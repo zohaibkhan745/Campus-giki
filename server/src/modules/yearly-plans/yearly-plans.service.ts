@@ -261,11 +261,22 @@ export class YearlyPlansService {
     const newStatus =
       dto.decision === ReviewDecision.APPROVED ? PlanStatus.APPROVED : PlanStatus.CHANGES_REQUESTED;
 
+    let newAdvisorComments = plan.advisorComments;
+    if (dto.comment && dto.comment.trim() !== '') {
+      const dateStr = new Date().toLocaleDateString('en-US', { 
+        month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' 
+      });
+      const formattedComment = `[${dateStr}] ${newStatus}:\n${dto.comment.trim()}`;
+      newAdvisorComments = plan.advisorComments
+        ? `${plan.advisorComments}\n\n---\n\n${formattedComment}`
+        : formattedComment;
+    }
+
     const updated = await this.prisma.yearlyPlan.update({
       where: { id: planId },
       data: {
         status: newStatus,
-        advisorComments: dto.comment !== undefined ? dto.comment : plan.advisorComments,
+        advisorComments: newAdvisorComments,
       },
       include: {
         society: {
