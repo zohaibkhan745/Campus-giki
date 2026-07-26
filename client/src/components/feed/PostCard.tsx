@@ -1,0 +1,65 @@
+import React from 'react';
+import { Building2, Megaphone } from 'lucide-react';
+import type { PostFeedItem } from '@/types/feed.types';
+
+interface PostCardProps {
+  item: PostFeedItem;
+}
+
+export const PostCard: React.FC<PostCardProps> = ({ item }) => {
+  const formattedTime = new Date(item.createdAt).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
+
+  return (
+    <article className="bg-lumen-cream border-2 border-vast-ink rounded-cards p-8 space-y-6 text-left transition-transform hover:-translate-y-0.5">
+      {/* Card Header: Society Meta */}
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          {item.society.logoUrl ? (
+            <img
+              src={item.society.logoUrl}
+              alt={item.society.name}
+              className="w-8 h-8 rounded-full border-2 border-vast-ink object-cover bg-lumen-stone shrink-0"
+            />
+          ) : (
+            <div className="w-8 h-8 rounded-full border-2 border-vast-ink bg-lavender-whisper flex items-center justify-center shrink-0 text-vast-ink">
+              <Building2 className="w-4 h-4" />
+            </div>
+          )}
+          <span className="font-medium text-[14px] text-vast-ink truncate">
+            {item.society.name}
+          </span>
+        </div>
+
+        <span className="inline-flex items-center gap-1 bg-lumen-stone text-vast-ink rounded-badges px-3 py-1 text-xs font-semibold shrink-0 border border-vast-ink/20">
+          <Megaphone className="w-3 h-3 text-forest-ink" />
+          <span>Announcement</span>
+        </span>
+      </div>
+
+      {/* Post Content */}
+      <p className="font-normal text-[16px] md:text-[20px] text-vast-ink leading-relaxed whitespace-pre-line">
+        {item.content}
+      </p>
+
+      {/* Optional Post Image */}
+      {item.imageUrl && (
+        <div className="overflow-hidden rounded-[24px] border-2 border-vast-ink mt-4">
+          <img
+            src={item.imageUrl}
+            alt="Announcement Attachment"
+            className="w-full max-h-[400px] object-cover"
+          />
+        </div>
+      )}
+
+      {/* Footer Timestamp */}
+      <div className="pt-2 border-t-2 border-vast-ink/10 text-fog text-[14px] font-medium">
+        Posted on {formattedTime}
+      </div>
+    </article>
+  );
+};

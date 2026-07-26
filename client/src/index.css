@@ -1,0 +1,46 @@
+@import "tailwindcss";
+
+@theme {
+  --color-lavender-whisper: #f0d7ff;
+  --color-forest-ink: #034f46;
+  --color-ember-glow: #ffa946;
+  --color-vast-ink: #1a1a1a;
+  --color-lumen-cream: #ffffeb;
+  --color-lumen-stone: #e4e4d0;
+  --color-fog: #8a8a80;
+  --color-charcoal: #222222;
+  --color-pure-white: #ffffff;
+
+  --font-eb-garamond: 'EB Garamond', ui-serif, serif;
+  --font-figtree: 'Figtree', ui-sans-serif, sans-serif;
+
+  --text-caption: 14px;
+  --text-body-sm: 16px;
+  --text-body: 20px;
+  --text-subheading: 24px;
+  --text-heading-sm: 32px;
+  --text-heading: 48px;
+  --text-heading-lg: 64px;
+  --text-display: 120px;
+
+  --radius-cards: 32px;
+  --radius-badges: 9999px;
+  --radius-inputs: 12px;
+  --radius-buttons: 12px;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: var(--color-lumen-cream);
+  color: var(--color-vast-ink);
+  font-family: var(--font-figtree);
+  text-align: left;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Base resets to enforce design system rules */
+* {
+  box-shadow: none !important; /* No box shadows anywhere */
+}
