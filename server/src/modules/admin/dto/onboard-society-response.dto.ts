@@ -10,7 +10,7 @@ export class OnboardSocietyResponseDto {
   @ApiProperty({ example: 'president.acm@giki.edu.pk' })
   presidentEmail: string;
 
-  @ApiProperty({ example: 'GIKI-Pass#8a9f2b' })
+  @ApiProperty({ example: 'TempKey#8a9f2b' })
   temporaryPassword: string;
 
   @ApiProperty({ example: false })

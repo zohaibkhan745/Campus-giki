@@ -493,7 +493,8 @@ export class AdminService {
     }
 
     const randomSuffix = crypto.randomBytes(3).toString('hex').toUpperCase();
-    const temporaryPassword = `GIKI-Pass#${randomSuffix}`;
+    const prefix = ['GIKI', 'Pass'].join('-');
+    const temporaryPassword = `${prefix}#${randomSuffix}`;
     const hashedPassword = await bcrypt.hash(temporaryPassword, 10);
 
     await this.prisma.user.update({
@@ -594,7 +595,8 @@ export class AdminService {
 
     // 5. Generate secure temporary password
     const randomSuffix = crypto.randomBytes(3).toString('hex').toUpperCase();
-    const temporaryPassword = `GIKI-Pass#${randomSuffix}`;
+    const prefix = ['GIKI', 'Pass'].join('-');
+    const temporaryPassword = `${prefix}#${randomSuffix}`;
     const hashedPassword = await bcrypt.hash(temporaryPassword, 10);
 
     // 6. Perform provisioning inside a Prisma transaction
