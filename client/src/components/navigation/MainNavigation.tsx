@@ -1,99 +1,103 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X } from 'lucide-react';
+import { Home, CalendarDays, Users, User, LogIn } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 
 export const MainNavigation: React.FC = () => {
   const { user } = useAuth();
   const location = useLocation();
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const navLinks = [
-    { label: 'Home', path: '/' },
-    { label: 'Calendar', path: '/events' },
-    { label: 'Clubs', path: '/societies' },
-    ...(user ? [{ label: 'Profile', path: '/dashboard' }] : []),
+    { label: 'Home', path: '/', icon: Home },
+    { label: 'Calendar', path: '/events', icon: CalendarDays },
+    { label: 'Clubs', path: '/societies', icon: Users },
+    ...(user
+      ? [{ label: 'Profile', path: '/dashboard', icon: User }]
+      : [{ label: 'Log in', path: '/login', icon: LogIn }]),
   ];
 
   return (
-    <div className="sticky top-4 sm:top-6 z-50 w-full px-4 md:px-6 max-w-[1200px] mx-auto font-figtree">
-      <nav className="relative flex items-center justify-between bg-lumen-cream border-2 border-vast-ink rounded-badges pl-6 pr-2 py-2">
-        {/* Left Side: Wordmark */}
-        <Link to="/" className="font-semibold text-[18px] md:text-[20px] text-vast-ink leading-none hover:opacity-80 transition-opacity">
-          GIKI Campus
-        </Link>
+    <>
+      {/* Desktop & Mobile Top Navigation */}
+      <div className="sticky top-4 sm:top-6 z-50 w-full px-4 md:px-6 max-w-[1200px] mx-auto font-figtree">
+        <nav className="relative flex items-center justify-between bg-lumen-cream border-2 border-vast-ink rounded-badges pl-6 pr-4 md:pr-2 py-2 shadow-[4px_4px_0px_0px_#1B1B18] transition-all">
+          {/* Left Side: Wordmark */}
+          <Link to="/" className="font-eb-garamond font-bold text-[22px] md:text-[24px] text-vast-ink leading-none hover:opacity-80 transition-opacity">
+            GIKI Campus
+          </Link>
 
-        <div className="flex items-center gap-2">
-          {/* Center: Desktop Nav */}
-          <div className="hidden md:flex items-center gap-1 mr-4">
-            {navLinks.map((link) => {
-              // Exact match for Home to avoid matching every route
-              const isActive = link.path === '/' 
-                ? location.pathname === '/' 
-                : location.pathname.startsWith(link.path);
+          <div className="flex items-center gap-2">
+            {/* Center: Desktop Nav (Hidden on Mobile) */}
+            <div className="hidden md:flex items-center gap-1 mr-4">
+              {navLinks.map((link) => {
+                const isActive = link.path === '/'
+                  ? location.pathname === '/'
+                  : location.pathname.startsWith(link.path);
 
-              return (
+                return (
+                  <Link
+                    key={link.path}
+                    to={link.path}
+                    className={`px-4 py-2 text-[16px] font-bold rounded-badges transition-all ${
+                      isActive
+                        ? 'bg-vast-ink text-pure-white shadow-md'
+                        : 'text-vast-ink hover:bg-lumen-stone'
+                    }`}
+                  >
+                    {link.label}
+                  </Link>
+                );
+              })}
+            </div>
+
+            {/* Mobile Top Nav Fallback (Optional right side items if needed, e.g. Login button on mobile? Or handled by bottom nav) */}
+            {!user && (
+              <div className="md:hidden">
                 <Link
-                  key={link.path}
-                  to={link.path}
-                  className={`px-4 py-2 text-[16px] font-medium rounded-badges transition-colors ${
-                    isActive
-                      ? 'bg-lavender-whisper text-vast-ink'
-                      : 'text-vast-ink hover:bg-lumen-stone'
-                  }`}
+                  to="/login"
+                  className="bg-vast-ink rounded-badges font-medium text-[13px] text-pure-white px-4 py-1.5 hover:opacity-90 transition-opacity"
                 >
-                  {link.label}
+                  Log in
                 </Link>
-              );
-            })}
+              </div>
+            )}
           </div>
+        </nav>
+      </div>
 
-          {/* Right Edge: Auth */}
-          {!user && (
-            <Link
-              to="/login"
-              className="bg-lavender-whisper border-2 border-vast-ink rounded-badges font-medium text-[14px] text-vast-ink px-4 py-2 hover:bg-lumen-stone transition-colors"
-            >
-              Log in
-            </Link>
-          )}
-
-          {/* Mobile Menu Toggle */}
-          <button
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden p-1.5 ml-1 text-vast-ink rounded-full hover:bg-lumen-stone transition-colors focus:outline-none"
-            aria-label="Toggle menu"
-          >
-            {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </button>
-        </div>
-      </nav>
-
-      {/* Mobile Dropdown Panel */}
-      {isMobileMenuOpen && (
-        <div className="absolute top-[calc(100%+12px)] left-4 right-4 md:hidden bg-lumen-cream border-2 border-vast-ink rounded-cards p-4 flex flex-col gap-2 z-40">
+      {/* Mobile Bottom Navigation (Material 3 style) */}
+      <div className="md:hidden fixed bottom-4 left-4 right-4 z-50 font-figtree">
+        <nav className="flex items-center justify-between bg-pure-white shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-vast-ink/10 rounded-[32px] px-4 py-2">
           {navLinks.map((link) => {
-            const isActive = link.path === '/' 
-                ? location.pathname === '/' 
-                : location.pathname.startsWith(link.path);
-                
+            const isActive = link.path === '/'
+              ? location.pathname === '/'
+              : location.pathname.startsWith(link.path);
+
+            const Icon = link.icon;
+
             return (
               <Link
                 key={link.path}
                 to={link.path}
-                onClick={() => setIsMobileMenuOpen(false)}
-                className={`block px-4 py-3 text-[16px] font-medium rounded-badges transition-colors ${
-                  isActive
-                    ? 'bg-lavender-whisper text-vast-ink'
-                    : 'text-vast-ink hover:bg-lumen-stone'
-                }`}
+                className="flex flex-col items-center justify-center gap-1 min-w-[64px]"
               >
-                {link.label}
+                <div
+                  className={`flex items-center justify-center w-14 h-8 rounded-full transition-colors ${
+                    isActive ? 'bg-forest-ink/15 text-forest-ink' : 'text-vast-ink/60 hover:text-vast-ink'
+                  }`}
+                >
+                  <Icon className="w-5 h-5" strokeWidth={isActive ? 2.5 : 2} />
+                </div>
+                <span className={`text-[11px] font-bold transition-colors ${
+                  isActive ? 'text-forest-ink' : 'text-vast-ink/60'
+                }`}>
+                  {link.label}
+                </span>
               </Link>
             );
           })}
-        </div>
-      )}
-    </div>
+        </nav>
+      </div>
+    </>
   );
 };
