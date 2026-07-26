@@ -12,7 +12,7 @@ export class AdvisorsService {
    * Helper: Resolves and verifies the advisor's assigned society.
    * Throws 403 Forbidden if user is not assigned to any society.
    */
-  async getAdvisorAssignedSociety(userId: string): Promise<Society> {
+  async getAdvisorAssignedSocieties(userId: string): Promise<Society[]> {
     const advisor = await this.prisma.advisor.findUnique({
       where: { userId },
       include: { societies: true },
@@ -24,7 +24,7 @@ export class AdvisorsService {
       );
     }
 
-    return advisor.societies[0];
+    return advisor.societies;
   }
 
   /**
@@ -34,14 +34,14 @@ export class AdvisorsService {
     userId: string,
     query: QueryAdvisorPlansDto,
   ): Promise<PaginatedAdvisorPlansResponseDto> {
-    const society = await this.getAdvisorAssignedSociety(userId);
+    const societies = await this.getAdvisorAssignedSocieties(userId);
 
     const page = Math.max(1, query.page || 1);
     const limit = Math.min(50, Math.max(1, query.limit || 10));
     const skip = (page - 1) * limit;
 
     const whereClause: Prisma.YearlyPlanWhereInput = {
-      societyId: society.id,
+      societyId: { in: societies.map(s => s.id) },
     };
 
     if (query.status) {
