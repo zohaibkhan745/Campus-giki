@@ -1,0 +1,29 @@
+{
+  "name": "campus-giki",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Campus GIKI - Centralized Platform for GIKI Students, Societies, Events, and Activities",
+  "scripts": {
+    "dev:server": "cd server && npm run start:dev",
+    "dev:client": "cd client && npm run dev",
+    "build:server": "cd server && npm run build",
+    "build:client": "cd client && npm run build",
+    "start:server": "cd server && npm run start:prod",
+    "lint:server": "cd server && npm run lint",
+    "format:server": "cd server && npm run format",
+    "prisma:generate": "cd server && npm run prisma:generate",
+    "prisma:migrate:dev": "cd server && npm run prisma:migrate:dev",
+    "prisma:studio": "cd server && npm run prisma:studio",
+    "seed": "cd server && npm run seed"
+  },
+  "keywords": [
+    "giki",
+    "nestjs",
+    "prisma",
+    "react",
+    "typescript",
+    "tailwind"
+  ],
+  "author": "GIKI Development Team",
+  "license": "MIT"
+}
