@@ -1,0 +1,228 @@
+import React from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { useParams, Link } from 'react-router-dom';
+import {
+  Calendar as CalendarIcon,
+  Clock,
+  MapPin,
+  Building2,
+  ExternalLink,
+  ArrowLeft,
+  CheckCircle,
+  Sparkles,
+  Info,
+} from 'lucide-react';
+import { eventService } from '@/services/event.service';
+import { EventDetailSkeleton } from '@/components/events/EventDetailSkeleton';
+import { Alert } from '@/components/ui/Alert';
+
+export const EventDetailPage: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
+
+  const {
+    data: eventItem,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ['event', id],
+    queryFn: () => eventService.getEventById(id!),
+    enabled: !!id,
+  });
+
+  if (isLoading) {
+    return <EventDetailSkeleton />;
+  }
+
+  if (isError || !eventItem) {
+    return (
+      <div className="max-w-md mx-auto py-12 space-y-4 text-center">
+        <Alert variant="error" message="Event not found or has been deleted." />
+        <Link
+          to="/societies"
+          className="inline-flex items-center gap-2 text-sm text-vast-ink hover:underline"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          <span>Return to Directory</span>
+        </Link>
+      </div>
+    );
+  }
+
+  const isPast = new Date(eventItem.eventDate) < new Date(new Date().setHours(0, 0, 0, 0));
+
+  return (
+    <div className="max-w-4xl mx-auto space-y-6 text-left py-4">
+      {/* Top Back Navigation Link */}
+      <div className="flex items-center justify-between">
+        <Link
+          to="/societies"
+          className="inline-flex items-center gap-2 text-xs font-semibold text-fog hover:text-vast-ink transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          <span>Back to Directory</span>
+        </Link>
+      </div>
+
+      {/* Main Container */}
+      <div className="bg-lumen-cream p-6 sm:p-8 rounded-cards border-2 border-vast-ink space-y-8">
+        {/* 1. Hero Cover Image */}
+        {eventItem.coverImageUrl && (
+          <div className="w-full h-56 sm:h-80 rounded-cards overflow-hidden bg-lumen-stone border-2 border-vast-ink shadow-xl">
+            <img
+              src={eventItem.coverImageUrl}
+              alt={eventItem.title}
+              className="w-full h-full object-cover"
+            />
+          </div>
+        )}
+
+        {/* 2. Hero Header */}
+        <div className="space-y-4 border-b-2 border-vast-ink pb-6">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div className="space-y-1">
+              <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-inputs text-xs font-semibold ${
+                isPast
+                  ? 'bg-lumen-stone text-fog'
+                  : 'bg-pure-white border border-forest-ink border border-emerald-500/20 text-forest-ink'
+              }`}>
+                <CheckCircle className="w-3.5 h-3.5" />
+                {isPast ? 'CONCLUDED CAMPUS EVENT' : 'ACTIVE CAMPUS EVENT'}
+              </span>
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-vast-ink">
+                {eventItem.title}
+              </h1>
+            </div>
+
+            {/* 3. Primary Registration Action Button */}
+            {eventItem.registrationLink && !isPast && (
+              <a
+                href={eventItem.registrationLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-vast-ink hover:opacity-90 text-white rounded-inputs text-sm font-semibold transition-all shadow-lg shadow-blue-600/25 hover:shadow-blue-600/40"
+              >
+                <span>Register for Event</span>
+                <ExternalLink className="w-4 h-4" />
+              </a>
+            )}
+          </div>
+        </div>
+
+        {/* 4. Schedule & Location Details Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-pure-white p-5 rounded-cards border-2 border-vast-ink">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 bg-pure-white border border-vast-ink text-vast-ink rounded-inputs shrink-0">
+              <CalendarIcon className="w-5 h-5" />
+            </div>
+            <div>
+              <p className="text-[11px] font-semibold uppercase text-fog tracking-wider">Date</p>
+              <p className="text-xs font-bold text-vast-ink">
+                {new Date(eventItem.eventDate).toLocaleDateString(undefined, {
+                  weekday: 'short',
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric',
+                })}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 bg-lavender-whisper border border-vast-ink text-vast-ink rounded-inputs shrink-0">
+              <Clock className="w-5 h-5" />
+            </div>
+            <div>
+              <p className="text-[11px] font-semibold uppercase text-fog tracking-wider">Schedule</p>
+              <p className="text-xs font-bold text-vast-ink">
+                {eventItem.startTime} - {eventItem.endTime}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 bg-pure-white border border-forest-ink text-forest-ink rounded-inputs shrink-0">
+              <MapPin className="w-5 h-5" />
+            </div>
+            <div>
+              <p className="text-[11px] font-semibold uppercase text-fog tracking-wider">Venue Location</p>
+              <p className="text-xs font-bold text-vast-ink truncate">{eventItem.venue}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* 5. Event Overview & Information */}
+        <div className="space-y-3">
+          <div className="flex items-center gap-2 text-sm font-bold text-vast-ink">
+            <Info className="w-4 h-4 text-vast-ink" />
+            <h3>Event Information & Agenda</h3>
+          </div>
+          <p className="text-sm text-vast-ink font-medium leading-relaxed whitespace-pre-line bg-lumen-cream/40 p-5 rounded-cards border border-vast-ink">
+            {eventItem.description}
+          </p>
+        </div>
+
+        {/* 6. Registration Highlight Panel */}
+        {eventItem.registrationLink && (
+          <div className="p-5 bg-blue-500/5 rounded-cards border border-blue-500/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2 text-xs font-bold text-vast-ink">
+                <Sparkles className="w-4 h-4" />
+                <span>External Registration Required</span>
+              </div>
+              <p className="text-xs text-vast-ink font-medium">
+                Registration for this event is managed via an official form link. Click below to sign up.
+              </p>
+            </div>
+
+            <a
+              href={eventItem.registrationLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-vast-ink hover:opacity-90 text-white rounded-inputs text-xs font-semibold transition-colors shrink-0"
+            >
+              <span>Open Registration Form</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
+          </div>
+        )}
+
+        {/* 7. Hosting Society Information Card */}
+        {eventItem.society && (
+          <div className="space-y-3 pt-2">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-fog">
+              Hosting Society
+            </h3>
+            <Link
+              to={`/societies/${eventItem.societyId}`}
+              className="flex items-center justify-between p-4 bg-pure-white hover:bg-lumen-stone rounded-cards border-2 border-vast-ink transition-all group"
+            >
+              <div className="flex items-center gap-3">
+                {eventItem.society.logoUrl ? (
+                  <img
+                    src={eventItem.society.logoUrl}
+                    alt={eventItem.society.name}
+                    className="w-12 h-12 rounded-inputs object-cover border-2 border-vast-ink"
+                  />
+                ) : (
+                  <div className="p-3 bg-blue-600/20 text-vast-ink rounded-inputs">
+                    <Building2 className="w-6 h-6" />
+                  </div>
+                )}
+                <div>
+                  <h4 className="font-bold text-sm text-vast-ink group-hover:text-vast-ink transition-colors">
+                    {eventItem.society.name}
+                  </h4>
+                  <p className="text-xs text-fog">View official society profile →</p>
+                </div>
+              </div>
+
+              <div className="px-3 py-1.5 bg-lumen-stone text-vast-ink font-medium text-xs font-semibold rounded-inputs group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                Visit Profile
+              </div>
+            </Link>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
