@@ -219,7 +219,7 @@ export async function seedSocietiesAndFeed(
         longDescription: sData.longDescription,
         logoUrl: sData.logoUrl,
         userId: user.id,
-        advisorId: advisorId,
+        advisorId: sData.email === 'acm@giki.edu.pk' ? advisorId : null,
         categoryId: categoryId || null,
         isSetupComplete: true,
       },
