@@ -69,11 +69,45 @@ export const CampusCalendarPage: React.FC = () => {
 
   const eventsList = eventsData?.items || [];
 
+  // Helper to parse "06:00 PM" into FullCalendar compatible local ISO "YYYY-MM-DDTHH:mm:00"
+  const parseLocalIso = (dateStr: string, timeStr: string) => {
+    let hours = 0;
+    let minutes = 0;
+    let addDay = false;
+    
+    if (timeStr) {
+      const match = timeStr.match(/(\d{1,2}):(\d{2})\s*(AM|PM)?/i);
+      if (match) {
+        hours = parseInt(match[1], 10);
+        minutes = parseInt(match[2], 10);
+        const modifier = match[3]?.toUpperCase();
+        if (modifier === 'PM' && hours < 12) hours += 12;
+        if (modifier === 'AM' && hours === 12) hours = 0;
+      }
+      if (timeStr.toLowerCase().includes('next day')) {
+        addDay = true;
+      }
+    }
+    
+    const dt = new Date(dateStr); // Parses YYYY-MM-DD as UTC midnight
+    if (addDay) {
+      dt.setUTCDate(dt.getUTCDate() + 1);
+    }
+    
+    const yyyy = dt.getUTCFullYear();
+    const mm = String(dt.getUTCMonth() + 1).padStart(2, '0');
+    const dd = String(dt.getUTCDate()).padStart(2, '0');
+    const hh = String(hours).padStart(2, '0');
+    const min = String(minutes).padStart(2, '0');
+    
+    return `${yyyy}-${mm}-${dd}T${hh}:${min}:00`;
+  };
+
   // Map backend EventItem items to FullCalendar format
   const calendarEvents = eventsList.map((item) => {
     const eventDateStr = new Date(item.eventDate).toISOString().split('T')[0];
-    const startIso = `${eventDateStr}T${item.startTime}:00`;
-    const endIso = `${eventDateStr}T${item.endTime}:00`;
+    const startIso = parseLocalIso(eventDateStr, item.startTime);
+    const endIso = parseLocalIso(eventDateStr, item.endTime);
 
     // Simple hash to generate a consistent color for a society
     const hash = (item.society?.name || 'A').split('').reduce((acc, char) => char.charCodeAt(0) + ((acc << 5) - acc), 0);
