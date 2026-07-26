@@ -210,7 +210,7 @@ export const CampusCalendarPage: React.FC = () => {
               meridiem: false,
               hour12: false,
             }}
-            displayEventTime={true}
+            displayEventTime={false}
           />
         </div>
 
