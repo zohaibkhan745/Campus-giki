@@ -6,6 +6,7 @@ import { societyService } from '@/services/society.service';
 import { DashboardSkeleton } from '@/components/dashboard/DashboardSkeleton';
 import { DeleteEventDialog } from '@/components/events/DeleteEventDialog';
 import { AdminDashboardPage } from '@/pages/admin/AdminDashboardPage';
+import { AdvisorQueuePage } from '@/pages/advisor/AdvisorQueuePage';
 import type { EventItem } from '@/types/event.types';
 import {
   UserCheck,
@@ -40,6 +41,11 @@ export const DashboardPage: React.FC = () => {
   // If DSA_ADMIN, render central DSA Dashboard
   if (user?.role === 'DSA_ADMIN') {
     return <AdminDashboardPage />;
+  }
+
+  // If ADVISOR, render central Advisor Queue Dashboard
+  if (user?.role === 'ADVISOR') {
+    return <AdvisorQueuePage />;
   }
 
   // Single aggregated dashboard query
