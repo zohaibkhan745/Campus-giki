@@ -75,13 +75,18 @@ export const CampusCalendarPage: React.FC = () => {
     const startIso = `${eventDateStr}T${item.startTime}:00`;
     const endIso = `${eventDateStr}T${item.endTime}:00`;
 
+    // Simple hash to generate a consistent color for a society
+    const hash = (item.society?.name || 'A').split('').reduce((acc, char) => char.charCodeAt(0) + ((acc << 5) - acc), 0);
+    const colors = ['#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#f43f5e', '#06b6d4', '#ec4899', '#6366f1'];
+    const color = colors[Math.abs(hash) % colors.length];
+
     return {
       id: item.id,
       title: item.title,
       start: startIso,
       end: endIso,
-      backgroundColor: '#3b82f6',
-      borderColor: '#3b82f6',
+      backgroundColor: color,
+      borderColor: color,
       textColor: '#ffffff',
       extendedProps: {
         societyName: item.society?.name || 'Campus Society',
@@ -171,26 +176,7 @@ export const CampusCalendarPage: React.FC = () => {
               meridiem: false,
               hour12: false,
             }}
-            eventContent={(eventInfo) => {
-              const props = eventInfo.event.extendedProps as {
-                societyName: string;
-                categoryName: string;
-                venue: string;
-                startTime: string;
-                endTime: string;
-              };
-              return (
-                <div
-                  className="p-1 text-xs cursor-pointer truncate space-y-0.5"
-                  title={`${eventInfo.event.title} - ${props.societyName} (${props.startTime} - ${props.endTime})`}
-                >
-                  <div className="font-semibold truncate text-lumen-cream drop-shadow-sm">{eventInfo.event.title}</div>
-                  <div className="text-[10px] opacity-90 truncate text-lumen-cream drop-shadow-sm">
-                    {props.societyName}
-                  </div>
-                </div>
-              );
-            }}
+            displayEventTime={true}
           />
         </div>
 
