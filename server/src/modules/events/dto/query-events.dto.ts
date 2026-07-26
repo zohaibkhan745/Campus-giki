@@ -32,4 +32,9 @@ export class QueryEventsDto {
   @IsOptional()
   @IsString()
   category?: string;
+
+  @ApiPropertyOptional({ example: 'uuid' })
+  @IsOptional()
+  @IsString()
+  societyId?: string;
 }

@@ -11,6 +11,7 @@ export const eventService = {
     from?: string;
     to?: string;
     category?: string;
+    societyId?: string;
     page?: number;
     limit?: number;
   }): Promise<{ items: EventItem[]; meta: { total: number; page: number; limit: number; totalPages: number } }> {

@@ -65,6 +65,10 @@ export class EventsService {
       };
     }
 
+    if (query.societyId) {
+      whereClause.societyId = query.societyId;
+    }
+
     const [total, items] = await Promise.all([
       this.prisma.event.count({ where: whereClause }),
       this.prisma.event.findMany({

@@ -5,26 +5,14 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { Calendar as CalendarIcon, Tag, Loader2, Info } from 'lucide-react';
+import { Calendar as CalendarIcon, Tag, Loader2, Clock, MapPin, ExternalLink, Building2 } from 'lucide-react';
 import { eventService } from '@/services/event.service';
 import { societyService } from '@/services/society.service';
-
-const CATEGORY_COLORS: Record<string, string> = {
-  technology: '#3b82f6', // Blue
-  sports: '#10b981', // Emerald
-  'arts-and-culture': '#8b5cf6', // Purple
-  academic: '#f59e0b', // Amber
-  media: '#f43f5e', // Rose
-  'community-service': '#06b6d4', // Cyan
-  entrepreneurship: '#ec4899', // Pink
-  religious: '#6366f1', // Indigo
-  other: '#64748b', // Slate
-};
 
 export const CampusCalendarPage: React.FC = () => {
   const navigate = useNavigate();
   const [dateRange, setDateRange] = useState<{ from?: string; to?: string }>({});
-  const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [selectedSociety, setSelectedSociety] = useState<string>('');
 
   // Responsive calendar view state
   const [calendarView, setCalendarView] = useState<'dayGridMonth' | 'timeGridWeek' | 'timeGridDay'>('dayGridMonth');
@@ -50,11 +38,12 @@ export const CampusCalendarPage: React.FC = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Query predefined categories
-  const { data: categories = [] } = useQuery({
-    queryKey: ['categories'],
-    queryFn: societyService.getCategories,
+  // Query all active societies for the filter dropdown
+  const { data: societiesData } = useQuery({
+    queryKey: ['societiesListForFilter'],
+    queryFn: () => societyService.getPublicSocieties({ limit: 100 }),
   });
+  const societies = societiesData?.items || [];
 
   // Query visible events in active date range [from, to]
   const {
@@ -66,13 +55,13 @@ export const CampusCalendarPage: React.FC = () => {
       'publicCalendarEvents',
       dateRange.from,
       dateRange.to,
-      selectedCategory,
+      selectedSociety,
     ],
     queryFn: () =>
       eventService.getAllPublicEvents({
         from: dateRange.from,
         to: dateRange.to,
-        category: selectedCategory || undefined,
+        societyId: selectedSociety || undefined,
         limit: 150,
       }),
     enabled: !!dateRange.from && !!dateRange.to,
@@ -80,11 +69,8 @@ export const CampusCalendarPage: React.FC = () => {
 
   const eventsList = eventsData?.items || [];
 
-  // Map backend EventItem items to FullCalendar format with category color coding
+  // Map backend EventItem items to FullCalendar format
   const calendarEvents = eventsList.map((item) => {
-    const catSlug = item.society?.category?.slug || 'other';
-    const color = CATEGORY_COLORS[catSlug] || CATEGORY_COLORS.other;
-
     const eventDateStr = new Date(item.eventDate).toISOString().split('T')[0];
     const startIso = `${eventDateStr}T${item.startTime}:00`;
     const endIso = `${eventDateStr}T${item.endTime}:00`;
@@ -94,12 +80,11 @@ export const CampusCalendarPage: React.FC = () => {
       title: item.title,
       start: startIso,
       end: endIso,
-      backgroundColor: color,
-      borderColor: color,
+      backgroundColor: '#3b82f6',
+      borderColor: '#3b82f6',
       textColor: '#ffffff',
       extendedProps: {
         societyName: item.society?.name || 'Campus Society',
-        categoryName: item.society?.category?.name || 'General',
         venue: item.venue,
         startTime: item.startTime,
         endTime: item.endTime,
@@ -139,36 +124,21 @@ export const CampusCalendarPage: React.FC = () => {
 
             <div className="relative flex items-center w-full md:w-56">
               <div className="absolute left-3 text-vast-ink/60 pointer-events-none flex items-center justify-center">
-                <Tag className="w-4 h-4" />
+                <Building2 className="w-4 h-4" />
               </div>
               <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
+                value={selectedSociety}
+                onChange={(e) => setSelectedSociety(e.target.value)}
                 className="w-full bg-lumen-cream text-vast-ink font-medium text-sm rounded-buttons border-2 border-vast-ink px-3.5 py-2 pl-10 transition-all outline-none focus:bg-lumen-stone appearance-none cursor-pointer"
               >
-                <option value="">All Categories</option>
-                {categories.map((cat) => (
-                  <option key={cat.id} value={cat.slug}>
-                    {cat.name}
+                <option value="">All Societies</option>
+                {societies.map((soc) => (
+                  <option key={soc.id} value={soc.id}>
+                    {soc.name}
                   </option>
                 ))}
               </select>
             </div>
-          </div>
-          
-          {/* Category Legend */}
-          <div className="flex flex-wrap items-center gap-4 text-xs font-medium">
-            {Object.entries(CATEGORY_COLORS).map(([slug, color]) => (
-              <div key={slug} className="flex items-center gap-1.5">
-                <span
-                  className="w-3 h-3 rounded-full border-2 border-vast-ink inline-block"
-                  style={{ backgroundColor: color }}
-                />
-                <span className="capitalize text-vast-ink/80">
-                  {slug.replace(/-/g, ' ')}
-                </span>
-              </div>
-            ))}
           </div>
         </div>
 
@@ -222,6 +192,72 @@ export const CampusCalendarPage: React.FC = () => {
               );
             }}
           />
+        </div>
+
+        {/* Detailed Events List Below Calendar */}
+        <div className="pt-8 pb-12">
+          <h2 className="font-eb-garamond text-2xl font-bold text-vast-ink mb-6 flex items-center gap-2">
+            <CalendarIcon className="w-6 h-6" />
+            Events in Selected View
+          </h2>
+          
+          {eventsList.length === 0 ? (
+            <div className="bg-pure-white p-10 rounded-cards border-2 border-vast-ink text-center text-fog">
+              No events scheduled for the current date range.
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {eventsList.map((event) => (
+                <div
+                  key={event.id}
+                  onClick={() => navigate(`/events/${event.id}`)}
+                  className="bg-pure-white rounded-cards border-2 border-vast-ink hover:translate-y-[-4px] hover:shadow-xl transition-all cursor-pointer flex flex-col justify-between overflow-hidden"
+                >
+                  <div className="space-y-4 p-5">
+                    {event.coverImageUrl && (
+                      <div className="w-full h-32 -mx-5 -mt-5 mb-4 border-b-2 border-vast-ink overflow-hidden bg-lumen-stone">
+                        <img
+                          src={event.coverImageUrl}
+                          alt={event.title}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    )}
+                    
+                    <div className="flex items-start justify-between gap-2">
+                      <h4 className="font-bold text-lg text-vast-ink leading-tight line-clamp-2">
+                        {event.title}
+                      </h4>
+                    </div>
+
+                    <p className="text-sm text-fog line-clamp-2">{event.description}</p>
+
+                    <div className="space-y-2 text-sm text-vast-ink font-medium pt-2 border-t-2 border-vast-ink/10">
+                      <div className="flex items-center gap-2">
+                        <CalendarIcon className="w-4 h-4 text-vast-ink shrink-0" />
+                        <span>{new Date(event.eventDate).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' })}</span>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <Clock className="w-4 h-4 text-vast-ink shrink-0" />
+                        <span>{event.startTime} - {event.endTime}</span>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <MapPin className="w-4 h-4 text-forest-ink shrink-0" />
+                        <span className="truncate">{event.venue}</span>
+                      </div>
+                      
+                      <div className="flex items-center gap-2">
+                        <Building2 className="w-4 h-4 text-ember-glow shrink-0" />
+                        <span className="truncate">{event.society?.name || 'Campus Society'}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
