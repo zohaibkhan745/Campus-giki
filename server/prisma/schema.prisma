@@ -1,0 +1,178 @@
+// Prisma Schema for Campus GIKI
+// Database: PostgreSQL
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ==========================================
+// Enums
+// ==========================================
+
+enum Role {
+  STUDENT
+  SOCIETY
+  ADVISOR
+  DSA_ADMIN
+}
+
+enum PlanStatus {
+  DRAFT
+  PENDING
+  CHANGES_REQUESTED
+  APPROVED
+}
+
+// ==========================================
+// Models
+// ==========================================
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  fullName  String
+  role      Role     @default(STUDENT)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // 1-to-1 optional profile relations
+  society Society?
+  advisor Advisor?
+
+  @@index([role])
+}
+
+model Category {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  slug      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  societies Society[]
+}
+
+model Advisor {
+  id          String   @id @default(uuid())
+  department  String
+  designation String
+  userId      String   @unique
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relationships
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  societies Society[]
+
+  @@index([userId])
+}
+
+model Society {
+  id               String       @id @default(uuid())
+  name             String       @unique
+  shortDescription String?      @db.Text
+  longDescription  String?      @db.Text
+  logoUrl          String?
+  bannerUrl        String?
+  instagram        String?
+  facebook         String?
+  linkedin         String?
+  website          String?
+  email            String?
+  isSetupComplete  Boolean      @default(false)
+  categoryId       String?
+  category         Category?    @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  userId           String       @unique
+  advisorId        String?
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+
+  // Relationships
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  advisor     Advisor?     @relation(fields: [advisorId], references: [id], onDelete: SetNull)
+  events      Event[]
+  posts       Post[]
+  yearlyPlans YearlyPlan[]
+
+  @@index([advisorId])
+  @@index([categoryId])
+  @@index([isSetupComplete])
+}
+
+model Event {
+  id               String   @id @default(uuid())
+  title            String
+  description      String   @db.Text
+  eventDate        DateTime
+  startTime        String
+  endTime          String
+  venue            String
+  coverImageUrl    String?
+  registrationLink String?
+  isPublished      Boolean  @default(true)
+  societyId        String
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  // Relationships
+  society Society @relation(fields: [societyId], references: [id], onDelete: Cascade)
+
+  @@index([societyId])
+  @@index([eventDate])
+  @@index([isPublished])
+}
+
+model YearlyPlan {
+  id              String         @id @default(uuid())
+  year            Int
+  status          PlanStatus     @default(DRAFT)
+  advisorComments String?        @db.Text
+  societyId       String
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  // Relationships
+  society       Society        @relation(fields: [societyId], references: [id], onDelete: Cascade)
+  plannedEvents PlannedEvent[]
+
+  @@unique([societyId, year])
+  @@index([status])
+}
+
+model PlannedEvent {
+  id           String     @id @default(uuid())
+  eventName    String
+  plannedDate  DateTime
+  notes        String?    @db.Text
+  yearlyPlanId String
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  // Relationships
+  yearlyPlan YearlyPlan @relation(fields: [yearlyPlanId], references: [id], onDelete: Cascade)
+
+  @@index([yearlyPlanId])
+}
+
+model Post {
+  id        String   @id @default(uuid())
+  content   String   @db.Text
+  imageUrl  String?
+  societyId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relationships
+  society Society @relation(fields: [societyId], references: [id], onDelete: Cascade)
+
+  @@index([societyId])
+  @@index([createdAt])
+}
+
