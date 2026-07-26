@@ -183,6 +183,17 @@ export const CampusCalendarPage: React.FC = () => {
 
         {/* FullCalendar Component Panel */}
         <div className="bg-lumen-cream border-2 border-vast-ink rounded-[32px] overflow-hidden p-4 sm:p-6 text-vast-ink shadow-none">
+          <style>{`
+            /* Make the default event wrapper transparent in month view so we can render just a dot */
+            .fc-dayGridMonth-view .fc-daygrid-event {
+              background: transparent !important;
+              border: none !important;
+              box-shadow: none !important;
+            }
+            .fc-dayGridMonth-view .fc-daygrid-event:hover {
+              background: rgba(0,0,0,0.05) !important;
+            }
+          `}</style>
           <FullCalendar
             key={calendarView} // Force re-render on initial view change to ensure it mounts correctly
             plugins={calendarPlugins}
@@ -211,6 +222,20 @@ export const CampusCalendarPage: React.FC = () => {
               hour12: false,
             }}
             displayEventTime={false}
+            eventContent={(eventInfo) => {
+              if (eventInfo.view.type === 'dayGridMonth') {
+                return (
+                  <div className="flex justify-center items-center w-full py-1 cursor-pointer" title={eventInfo.event.title}>
+                    <div 
+                      className="w-2.5 h-2.5 rounded-full"
+                      style={{ backgroundColor: eventInfo.event.backgroundColor || '#3b82f6' }}
+                    />
+                  </div>
+                );
+              }
+              // For week and day views, let FullCalendar render natively
+              return undefined;
+            }}
           />
         </div>
 
