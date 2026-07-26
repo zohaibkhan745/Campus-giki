@@ -1,0 +1,410 @@
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+  BadRequestException,
+} from '@nestjs/common';
+import { PrismaService } from '../../core/database/prisma.service';
+import { SetupSocietyDto } from './dto/setup-society.dto';
+import { UpdateSocietyDto } from './dto/update-society.dto';
+import { SocietyResponseDto } from './dto/society-response.dto';
+import { SocietyDashboardResponseDto } from './dto/society-dashboard-response.dto';
+import { QuerySocietiesDto } from './dto/query-societies.dto';
+import { PaginatedSocietiesResponseDto } from './dto/public-society-response.dto';
+import { PublicSocietyDetailResponseDto } from './dto/public-society-detail-response.dto';
+import { EventResponseDto } from '../events/dto/event-response.dto';
+import { Prisma } from '@prisma/client';
+
+export interface PublicSocietyEventsGroupDto {
+  upcoming: EventResponseDto[];
+  past: EventResponseDto[];
+}
+
+@Injectable()
+export class SocietiesService {
+  constructor(private readonly prisma: PrismaService) {}
+
+  /**
+   * Public Directory Query: Returns paginated list of fully setup societies.
+   * Strips out user credentials, email, and internal fields for privacy and security.
+   */
+  async getPublicSocieties(query: QuerySocietiesDto): Promise<PaginatedSocietiesResponseDto> {
+    const page = Math.max(1, query.page || 1);
+    const limit = Math.min(50, Math.max(1, query.limit || 12));
+    const skip = (page - 1) * limit;
+
+    const whereClause: Prisma.SocietyWhereInput = {
+      isSetupComplete: true,
+    };
+
+    if (query.category) {
+      const catFilter = query.category.trim();
+      whereClause.category = {
+        OR: [
+          { slug: catFilter.toLowerCase() },
+          { name: { contains: catFilter, mode: 'insensitive' } },
+        ],
+      };
+    }
+
+    if (query.search) {
+      const searchFilter = query.search.trim();
+      whereClause.OR = [
+        { name: { contains: searchFilter, mode: 'insensitive' } },
+        { shortDescription: { contains: searchFilter, mode: 'insensitive' } },
+      ];
+    }
+
+    const [total, items] = await Promise.all([
+      this.prisma.society.count({ where: whereClause }),
+      this.prisma.society.findMany({
+        where: whereClause,
+        skip,
+        take: limit,
+        orderBy: { name: 'asc' },
+        select: {
+          id: true,
+          name: true,
+          shortDescription: true,
+          logoUrl: true,
+          category: {
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+            },
+          },
+        },
+      }),
+    ]);
+
+    const totalPages = Math.ceil(total / limit) || 1;
+
+    return {
+      items,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages,
+        hasNextPage: page < totalPages,
+        hasPreviousPage: page > 1,
+      },
+    };
+  }
+
+  /**
+   * Public Detail Query: Returns single public society profile by ID.
+   * Throws 404 if missing or incomplete.
+   */
+  async getPublicSocietyById(id: string): Promise<PublicSocietyDetailResponseDto> {
+    const society = await this.prisma.society.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        name: true,
+        shortDescription: true,
+        longDescription: true,
+        logoUrl: true,
+        bannerUrl: true,
+        instagram: true,
+        facebook: true,
+        linkedin: true,
+        website: true,
+        email: true,
+        isSetupComplete: true,
+        category: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+          },
+        },
+      },
+    });
+
+    if (!society || !society.isSetupComplete) {
+      throw new NotFoundException(`Society with ID '${id}' was not found or is not published`);
+    }
+
+    return society;
+  }
+
+  /**
+   * Public Society Events Query: Returns upcoming (nearest first) and past (most recent first) events.
+   */
+  async getPublicSocietyEvents(societyId: string): Promise<PublicSocietyEventsGroupDto> {
+    const society = await this.prisma.society.findUnique({
+      where: { id: societyId },
+      select: { id: true, isSetupComplete: true },
+    });
+
+    if (!society || !society.isSetupComplete) {
+      throw new NotFoundException(`Society with ID '${societyId}' was not found`);
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const [upcoming, past] = await Promise.all([
+      this.prisma.event.findMany({
+        where: {
+          societyId,
+          eventDate: { gte: today },
+          isPublished: true,
+        },
+        orderBy: [{ eventDate: 'asc' }, { startTime: 'asc' }],
+        include: {
+          society: {
+            select: {
+              id: true,
+              name: true,
+              logoUrl: true,
+            },
+          },
+        },
+      }),
+      this.prisma.event.findMany({
+        where: {
+          societyId,
+          eventDate: { lt: today },
+          isPublished: true,
+        },
+        orderBy: [{ eventDate: 'desc' }, { startTime: 'desc' }],
+        include: {
+          society: {
+            select: {
+              id: true,
+              name: true,
+              logoUrl: true,
+            },
+          },
+        },
+      }),
+    ]);
+
+    return { upcoming, past };
+  }
+
+  /**
+   * Retrieves the society profile belonging to the authenticated user.
+   */
+  async getMySocietyProfile(userId: string): Promise<SocietyResponseDto | null> {
+    const society = await this.prisma.society.findUnique({
+      where: { userId },
+      include: {
+        category: true,
+      },
+    });
+
+    return society;
+  }
+
+  /**
+   * Aggregates all dashboard data (profile, statistics, upcoming/recent events, yearly plan summary)
+   * in a single performant database query batch.
+   */
+  async getSocietyDashboard(userId: string): Promise<SocietyDashboardResponseDto> {
+    const society = await this.prisma.society.findUnique({
+      where: { userId },
+      include: {
+        category: true,
+      },
+    });
+
+    if (!society || !society.isSetupComplete) {
+      return {
+        profile: society,
+        statistics: {
+          totalEvents: 0,
+          upcomingEvents: 0,
+          pastEvents: 0,
+        },
+        upcomingEvents: [],
+        recentEvents: [],
+        yearlyPlanSummary: {
+          totalEventsInPlan: 0,
+          status: 'SETUP_INCOMPLETE',
+        },
+      };
+    }
+
+    // Parallel fetch for events
+    const events = await this.prisma.event.findMany({
+      where: { societyId: society.id },
+      orderBy: [{ eventDate: 'asc' }, { startTime: 'asc' }],
+      include: {
+        society: {
+          select: {
+            id: true,
+            name: true,
+            logoUrl: true,
+          },
+        },
+      },
+    });
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const allUpcoming = events.filter((e) => new Date(e.eventDate) >= today);
+    const allPast = events.filter((e) => new Date(e.eventDate) < today);
+
+    // Limit display items for dashboard overview cards
+    const upcomingEvents = allUpcoming.slice(0, 5);
+    const recentEvents = allPast.slice(-5).reverse();
+
+    return {
+      profile: society,
+      statistics: {
+        totalEvents: events.length,
+        upcomingEvents: allUpcoming.length,
+        pastEvents: allPast.length,
+      },
+      upcomingEvents,
+      recentEvents,
+      yearlyPlanSummary: {
+        totalEventsInPlan: events.length,
+        status: events.length > 0 ? 'DRAFT_PLAN' : 'NOT_STARTED',
+      },
+    };
+  }
+
+  /**
+   * Completes initial profile setup for a society (Can only be completed once).
+   */
+  async setupSocietyProfile(userId: string, dto: SetupSocietyDto): Promise<SocietyResponseDto> {
+    // 1. Verify category exists
+    const categoryExists = await this.prisma.category.findUnique({
+      where: { id: dto.categoryId },
+    });
+
+    if (!categoryExists) {
+      throw new NotFoundException('Selected society category does not exist');
+    }
+
+    // 2. Check existing society record for user
+    const existingSociety = await this.prisma.society.findUnique({
+      where: { userId },
+    });
+
+    if (existingSociety && existingSociety.isSetupComplete) {
+      throw new ConflictException(
+        'Society profile setup has already been completed. Use the update endpoint to modify your profile.',
+      );
+    }
+
+    // 3. Verify name uniqueness
+    const nameTaken = await this.prisma.society.findUnique({
+      where: { name: dto.name },
+    });
+
+    if (nameTaken && nameTaken.userId !== userId) {
+      throw new ConflictException(`A society with the name '${dto.name}' is already registered`);
+    }
+
+    // 4. Perform setup in Prisma transaction
+    return this.prisma.$transaction(async (tx) => {
+      const society = await tx.society.upsert({
+        where: { userId },
+        update: {
+          name: dto.name,
+          shortDescription: dto.shortDescription,
+          longDescription: dto.longDescription,
+          categoryId: dto.categoryId,
+          logoUrl: dto.logoUrl || null,
+          bannerUrl: dto.bannerUrl || null,
+          instagram: dto.instagram || null,
+          facebook: dto.facebook || null,
+          linkedin: dto.linkedin || null,
+          website: dto.website || null,
+          email: dto.email || null,
+          isSetupComplete: true,
+        },
+        create: {
+          userId,
+          name: dto.name,
+          shortDescription: dto.shortDescription,
+          longDescription: dto.longDescription,
+          categoryId: dto.categoryId,
+          logoUrl: dto.logoUrl || null,
+          bannerUrl: dto.bannerUrl || null,
+          instagram: dto.instagram || null,
+          facebook: dto.facebook || null,
+          linkedin: dto.linkedin || null,
+          website: dto.website || null,
+          email: dto.email || null,
+          isSetupComplete: true,
+        },
+        include: {
+          category: true,
+        },
+      });
+
+      return society;
+    });
+  }
+
+  /**
+   * Updates an existing setup society profile.
+   */
+  async updateSocietyProfile(userId: string, dto: UpdateSocietyDto): Promise<SocietyResponseDto> {
+    const existing = await this.prisma.society.findUnique({
+      where: { userId },
+    });
+
+    if (!existing || !existing.isSetupComplete) {
+      throw new BadRequestException(
+        'Please complete initial society profile setup before attempting updates',
+      );
+    }
+
+    if (dto.categoryId) {
+      const categoryExists = await this.prisma.category.findUnique({
+        where: { id: dto.categoryId },
+      });
+      if (!categoryExists) {
+        throw new NotFoundException('Selected category does not exist');
+      }
+    }
+
+    if (dto.name && dto.name !== existing.name) {
+      const nameTaken = await this.prisma.society.findUnique({
+        where: { name: dto.name },
+      });
+      if (nameTaken && nameTaken.userId !== userId) {
+        throw new ConflictException(`A society with the name '${dto.name}' is already registered`);
+      }
+    }
+
+    const updated = await this.prisma.society.update({
+      where: { userId },
+      data: {
+        ...(dto.name && { name: dto.name }),
+        ...(dto.shortDescription !== undefined && {
+          shortDescription: dto.shortDescription,
+        }),
+        ...(dto.longDescription !== undefined && {
+          longDescription: dto.longDescription,
+        }),
+        ...(dto.categoryId && { categoryId: dto.categoryId }),
+        ...(dto.logoUrl !== undefined && { logoUrl: dto.logoUrl || null }),
+        ...(dto.bannerUrl !== undefined && {
+          bannerUrl: dto.bannerUrl || null,
+        }),
+        ...(dto.instagram !== undefined && {
+          instagram: dto.instagram || null,
+        }),
+        ...(dto.facebook !== undefined && { facebook: dto.facebook || null }),
+        ...(dto.linkedin !== undefined && { linkedin: dto.linkedin || null }),
+        ...(dto.website !== undefined && { website: dto.website || null }),
+        ...(dto.email !== undefined && { email: dto.email || null }),
+      },
+      include: {
+        category: true,
+      },
+    });
+
+    return updated;
+  }
+}

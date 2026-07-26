@@ -1,0 +1,769 @@
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+  BadRequestException,
+} from '@nestjs/common';
+import { PrismaService } from '../../core/database/prisma.service';
+import { QueryAdminYearlyPlansDto } from './dto/query-admin-plans.dto';
+import { PaginatedAdminPlansResponseDto } from './dto/admin-plans-response.dto';
+import { CreateSocietyAdminDto } from './dto/create-society-admin.dto';
+import { OnboardSocietyResponseDto } from './dto/onboard-society-response.dto';
+import { QueryAdminSocietiesDto, AdminSocietyStatus } from './dto/query-admin-societies.dto';
+import { UpdateSocietyAdminDto } from './dto/update-society-admin.dto';
+import { QueryAdminEventsDto, EventTimeType } from './dto/query-admin-events.dto';
+import { AdminDashboardResponseDto } from './dto/admin-dashboard-response.dto';
+import { Prisma, Role, PlanStatus } from '@prisma/client';
+import * as bcrypt from 'bcrypt';
+import * as crypto from 'crypto';
+
+@Injectable()
+export class AdminService {
+  constructor(private readonly prisma: PrismaService) {}
+
+  /**
+   * DSA Aggregated Dashboard API: Returns system-wide metrics, active statistics, and pending action queues.
+   */
+  async getDashboardData(): Promise<AdminDashboardResponseDto> {
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
+
+    const [
+      totalSocieties,
+      activeSocieties,
+      unconfiguredSocieties,
+      inactiveSocieties,
+      pendingYearlyPlans,
+      approvedPlans,
+      eventsThisMonth,
+      upcomingEvents,
+      pendingPlansRaw,
+      upcomingEventsRaw,
+    ] = await Promise.all([
+      this.prisma.society.count(),
+      this.prisma.society.count({
+        where: { user: { isActive: true }, isSetupComplete: true },
+      }),
+      this.prisma.society.count({
+        where: { user: { isActive: true }, isSetupComplete: false },
+      }),
+      this.prisma.society.count({ where: { user: { isActive: false } } }),
+      this.prisma.yearlyPlan.count({
+        where: { status: PlanStatus.PENDING },
+      }),
+      this.prisma.yearlyPlan.count({
+        where: { status: PlanStatus.APPROVED },
+      }),
+      this.prisma.event.count({
+        where: { eventDate: { gte: startOfMonth, lte: endOfMonth } },
+      }),
+      this.prisma.event.count({ where: { eventDate: { gte: now } } }),
+
+      this.prisma.yearlyPlan.findMany({
+        where: { status: PlanStatus.PENDING },
+        take: 5,
+        orderBy: { updatedAt: 'desc' },
+        include: {
+          society: {
+            select: {
+              id: true,
+              name: true,
+              logoUrl: true,
+              advisor: {
+                select: {
+                  id: true,
+                  designation: true,
+                  department: true,
+                  user: {
+                    select: {
+                      fullName: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+          _count: {
+            select: {
+              plannedEvents: true,
+            },
+          },
+        },
+      }),
+
+      this.prisma.event.findMany({
+        where: { eventDate: { gte: now } },
+        take: 5,
+        orderBy: { eventDate: 'asc' },
+        include: {
+          society: {
+            select: {
+              id: true,
+              name: true,
+              logoUrl: true,
+              category: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          },
+        },
+      }),
+    ]);
+
+    const pendingPlansPreview = pendingPlansRaw.map((plan) => ({
+      id: plan.id,
+      year: plan.year,
+      status: plan.status,
+      advisorComments: plan.advisorComments,
+      updatedAt: plan.updatedAt,
+      totalPlannedEvents: plan._count.plannedEvents,
+      society: plan.society,
+    }));
+
+    const upcomingEventsPreview = upcomingEventsRaw.map((evt) => ({
+      id: evt.id,
+      title: evt.title,
+      eventDate: evt.eventDate,
+      startTime: evt.startTime,
+      endTime: evt.endTime,
+      venue: evt.venue,
+      society: evt.society,
+    }));
+
+    return {
+      statistics: {
+        totalSocieties,
+        activeSocieties,
+        unconfiguredSocieties,
+        inactiveSocieties,
+        pendingYearlyPlans,
+        approvedPlans,
+        eventsThisMonth,
+        upcomingEvents,
+      },
+      pendingPlansPreview,
+      upcomingEventsPreview,
+    };
+  }
+
+  /**
+   * Retrieves list of available faculty advisors for society onboarding forms.
+   */
+  async getAvailableAdvisors() {
+    return this.prisma.advisor.findMany({
+      select: {
+        id: true,
+        designation: true,
+        department: true,
+        user: {
+          select: {
+            id: true,
+            fullName: true,
+            email: true,
+          },
+        },
+      },
+      orderBy: {
+        user: {
+          fullName: 'asc',
+        },
+      },
+    });
+  }
+
+  /**
+   * DSA Events Overview Query: Paginated list of all campus events across all societies.
+   */
+  async getAllEventsAdmin(query: QueryAdminEventsDto) {
+    const page = Math.max(1, query.page || 1);
+    const limit = Math.min(50, Math.max(1, query.limit || 10));
+    const skip = (page - 1) * limit;
+
+    const whereClause: Prisma.EventWhereInput = {};
+
+    // Date range filtering
+    const dateConditions: Prisma.DateTimeFilter = {};
+    let hasDateFilter = false;
+
+    if (query.from) {
+      dateConditions.gte = new Date(query.from);
+      hasDateFilter = true;
+    }
+
+    if (query.to) {
+      const toDate = new Date(query.to);
+      toDate.setHours(23, 59, 59, 999);
+      dateConditions.lte = toDate;
+      hasDateFilter = true;
+    }
+
+    const now = new Date();
+    if (query.type === EventTimeType.UPCOMING) {
+      dateConditions.gte = now;
+      hasDateFilter = true;
+    } else if (query.type === EventTimeType.PAST) {
+      dateConditions.lt = now;
+      hasDateFilter = true;
+    }
+
+    if (hasDateFilter) {
+      whereClause.eventDate = dateConditions;
+    }
+
+    // Category & Society filtering
+    const societyWhere: Prisma.SocietyWhereInput = {};
+    let hasSocietyFilter = false;
+
+    if (query.category) {
+      const cat = query.category.trim();
+      societyWhere.category = {
+        OR: [{ slug: cat.toLowerCase() }, { name: { contains: cat, mode: 'insensitive' } }],
+      };
+      hasSocietyFilter = true;
+    }
+
+    if (query.society) {
+      const soc = query.society.trim();
+      societyWhere.name = { contains: soc, mode: 'insensitive' };
+      hasSocietyFilter = true;
+    }
+
+    if (hasSocietyFilter) {
+      whereClause.society = societyWhere;
+    }
+
+    // Search query
+    if (query.search) {
+      const term = query.search.trim();
+      whereClause.OR = [
+        { title: { contains: term, mode: 'insensitive' } },
+        { description: { contains: term, mode: 'insensitive' } },
+        { venue: { contains: term, mode: 'insensitive' } },
+      ];
+    }
+
+    const sortOrder: Prisma.SortOrder = query.type === EventTimeType.PAST ? 'desc' : 'asc';
+
+    const [total, events] = await Promise.all([
+      this.prisma.event.count({ where: whereClause }),
+      this.prisma.event.findMany({
+        where: whereClause,
+        skip,
+        take: limit,
+        orderBy: { eventDate: sortOrder },
+        include: {
+          society: {
+            select: {
+              id: true,
+              name: true,
+              logoUrl: true,
+              category: {
+                select: {
+                  id: true,
+                  name: true,
+                  slug: true,
+                },
+              },
+            },
+          },
+        },
+      }),
+    ]);
+
+    const totalPages = Math.ceil(total / limit) || 1;
+
+    const formattedItems = events.map((evt) => ({
+      id: evt.id,
+      title: evt.title,
+      description: evt.description,
+      eventDate: evt.eventDate,
+      startTime: evt.startTime,
+      endTime: evt.endTime,
+      venue: evt.venue,
+      coverImageUrl: evt.coverImageUrl,
+      registrationLink: evt.registrationLink,
+      createdAt: evt.createdAt,
+      updatedAt: evt.updatedAt,
+      society: evt.society,
+      isUpcoming: new Date(evt.eventDate) >= now,
+    }));
+
+    return {
+      items: formattedItems,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages,
+        hasNextPage: page < totalPages,
+        hasPreviousPage: page > 1,
+      },
+    };
+  }
+
+  /**
+   * DSA Society Directory Query: Paginated list of all campus societies with status, category, and search filters.
+   */
+  async getAllSocietiesAdmin(query: QueryAdminSocietiesDto) {
+    const page = Math.max(1, query.page || 1);
+    const limit = Math.min(50, Math.max(1, query.limit || 10));
+    const skip = (page - 1) * limit;
+
+    const whereClause: Prisma.SocietyWhereInput = {};
+
+    if (query.status) {
+      if (query.status === AdminSocietyStatus.INACTIVE) {
+        whereClause.user = { isActive: false };
+      } else if (query.status === AdminSocietyStatus.UNCONFIGURED) {
+        whereClause.user = { isActive: true };
+        whereClause.isSetupComplete = false;
+      } else if (query.status === AdminSocietyStatus.ACTIVE) {
+        whereClause.user = { isActive: true };
+        whereClause.isSetupComplete = true;
+      }
+    }
+
+    if (query.category) {
+      const cat = query.category.trim();
+      whereClause.category = {
+        OR: [{ slug: cat.toLowerCase() }, { name: { contains: cat, mode: 'insensitive' } }],
+      };
+    }
+
+    if (query.search) {
+      const searchTerm = query.search.trim();
+      whereClause.name = { contains: searchTerm, mode: 'insensitive' };
+    }
+
+    const [total, items] = await Promise.all([
+      this.prisma.society.count({ where: whereClause }),
+      this.prisma.society.findMany({
+        where: whereClause,
+        skip,
+        take: limit,
+        orderBy: { name: 'asc' },
+        include: {
+          category: {
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+            },
+          },
+          advisor: {
+            select: {
+              id: true,
+              designation: true,
+              department: true,
+              user: {
+                select: {
+                  fullName: true,
+                  email: true,
+                },
+              },
+            },
+          },
+          user: {
+            select: {
+              id: true,
+              email: true,
+              isActive: true,
+            },
+          },
+        },
+      }),
+    ]);
+
+    const totalPages = Math.ceil(total / limit) || 1;
+
+    const formattedItems = items.map((soc) => {
+      let status = AdminSocietyStatus.ACTIVE;
+      if (!soc.user.isActive) {
+        status = AdminSocietyStatus.INACTIVE;
+      } else if (!soc.isSetupComplete) {
+        status = AdminSocietyStatus.UNCONFIGURED;
+      }
+
+      return {
+        id: soc.id,
+        name: soc.name,
+        shortDescription: soc.shortDescription,
+        logoUrl: soc.logoUrl,
+        isSetupComplete: soc.isSetupComplete,
+        status,
+        presidentEmail: soc.user.email,
+        category: soc.category,
+        advisor: soc.advisor,
+        createdAt: soc.createdAt,
+        updatedAt: soc.updatedAt,
+      };
+    });
+
+    return {
+      items: formattedItems,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages,
+        hasNextPage: page < totalPages,
+        hasPreviousPage: page > 1,
+      },
+    };
+  }
+
+  /**
+   * DSA Updates society information or reassigns faculty advisor.
+   */
+  async updateSocietyAdmin(id: string, dto: UpdateSocietyAdminDto) {
+    const existing = await this.prisma.society.findUnique({
+      where: { id },
+    });
+
+    if (!existing) {
+      throw new NotFoundException(`Society with ID '${id}' was not found`);
+    }
+
+    if (dto.categoryId) {
+      const categoryExists = await this.prisma.category.findUnique({
+        where: { id: dto.categoryId },
+      });
+      if (!categoryExists) {
+        throw new NotFoundException('Selected category does not exist');
+      }
+    }
+
+    if (dto.advisorId) {
+      const advisorExists = await this.prisma.advisor.findUnique({
+        where: { id: dto.advisorId },
+      });
+      if (!advisorExists) {
+        throw new NotFoundException('Selected faculty advisor does not exist');
+      }
+    }
+
+    if (dto.name && dto.name !== existing.name) {
+      const nameTaken = await this.prisma.society.findUnique({
+        where: { name: dto.name },
+      });
+      if (nameTaken) {
+        throw new ConflictException(`A society with the name '${dto.name}' is already registered`);
+      }
+    }
+
+    const updated = await this.prisma.society.update({
+      where: { id },
+      data: {
+        ...(dto.name && { name: dto.name }),
+        ...(dto.categoryId && { categoryId: dto.categoryId }),
+        ...(dto.advisorId && { advisorId: dto.advisorId }),
+      },
+      include: {
+        category: true,
+        advisor: {
+          include: {
+            user: {
+              select: {
+                fullName: true,
+                email: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    return updated;
+  }
+
+  /**
+   * DSA Credential Reset: Resets president password for a society account.
+   */
+  async resetSocietyPassword(id: string) {
+    const society = await this.prisma.society.findUnique({
+      where: { id },
+      include: { user: true },
+    });
+
+    if (!society) {
+      throw new NotFoundException(`Society with ID '${id}' was not found`);
+    }
+
+    const randomSuffix = crypto.randomBytes(3).toString('hex').toUpperCase();
+    const temporaryPassword = `GIKI-Pass#${randomSuffix}`;
+    const hashedPassword = await bcrypt.hash(temporaryPassword, 10);
+
+    await this.prisma.user.update({
+      where: { id: society.userId },
+      data: { password: hashedPassword },
+    });
+
+    return {
+      message: 'Society credentials reset successfully',
+      societyId: society.id,
+      societyName: society.name,
+      presidentEmail: society.user.email,
+      temporaryPassword,
+    };
+  }
+
+  /**
+   * DSA Soft Deactivation: Deactivates society account without deleting historical records.
+   */
+  async deactivateSociety(id: string) {
+    const society = await this.prisma.society.findUnique({
+      where: { id },
+      include: { user: true },
+    });
+
+    if (!society) {
+      throw new NotFoundException(`Society with ID '${id}' was not found`);
+    }
+
+    if (!society.user.isActive) {
+      throw new BadRequestException('Society account is already inactive');
+    }
+
+    await this.prisma.user.update({
+      where: { id: society.userId },
+      data: { isActive: false },
+    });
+
+    return {
+      message: 'Society account deactivated successfully',
+      id: society.id,
+      name: society.name,
+    };
+  }
+
+  /**
+   * DSA Society Onboarding Workflow:
+   * 1. Validates uniqueness of president email and society name.
+   * 2. Verifies existence of Category and Advisor.
+   * 3. Generates a secure temporary password.
+   * 4. Provisions User (SOCIETY role) and unconfigured Society profile inside a Prisma transaction.
+   * 5. Returns created society details with unhashed temporary credentials for manual administrator delivery.
+   */
+  async onboardSociety(dto: CreateSocietyAdminDto): Promise<OnboardSocietyResponseDto> {
+    const email = dto.presidentEmail.toLowerCase().trim();
+    const name = dto.name.trim();
+
+    // 1. Check duplicate president email
+    const emailExists = await this.prisma.user.findUnique({
+      where: { email },
+    });
+    if (emailExists) {
+      throw new ConflictException(
+        `A user account with the email '${email}' already exists in the system`,
+      );
+    }
+
+    // 2. Check duplicate society name
+    const nameExists = await this.prisma.society.findUnique({
+      where: { name },
+    });
+    if (nameExists) {
+      throw new ConflictException(`A society with the name '${name}' is already registered`);
+    }
+
+    // 3. Verify category exists
+    const category = await this.prisma.category.findUnique({
+      where: { id: dto.categoryId },
+    });
+    if (!category) {
+      throw new NotFoundException('Selected society category does not exist');
+    }
+
+    // 4. Verify advisor exists
+    const advisor = await this.prisma.advisor.findUnique({
+      where: { id: dto.advisorId },
+      include: {
+        user: {
+          select: {
+            fullName: true,
+          },
+        },
+      },
+    });
+    if (!advisor) {
+      throw new NotFoundException('Selected faculty advisor does not exist');
+    }
+
+    // 5. Generate secure temporary password
+    const randomSuffix = crypto.randomBytes(3).toString('hex').toUpperCase();
+    const temporaryPassword = `GIKI-Pass#${randomSuffix}`;
+    const hashedPassword = await bcrypt.hash(temporaryPassword, 10);
+
+    // 6. Perform provisioning inside a Prisma transaction
+    return this.prisma.$transaction(async (tx) => {
+      const user = await tx.user.create({
+        data: {
+          email,
+          password: hashedPassword,
+          fullName: `${name} President`,
+          role: Role.SOCIETY,
+          isActive: true,
+        },
+      });
+
+      const society = await tx.society.create({
+        data: {
+          name,
+          categoryId: dto.categoryId,
+          advisorId: dto.advisorId,
+          userId: user.id,
+          isSetupComplete: false,
+        },
+      });
+
+      return {
+        id: society.id,
+        name: society.name,
+        presidentEmail: user.email,
+        temporaryPassword,
+        isSetupComplete: false,
+        category: {
+          id: category.id,
+          name: category.name,
+        },
+        advisor: {
+          id: advisor.id,
+          designation: advisor.designation,
+          user: {
+            fullName: advisor.user.fullName,
+          },
+        },
+        createdAt: society.createdAt,
+      };
+    });
+  }
+
+  /**
+   * DSA Internal Record Query: Paginated yearly plans across all campus societies.
+   */
+  async getAllYearlyPlans(
+    query: QueryAdminYearlyPlansDto,
+  ): Promise<PaginatedAdminPlansResponseDto> {
+    const page = Math.max(1, query.page || 1);
+    const limit = Math.min(50, Math.max(1, query.limit || 10));
+    const skip = (page - 1) * limit;
+
+    const whereClause: Prisma.YearlyPlanWhereInput = {};
+
+    if (query.status) {
+      whereClause.status = query.status;
+    }
+
+    if (query.year) {
+      whereClause.year = query.year;
+    }
+
+    const searchTerm = query.search || query.society;
+    if (searchTerm) {
+      const term = searchTerm.trim();
+      whereClause.society = {
+        name: { contains: term, mode: 'insensitive' },
+      };
+    }
+
+    const [total, plans] = await Promise.all([
+      this.prisma.yearlyPlan.count({ where: whereClause }),
+      this.prisma.yearlyPlan.findMany({
+        where: whereClause,
+        skip,
+        take: limit,
+        orderBy: [{ year: 'desc' }, { updatedAt: 'desc' }],
+        include: {
+          society: {
+            select: {
+              id: true,
+              name: true,
+              logoUrl: true,
+              advisor: {
+                select: {
+                  id: true,
+                  designation: true,
+                  department: true,
+                  user: {
+                    select: {
+                      fullName: true,
+                      email: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+          _count: {
+            select: {
+              plannedEvents: true,
+            },
+          },
+        },
+      }),
+    ]);
+
+    const totalPages = Math.ceil(total / limit) || 1;
+
+    const items = plans.map((plan) => ({
+      id: plan.id,
+      year: plan.year,
+      status: plan.status,
+      advisorComments: plan.advisorComments,
+      createdAt: plan.createdAt,
+      updatedAt: plan.updatedAt,
+      totalPlannedEvents: plan._count.plannedEvents,
+      society: plan.society,
+    }));
+
+    return {
+      items,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages,
+        hasNextPage: page < totalPages,
+        hasPreviousPage: page > 1,
+      },
+    };
+  }
+
+  /**
+   * DSA Internal Record Detail: Full record view with complete review history & planned events.
+   */
+  async getYearlyPlanDetailById(id: string) {
+    const plan = await this.prisma.yearlyPlan.findUnique({
+      where: { id },
+      include: {
+        society: {
+          include: {
+            category: true,
+            advisor: {
+              include: {
+                user: {
+                  select: {
+                    fullName: true,
+                    email: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+        plannedEvents: {
+          orderBy: { plannedDate: 'asc' },
+        },
+      },
+    });
+
+    if (!plan) {
+      throw new NotFoundException(`Yearly plan record with ID '${id}' was not found`);
+    }
+
+    return plan;
+  }
+}
