@@ -18,7 +18,7 @@ export const AuthLayout: React.FC = () => {
             <div className="p-2 bg-lavender-whisper border-2 border-vast-ink rounded-badges text-vast-ink">
               <GraduationCap className="w-8 h-8" />
             </div>
-            <span className="text-3xl">Campus GIKI</span>
+            <span className="text-2xl sm:text-3xl">Campus GIKI</span>
           </Link>
           <p className="text-sm font-medium text-fog">
             Centralized Platform for GIKI Students & Societies

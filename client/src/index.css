@@ -17,11 +17,11 @@
   --text-caption: 14px;
   --text-body-sm: 16px;
   --text-body: 20px;
-  --text-subheading: 24px;
-  --text-heading-sm: 32px;
-  --text-heading: 48px;
-  --text-heading-lg: 64px;
-  --text-display: 120px;
+  --text-subheading: clamp(20px, 4vw, 24px);
+  --text-heading-sm: clamp(24px, 5vw, 32px);
+  --text-heading: clamp(32px, 6vw, 48px);
+  --text-heading-lg: clamp(40px, 8vw, 64px);
+  --text-display: clamp(64px, 12vw, 120px);
 
   --radius-cards: 32px;
   --radius-badges: 9999px;
