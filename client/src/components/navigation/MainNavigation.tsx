@@ -18,17 +18,17 @@ export const MainNavigation: React.FC = () => {
 
   return (
     <>
-      {/* Desktop & Mobile Top Navigation */}
-      <div className="sticky top-4 sm:top-6 z-50 w-full px-4 md:px-6 max-w-[1200px] mx-auto font-figtree">
-        <nav className="relative flex items-center justify-between bg-lumen-cream border-2 border-vast-ink rounded-badges pl-6 pr-4 md:pr-2 py-2 shadow-[4px_4px_0px_0px_#1B1B18] transition-all">
+      {/* Desktop Top Navigation (Hidden on Mobile as bottom nav is active) */}
+      <div className="hidden md:block sticky top-6 z-50 w-full px-6 max-w-[1200px] mx-auto font-figtree">
+        <nav className="relative flex items-center justify-between bg-lumen-cream border-2 border-vast-ink rounded-badges pl-6 pr-2 py-2 shadow-[4px_4px_0px_0px_#1B1B18] transition-all">
           {/* Left Side: Wordmark */}
-          <Link to="/" className="font-eb-garamond font-bold text-[22px] md:text-[24px] text-vast-ink leading-none hover:opacity-80 transition-opacity">
+          <Link to="/" className="font-eb-garamond font-bold text-[24px] text-vast-ink leading-none hover:opacity-80 transition-opacity">
             GIKI Campus
           </Link>
 
           <div className="flex items-center gap-2">
-            {/* Center: Desktop Nav (Hidden on Mobile) */}
-            <div className="hidden md:flex items-center gap-1 mr-4">
+            {/* Center: Desktop Nav */}
+            <div className="flex items-center gap-1 mr-4">
               {navLinks.map((link) => {
                 const isActive = link.path === '/'
                   ? location.pathname === '/'
@@ -49,18 +49,6 @@ export const MainNavigation: React.FC = () => {
                 );
               })}
             </div>
-
-            {/* Mobile Top Nav Fallback (Optional right side items if needed, e.g. Login button on mobile? Or handled by bottom nav) */}
-            {!user && (
-              <div className="md:hidden">
-                <Link
-                  to="/login"
-                  className="bg-vast-ink rounded-badges font-medium text-[13px] text-pure-white px-4 py-1.5 hover:opacity-90 transition-opacity"
-                >
-                  Log in
-                </Link>
-              </div>
-            )}
           </div>
         </nav>
       </div>

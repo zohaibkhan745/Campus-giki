@@ -141,7 +141,7 @@ export const SocietyProfilePage: React.FC = () => {
   );
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6 text-left pt-10 sm:pt-14 pb-8 px-4 font-figtree">
+    <div className="max-w-5xl mx-auto space-y-6 text-left pt-4 md:pt-14 pb-8 px-4 font-figtree">
       {/* Top Back Navigation Link */}
       <div className="flex items-center justify-between">
         <button
