@@ -29,6 +29,9 @@ export class SocietyDashboardResponseDto {
   statistics: DashboardStatisticsDto;
 
   @ApiProperty({ type: [EventResponseDto] })
+  pendingEvents: EventResponseDto[];
+
+  @ApiProperty({ type: [EventResponseDto] })
   upcomingEvents: EventResponseDto[];
 
   @ApiProperty({ type: [EventResponseDto] })
