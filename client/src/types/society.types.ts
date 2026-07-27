@@ -77,6 +77,7 @@ export interface YearlyPlanSummary {
 export interface SocietyDashboardResponse {
   profile: Society | null;
   statistics: DashboardStatistics;
+  pendingEvents: EventItem[];
   upcomingEvents: EventItem[];
   recentEvents: EventItem[];
   yearlyPlanSummary: YearlyPlanSummary;

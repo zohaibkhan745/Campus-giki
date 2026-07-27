@@ -238,6 +238,7 @@ export class SocietiesService {
           upcomingEvents: 0,
           pastEvents: 0,
         },
+        pendingEvents: [],
         upcomingEvents: [],
         recentEvents: [],
         yearlyPlanSummary: {
@@ -265,8 +266,11 @@ export class SocietiesService {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    const allUpcoming = events.filter((e) => new Date(e.eventDate) >= today);
-    const allPast = events.filter((e) => new Date(e.eventDate) < today);
+    const pendingEvents = events.filter(
+      (e) => e.approvalStatus === 'PENDING_ADVISOR' || e.approvalStatus === 'PENDING_ADMIN' || e.approvalStatus === 'CHANGES_REQUESTED'
+    );
+    const allUpcoming = events.filter((e) => new Date(e.eventDate) >= today && e.approvalStatus === 'PUBLISHED');
+    const allPast = events.filter((e) => new Date(e.eventDate) < today && e.approvalStatus === 'PUBLISHED');
 
     // Limit display items for dashboard overview cards
     const upcomingEvents = allUpcoming.slice(0, 5);
@@ -297,13 +301,16 @@ export class SocietiesService {
           status: 'NOT_STARTED',
         };
 
+    const statistics = {
+      totalEvents: events.length,
+      upcomingEvents: allUpcoming.length,
+      pastEvents: allPast.length,
+    };
+
     return {
       profile: society,
-      statistics: {
-        totalEvents: events.length,
-        upcomingEvents: allUpcoming.length,
-        pastEvents: allPast.length,
-      },
+      statistics,
+      pendingEvents,
       upcomingEvents,
       recentEvents,
       yearlyPlanSummary,

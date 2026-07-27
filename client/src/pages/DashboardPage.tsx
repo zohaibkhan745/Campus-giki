@@ -59,6 +59,7 @@ export const DashboardPage: React.FC = () => {
   const stats = dashboardData?.statistics;
   const upcomingEvents = dashboardData?.upcomingEvents || [];
   const recentEvents = dashboardData?.recentEvents || [];
+  const pendingEvents = dashboardData?.pendingEvents || [];
   const yearlyPlan = dashboardData?.yearlyPlanSummary;
 
   // First-login redirect if profile setup incomplete
@@ -352,8 +353,29 @@ export const DashboardPage: React.FC = () => {
             </div>
           </div>
 
-          {/* 6. Upcoming & Recent Events Overview Grid */}
-          <div id="upcoming-events-section" className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* 6. Upcoming, Pending & Recent Events Overview Grid */}
+          <div id="upcoming-events-section" className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Pending Approvals Column */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between border-b-2 border-vast-ink pb-3">
+                <div className="flex items-center gap-2 font-bold text-base text-ember-glow">
+                  <Clock className="w-4 h-4 text-ember-glow" />
+                  <h3 className="text-vast-ink">Pending Approvals ({pendingEvents.length})</h3>
+                </div>
+              </div>
+
+              {pendingEvents.length === 0 ? (
+                <div className="bg-pure-white p-6 rounded-cards border-2 border-vast-ink text-center text-xs text-fog space-y-2">
+                  <Shield className="w-8 h-8 text-fog mx-auto opacity-50" />
+                  <p>No events pending approval.</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {pendingEvents.map((event) => renderEventCard(event))}
+                </div>
+              )}
+            </div>
+
             {/* Upcoming Events Column */}
             <div className="space-y-4">
               <div className="flex items-center justify-between border-b-2 border-vast-ink pb-3">
