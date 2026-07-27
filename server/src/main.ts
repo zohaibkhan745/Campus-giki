@@ -25,14 +25,11 @@ async function bootstrap() {
   app.setGlobalPrefix(apiPrefix);
 
   // Enable CORS
-  const origins = corsOrigin.includes(',')
-    ? corsOrigin.split(',').map((origin) => origin.trim())
-    : corsOrigin === '*'
-      ? '*'
-      : [corsOrigin.trim()];
-
   app.enableCors({
-    origin: origins,
+    origin: (origin, callback) => {
+      // Always allow any origin (e.g., localhost, 127.0.0.1, any port)
+      callback(null, true);
+    },
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'X-Requested-With'],
     credentials: true,
