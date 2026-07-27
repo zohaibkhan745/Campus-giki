@@ -151,10 +151,6 @@ export const DashboardPage: React.FC = () => {
       {/* 1. Welcome Card */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-pure-white p-6 rounded-cards border-2 border-vast-ink">
         <div>
-          <div className="flex items-center gap-2 text-vast-ink text-xs font-semibold uppercase tracking-wider mb-1">
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>Society Executive Portal</span>
-          </div>
           <h1 className="text-2xl font-bold text-vast-ink">
             Welcome back, {user?.fullName || 'User'}!
           </h1>
@@ -211,6 +207,12 @@ export const DashboardPage: React.FC = () => {
               </div>
 
               <div className="flex flex-wrap items-center gap-4 text-xs text-fog pt-2 border-t border-vast-ink">
+                {profile.advisor && profile.advisor.user && (
+                  <div className="flex items-center gap-1.5 text-vast-ink font-medium">
+                    <UserCheck className="w-3.5 h-3.5 text-vast-ink" />
+                    <span>Advisor: {profile.advisor.user.fullName} ({profile.advisor.designation})</span>
+                  </div>
+                )}
                 {profile.email && (
                   <div className="flex items-center gap-1.5 text-vast-ink font-medium">
                     <Mail className="w-3.5 h-3.5 text-vast-ink" />
@@ -313,7 +315,6 @@ export const DashboardPage: React.FC = () => {
           {/* 5. Quick Actions Toolbar */}
           <div className="bg-lumen-cream p-5 rounded-cards border-2 border-vast-ink space-y-3">
             <div className="flex items-center gap-2 font-bold text-sm text-vast-ink">
-              <Zap className="w-4 h-4 text-ember-glow" />
               <h3>Quick Actions</h3>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">

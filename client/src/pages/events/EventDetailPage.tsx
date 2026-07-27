@@ -1,6 +1,6 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import {
   Calendar as CalendarIcon,
   Clock,
@@ -18,6 +18,7 @@ import { Alert } from '@/components/ui/Alert';
 
 export const EventDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
 
   const {
     data: eventItem,
@@ -51,16 +52,16 @@ export const EventDetailPage: React.FC = () => {
   const isPast = new Date(eventItem.eventDate) < new Date(new Date().setHours(0, 0, 0, 0));
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6 text-left py-4">
+    <div className="max-w-4xl mx-auto space-y-6 text-left pt-10 sm:pt-14 pb-8 px-4">
       {/* Top Back Navigation Link */}
       <div className="flex items-center justify-between">
-        <Link
-          to="/societies"
-          className="inline-flex items-center gap-2 text-xs font-semibold text-fog hover:text-vast-ink transition-colors"
+        <button
+          onClick={() => navigate(-1)}
+          className="inline-flex items-center gap-2 px-3.5 py-2 bg-pure-white hover:bg-lumen-stone border-2 border-vast-ink text-vast-ink text-xs font-bold rounded-buttons transition-all cursor-pointer shadow-[2px_2px_0px_0px_#1B1B18]"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>Back to Directory</span>
-        </Link>
+          <span>Back</span>
+        </button>
       </div>
 
       {/* Main Container */}
@@ -72,6 +73,9 @@ export const EventDetailPage: React.FC = () => {
               src={eventItem.coverImageUrl}
               alt={eventItem.title}
               className="w-full h-full object-cover"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=1200&auto=format&fit=crop&q=80';
+              }}
             />
           </div>
         )}
@@ -94,12 +98,12 @@ export const EventDetailPage: React.FC = () => {
             </div>
 
             {/* 3. Primary Registration Action Button */}
-            {eventItem.registrationLink && !isPast && (
+            {eventItem.registrationLink && (
               <a
                 href={eventItem.registrationLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-vast-ink hover:opacity-90 text-white rounded-inputs text-sm font-semibold transition-all shadow-lg shadow-blue-600/25 hover:shadow-blue-600/40"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-vast-ink hover:opacity-90 text-white rounded-inputs text-sm font-bold transition-all shadow-md shrink-0 cursor-pointer"
               >
                 <span>Register for Event</span>
                 <ExternalLink className="w-4 h-4" />
@@ -160,31 +164,6 @@ export const EventDetailPage: React.FC = () => {
             {eventItem.description}
           </p>
         </div>
-
-        {/* 6. Registration Highlight Panel */}
-        {eventItem.registrationLink && (
-          <div className="p-5 bg-blue-500/5 rounded-cards border border-blue-500/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div className="space-y-1">
-              <div className="flex items-center gap-2 text-xs font-bold text-vast-ink">
-                <Sparkles className="w-4 h-4" />
-                <span>External Registration Required</span>
-              </div>
-              <p className="text-xs text-vast-ink font-medium">
-                Registration for this event is managed via an official form link. Click below to sign up.
-              </p>
-            </div>
-
-            <a
-              href={eventItem.registrationLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-vast-ink hover:opacity-90 text-white rounded-inputs text-xs font-semibold transition-colors shrink-0"
-            >
-              <span>Open Registration Form</span>
-              <ExternalLink className="w-3.5 h-3.5" />
-            </a>
-          </div>
-        )}
 
         {/* 7. Hosting Society Information Card */}
         {eventItem.society && (

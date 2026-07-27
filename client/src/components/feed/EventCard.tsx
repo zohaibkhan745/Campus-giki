@@ -73,6 +73,9 @@ export const EventCard: React.FC<EventCardProps> = ({ item }) => {
             src={item.coverImageUrl}
             alt={item.title}
             className="w-full max-h-[360px] object-cover"
+            onError={(e) => {
+              (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=1200&auto=format&fit=crop&q=80';
+            }}
           />
         </div>
       )}

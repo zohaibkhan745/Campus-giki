@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import {
   Shield,
   Search,
@@ -21,8 +21,11 @@ import type { PlanStatus } from '@/types/yearly-plan.types';
 import { Alert } from '@/components/ui/Alert';
 
 export const AdminYearlyPlansPage: React.FC = () => {
+  const [searchParams] = useSearchParams();
+  const initialStatus = searchParams.get('status') || '';
+
   const [page, setPage] = useState(1);
-  const [statusFilter, setStatusFilter] = useState<string>('');
+  const [statusFilter, setStatusFilter] = useState<string>(initialStatus);
   const [yearFilter, setYearFilter] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState<string>('');
 
@@ -135,29 +138,32 @@ export const AdminYearlyPlansPage: React.FC = () => {
               }}
               className="w-full bg-pure-white text-vast-ink text-sm rounded-inputs border-2 border-vast-ink px-3.5 py-2 pl-10 transition-all outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
             >
-              <option value="">All Statuses</option>
-              <option value="APPROVED">Approved</option>
+              <option value="">All Submitted Plans</option>
               <option value="PENDING">Pending Review</option>
+              <option value="APPROVED">Approved</option>
               <option value="CHANGES_REQUESTED">Changes Requested</option>
-              <option value="DRAFT">Draft</option>
             </select>
           </div>
 
-          {/* Year Filter */}
+          {/* Year Select Filter */}
           <div className="relative flex items-center w-full sm:w-36">
-            <div className="absolute left-3 text-fog pointer-events-none flex items-center justify-center">
+            <div className="absolute left-3 text-fog pointer-events-none flex items-center justify-center z-10">
               <Calendar className="w-4 h-4" />
             </div>
-            <input
-              type="number"
-              placeholder="Filter by year (e.g. 2026)"
+            <select
               value={yearFilter}
               onChange={(e) => {
                 setYearFilter(e.target.value);
                 setPage(1);
               }}
-              className="w-full bg-pure-white text-vast-ink text-sm rounded-inputs border-2 border-vast-ink px-3.5 py-2 pl-10 transition-all outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:border-indigo-500"
-            />
+              className="w-full bg-pure-white text-vast-ink text-sm rounded-inputs border-2 border-vast-ink px-3.5 py-2 pl-10 transition-all outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 cursor-pointer"
+            >
+              <option value="">All Years</option>
+              <option value="2026">2026</option>
+              <option value="2025">2025</option>
+              <option value="2024">2024</option>
+              <option value="2027">2027</option>
+            </select>
           </div>
 
           {(statusFilter || yearFilter || searchQuery) && (

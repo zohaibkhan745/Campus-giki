@@ -139,7 +139,7 @@ export const CampusCalendarPage: React.FC = () => {
   ];
 
   return (
-    <div className="bg-lumen-cream text-vast-ink min-h-screen py-8 font-figtree">
+    <div className="bg-lumen-cream text-vast-ink min-h-screen pt-10 sm:pt-14 pb-12 font-figtree">
       <div className="max-w-[1200px] mx-auto px-4 md:px-6 space-y-10 text-left">
         {/* Page Header */}
         <header className="space-y-3 border-b-2 border-vast-ink/10 pb-8">
@@ -184,14 +184,36 @@ export const CampusCalendarPage: React.FC = () => {
         {/* FullCalendar Component Panel */}
         <div className="bg-lumen-cream border-2 border-vast-ink rounded-[32px] overflow-hidden p-4 sm:p-6 text-vast-ink shadow-none">
           <style>{`
-            /* Make the default event wrapper transparent in month view so we can render just a dot */
+            .fc {
+              table-layout: fixed !important;
+            }
+            .fc-daygrid-day-frame {
+              overflow: hidden !important;
+              max-width: 100% !important;
+            }
+            .fc-daygrid-event-harness {
+              margin-bottom: 2px !important;
+              max-width: 100% !important;
+              overflow: hidden !important;
+            }
             .fc-dayGridMonth-view .fc-daygrid-event {
               background: transparent !important;
               border: none !important;
               box-shadow: none !important;
+              padding: 1px 0 !important;
+              margin: 1px 0 !important;
+              max-width: 100% !important;
+              overflow: hidden !important;
             }
-            .fc-dayGridMonth-view .fc-daygrid-event:hover {
-              background: rgba(0,0,0,0.05) !important;
+            .fc-event-main {
+              overflow: hidden !important;
+              width: 100% !important;
+              max-width: 100% !important;
+              text-overflow: ellipsis !important;
+              white-space: nowrap !important;
+            }
+            .fc-theme-standard td, .fc-theme-standard th {
+              border-color: rgba(30, 41, 59, 0.15) !important;
             }
           `}</style>
           <FullCalendar
@@ -223,13 +245,29 @@ export const CampusCalendarPage: React.FC = () => {
             }}
             displayEventTime={false}
             eventContent={(eventInfo) => {
+              const color = eventInfo.event.backgroundColor || '#3b82f6';
+              const title = eventInfo.event.title;
+
               if (eventInfo.view.type === 'dayGridMonth') {
                 return (
-                  <div className="flex justify-center items-center w-full py-1 cursor-pointer" title={eventInfo.event.title}>
-                    <div 
-                      className="w-2.5 h-2.5 rounded-full"
-                      style={{ backgroundColor: eventInfo.event.backgroundColor || '#3b82f6' }}
+                  <div
+                    className="w-full max-w-full flex items-center gap-1 px-1.5 py-0.5 rounded transition-all duration-150 hover:opacity-90 cursor-pointer overflow-hidden box-border"
+                    style={{
+                      backgroundColor: `${color}20`,
+                      borderLeft: `3px solid ${color}`,
+                    }}
+                    title={title}
+                  >
+                    <span
+                      className="w-1.5 h-1.5 rounded-full shrink-0 hidden sm:inline-block"
+                      style={{ backgroundColor: color }}
                     />
+                    <span
+                      className="text-[11px] font-bold truncate block w-full leading-tight text-left"
+                      style={{ color: '#0f172a' }}
+                    >
+                      {title}
+                    </span>
                   </div>
                 );
               }

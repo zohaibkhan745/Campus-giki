@@ -198,25 +198,39 @@ export const AdvisorPlanReviewPage: React.FC = () => {
                 key={evt.id}
                 className="bg-pure-white p-4 rounded-inputs border-2 border-vast-ink flex flex-col md:flex-row justify-between items-start md:items-center gap-3"
               >
-                <div className="space-y-1">
+                <div className="space-y-1 w-full">
                   <span className="text-xs font-bold text-ember-glow">
                     Event #{idx + 1}: {evt.eventName}
                   </span>
-                  {evt.notes && (
-                    <p className="text-xs text-fog leading-relaxed">
-                      Notes: {evt.notes}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
+                    <p className="text-xs text-fog"><strong className="text-vast-ink">Venue:</strong> {evt.venue}</p>
+                    <p className="text-xs text-fog"><strong className="text-vast-ink">Outside Participants:</strong> {evt.hasOutsideParticipants ? 'Yes' : 'No'}</p>
+                    <p className="text-xs text-fog"><strong className="text-vast-ink">Outside Speaker:</strong> {evt.hasOutsideSpeaker ? 'Yes' : 'No'}</p>
+                  </div>
+                  <p className="text-xs text-fog mt-2"><strong className="text-vast-ink">Description:</strong> {evt.description}</p>
+                  {evt.rules && (
+                    <p className="text-xs text-fog mt-1">
+                      <strong className="text-vast-ink">Rules:</strong> {evt.rules}
                     </p>
                   )}
-                </div>
-
-                <div className="text-xs font-semibold text-vast-ink font-medium bg-lumen-stone px-3 py-1.5 rounded-inputs border-2 border-vast-ink shrink-0">
-                  Planned Date:{' '}
-                  {new Date(evt.plannedDate).toLocaleDateString(undefined, {
-                    weekday: 'short',
-                    month: 'short',
-                    day: 'numeric',
-                    year: 'numeric',
-                  })}
+                  <div className="flex gap-2 mt-2">
+                    <div className="text-xs font-semibold text-vast-ink font-medium bg-lumen-stone px-3 py-1.5 rounded-inputs border-2 border-vast-ink shrink-0 inline-block">
+                      Start:{' '}
+                      {new Date(evt.startDate).toLocaleDateString(undefined, {
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric',
+                      })}
+                    </div>
+                    <div className="text-xs font-semibold text-vast-ink font-medium bg-lumen-stone px-3 py-1.5 rounded-inputs border-2 border-vast-ink shrink-0 inline-block">
+                      End:{' '}
+                      {new Date(evt.endDate).toLocaleDateString(undefined, {
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric',
+                      })}
+                    </div>
+                  </div>
                 </div>
               </div>
             ))}

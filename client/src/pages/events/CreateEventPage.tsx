@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate, Link } from 'react-router-dom';
 import {
   Calendar,
@@ -12,8 +12,12 @@ import {
   ExternalLink,
   ArrowLeft,
   CheckCircle2,
+  ShieldCheck,
+  Sparkles,
 } from 'lucide-react';
 import { eventService } from '@/services/event.service';
+import { yearlyPlanService } from '@/services/yearly-plan.service';
+import type { PlannedEventItem } from '@/types/yearly-plan.types';
 import {
   eventFormSchema,
   type EventFormData,
@@ -28,9 +32,12 @@ export const CreateEventPage: React.FC = () => {
   const queryClient = useQueryClient();
   const [serverError, setServerError] = useState<string | null>(null);
 
+  const [selectedEventKey, setSelectedEventKey] = useState<string>('');
+
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<EventFormData>({
     resolver: zodResolver(eventFormSchema),
@@ -46,10 +53,55 @@ export const CreateEventPage: React.FC = () => {
     },
   });
 
+  const { data: myPlans } = useQuery({
+    queryKey: ['myYearlyPlans'],
+    queryFn: () => yearlyPlanService.getMyPlans(),
+  });
+
+  const plannedEvents = React.useMemo(() => {
+    if (!myPlans) return [];
+    const list: { key: string; planYear: number; planStatus: string; event: PlannedEventItem }[] = [];
+    myPlans.forEach((plan) => {
+      plan.plannedEvents?.forEach((pe, idx) => {
+        list.push({
+          key: pe.id || `${plan.id}-${idx}`,
+          planYear: plan.year,
+          planStatus: plan.status,
+          event: pe,
+        });
+      });
+    });
+    return list;
+  }, [myPlans]);
+
+  const handleSelectPlannedEvent = (key: string) => {
+    setSelectedEventKey(key);
+    if (!key) return;
+
+    const found = plannedEvents.find((item) => item.key === key);
+    if (found) {
+      const { event: pe } = found;
+      setValue('title', pe.eventName || '', { shouldValidate: true });
+      if (pe.startDate) {
+        const dateFormatted = new Date(pe.startDate).toISOString().split('T')[0];
+        setValue('eventDate', dateFormatted, { shouldValidate: true });
+      }
+      setValue('venue', pe.venue || '', { shouldValidate: true });
+      setValue('description', pe.description || '', { shouldValidate: true });
+    }
+  };
+
   const createMutation = useMutation({
     mutationFn: (data: EventFormData) => eventService.createEvent(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['myEvents'] });
+      queryClient.invalidateQueries({ queryKey: ['publicEvents'] });
+      queryClient.invalidateQueries({ queryKey: ['events'] });
+      queryClient.invalidateQueries({ queryKey: ['societyEvents'] });
+      queryClient.invalidateQueries({ queryKey: ['societyDashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['adminEvents'] });
+      queryClient.invalidateQueries({ queryKey: ['adminDashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['feed'] });
       navigate('/dashboard', { replace: true });
     },
     onError: (
@@ -68,9 +120,9 @@ export const CreateEventPage: React.FC = () => {
     },
   });
 
-  const onSubmit = (data: EventFormData) => {
+  const handlePublish = (data: EventFormData, submitForApproval: boolean) => {
     setServerError(null);
-    createMutation.mutate(data);
+    createMutation.mutate({ ...data, submitForApproval });
   };
 
   return (
@@ -94,9 +146,40 @@ export const CreateEventPage: React.FC = () => {
         </p>
       </div>
 
+      {/* Annual Calendar Import Selector Card */}
+      {plannedEvents.length > 0 && (
+        <div className="p-5 bg-lumen-cream border-2 border-vast-ink rounded-cards space-y-3">
+          <div className="flex items-center justify-between">
+            <h3 className="text-vast-ink font-bold text-sm">
+              Import Event Details from Annual Calendar Plan
+            </h3>
+            <span className="text-[10px] font-extrabold text-vast-ink uppercase tracking-wider bg-pure-white px-2.5 py-1 rounded-inputs border border-vast-ink/20">
+              Optional Auto-Fill
+            </span>
+          </div>
+
+          <p className="text-xs text-fog font-medium">
+            Select a planned event from your annual calendar to automatically pre-fill title, date, venue, and description:
+          </p>
+
+          <select
+            value={selectedEventKey}
+            onChange={(e) => handleSelectPlannedEvent(e.target.value)}
+            className="w-full bg-pure-white text-vast-ink text-xs font-bold rounded-inputs border-2 border-vast-ink px-3.5 py-2.5 transition-all outline-none focus:ring-2 focus:ring-vast-ink cursor-pointer"
+          >
+            <option value="">-- Select Event from Annual Plan (or Create Custom Event) --</option>
+            {plannedEvents.map((item) => (
+              <option key={item.key} value={item.key}>
+                {item.event.eventName}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
+
       {serverError && <Alert variant="error" message={serverError} />}
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" noValidate>
+      <form onSubmit={(e) => e.preventDefault()} className="space-y-6" noValidate>
         <div className="bg-lumen-cream p-6 rounded-cards border-2 border-vast-ink space-y-4">
           <h2 className="text-base font-bold text-vast-ink border-b-2 border-vast-ink pb-2">
             Event Overview
@@ -202,16 +285,31 @@ export const CreateEventPage: React.FC = () => {
           />
         </div>
 
-        <Button
-          type="submit"
-          variant="primary"
-          size="lg"
-          className="w-full"
-          isLoading={createMutation.isPending}
-          leftIcon={<CheckCircle2 className="w-5 h-5" />}
-        >
-          Publish Event Immediately
-        </Button>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+          <Button
+            type="button"
+            variant="primary"
+            size="lg"
+            className="w-full"
+            isLoading={createMutation.isPending}
+            onClick={handleSubmit((data) => handlePublish(data, false))}
+            leftIcon={<CheckCircle2 className="w-5 h-5" />}
+          >
+            Directly Publish Event
+          </Button>
+
+          <Button
+            type="button"
+            variant="outline"
+            size="lg"
+            className="w-full bg-pure-white border-2 border-vast-ink hover:bg-lavender-whisper"
+            isLoading={createMutation.isPending}
+            onClick={handleSubmit((data) => handlePublish(data, true))}
+            leftIcon={<ShieldCheck className="w-5 h-5 text-forest-ink" />}
+          >
+            Submit for Advisor &amp; DSA Review
+          </Button>
+        </div>
       </form>
     </div>
   );

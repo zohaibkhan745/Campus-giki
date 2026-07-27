@@ -9,6 +9,7 @@ import {
   AlertCircle,
   FileText,
   Calendar,
+  TrendingUp,
   Sparkles,
   UserPlus,
   ArrowRight,
@@ -178,9 +179,23 @@ export const AdminDashboardPage: React.FC = () => {
             </p>
           </Link>
 
+          {/* Events This Week */}
+          <Link
+            to="/admin/events?type=this_week"
+            className="bg-pure-white p-5 rounded-cards border-2 border-vast-ink hover:bg-lavender-whisper transition-all space-y-2 group"
+          >
+            <div className="flex items-center justify-between text-fog">
+              <span className="text-xs font-semibold">Events This Week</span>
+              <Calendar className="w-4 h-4 text-forest-ink" />
+            </div>
+            <p className="text-2xl font-extrabold text-forest-ink">
+              {stats?.eventsThisWeek || 0}
+            </p>
+          </Link>
+
           {/* Events This Month */}
           <Link
-            to="/admin/events"
+            to="/admin/events?type=this_month"
             className="bg-pure-white p-5 rounded-cards border-2 border-vast-ink hover:bg-lavender-whisper transition-all space-y-2 group"
           >
             <div className="flex items-center justify-between text-fog">
@@ -197,9 +212,11 @@ export const AdminDashboardPage: React.FC = () => {
             to="/admin/events?type=upcoming"
             className="bg-pure-white p-5 rounded-cards border-2 border-vast-ink hover:bg-lavender-whisper transition-all space-y-2 group"
           >
-            <div className="flex items-center justify-between text-fog">
-              <span className="text-xs font-semibold">Upcoming Events</span>
-              <Sparkles className="w-4 h-4 text-forest-ink" />
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-fog uppercase tracking-wider">Upcoming</span>
+              <div className="p-2 bg-pure-white border border-forest-ink text-forest-ink rounded-inputs">
+                <TrendingUp className="w-4 h-4" />
+              </div>
             </div>
             <p className="text-2xl font-extrabold text-forest-ink">
               {stats?.upcomingEvents || 0}
@@ -318,7 +335,7 @@ export const AdminDashboardPage: React.FC = () => {
         <div className="bg-lumen-cream p-6 rounded-cards border-2 border-vast-ink space-y-4">
           <div className="flex items-center justify-between border-b-2 border-vast-ink pb-3">
             <h3 className="font-bold text-vast-ink text-base flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-forest-ink" />
+              <Calendar className="w-4 h-4 text-vast-ink" />
               <span>Upcoming Campus Events ({upcomingEvents.length})</span>
             </h3>
             <Link to="/admin/events?type=upcoming" className="text-xs text-vast-ink hover:underline font-semibold">

@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import {
+  ArrowLeft,
   Building2,
   Tag,
   FileText,
@@ -30,6 +31,13 @@ export const SocietySetupPage: React.FC = () => {
   const queryClient = useQueryClient();
   const [serverError, setServerError] = useState<string | null>(null);
 
+  const { data: mySociety, isLoading: isLoadingSociety } = useQuery({
+    queryKey: ['mySociety'],
+    queryFn: societyService.getMySociety,
+  });
+
+  const isEditing = mySociety?.isSetupComplete;
+
   // Fetch predefined categories from backend
   const { data: categories = [], isLoading: isLoadingCategories } = useQuery({
     queryKey: ['categories'],
@@ -39,6 +47,7 @@ export const SocietySetupPage: React.FC = () => {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<SocietySetupFormData>({
     resolver: zodResolver(societySetupSchema),
@@ -57,17 +66,37 @@ export const SocietySetupPage: React.FC = () => {
     },
   });
 
+  useEffect(() => {
+    if (mySociety && isEditing) {
+      reset({
+        name: mySociety.name || '',
+        categoryId: mySociety.category?.id || '',
+        shortDescription: mySociety.shortDescription || '',
+        longDescription: mySociety.longDescription || '',
+        logoUrl: mySociety.logoUrl || '',
+        bannerUrl: mySociety.bannerUrl || '',
+        instagram: mySociety.instagram || '',
+        facebook: mySociety.facebook || '',
+        linkedin: mySociety.linkedin || '',
+        website: mySociety.website || '',
+        email: mySociety.email || '',
+      });
+    }
+  }, [mySociety, isEditing, reset]);
+
   const setupMutation = useMutation({
-    mutationFn: (data: SocietySetupFormData) => societyService.setupSociety(data),
+    mutationFn: (data: SocietySetupFormData) => 
+      isEditing ? societyService.updateSociety(data) : societyService.setupSociety(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['mySociety'] });
+      queryClient.invalidateQueries({ queryKey: ['societyDashboard'] });
       navigate('/dashboard', { replace: true });
     },
     onError: (
       error: AxiosError<{ message?: string | string[]; error?: string }>,
     ) => {
       const respMessage = error.response?.data?.message;
-      let errText = 'Failed to complete profile setup. Please check your inputs.';
+      let errText = 'Failed to save profile. Please check your inputs.';
 
       if (Array.isArray(respMessage)) {
         errText = respMessage.join(', ');
@@ -84,18 +113,33 @@ export const SocietySetupPage: React.FC = () => {
     setupMutation.mutate(data);
   };
 
+  if (isLoadingSociety) {
+    return <div className="p-8 text-center text-fog font-medium text-sm">Loading society profile...</div>;
+  }
+
   return (
     <div className="max-w-3xl mx-auto space-y-6 text-left py-6">
-      <div className="space-y-1 bg-pure-white p-6 rounded-cards border-2 border-vast-ink">
+      <div className="space-y-1 bg-pure-white p-6 rounded-cards border-2 border-vast-ink relative">
+        {isEditing && (
+          <button
+            onClick={() => navigate('/dashboard')}
+            className="absolute top-6 right-6 flex items-center gap-2 px-3 py-1.5 bg-lumen-stone hover:bg-lavender-whisper border-2 border-vast-ink text-vast-ink text-xs font-semibold rounded-inputs transition-colors"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+            <span>Back to Dashboard</span>
+          </button>
+        )}
         <div className="flex items-center gap-2 text-vast-ink text-xs font-semibold uppercase tracking-wider mb-1">
           <Building2 className="w-4 h-4" />
-          <span>One-Time Initial Setup</span>
+          <span>{isEditing ? 'Profile Settings' : 'One-Time Initial Setup'}</span>
         </div>
-        <h1 className="text-2xl font-extrabold text-vast-ink">
-          Complete Your Society Profile
+        <h1 className="text-2xl font-extrabold text-vast-ink pr-32">
+          {isEditing ? 'Edit Society Profile' : 'Complete Your Society Profile'}
         </h1>
-        <p className="text-sm text-fog">
-          Welcome to Campus GIKI! Please complete your official society profile metadata below.
+        <p className="text-sm text-fog pr-32">
+          {isEditing 
+            ? 'Update your official society profile metadata and contact information below.' 
+            : 'Welcome to Campus GIKI! Please complete your official society profile metadata below.'}
         </p>
       </div>
 
@@ -266,7 +310,7 @@ export const SocietySetupPage: React.FC = () => {
           isLoading={setupMutation.isPending}
           leftIcon={<CheckCircle2 className="w-5 h-5" />}
         >
-          Complete Society Profile Setup
+          {isEditing ? 'Save Profile Changes' : 'Complete Society Profile Setup'}
         </Button>
       </form>
     </div>

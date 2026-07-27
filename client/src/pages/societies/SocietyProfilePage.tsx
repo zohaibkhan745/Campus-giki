@@ -1,6 +1,6 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import {
   Building2,
   Tag,
@@ -22,6 +22,7 @@ import { Alert } from '@/components/ui/Alert';
 
 export const SocietyProfilePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
 
   // Query society profile details
   const {
@@ -140,71 +141,73 @@ export const SocietyProfilePage: React.FC = () => {
   );
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6 text-left py-4">
+    <div className="max-w-5xl mx-auto space-y-6 text-left pt-10 sm:pt-14 pb-8 px-4 font-figtree">
       {/* Top Back Navigation Link */}
       <div className="flex items-center justify-between">
-        <Link
-          to="/societies"
-          className="inline-flex items-center gap-2 text-xs font-semibold text-fog hover:text-vast-ink transition-colors"
+        <button
+          onClick={() => navigate(-1)}
+          className="inline-flex items-center gap-2 px-3.5 py-2 bg-pure-white hover:bg-lumen-stone border-2 border-vast-ink text-vast-ink text-xs font-bold rounded-buttons transition-all cursor-pointer shadow-[2px_2px_0px_0px_#1B1B18]"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>Back to Directory</span>
-        </Link>
+          <span>Back</span>
+        </button>
       </div>
 
-      {/* 1. Hero Banner Section */}
-      <div className="relative rounded-cards overflow-hidden border-2 border-vast-ink bg-lumen-stone">
-        {/* Banner Image or Gradient Fallback */}
-        <div className="w-full h-48 sm:h-64 bg-gradient-to-r from-blue-900/60 via-slate-900 to-indigo-900/60 relative">
-          {society.bannerUrl && (
-            <img
-              src={society.bannerUrl}
-              alt={society.name}
-              className="w-full h-full object-cover opacity-80"
-            />
-          )}
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent" />
-        </div>
+      {/* 1. Hero Banner Image Cover */}
+      <div className="relative rounded-cards overflow-hidden border-2 border-vast-ink bg-vast-ink shadow-sm h-44 sm:h-60">
+        {society.bannerUrl ? (
+          <img
+            src={society.bannerUrl}
+            alt={society.name}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <div className="w-full h-full bg-gradient-to-r from-slate-900 via-vast-ink to-slate-900" />
+        )}
+      </div>
 
-        {/* Hero Logo & Meta Info Bar */}
-        <div className="relative px-6 pb-6 pt-0 -mt-16 sm:-mt-20 flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4">
-          <div className="flex flex-col sm:flex-row items-start sm:items-end gap-4">
+      {/* 2. High-Contrast Society Title & Info Header Card */}
+      <div className="bg-lumen-cream p-6 sm:p-8 rounded-cards border-2 border-vast-ink space-y-5 relative -mt-10 sm:-mt-14 mx-2 sm:mx-4 shadow-xl">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="flex flex-col sm:flex-row items-center gap-5">
             {society.logoUrl ? (
               <img
                 src={society.logoUrl}
                 alt={society.name}
-                className="w-24 h-24 sm:w-28 sm:h-28 rounded-cards object-cover border-4 border-slate-950 shadow-2xl bg-lumen-stone"
+                className="w-24 h-24 sm:w-28 sm:h-28 rounded-cards object-cover border-2 border-vast-ink shadow-md bg-pure-white shrink-0"
               />
             ) : (
-              <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-cards bg-blue-600/20 border-4 border-slate-950 shadow-2xl flex items-center justify-center text-vast-ink">
+              <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-cards bg-lavender-whisper border-2 border-vast-ink shadow-md flex items-center justify-center text-vast-ink shrink-0">
                 <Building2 className="w-12 h-12" />
               </div>
             )}
 
-            <div className="space-y-1">
-              <div className="flex flex-wrap items-center gap-2">
-                <h1 className="text-2xl sm:text-3xl font-extrabold text-vast-ink">
+            <div className="space-y-2 text-center sm:text-left">
+              <div className="flex flex-wrap items-center gap-3">
+                <h1 className="text-3xl sm:text-4xl font-extrabold font-eb-garamond text-vast-ink leading-tight tracking-tight">
                   {society.name}
                 </h1>
                 {society.category && (
-                  <span className="inline-flex items-center gap-1 px-3 py-1 bg-pure-white border border-vast-ink text-vast-ink rounded-inputs text-xs font-semibold">
-                    <Tag className="w-3.5 h-3.5" />
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-pure-white border-2 border-vast-ink text-vast-ink rounded-inputs text-xs font-bold shadow-sm">
+                    <Tag className="w-3.5 h-3.5 text-forest-ink" />
                     {society.category.name}
                   </span>
                 )}
               </div>
-              <p className="text-sm text-vast-ink font-medium max-w-2xl">{society.shortDescription}</p>
+              <p className="text-sm font-semibold text-fog max-w-2xl leading-relaxed">
+                {society.shortDescription}
+              </p>
             </div>
           </div>
 
-          {/* Social Links Icons Bar (Only rendered if provided) */}
-          <div className="flex items-center gap-2 pt-2 sm:pt-0">
+          {/* Social Links Bar */}
+          <div className="flex items-center gap-2 pt-2 md:pt-0 shrink-0">
             {society.website && (
               <a
                 href={society.website}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2.5 bg-lumen-stone hover:bg-lavender-whisper text-vast-ink rounded-inputs transition-colors border-2 border-vast-ink"
+                className="p-2.5 bg-pure-white hover:bg-lumen-stone text-vast-ink rounded-inputs transition-all border-2 border-vast-ink shadow-sm"
                 title="Official Website"
               >
                 <Globe className="w-4 h-4" />
@@ -214,7 +217,7 @@ export const SocietyProfilePage: React.FC = () => {
             {society.email && (
               <a
                 href={`mailto:${society.email}`}
-                className="p-2.5 bg-lumen-stone hover:bg-lavender-whisper text-vast-ink rounded-inputs transition-colors border-2 border-vast-ink"
+                className="p-2.5 bg-pure-white hover:bg-lumen-stone text-vast-ink rounded-inputs transition-all border-2 border-vast-ink shadow-sm"
                 title="Official Email"
               >
                 <Mail className="w-4 h-4" />
@@ -226,7 +229,7 @@ export const SocietyProfilePage: React.FC = () => {
                 href={society.instagram}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2.5 bg-lumen-stone hover:bg-lavender-whisper text-pink-400 rounded-inputs transition-colors border-2 border-vast-ink"
+                className="p-2.5 bg-pure-white hover:bg-lumen-stone text-pink-600 rounded-inputs transition-all border-2 border-vast-ink shadow-sm"
                 title="Instagram"
               >
                 <Share2 className="w-4 h-4" />
@@ -238,7 +241,7 @@ export const SocietyProfilePage: React.FC = () => {
                 href={society.facebook}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2.5 bg-lumen-stone hover:bg-lavender-whisper text-blue-500 rounded-inputs transition-colors border-2 border-vast-ink"
+                className="p-2.5 bg-pure-white hover:bg-lumen-stone text-blue-600 rounded-inputs transition-all border-2 border-vast-ink shadow-sm"
                 title="Facebook"
               >
                 <Share2 className="w-4 h-4" />
@@ -250,7 +253,7 @@ export const SocietyProfilePage: React.FC = () => {
                 href={society.linkedin}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2.5 bg-lumen-stone hover:bg-lavender-whisper text-cyan-400 rounded-inputs transition-colors border-2 border-vast-ink"
+                className="p-2.5 bg-pure-white hover:bg-lumen-stone text-indigo-600 rounded-inputs transition-all border-2 border-vast-ink shadow-sm"
                 title="LinkedIn"
               >
                 <Link2 className="w-4 h-4" />

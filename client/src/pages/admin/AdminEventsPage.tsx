@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import {
   Calendar,
   Search,
@@ -21,19 +21,95 @@ import { societyService } from '@/services/society.service';
 import { Alert } from '@/components/ui/Alert';
 
 export const AdminEventsPage: React.FC = () => {
+  const [searchParams] = useSearchParams();
+  const rawType = searchParams.get('type');
+
+  let defaultType: 'all' | 'this_week' | 'this_month' | 'upcoming' | 'past' = 'all';
+  let defaultFrom = '';
+  let defaultTo = '';
+
+  const now = new Date();
+  if (rawType === 'this_week') {
+    defaultType = 'this_week';
+    const startOfWeek = new Date(now);
+    startOfWeek.setDate(now.getDate() - now.getDay());
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 6);
+    defaultFrom = startOfWeek.toISOString().split('T')[0];
+    defaultTo = endOfWeek.toISOString().split('T')[0];
+  } else if (rawType === 'this_month') {
+    defaultType = 'this_month';
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    defaultFrom = startOfMonth.toISOString().split('T')[0];
+    defaultTo = endOfMonth.toISOString().split('T')[0];
+  } else if (rawType === 'upcoming' || rawType === 'past') {
+    defaultType = rawType;
+  }
+
   const [page, setPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [societyFilter, setSocietyFilter] = useState<string>('');
   const [categoryFilter, setCategoryFilter] = useState<string>('');
-  const [fromDate, setFromDate] = useState<string>('');
-  const [toDate, setToDate] = useState<string>('');
-  const [typeToggle, setTypeToggle] = useState<'all' | 'upcoming' | 'past'>('all');
+  const [fromDate, setFromDate] = useState<string>(defaultFrom);
+  const [toDate, setToDate] = useState<string>(defaultTo);
+  const [typeToggle, setTypeToggle] = useState<'all' | 'this_week' | 'this_month' | 'upcoming' | 'past'>(defaultType);
+
+  const setThisWeekFilter = () => {
+    const n = new Date();
+    const startOfWeek = new Date(n);
+    startOfWeek.setDate(n.getDate() - n.getDay());
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 6);
+    setFromDate(startOfWeek.toISOString().split('T')[0]);
+    setToDate(endOfWeek.toISOString().split('T')[0]);
+    setTypeToggle('this_week');
+    setPage(1);
+  };
+
+  const setThisMonthFilter = () => {
+    const n = new Date();
+    const startOfMonth = new Date(n.getFullYear(), n.getMonth(), 1);
+    const endOfMonth = new Date(n.getFullYear(), n.getMonth() + 1, 0);
+    setFromDate(startOfMonth.toISOString().split('T')[0]);
+    setToDate(endOfMonth.toISOString().split('T')[0]);
+    setTypeToggle('this_month');
+    setPage(1);
+  };
+
+  const setAllFilter = () => {
+    setFromDate('');
+    setToDate('');
+    setTypeToggle('all');
+    setPage(1);
+  };
+
+  const setUpcomingFilter = () => {
+    setFromDate('');
+    setToDate('');
+    setTypeToggle('upcoming');
+    setPage(1);
+  };
+
+  const setPastFilter = () => {
+    setFromDate('');
+    setToDate('');
+    setTypeToggle('past');
+    setPage(1);
+  };
 
   // Query categories
   const { data: categories = [] } = useQuery({
     queryKey: ['categories'],
     queryFn: societyService.getCategories,
   });
+
+  // Query societies list for dropdown filter
+  const { data: societiesData } = useQuery({
+    queryKey: ['publicSocietiesList'],
+    queryFn: () => societyService.getPublicSocieties({ limit: 100 }),
+  });
+  const societies = societiesData?.items || [];
 
   // Query events
   const {
@@ -61,7 +137,7 @@ export const AdminEventsPage: React.FC = () => {
         category: categoryFilter || undefined,
         from: fromDate || undefined,
         to: toDate || undefined,
-        type: typeToggle === 'all' ? undefined : typeToggle,
+        type: typeToggle === 'upcoming' || typeToggle === 'past' ? typeToggle : undefined,
       }),
   });
 
@@ -117,41 +193,57 @@ export const AdminEventsPage: React.FC = () => {
           </div>
 
           {/* Time Window Pills Toggle */}
-          <div className="flex items-center bg-lumen-stone p-1 rounded-inputs border-2 border-vast-ink w-full sm:w-auto">
+          <div className="flex flex-wrap items-center bg-lumen-stone p-1 rounded-inputs border-2 border-vast-ink w-full md:w-auto gap-1">
             <button
-              onClick={() => {
-                setTypeToggle('all');
-                setPage(1);
-              }}
-              className={`flex-1 sm:flex-initial px-4 py-1.5 rounded-inputs text-xs font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 ${
+              type="button"
+              onClick={setAllFilter}
+              className={`px-3 py-1.5 rounded-inputs text-xs font-bold transition-all ${
                 typeToggle === 'all'
-                  ? 'bg-indigo-600 text-white'
+                  ? 'bg-vast-ink text-white shadow-sm'
                   : 'text-fog hover:text-vast-ink'
               }`}
             >
               All Events
             </button>
             <button
-              onClick={() => {
-                setTypeToggle('upcoming');
-                setPage(1);
-              }}
-              className={`flex-1 sm:flex-initial px-4 py-1.5 rounded-inputs text-xs font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 ${
+              type="button"
+              onClick={setThisWeekFilter}
+              className={`px-3 py-1.5 rounded-inputs text-xs font-bold transition-all ${
+                typeToggle === 'this_week'
+                  ? 'bg-vast-ink text-white shadow-sm'
+                  : 'text-fog hover:text-vast-ink'
+              }`}
+            >
+              This Week
+            </button>
+            <button
+              type="button"
+              onClick={setThisMonthFilter}
+              className={`px-3 py-1.5 rounded-inputs text-xs font-bold transition-all ${
+                typeToggle === 'this_month'
+                  ? 'bg-vast-ink text-white shadow-sm'
+                  : 'text-fog hover:text-vast-ink'
+              }`}
+            >
+              This Month
+            </button>
+            <button
+              type="button"
+              onClick={setUpcomingFilter}
+              className={`px-3 py-1.5 rounded-inputs text-xs font-bold transition-all ${
                 typeToggle === 'upcoming'
-                  ? 'bg-indigo-600 text-white'
+                  ? 'bg-vast-ink text-white shadow-sm'
                   : 'text-fog hover:text-vast-ink'
               }`}
             >
               Upcoming
             </button>
             <button
-              onClick={() => {
-                setTypeToggle('past');
-                setPage(1);
-              }}
-              className={`flex-1 sm:flex-initial px-4 py-1.5 rounded-inputs text-xs font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 ${
+              type="button"
+              onClick={setPastFilter}
+              className={`px-3 py-1.5 rounded-inputs text-xs font-bold transition-all ${
                 typeToggle === 'past'
-                  ? 'bg-indigo-600 text-white'
+                  ? 'bg-vast-ink text-white shadow-sm'
                   : 'text-fog hover:text-vast-ink'
               }`}
             >
@@ -162,21 +254,26 @@ export const AdminEventsPage: React.FC = () => {
 
         {/* Bottom Row: Society, Category, Date Range Filters */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 pt-2 border-t border-vast-ink">
-          {/* Society Input */}
+          {/* Society Select Dropdown */}
           <div className="relative flex items-center">
-            <div className="absolute left-3 text-fog pointer-events-none flex items-center justify-center">
+            <div className="absolute left-3 text-fog pointer-events-none flex items-center justify-center z-10">
               <Building2 className="w-4 h-4" />
             </div>
-            <input
-              type="text"
-              placeholder="Filter by society..."
+            <select
               value={societyFilter}
               onChange={(e) => {
                 setSocietyFilter(e.target.value);
                 setPage(1);
               }}
-              className="w-full bg-pure-white text-vast-ink text-xs rounded-inputs border-2 border-vast-ink px-3 py-2 pl-9 outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
-            />
+              className="w-full bg-pure-white text-vast-ink text-xs rounded-inputs border-2 border-vast-ink px-3 py-2 pl-9 outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 cursor-pointer"
+            >
+              <option value="">All Societies</option>
+              {societies.map((soc) => (
+                <option key={soc.id} value={soc.id}>
+                  {soc.name}
+                </option>
+              ))}
+            </select>
           </div>
 
           {/* Category Dropdown */}

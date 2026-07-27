@@ -23,6 +23,13 @@ export const DeleteEventDialog: React.FC<DeleteEventDialogProps> = ({
     mutationFn: (id: string) => eventService.deleteEvent(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['myEvents'] });
+      queryClient.invalidateQueries({ queryKey: ['publicEvents'] });
+      queryClient.invalidateQueries({ queryKey: ['events'] });
+      queryClient.invalidateQueries({ queryKey: ['societyEvents'] });
+      queryClient.invalidateQueries({ queryKey: ['societyDashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['adminEvents'] });
+      queryClient.invalidateQueries({ queryKey: ['adminDashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['feed'] });
       onClose();
     },
   });

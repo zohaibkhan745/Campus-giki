@@ -16,6 +16,9 @@ import {
   CheckCircle2,
   Clock,
   Lock,
+  Shield,
+  ShieldAlert,
+  ShieldCheck,
 } from 'lucide-react';
 import { yearlyPlanService } from '@/services/yearly-plan.service';
 import {
@@ -52,12 +55,15 @@ export const YearlyCalendarPage: React.FC = () => {
     control,
     handleSubmit,
     reset,
+    getValues,
+    setValue,
+    watch,
     formState: { errors },
   } = useForm<YearlyPlanFormData>({
     resolver: zodResolver(yearlyPlanFormSchema),
     defaultValues: {
       year: currentYear,
-      events: [{ eventName: '', plannedDate: '', notes: '' }],
+      events: [{ eventName: '', startDate: '', endDate: '', description: '', venue: '', hasOutsideParticipants: false, hasOutsideSpeaker: false, rules: '', societyRules: '' }],
     },
   });
 
@@ -73,10 +79,14 @@ export const YearlyCalendarPage: React.FC = () => {
         year: existingPlan.year,
         events: existingPlan.plannedEvents.map((e) => ({
           eventName: e.eventName,
-          plannedDate: e.plannedDate
-            ? new Date(e.plannedDate).toISOString().split('T')[0]
-            : '',
-          notes: e.notes || '',
+          startDate: e.startDate ? new Date(e.startDate).toISOString().split('T')[0] : '',
+          endDate: e.endDate ? new Date(e.endDate).toISOString().split('T')[0] : '',
+          description: e.description || '',
+          venue: e.venue || '',
+          hasOutsideParticipants: e.hasOutsideParticipants || false,
+          hasOutsideSpeaker: e.hasOutsideSpeaker || false,
+          rules: e.rules || '',
+          societyRules: e.societyRules || '',
         })),
       });
     }
@@ -264,7 +274,7 @@ export const YearlyCalendarPage: React.FC = () => {
                 type="button"
                 variant="outline"
                 size="sm"
-                onClick={() => append({ eventName: '', plannedDate: '', notes: '' })}
+                onClick={() => append({ eventName: '', startDate: '', endDate: '', description: '', venue: '', hasOutsideParticipants: false, hasOutsideSpeaker: false, rules: '', societyRules: '' })}
                 leftIcon={<Plus className="w-4 h-4" />}
               >
                 Add Event Row
@@ -282,7 +292,7 @@ export const YearlyCalendarPage: React.FC = () => {
                 key={field.id}
                 className="bg-pure-white p-4 rounded-inputs border-2 border-vast-ink space-y-3 relative group"
               >
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   <Input
                     label={`Event Name #${index + 1} *`}
                     placeholder="e.g. SoftDesk Annual Hackathon"
@@ -292,19 +302,140 @@ export const YearlyCalendarPage: React.FC = () => {
                   />
 
                   <Input
-                    label="Planned Date *"
+                    label="Start Date *"
                     type="date"
                     disabled={isReadOnly || isSaving}
-                    error={errors.events?.[index]?.plannedDate?.message}
-                    {...register(`events.${index}.plannedDate`)}
+                    error={errors.events?.[index]?.startDate?.message}
+                    {...register(`events.${index}.startDate`, {
+                      onChange: (e) => {
+                        const newStart = e.target.value;
+                        const currentEnd = getValues(`events.${index}.endDate`);
+                        if (!currentEnd || newStart > currentEnd) {
+                          setValue(`events.${index}.endDate`, newStart, { shouldValidate: true });
+                        }
+                      },
+                    })}
                   />
 
                   <Input
-                    label="Planning Notes (Optional)"
-                    placeholder="e.g. Venue requirement / Speaker invite"
+                    label="End Date *"
+                    type="date"
+                    min={watch(`events.${index}.startDate`)}
                     disabled={isReadOnly || isSaving}
-                    {...register(`events.${index}.notes`)}
+                    error={errors.events?.[index]?.endDate?.message}
+                    {...register(`events.${index}.endDate`)}
                   />
+
+                  <Input
+                    label="Venue *"
+                    placeholder="e.g. AHA Auditorium"
+                    disabled={isReadOnly || isSaving}
+                    error={errors.events?.[index]?.venue?.message}
+                    {...register(`events.${index}.venue`)}
+                  />
+
+                  <div className="flex flex-col justify-center space-y-2">
+                    <label className="text-sm font-semibold text-vast-ink">Outside Participants?</label>
+                    <div className="flex items-center gap-4">
+                      <label className="flex items-center gap-2">
+                        <input
+                          type="radio"
+                          value="true"
+                          disabled={isReadOnly || isSaving}
+                          {...register(`events.${index}.hasOutsideParticipants`, {
+                            setValueAs: (v) => v === 'true' || v === true
+                          })}
+                          className="w-4 h-4 text-forest-ink focus:ring-forest-ink"
+                        />
+                        <span className="text-sm font-medium">Yes</span>
+                      </label>
+                      <label className="flex items-center gap-2">
+                        <input
+                          type="radio"
+                          value="false"
+                          disabled={isReadOnly || isSaving}
+                          {...register(`events.${index}.hasOutsideParticipants`, {
+                            setValueAs: (v) => v === 'true' || v === true
+                          })}
+                          className="w-4 h-4 text-forest-ink focus:ring-forest-ink"
+                        />
+                        <span className="text-sm font-medium">No</span>
+                      </label>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col justify-center space-y-2">
+                    <label className="text-sm font-semibold text-vast-ink">Outside Speaker?</label>
+                    <div className="flex items-center gap-4">
+                      <label className="flex items-center gap-2">
+                        <input
+                          type="radio"
+                          value="true"
+                          disabled={isReadOnly || isSaving}
+                          {...register(`events.${index}.hasOutsideSpeaker`, {
+                            setValueAs: (v) => v === 'true' || v === true
+                          })}
+                          className="w-4 h-4 text-forest-ink focus:ring-forest-ink"
+                        />
+                        <span className="text-sm font-medium">Yes</span>
+                      </label>
+                      <label className="flex items-center gap-2">
+                        <input
+                          type="radio"
+                          value="false"
+                          disabled={isReadOnly || isSaving}
+                          {...register(`events.${index}.hasOutsideSpeaker`, {
+                            setValueAs: (v) => v === 'true' || v === true
+                          })}
+                          className="w-4 h-4 text-forest-ink focus:ring-forest-ink"
+                        />
+                        <span className="text-sm font-medium">No</span>
+                      </label>
+                    </div>
+                  </div>
+
+                  <div className="col-span-1 md:col-span-2 lg:col-span-3 space-y-4">
+                    <div className="flex flex-col space-y-1">
+                      <label className="text-sm font-semibold text-vast-ink block">
+                        Description *
+                      </label>
+                      <textarea
+                        disabled={isReadOnly || isSaving}
+                        rows={3}
+                        className="w-full px-4 py-2 bg-pure-white border-2 border-vast-ink rounded-inputs shadow-inputs focus:outline-none focus:ring-2 focus:ring-vast-ink focus:border-vast-ink transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                        placeholder="Event description..."
+                        {...register(`events.${index}.description`)}
+                      />
+                      {errors.events?.[index]?.description?.message && (
+                        <p className="text-xs text-red-500 mt-1">{errors.events?.[index]?.description?.message}</p>
+                      )}
+                    </div>
+                    <div className="flex flex-col space-y-1">
+                      <label className="text-xs font-bold text-vast-ink uppercase tracking-wider block">
+                        Society Guidelines &amp; Participant Notes (Optional)
+                      </label>
+                      <textarea
+                        disabled={isReadOnly || isSaving}
+                        rows={2}
+                        className="w-full px-4 py-2 bg-pure-white border-2 border-vast-ink rounded-inputs shadow-inputs focus:outline-none focus:ring-2 focus-visible:ring-2 focus-visible:ring-indigo-500 font-medium text-xs text-vast-ink transition-all disabled:opacity-50"
+                        placeholder="e.g. Laptops required, formal dress code, registration deadline..."
+                        {...register(`events.${index}.societyRules`)}
+                      />
+                    </div>
+
+                    {/* Official DSA / Admin Directives Display (Read-Only to Society) */}
+                    {watch(`events.${index}.rules`) && (
+                      <div className="p-4 bg-amber-50 border-2 border-amber-500/40 rounded-cards space-y-1 mt-2">
+                        <div className="flex items-center gap-2 text-amber-900 font-extrabold text-xs uppercase tracking-wider">
+                          <ShieldAlert className="w-4 h-4 text-amber-600 shrink-0" />
+                          <span>Official DSA / Admin Directives &amp; Regulations</span>
+                        </div>
+                        <p className="text-xs text-amber-950 font-semibold whitespace-pre-line leading-relaxed pl-6">
+                          {watch(`events.${index}.rules`)}
+                        </p>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 {!isReadOnly && fields.length > 1 && (
