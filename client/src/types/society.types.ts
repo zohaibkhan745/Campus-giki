@@ -49,7 +49,15 @@ export interface Society {
   isSetupComplete: boolean;
   userId: string;
   advisorId?: string | null;
-  categoryId?: string | null;
+  advisor?: {
+    id: string;
+    designation: string;
+    department: string;
+    user?: {
+      fullName: string;
+      email: string;
+    } | null;
+  } | null;
   category?: Category | null;
   createdAt: string;
   updatedAt: string;

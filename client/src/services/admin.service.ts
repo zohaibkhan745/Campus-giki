@@ -1,5 +1,5 @@
 import { api } from '@/lib/api';
-import type { PlanStatus, YearlyPlan } from '@/types/yearly-plan.types';
+import type { PlanStatus, YearlyPlan, PlannedEventPayload } from '@/types/yearly-plan.types';
 
 export interface AdvisorOption {
   id: string;
@@ -163,6 +163,7 @@ export interface AdminDashboardStatistics {
   inactiveSocieties: number;
   pendingYearlyPlans: number;
   approvedPlans: number;
+  eventsThisWeek: number;
   eventsThisMonth: number;
   upcomingEvents: number;
 }
@@ -280,5 +281,9 @@ export const adminService = {
 
   async getYearlyPlanDetailById(id: string): Promise<YearlyPlan> {
     return api.get(`/admin/yearly-plans/${id}`);
+  },
+
+  async updateYearlyPlan(id: string, payload: { events: PlannedEventPayload[] }): Promise<YearlyPlan> {
+    return api.patch(`/admin/yearly-plans/${id}`, payload);
   },
 };

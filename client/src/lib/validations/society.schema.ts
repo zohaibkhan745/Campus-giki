@@ -2,15 +2,21 @@ import { z } from 'zod';
 
 const optionalUrl = z
   .string()
-  .url('Must be a valid URL address (e.g. https://example.com)')
-  .or(z.literal(''))
-  .optional();
+  .trim()
+  .optional()
+  .refine(
+    (val) => !val || val === '' || z.string().url().safeParse(val).success,
+    { message: 'Must be a valid URL address (e.g. https://example.com)' },
+  );
 
 const optionalEmail = z
   .string()
-  .email('Must be a valid email address')
-  .or(z.literal(''))
-  .optional();
+  .trim()
+  .optional()
+  .refine(
+    (val) => !val || val === '' || z.string().email().safeParse(val).success,
+    { message: 'Must be a valid email address' },
+  );
 
 export const societySetupSchema = z.object({
   name: z

@@ -2,9 +2,12 @@ import { z } from 'zod';
 
 const optionalUrl = z
   .string()
-  .url('Must be a valid URL address (e.g. https://example.com)')
-  .or(z.literal(''))
-  .optional();
+  .optional()
+  .nullable()
+  .refine(
+    (val) => !val || val.trim() === '' || z.string().url().safeParse(val).success,
+    { message: 'Must be a valid URL address (e.g. https://example.com)' }
+  );
 
 const timeRegex = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
 
@@ -32,6 +35,7 @@ export const eventFormSchema = z
       .max(100, 'Venue cannot exceed 100 characters'),
     coverImageUrl: optionalUrl,
     registrationLink: optionalUrl,
+    submitForApproval: z.boolean().optional(),
   })
   .refine(
     (data) => {

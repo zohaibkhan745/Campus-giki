@@ -1,10 +1,28 @@
 export type PlanStatus = 'DRAFT' | 'PENDING' | 'CHANGES_REQUESTED' | 'APPROVED';
 
+export interface PlannedEventPayload {
+  eventName: string;
+  startDate: string;
+  endDate: string;
+  description: string;
+  venue: string;
+  hasOutsideParticipants: boolean;
+  hasOutsideSpeaker: boolean;
+  rules?: string;
+  societyRules?: string;
+}
+
 export interface PlannedEventItem {
   id?: string;
   eventName: string;
-  plannedDate: string;
-  notes?: string | null;
+  startDate: string;
+  endDate: string;
+  description: string;
+  venue: string;
+  hasOutsideParticipants: boolean;
+  hasOutsideSpeaker: boolean;
+  rules?: string | null;
+  societyRules?: string | null;
 }
 
 export interface YearlyPlanSocietyAdvisor {
@@ -39,18 +57,10 @@ export interface YearlyPlan {
 export interface CreateYearlyPlanPayload {
   year: number;
   status?: PlanStatus;
-  events: {
-    eventName: string;
-    plannedDate: string;
-    notes?: string;
-  }[];
+  events: PlannedEventPayload[];
 }
 
 export interface UpdateYearlyPlanPayload {
   status?: PlanStatus;
-  events?: {
-    eventName: string;
-    plannedDate: string;
-    notes?: string;
-  }[];
+  events?: PlannedEventPayload[];
 }

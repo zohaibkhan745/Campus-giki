@@ -9,6 +9,7 @@ export interface EventItem {
   coverImageUrl?: string | null;
   registrationLink?: string | null;
   isPublished: boolean;
+  approvalStatus?: 'PUBLISHED' | 'PENDING_ADVISOR' | 'PENDING_ADMIN' | 'CHANGES_REQUESTED';
   societyId: string;
   society?: {
     id: string;
@@ -38,6 +39,7 @@ export interface CreateEventPayload {
   venue: string;
   coverImageUrl?: string;
   registrationLink?: string;
+  submitForApproval?: boolean;
 }
 
 export type UpdateEventPayload = Partial<CreateEventPayload>;
