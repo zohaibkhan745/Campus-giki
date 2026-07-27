@@ -3,6 +3,7 @@ import { Type } from 'class-transformer';
 import {
   ArrayMinSize,
   IsArray,
+  IsBoolean,
   IsDateString,
   IsEnum,
   IsInt,
@@ -11,7 +12,6 @@ import {
   IsString,
   Max,
   Min,
-  MinLength,
   ValidateNested,
 } from 'class-validator';
 
@@ -26,21 +26,48 @@ export enum SocietyAllowedPlanStatus {
 }
 
 export class PlannedEventItemDto {
-  @ApiProperty({ example: 'SoftDesk Annual Hackathon' })
+  @ApiProperty({ example: 'Tech Conference 2026', description: 'Name of the planned event' })
   @IsString()
-  @IsNotEmpty({ message: 'Event name is required' })
-  @MinLength(2, { message: 'Event name must be at least 2 characters' })
+  @IsNotEmpty()
   eventName: string;
 
-  @ApiProperty({ example: '2026-11-15' })
-  @IsDateString({}, { message: 'Planned date must be a valid ISO date' })
-  @IsNotEmpty({ message: 'Planned date is required' })
-  plannedDate: string;
+  @ApiProperty({ example: '2026-10-15T00:00:00.000Z', description: 'Start date of the event' })
+  @IsDateString()
+  @IsNotEmpty()
+  startDate: string;
 
-  @ApiPropertyOptional({ example: 'Budget approval pending from DSA' })
-  @IsOptional()
+  @ApiProperty({ example: '2026-10-16T00:00:00.000Z', description: 'End date of the event' })
+  @IsDateString()
+  @IsNotEmpty()
+  endDate: string;
+
+  @ApiProperty({ example: 'A two day tech conference...', description: 'Description of the event' })
   @IsString()
-  notes?: string;
+  @IsNotEmpty()
+  description: string;
+
+  @ApiProperty({ example: 'AHA Auditorium', description: 'Venue for the event' })
+  @IsString()
+  @IsNotEmpty()
+  venue: string;
+
+  @ApiProperty({ example: true, description: 'Will there be outside participants?' })
+  @IsBoolean()
+  hasOutsideParticipants: boolean;
+
+  @ApiProperty({ example: false, description: 'Will there be an outside speaker?' })
+  @IsBoolean()
+  hasOutsideSpeaker: boolean;
+
+  @ApiProperty({ example: 'No smoking allowed.', description: 'Official DSA rules for the event', required: false })
+  @IsString()
+  @IsOptional()
+  rules?: string;
+
+  @ApiProperty({ example: 'Bring laptop for workshop.', description: 'Society rules and internal guidelines', required: false })
+  @IsString()
+  @IsOptional()
+  societyRules?: string;
 }
 
 export class CreateYearlyPlanDto {

@@ -55,6 +55,16 @@ export class YearlyPlansService {
       );
     }
 
+    for (const e of dto.events) {
+      const start = new Date(e.startDate);
+      const end = new Date(e.endDate);
+      if (end < start) {
+        throw new BadRequestException(
+          `Event '${e.eventName}' end date cannot be prior to its start date.`,
+        );
+      }
+    }
+
     return this.prisma.$transaction(async (tx) => {
       const plan = await tx.yearlyPlan.create({
         data: {
@@ -64,8 +74,14 @@ export class YearlyPlansService {
           plannedEvents: {
             create: dto.events.map((e) => ({
               eventName: e.eventName,
-              plannedDate: new Date(e.plannedDate),
-              notes: e.notes || null,
+              startDate: new Date(e.startDate),
+              endDate: new Date(e.endDate),
+              description: e.description,
+              venue: e.venue,
+              hasOutsideParticipants: e.hasOutsideParticipants,
+              hasOutsideSpeaker: e.hasOutsideSpeaker,
+              rules: e.rules,
+              societyRules: e.societyRules,
             })),
           },
         },
@@ -78,7 +94,7 @@ export class YearlyPlansService {
             },
           },
           plannedEvents: {
-            orderBy: { plannedDate: 'asc' },
+            orderBy: { startDate: 'asc' },
           },
         },
       });
@@ -105,7 +121,7 @@ export class YearlyPlansService {
           },
         },
         plannedEvents: {
-          orderBy: { plannedDate: 'asc' },
+          orderBy: { startDate: 'asc' },
         },
       },
     });
@@ -128,7 +144,7 @@ export class YearlyPlansService {
           },
         },
         plannedEvents: {
-          orderBy: { plannedDate: 'asc' },
+          orderBy: { startDate: 'asc' },
         },
       },
     });
@@ -178,6 +194,15 @@ export class YearlyPlansService {
     return this.prisma.$transaction(async (tx) => {
       // If events array is provided, replace old planned events
       if (dto.events) {
+        for (const e of dto.events) {
+          const start = new Date(e.startDate);
+          const end = new Date(e.endDate);
+          if (end < start) {
+            throw new BadRequestException(
+              `Event '${e.eventName}' end date cannot be prior to its start date.`,
+            );
+          }
+        }
         await tx.plannedEvent.deleteMany({
           where: { yearlyPlanId: planId },
         });
@@ -191,8 +216,14 @@ export class YearlyPlansService {
             plannedEvents: {
               create: dto.events.map((e) => ({
                 eventName: e.eventName,
-                plannedDate: new Date(e.plannedDate),
-                notes: e.notes || null,
+                startDate: new Date(e.startDate),
+                endDate: new Date(e.endDate),
+                description: e.description,
+                venue: e.venue,
+                hasOutsideParticipants: e.hasOutsideParticipants,
+                hasOutsideSpeaker: e.hasOutsideSpeaker,
+                rules: e.rules,
+                societyRules: e.societyRules,
               })),
             },
           }),
@@ -206,7 +237,7 @@ export class YearlyPlansService {
             },
           },
           plannedEvents: {
-            orderBy: { plannedDate: 'asc' },
+            orderBy: { startDate: 'asc' },
           },
         },
       });
@@ -287,7 +318,7 @@ export class YearlyPlansService {
           },
         },
         plannedEvents: {
-          orderBy: { plannedDate: 'asc' },
+          orderBy: { startDate: 'asc' },
         },
       },
     });

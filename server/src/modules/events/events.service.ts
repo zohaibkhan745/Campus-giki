@@ -183,13 +183,39 @@ export class EventsService {
   }
 
   /**
-   * Creates and immediately publishes a new campus event for the authenticated society.
+   * Helper: Sanitizes image URLs, automatically converting Unsplash webpage URLs into direct image URLs.
+   */
+  private sanitizeImageUrl(url?: string | null): string | null {
+    if (!url || !url.trim()) return null;
+    const trimmed = url.trim();
+    if (trimmed.includes('unsplash.com/photos/')) {
+      const parts = trimmed.split('/photos/')[1]?.split('?')[0]?.split('/');
+      const rawId = parts ? parts[0] : null;
+      if (rawId) {
+        const idParts = rawId.split('-');
+        const photoId = idParts[idParts.length - 1];
+        if (photoId) {
+          return `https://images.unsplash.com/photo-${photoId}?w=1200&auto=format&fit=crop&q=80`;
+        }
+      }
+    }
+    return trimmed;
+  }
+
+  /**
+   * Creates a new campus event for the authenticated society.
    */
   async createEvent(userId: string, dto: CreateEventDto): Promise<EventResponseDto> {
     const society = await this.validateSocietyOwnership(userId);
 
     this.validateFutureDate(dto.eventDate);
     this.validateTimeRange(dto.startTime, dto.endTime);
+
+    const submitForApproval = Boolean(dto.submitForApproval);
+    const isPublished = !submitForApproval;
+    const approvalStatus = submitForApproval ? 'PENDING_ADVISOR' : 'PUBLISHED';
+
+    const coverImageUrl = this.sanitizeImageUrl(dto.coverImageUrl);
 
     const event = await this.prisma.event.create({
       data: {
@@ -199,9 +225,10 @@ export class EventsService {
         startTime: dto.startTime,
         endTime: dto.endTime,
         venue: dto.venue,
-        coverImageUrl: dto.coverImageUrl || null,
+        coverImageUrl,
         registrationLink: dto.registrationLink || null,
-        isPublished: true, // Events are published immediately per business rule
+        isPublished,
+        approvalStatus,
         societyId: society.id,
       },
       include: {

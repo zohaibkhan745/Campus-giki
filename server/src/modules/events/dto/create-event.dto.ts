@@ -69,6 +69,7 @@ export class CreateEventDto {
     example: 'https://giki.edu.pk/events/softdesk-banner.png',
   })
   @IsOptional()
+  @Transform(({ value }: { value: unknown }) => (value === '' ? undefined : value))
   @IsUrl({}, { message: 'Cover Image URL must be a valid URL address' })
   coverImageUrl?: string;
 
@@ -76,6 +77,11 @@ export class CreateEventDto {
     example: 'https://forms.gle/sampleRegistrationFormId',
   })
   @IsOptional()
+  @Transform(({ value }: { value: unknown }) => (value === '' ? undefined : value))
   @IsUrl({}, { message: 'Registration Link must be a valid URL address' })
   registrationLink?: string;
+
+  @ApiPropertyOptional({ example: false, description: 'Submit event for advisor & DSA approval instead of direct publishing' })
+  @IsOptional()
+  submitForApproval?: boolean;
 }

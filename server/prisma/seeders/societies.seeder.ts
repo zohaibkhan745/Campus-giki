@@ -18,6 +18,7 @@ export async function seedSocietiesAndFeed(
       shortDescription: 'Computing and software innovation society',
       longDescription: 'Association for Computing Machinery GIKI Chapter promoting software innovation, competitive programming, and technical excellence.',
       logoUrl: 'https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=150&auto=format&fit=crop&q=80',
+      bannerUrl: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=1200&auto=format&fit=crop&q=80',
       categorySlug: 'technology',
       events: [
         {
@@ -183,6 +184,35 @@ export async function seedSocietiesAndFeed(
         },
       ],
     },
+    {
+      email: 'naqsh@giki.edu.pk',
+      fullName: 'NAQSH Arts Executive Committee',
+      name: 'NAQSH Arts Society',
+      shortDescription: 'Fine arts, calligraphy, speed painting, and creative visual design',
+      longDescription: 'NAQSH Arts Society is GIKI\'s creative powerhouse organizing national art exhibitions, live murals, calligraphy workshops, and digital art contests.',
+      logoUrl: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=200&auto=format&fit=crop&q=80',
+      bannerUrl: 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=1200&auto=format&fit=crop&q=80',
+      categorySlug: 'arts-and-culture',
+      events: [
+        {
+          title: 'NAQSH National Arts & Calligraphy Exhibition 2026',
+          description: 'A 3-day national exhibition showcasing fine art, Arabic calligraphy, speed painting competitions, and digital art galleries.',
+          eventDate: new Date(Date.now() + 12 * 24 * 60 * 60 * 1000), // +12 days
+          startTime: '10:00 AM',
+          endTime: '06:00 PM',
+          venue: 'AHA Auditorium Gallery',
+          coverImageUrl: 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=1200&auto=format&fit=crop&q=80',
+          registrationLink: 'https://forms.gle/naqsh-arts-2026',
+        },
+      ],
+      posts: [
+        {
+          content: '🎨 Registrations for NAQSH National Arts Exhibition 2026 are officially open! Submit your artwork entries before the deadline.',
+          imageUrl: 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?w=800&auto=format&fit=crop&q=80',
+          createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+        },
+      ],
+    },
   ];
 
   const seededSocieties: Society[] = [];
@@ -210,6 +240,7 @@ export async function seedSocietiesAndFeed(
         shortDescription: sData.shortDescription,
         longDescription: sData.longDescription,
         logoUrl: sData.logoUrl,
+        bannerUrl: (sData as any).bannerUrl || null,
         categoryId: categoryId || null,
         isSetupComplete: true,
       },
@@ -218,6 +249,7 @@ export async function seedSocietiesAndFeed(
         shortDescription: sData.shortDescription,
         longDescription: sData.longDescription,
         logoUrl: sData.logoUrl,
+        bannerUrl: (sData as any).bannerUrl || null,
         userId: user.id,
         advisorId: sData.email === 'acm@giki.edu.pk' ? advisorId : null,
         categoryId: categoryId || null,
@@ -249,6 +281,13 @@ export async function seedSocietiesAndFeed(
           },
         });
         seededEvents.push(createdEvent);
+      } else {
+        await prisma.event.update({
+          where: { id: existingEvent.id },
+          data: {
+            coverImageUrl: e.coverImageUrl,
+          },
+        });
       }
     }
 

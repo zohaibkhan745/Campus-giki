@@ -28,6 +28,13 @@ enum PlanStatus {
   APPROVED
 }
 
+enum EventApprovalStatus {
+  PUBLISHED
+  PENDING_ADVISOR
+  PENDING_ADMIN
+  CHANGES_REQUESTED
+}
+
 // ==========================================
 // Models
 // ==========================================
@@ -107,19 +114,21 @@ model Society {
 }
 
 model Event {
-  id               String   @id @default(uuid())
+  id               String              @id @default(uuid())
   title            String
-  description      String   @db.Text
+  description      String              @db.Text
   eventDate        DateTime
   startTime        String
   endTime          String
   venue            String
   coverImageUrl    String?
   registrationLink String?
-  isPublished      Boolean  @default(true)
+  isPublished      Boolean             @default(true)
+  approvalStatus   EventApprovalStatus @default(PUBLISHED)
+  advisorComments  String?             @db.Text
   societyId        String
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
 
   // Relationships
   society Society @relation(fields: [societyId], references: [id], onDelete: Cascade)
@@ -147,13 +156,19 @@ model YearlyPlan {
 }
 
 model PlannedEvent {
-  id           String     @id @default(uuid())
-  eventName    String
-  plannedDate  DateTime
-  notes        String?    @db.Text
-  yearlyPlanId String
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
+  id                     String     @id @default(uuid())
+  eventName              String
+  startDate              DateTime
+  endDate                DateTime
+  description            String     @db.Text
+  venue                  String
+  hasOutsideParticipants Boolean    @default(false)
+  hasOutsideSpeaker      Boolean    @default(false)
+  rules                  String?    @db.Text
+  societyRules           String?    @db.Text
+  yearlyPlanId           String
+  createdAt              DateTime   @default(now())
+  updatedAt              DateTime   @updatedAt
 
   // Relationships
   yearlyPlan YearlyPlan @relation(fields: [yearlyPlanId], references: [id], onDelete: Cascade)

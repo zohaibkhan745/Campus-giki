@@ -19,6 +19,9 @@ export class AdminDashboardStatisticsDto {
   @ApiProperty({ example: 8 })
   approvedPlans: number;
 
+  @ApiProperty({ example: 3 })
+  eventsThisWeek: number;
+
   @ApiProperty({ example: 5 })
   eventsThisMonth: number;
 

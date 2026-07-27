@@ -47,6 +47,17 @@ export class SocietyResponseDto {
   @ApiPropertyOptional({ type: CategoryResponseDto })
   category?: CategoryResponseDto | null;
 
+  @ApiPropertyOptional()
+  advisor?: {
+    id: string;
+    designation: string;
+    department: string;
+    user?: {
+      fullName: string;
+      email: string;
+    } | null;
+  } | null;
+
   @ApiProperty({ example: '2026-07-26T00:00:00.000Z' })
   createdAt: Date;
 

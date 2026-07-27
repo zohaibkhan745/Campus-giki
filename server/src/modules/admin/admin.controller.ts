@@ -21,6 +21,7 @@ import { QueryAdminSocietiesDto } from './dto/query-admin-societies.dto';
 import { UpdateSocietyAdminDto } from './dto/update-society-admin.dto';
 import { QueryAdminEventsDto } from './dto/query-admin-events.dto';
 import { AdminDashboardResponseDto } from './dto/admin-dashboard-response.dto';
+import { AdminUpdateYearlyPlanDto } from './dto/admin-update-yearly-plan.dto';
 import { Auth } from '../../core/decorators/auth.decorator';
 
 @ApiTags('DSA Administration')
@@ -220,5 +221,18 @@ export class AdminController {
   })
   async getYearlyPlanDetailById(@Param('id', ParseUUIDPipe) id: string) {
     return this.adminService.getYearlyPlanDetailById(id);
+  }
+
+  @Patch('yearly-plans/:id')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'DSA Force Update Plan Events',
+    description: 'Allows DSA to manually override and update events in a yearly plan.',
+  })
+  async updateYearlyPlan(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: AdminUpdateYearlyPlanDto,
+  ) {
+    return this.adminService.updateYearlyPlan(id, dto);
   }
 }

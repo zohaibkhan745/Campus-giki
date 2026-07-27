@@ -15,7 +15,7 @@ export class QuerySocietiesDto {
   @Type(() => Number)
   @IsInt({ message: 'Limit must be an integer' })
   @Min(1, { message: 'Limit must be at least 1' })
-  @Max(50, { message: 'Limit cannot exceed 50' })
+  @Max(200, { message: 'Limit cannot exceed 200' })
   limit?: number = 12;
 
   @ApiPropertyOptional({ example: 'technology' })

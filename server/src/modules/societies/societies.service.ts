@@ -30,12 +30,10 @@ export class SocietiesService {
    */
   async getPublicSocieties(query: QuerySocietiesDto): Promise<PaginatedSocietiesResponseDto> {
     const page = Math.max(1, query.page || 1);
-    const limit = Math.min(50, Math.max(1, query.limit || 12));
+    const limit = Math.min(200, Math.max(1, query.limit || 12));
     const skip = (page - 1) * limit;
 
-    const whereClause: Prisma.SocietyWhereInput = {
-      isSetupComplete: true,
-    };
+    const whereClause: Prisma.SocietyWhereInput = {};
 
     if (query.category) {
       const catFilter = query.category.trim();
@@ -194,6 +192,16 @@ export class SocietiesService {
       where: { userId },
       include: {
         category: true,
+        advisor: {
+          include: {
+            user: {
+              select: {
+                fullName: true,
+                email: true,
+              },
+            },
+          },
+        },
       },
     });
 
@@ -209,6 +217,16 @@ export class SocietiesService {
       where: { userId },
       include: {
         category: true,
+        advisor: {
+          include: {
+            user: {
+              select: {
+                fullName: true,
+                email: true,
+              },
+            },
+          },
+        },
       },
     });
 
@@ -254,6 +272,31 @@ export class SocietiesService {
     const upcomingEvents = allUpcoming.slice(0, 5);
     const recentEvents = allPast.slice(-5).reverse();
 
+    const currentYear = new Date().getFullYear();
+    const yearlyPlan = await this.prisma.yearlyPlan.findUnique({
+      where: {
+        societyId_year: {
+          societyId: society.id,
+          year: currentYear,
+        },
+      },
+      include: {
+        _count: {
+          select: { plannedEvents: true },
+        },
+      },
+    });
+
+    const yearlyPlanSummary = yearlyPlan
+      ? {
+          totalEventsInPlan: yearlyPlan._count.plannedEvents,
+          status: yearlyPlan.status,
+        }
+      : {
+          totalEventsInPlan: 0,
+          status: 'NOT_STARTED',
+        };
+
     return {
       profile: society,
       statistics: {
@@ -263,10 +306,7 @@ export class SocietiesService {
       },
       upcomingEvents,
       recentEvents,
-      yearlyPlanSummary: {
-        totalEventsInPlan: events.length,
-        status: events.length > 0 ? 'DRAFT_PLAN' : 'NOT_STARTED',
-      },
+      yearlyPlanSummary,
     };
   }
 

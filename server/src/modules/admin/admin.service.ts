@@ -12,6 +12,7 @@ import { OnboardSocietyResponseDto } from './dto/onboard-society-response.dto';
 import { QueryAdminSocietiesDto, AdminSocietyStatus } from './dto/query-admin-societies.dto';
 import { UpdateSocietyAdminDto } from './dto/update-society-admin.dto';
 import { QueryAdminEventsDto, EventTimeType } from './dto/query-admin-events.dto';
+import { AdminUpdateYearlyPlanDto } from './dto/admin-update-yearly-plan.dto';
 import { AdminDashboardResponseDto } from './dto/admin-dashboard-response.dto';
 import { Prisma, Role, PlanStatus } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
@@ -29,6 +30,14 @@ export class AdminService {
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
 
+    const startOfWeek = new Date(now);
+    startOfWeek.setDate(now.getDate() - now.getDay());
+    startOfWeek.setHours(0, 0, 0, 0);
+
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 6);
+    endOfWeek.setHours(23, 59, 59, 999);
+
     const [
       totalSocieties,
       activeSocieties,
@@ -36,6 +45,7 @@ export class AdminService {
       inactiveSocieties,
       pendingYearlyPlans,
       approvedPlans,
+      eventsThisWeek,
       eventsThisMonth,
       upcomingEvents,
       pendingPlansRaw,
@@ -54,6 +64,9 @@ export class AdminService {
       }),
       this.prisma.yearlyPlan.count({
         where: { status: PlanStatus.APPROVED },
+      }),
+      this.prisma.event.count({
+        where: { eventDate: { gte: startOfWeek, lte: endOfWeek } },
       }),
       this.prisma.event.count({
         where: { eventDate: { gte: startOfMonth, lte: endOfMonth } },
@@ -141,6 +154,7 @@ export class AdminService {
         inactiveSocieties,
         pendingYearlyPlans,
         approvedPlans,
+        eventsThisWeek,
         eventsThisMonth,
         upcomingEvents,
       },
@@ -201,10 +215,10 @@ export class AdminService {
     }
 
     const now = new Date();
-    if (query.type === EventTimeType.UPCOMING) {
+    if (query.type === EventTimeType.UPCOMING && !query.from) {
       dateConditions.gte = now;
       hasDateFilter = true;
-    } else if (query.type === EventTimeType.PAST) {
+    } else if (query.type === EventTimeType.PAST && !query.to) {
       dateConditions.lt = now;
       hasDateFilter = true;
     }
@@ -220,14 +234,21 @@ export class AdminService {
     if (query.category) {
       const cat = query.category.trim();
       societyWhere.category = {
-        OR: [{ slug: cat.toLowerCase() }, { name: { contains: cat, mode: 'insensitive' } }],
+        OR: [
+          { id: cat },
+          { slug: cat.toLowerCase() },
+          { name: { contains: cat, mode: 'insensitive' } },
+        ],
       };
       hasSocietyFilter = true;
     }
 
     if (query.society) {
       const soc = query.society.trim();
-      societyWhere.name = { contains: soc, mode: 'insensitive' };
+      societyWhere.OR = [
+        { id: soc },
+        { name: { contains: soc, mode: 'insensitive' } },
+      ];
       hasSocietyFilter = true;
     }
 
@@ -653,14 +674,12 @@ export class AdminService {
     const limit = Math.min(50, Math.max(1, query.limit || 10));
     const skip = (page - 1) * limit;
 
-    const whereClause: Prisma.YearlyPlanWhereInput = {};
-
-    if (query.status) {
-      whereClause.status = query.status;
-    }
+    const whereClause: Prisma.YearlyPlanWhereInput = {
+      status: query.status ? query.status : { not: PlanStatus.DRAFT },
+    };
 
     if (query.year) {
-      whereClause.year = query.year;
+      whereClause.year = Number(query.year);
     }
 
     const searchTerm = query.search || query.society;
@@ -757,7 +776,7 @@ export class AdminService {
           },
         },
         plannedEvents: {
-          orderBy: { plannedDate: 'asc' },
+          orderBy: { startDate: 'asc' },
         },
       },
     });
@@ -765,7 +784,62 @@ export class AdminService {
     if (!plan) {
       throw new NotFoundException(`Yearly plan record with ID '${id}' was not found`);
     }
-
     return plan;
+  }
+
+  async updateYearlyPlan(id: string, dto: AdminUpdateYearlyPlanDto) {
+    const plan = await this.prisma.yearlyPlan.findUnique({ where: { id } });
+    if (!plan) {
+      throw new NotFoundException(`Yearly plan record with ID '${id}' was not found`);
+    }
+
+    return this.prisma.$transaction(async (tx) => {
+      if (dto.events) {
+        await tx.plannedEvent.deleteMany({
+          where: { yearlyPlanId: id },
+        });
+
+        if (dto.events.length > 0) {
+          await tx.plannedEvent.createMany({
+            data: dto.events.map((e) => ({
+              eventName: e.eventName,
+              startDate: new Date(e.startDate),
+              endDate: new Date(e.endDate),
+              description: e.description,
+              venue: e.venue,
+              hasOutsideParticipants: e.hasOutsideParticipants,
+              hasOutsideSpeaker: e.hasOutsideSpeaker,
+              rules: e.rules,
+              societyRules: e.societyRules,
+              yearlyPlanId: id,
+            })),
+          });
+        }
+      }
+
+      return tx.yearlyPlan.findUnique({
+        where: { id },
+        include: {
+          society: {
+            include: {
+              category: true,
+              advisor: {
+                include: {
+                  user: {
+                    select: {
+                      fullName: true,
+                      email: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+          plannedEvents: {
+            orderBy: { startDate: 'asc' },
+          },
+        },
+      });
+    });
   }
 }

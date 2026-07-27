@@ -2,17 +2,32 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { PlanStatus } from '@prisma/client';
 
 export class PlannedEventResponseDto {
-  @ApiProperty({ example: 'plan-event-uuid-1234' })
+  @ApiProperty()
   id: string;
 
-  @ApiProperty({ example: 'SoftDesk Annual Hackathon' })
+  @ApiProperty()
   eventName: string;
 
-  @ApiProperty({ example: '2026-11-15T00:00:00.000Z' })
-  plannedDate: Date;
+  @ApiProperty()
+  startDate: Date;
 
-  @ApiPropertyOptional({ example: 'Budget approval pending from DSA' })
-  notes?: string | null;
+  @ApiProperty()
+  endDate: Date;
+
+  @ApiProperty()
+  description: string;
+
+  @ApiProperty()
+  venue: string;
+
+  @ApiProperty()
+  hasOutsideParticipants: boolean;
+
+  @ApiProperty()
+  hasOutsideSpeaker: boolean;
+
+  @ApiProperty({ required: false })
+  rules?: string | null;
 
   @ApiProperty({ example: 'plan-uuid-5678' })
   yearlyPlanId: string;
