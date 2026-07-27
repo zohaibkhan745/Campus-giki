@@ -1,9 +1,11 @@
-import { Controller, Get, Query, HttpCode, HttpStatus } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import { Controller, Get, Patch, Body, Param, ParseUUIDPipe, Query, HttpCode, HttpStatus } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam } from '@nestjs/swagger';
 import { Role } from '@prisma/client';
 import { AdvisorsService } from './advisors.service';
 import { QueryAdvisorPlansDto } from './dto/query-advisor-plans.dto';
 import { PaginatedAdvisorPlansResponseDto } from './dto/advisor-plans-response.dto';
+import { QueryAdvisorEventsDto } from './dto/query-advisor-events.dto';
+import { UpdateAdvisorEventDto } from './dto/update-advisor-event.dto';
 import { Auth } from '../../core/decorators/auth.decorator';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { UserProfileDto } from '../auth/dto/auth-response.dto';
@@ -34,5 +36,33 @@ export class AdvisorsController {
     @Query() query: QueryAdvisorPlansDto,
   ): Promise<PaginatedAdvisorPlansResponseDto> {
     return this.advisorsService.getMySocietyYearlyPlans(user.id, query);
+  }
+
+  @Get('me/events')
+  @Auth(Role.ADVISOR)
+  @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({
+    summary: 'Advisor Review Queue: Retrieve events for advisor assigned society',
+  })
+  async getMySocietyEvents(
+    @CurrentUser() user: UserProfileDto,
+    @Query() query: QueryAdvisorEventsDto,
+  ) {
+    return this.advisorsService.getMySocietyEvents(user.id, query);
+  }
+
+  @Patch('me/events/:id/status')
+  @Auth(Role.ADVISOR)
+  @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Advisor Event Approval: Approve or reject a society event' })
+  @ApiParam({ name: 'id', description: 'Event UUID' })
+  async updateEventStatus(
+    @Param('id', ParseUUIDPipe) id: string,
+    @CurrentUser() user: UserProfileDto,
+    @Body() dto: UpdateAdvisorEventDto,
+  ) {
+    return this.advisorsService.updateEventStatus(user.id, id, dto);
   }
 }

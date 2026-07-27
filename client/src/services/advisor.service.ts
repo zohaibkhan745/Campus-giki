@@ -10,4 +10,16 @@ export const advisorService = {
   }): Promise<PaginatedAdvisorPlansResponse> {
     return api.get('/advisors/me/yearly-plans', { params });
   },
+
+  async getMySocietyEvents(params?: {
+    page?: number;
+    limit?: number;
+    status?: string;
+  }) {
+    return api.get('/advisors/me/events', { params });
+  },
+
+  async updateEventStatus(eventId: string, payload: { status: string; comments?: string }) {
+    return api.patch(`/advisors/me/events/${eventId}/status`, payload);
+  }
 };
