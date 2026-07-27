@@ -355,23 +355,22 @@ export const DashboardPage: React.FC = () => {
 
           {/* 6. Upcoming, Pending & Recent Events Overview Grid */}
           <div id="upcoming-events-section" className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Pending Approvals Column */}
+            {/* Recent Events Column */}
             <div className="space-y-4">
               <div className="flex items-center justify-between border-b-2 border-vast-ink pb-3">
-                <div className="flex items-center gap-2 font-bold text-base text-ember-glow">
-                  <Clock className="w-4 h-4 text-ember-glow" />
-                  <h3 className="text-vast-ink">Pending Approvals ({pendingEvents.length})</h3>
+                <div className="flex items-center gap-2 font-bold text-base text-vast-ink">
+                  <History className="w-4 h-4 text-fog" />
+                  <h3>Recent Events ({recentEvents.length})</h3>
                 </div>
               </div>
 
-              {pendingEvents.length === 0 ? (
-                <div className="bg-pure-white p-6 rounded-cards border-2 border-vast-ink text-center text-xs text-fog space-y-2">
-                  <Shield className="w-8 h-8 text-fog mx-auto opacity-50" />
-                  <p>No events pending approval.</p>
+              {recentEvents.length === 0 ? (
+                <div className="bg-pure-white p-6 rounded-cards border-2 border-vast-ink text-center text-xs text-fog">
+                  No past events recorded yet.
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {pendingEvents.map((event) => renderEventCard(event))}
+                  {recentEvents.map((event) => renderEventCard(event, true))}
                 </div>
               )}
             </div>
@@ -400,22 +399,23 @@ export const DashboardPage: React.FC = () => {
               )}
             </div>
 
-            {/* Recent Events Column */}
+            {/* Pending Approvals Column */}
             <div className="space-y-4">
               <div className="flex items-center justify-between border-b-2 border-vast-ink pb-3">
-                <div className="flex items-center gap-2 font-bold text-base text-vast-ink">
-                  <History className="w-4 h-4 text-fog" />
-                  <h3>Recent Events ({recentEvents.length})</h3>
+                <div className="flex items-center gap-2 font-bold text-base text-ember-glow">
+                  <Clock className="w-4 h-4 text-ember-glow" />
+                  <h3 className="text-vast-ink">Pending Approvals ({pendingEvents.length})</h3>
                 </div>
               </div>
 
-              {recentEvents.length === 0 ? (
-                <div className="bg-pure-white p-6 rounded-cards border-2 border-vast-ink text-center text-xs text-fog">
-                  No past events recorded yet.
+              {pendingEvents.length === 0 ? (
+                <div className="bg-pure-white p-6 rounded-cards border-2 border-vast-ink text-center text-xs text-fog space-y-2">
+                  <Shield className="w-8 h-8 text-fog mx-auto opacity-50" />
+                  <p>No events pending approval.</p>
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {recentEvents.map((event) => renderEventCard(event, true))}
+                  {pendingEvents.map((event) => renderEventCard(event))}
                 </div>
               )}
             </div>
