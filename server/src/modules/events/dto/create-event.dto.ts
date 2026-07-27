@@ -1,5 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
+  IsBoolean,
   IsDateString,
   IsNotEmpty,
   IsOptional,
@@ -83,5 +84,6 @@ export class CreateEventDto {
 
   @ApiPropertyOptional({ example: false, description: 'Submit event for advisor & DSA approval instead of direct publishing' })
   @IsOptional()
+  @IsBoolean()
   submitForApproval?: boolean;
 }
