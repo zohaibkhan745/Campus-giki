@@ -13,6 +13,7 @@ export const CampusCalendarPage: React.FC = () => {
   const navigate = useNavigate();
   const [dateRange, setDateRange] = useState<{ from?: string; to?: string }>({});
   const [selectedSociety, setSelectedSociety] = useState<string>('');
+  const [activeTabMode, setActiveTabMode] = useState<'grid' | 'list'>('grid');
 
   // Responsive calendar view state
   const [calendarView, setCalendarView] = useState<'dayGridMonth' | 'timeGridWeek' | 'timeGridDay'>('dayGridMonth');
@@ -21,14 +22,11 @@ export const CampusCalendarPage: React.FC = () => {
   useEffect(() => {
     const handleResize = () => {
       const width = window.innerWidth;
-      if (width < 768) {
-        setCalendarView('timeGridDay');
-        setCalendarHeaderRight('timeGridWeek,timeGridDay');
-      } else if (width >= 768 && width < 1024) {
-        setCalendarView('timeGridWeek');
-        setCalendarHeaderRight('dayGridMonth,timeGridWeek,timeGridDay');
+      if (width < 640) {
+        setCalendarHeaderRight('today');
+      } else if (width < 768) {
+        setCalendarHeaderRight('prev,next today');
       } else {
-        setCalendarView('dayGridMonth');
         setCalendarHeaderRight('dayGridMonth,timeGridWeek,timeGridDay');
       }
     };
@@ -152,23 +150,23 @@ export const CampusCalendarPage: React.FC = () => {
         </header>
 
         {/* Controls Bar */}
-        <div className="bg-lumen-cream border-2 border-vast-ink rounded-cards p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-          <div className="flex items-center gap-3 w-full md:w-auto">
+        <div className="bg-lumen-cream border-2 border-vast-ink rounded-cards p-4 sm:p-6 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4">
+          <div className="flex items-center gap-3 w-full sm:w-auto">
             {(isLoading || isFetching) && (
-              <div className="flex items-center gap-1.5 text-xs text-vast-ink font-semibold bg-lavender-whisper px-3 py-1.5 rounded-badges border-2 border-vast-ink">
+              <div className="flex items-center gap-1.5 text-xs text-vast-ink font-semibold bg-lavender-whisper px-3 py-1.5 rounded-badges border-2 border-vast-ink shrink-0">
                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                <span>Fetching events...</span>
+                <span>Loading...</span>
               </div>
             )}
 
-            <div className="relative flex items-center w-full md:w-56">
+            <div className="relative flex items-center w-full sm:w-64">
               <div className="absolute left-3 text-vast-ink/60 pointer-events-none flex items-center justify-center">
                 <Building2 className="w-4 h-4" />
               </div>
               <select
                 value={selectedSociety}
                 onChange={(e) => setSelectedSociety(e.target.value)}
-                className="w-full bg-lumen-cream text-vast-ink font-medium text-sm rounded-buttons border-2 border-vast-ink px-3.5 py-2 pl-10 transition-all outline-none focus:bg-lumen-stone appearance-none cursor-pointer"
+                className="w-full bg-pure-white text-vast-ink font-bold text-xs rounded-inputs border-2 border-vast-ink px-3.5 py-2.5 pl-10 transition-all outline-none focus:ring-2 focus:ring-vast-ink cursor-pointer"
               >
                 <option value="">All Societies</option>
                 {societies.map((soc) => (
@@ -179,43 +177,102 @@ export const CampusCalendarPage: React.FC = () => {
               </select>
             </div>
           </div>
+
+          {/* View Mode Toggle (Grid vs Mobile Agenda) */}
+          <div className="flex items-center gap-1 bg-pure-white p-1 rounded-inputs border-2 border-vast-ink self-start sm:self-auto">
+            <button
+              type="button"
+              onClick={() => setActiveTabMode('grid')}
+              className={`px-3 py-1.5 text-xs font-bold rounded-inputs transition-colors ${
+                activeTabMode === 'grid'
+                  ? 'bg-vast-ink text-white shadow-sm'
+                  : 'text-vast-ink hover:bg-lumen-stone'
+              }`}
+            >
+              📅 Month Grid
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTabMode('list')}
+              className={`px-3 py-1.5 text-xs font-bold rounded-inputs transition-colors ${
+                activeTabMode === 'list'
+                  ? 'bg-vast-ink text-white shadow-sm'
+                  : 'text-vast-ink hover:bg-lumen-stone'
+              }`}
+            >
+              📋 Agenda Cards
+            </button>
+          </div>
         </div>
 
-        {/* FullCalendar Component Panel */}
-        <div className="bg-lumen-cream border-2 border-vast-ink rounded-[32px] overflow-hidden p-4 sm:p-6 text-vast-ink shadow-none">
-          <style>{`
-            .fc {
-              table-layout: fixed !important;
-            }
-            .fc-daygrid-day-frame {
-              overflow: hidden !important;
-              max-width: 100% !important;
-            }
-            .fc-daygrid-event-harness {
-              margin-bottom: 2px !important;
-              max-width: 100% !important;
-              overflow: hidden !important;
-            }
-            .fc-dayGridMonth-view .fc-daygrid-event {
-              background: transparent !important;
-              border: none !important;
-              box-shadow: none !important;
-              padding: 1px 0 !important;
-              margin: 1px 0 !important;
-              max-width: 100% !important;
-              overflow: hidden !important;
-            }
-            .fc-event-main {
-              overflow: hidden !important;
-              width: 100% !important;
-              max-width: 100% !important;
-              text-overflow: ellipsis !important;
-              white-space: nowrap !important;
-            }
-            .fc-theme-standard td, .fc-theme-standard th {
-              border-color: rgba(30, 41, 59, 0.15) !important;
-            }
-          `}</style>
+        {/* Calendar / Agenda View Container */}
+        {activeTabMode === 'grid' ? (
+          <div className="bg-lumen-cream border-2 border-vast-ink rounded-cards sm:rounded-[32px] overflow-hidden p-3 sm:p-6 text-vast-ink shadow-none">
+            <style>{`
+              .fc {
+                table-layout: fixed !important;
+                font-family: inherit !important;
+              }
+              .fc-daygrid-day-frame {
+                overflow: hidden !important;
+                max-width: 100% !important;
+                min-height: 52px !important;
+              }
+              .fc-daygrid-event-harness {
+                margin-bottom: 2px !important;
+                max-width: 100% !important;
+                overflow: hidden !important;
+              }
+              .fc-dayGridMonth-view .fc-daygrid-event {
+                background: transparent !important;
+                border: none !important;
+                box-shadow: none !important;
+                padding: 1px 0 !important;
+                margin: 1px 0 !important;
+                max-width: 100% !important;
+                overflow: hidden !important;
+              }
+              .fc-event-main {
+                overflow: hidden !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                text-overflow: ellipsis !important;
+                white-space: nowrap !important;
+              }
+              .fc-theme-standard td, .fc-theme-standard th {
+                border-color: rgba(30, 41, 59, 0.15) !important;
+              }
+
+              /* Mobile CSS Overrides */
+              @media (max-width: 640px) {
+                .fc .fc-toolbar {
+                  flex-direction: column !important;
+                  gap: 8px !important;
+                  align-items: center !important;
+                }
+                .fc .fc-toolbar-title {
+                  font-size: 1.1rem !important;
+                  font-weight: 800 !important;
+                }
+                .fc .fc-button {
+                  padding: 4px 10px !important;
+                  font-size: 0.75rem !important;
+                  font-weight: 700 !important;
+                  border-radius: 8px !important;
+                }
+                .fc-col-header-cell-cushion {
+                  font-size: 0.7rem !important;
+                  font-weight: 800 !important;
+                  text-transform: uppercase !important;
+                  padding: 4px 2px !important;
+                }
+                .fc-daygrid-day-number {
+                  font-size: 0.75rem !important;
+                  font-weight: 700 !important;
+                  padding: 2px 4px !important;
+                }
+              }
+            `}</style>
           <FullCalendar
             key={calendarView} // Force re-render on initial view change to ensure it mounts correctly
             plugins={calendarPlugins}
@@ -276,6 +333,7 @@ export const CampusCalendarPage: React.FC = () => {
             }}
           />
         </div>
+        ) : null}
 
         {/* Detailed Events List Below Calendar */}
         <div className="pt-8 pb-12">
