@@ -13,7 +13,7 @@ export const CampusCalendarPage: React.FC = () => {
   const navigate = useNavigate();
   const [dateRange, setDateRange] = useState<{ from?: string; to?: string }>({});
   const [selectedSociety, setSelectedSociety] = useState<string>('');
-  const [listFilter, setListFilter] = useState<'week' | 'month' | 'upcoming'>('upcoming');
+  const [listFilter, setListFilter] = useState<'today' | 'week' | 'month' | 'upcoming'>('upcoming');
 
   // Query all active societies for the filter dropdown
   const { data: societiesData } = useQuery({
@@ -35,6 +35,12 @@ export const CampusCalendarPage: React.FC = () => {
   const getFilterDates = () => {
     const today = new Date();
     today.setHours(0,0,0,0);
+    
+    if (listFilter === 'today') {
+      const toDate = new Date(today);
+      toDate.setDate(today.getDate() + 1);
+      return { from: today.toISOString(), to: toDate.toISOString() };
+    }
     if (listFilter === 'week') {
       const toDate = new Date(today);
       toDate.setDate(today.getDate() + 7);
@@ -308,10 +314,20 @@ export const CampusCalendarPage: React.FC = () => {
             
             <div className="flex items-center flex-wrap gap-2">
               <button
+                onClick={() => setListFilter('today')}
+                className={`px-4 py-2 rounded-full font-bold text-sm border-2 transition-all ${
+                  listFilter === 'today'
+                    ? 'bg-vast-ink text-pure-white border-vast-ink'
+                    : 'bg-pure-white text-vast-ink border-vast-ink/20 hover:border-vast-ink'
+                }`}
+              >
+                Today
+              </button>
+              <button
                 onClick={() => setListFilter('week')}
                 className={`px-4 py-2 rounded-full font-bold text-sm border-2 transition-all ${
                   listFilter === 'week'
-                    ? 'bg-forest-ink text-pure-white border-forest-ink'
+                    ? 'bg-vast-ink text-pure-white border-vast-ink'
                     : 'bg-pure-white text-vast-ink border-vast-ink/20 hover:border-vast-ink'
                 }`}
               >
@@ -321,7 +337,7 @@ export const CampusCalendarPage: React.FC = () => {
                 onClick={() => setListFilter('month')}
                 className={`px-4 py-2 rounded-full font-bold text-sm border-2 transition-all ${
                   listFilter === 'month'
-                    ? 'bg-forest-ink text-pure-white border-forest-ink'
+                    ? 'bg-vast-ink text-pure-white border-vast-ink'
                     : 'bg-pure-white text-vast-ink border-vast-ink/20 hover:border-vast-ink'
                 }`}
               >
@@ -331,7 +347,7 @@ export const CampusCalendarPage: React.FC = () => {
                 onClick={() => setListFilter('upcoming')}
                 className={`px-4 py-2 rounded-full font-bold text-sm border-2 transition-all ${
                   listFilter === 'upcoming'
-                    ? 'bg-forest-ink text-pure-white border-forest-ink'
+                    ? 'bg-vast-ink text-pure-white border-vast-ink'
                     : 'bg-pure-white text-vast-ink border-vast-ink/20 hover:border-vast-ink'
                 }`}
               >
