@@ -247,7 +247,7 @@ export const CampusCalendarPage: React.FC = () => {
             plugins={calendarPlugins}
             initialView="dayGridMonth"
             headerToolbar={{
-              left: 'prev,next today',
+              left: 'prev,next',
               center: 'title',
               right: '',
             }}
