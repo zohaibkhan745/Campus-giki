@@ -11,6 +11,10 @@
   --color-charcoal: #222222;
   --color-pure-white: #ffffff;
 
+  /* Soft border utility — use this instead of border-vast-ink for cards/surfaces */
+  --color-border-soft: rgba(26, 26, 26, 0.12);
+  --color-border-mid:  rgba(26, 26, 26, 0.20);
+
   --font-eb-garamond: 'EB Garamond', ui-serif, serif;
   --font-figtree: 'Figtree', ui-sans-serif, sans-serif;
 
@@ -43,4 +47,40 @@ body {
 /* Base resets to enforce design system rules */
 * {
   box-shadow: none !important; /* No box shadows anywhere */
+}
+
+/*
+  Global border softening — Tailwind v4 approach.
+  In v4, border colors are set directly via border-color property.
+  We globally reduce border intensity for card/surface elements by
+  overriding the border-color to a softer rgba value via @layer base.
+  This gives the subtle, near-invisible card borders seen on modern
+  design systems without touching every component individually.
+*/
+@layer base {
+  /* All surfaces: cards, sections, containers → ultra-soft border */
+  article,
+  section,
+  aside,
+  header,
+  footer,
+  div[class~="rounded-cards"],
+  div[class~="border-vast-ink"],
+  div[class~="border-2"] {
+    border-color: rgba(26, 26, 26, 0.12);
+  }
+
+  /* Inputs, selects, textareas → slightly more visible */
+  input,
+  select,
+  textarea {
+    border-color: rgba(26, 26, 26, 0.20);
+  }
+
+  /* Focus states → full strength */
+  input:focus,
+  select:focus,
+  textarea:focus {
+    border-color: rgba(26, 26, 26, 1);
+  }
 }
