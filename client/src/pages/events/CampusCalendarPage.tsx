@@ -166,6 +166,7 @@ export const CampusCalendarPage: React.FC = () => {
                 ))}
               </select>
             </div>
+          </div>
         </div>
 
         {/* Calendar Container */}
