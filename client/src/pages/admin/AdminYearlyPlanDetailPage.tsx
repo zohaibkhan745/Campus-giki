@@ -14,6 +14,7 @@ import {
   Lock,
   MessageSquare,
   Shield,
+  ShieldCheck,
   UserCheck,
   Loader2,
   FileCheck,

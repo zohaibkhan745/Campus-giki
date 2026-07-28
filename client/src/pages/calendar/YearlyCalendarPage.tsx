@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
-import type { SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link, useNavigate } from 'react-router-dom';
@@ -149,7 +148,7 @@ export const YearlyCalendarPage: React.FC = () => {
     },
   });
 
-  const handleSaveDraft: SubmitHandler<YearlyPlanFormData> = (data) => {
+  const handleSaveDraft = (data: YearlyPlanFormData) => {
     setServerError(null);
     setSuccessMessage(null);
     if (existingPlan) {
@@ -159,7 +158,7 @@ export const YearlyCalendarPage: React.FC = () => {
     }
   };
 
-  const handleSubmitForReview: SubmitHandler<YearlyPlanFormData> = (data) => {
+  const handleSubmitForReview = (data: YearlyPlanFormData) => {
     setServerError(null);
     setSuccessMessage(null);
     if (existingPlan) {

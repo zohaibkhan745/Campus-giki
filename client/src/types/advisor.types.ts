@@ -28,3 +28,28 @@ export interface PaginatedAdvisorPlansResponse {
     hasPreviousPage: boolean;
   };
 }
+
+export interface AdvisorEventItem {
+  id: string;
+  title: string;
+  description: string;
+  eventDate: string;
+  startTime: string;
+  endTime: string;
+  venue: string;
+  approvalStatus: string;
+  coverImageUrl?: string | null;
+  society: AdvisorSocietySummary;
+}
+
+export interface PaginatedAdvisorEventsResponse {
+  items: AdvisorEventItem[];
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+    hasNextPage: boolean;
+    hasPreviousPage: boolean;
+  };
+}

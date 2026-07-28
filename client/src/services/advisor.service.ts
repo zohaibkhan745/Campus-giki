@@ -1,5 +1,5 @@
 import { api } from '@/lib/api';
-import type { PaginatedAdvisorPlansResponse } from '@/types/advisor.types';
+import type { PaginatedAdvisorPlansResponse, PaginatedAdvisorEventsResponse } from '@/types/advisor.types';
 import type { PlanStatus } from '@/types/yearly-plan.types';
 
 export const advisorService = {
@@ -15,7 +15,7 @@ export const advisorService = {
     page?: number;
     limit?: number;
     status?: string;
-  }) {
+  }): Promise<PaginatedAdvisorEventsResponse> {
     return api.get('/advisors/me/events', { params });
   },
 

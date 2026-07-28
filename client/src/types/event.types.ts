@@ -37,8 +37,8 @@ export interface CreateEventPayload {
   startTime: string;
   endTime: string;
   venue: string;
-  coverImageUrl?: string;
-  registrationLink?: string;
+  coverImageUrl?: string | null;
+  registrationLink?: string | null;
   submitForApproval?: boolean;
 }
 
