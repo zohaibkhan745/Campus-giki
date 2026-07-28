@@ -13,28 +13,7 @@ export const CampusCalendarPage: React.FC = () => {
   const navigate = useNavigate();
   const [dateRange, setDateRange] = useState<{ from?: string; to?: string }>({});
   const [selectedSociety, setSelectedSociety] = useState<string>('');
-  const [activeTabMode, setActiveTabMode] = useState<'grid' | 'list'>('grid');
-
-  // Responsive calendar view state
-  const [calendarView, setCalendarView] = useState<'dayGridMonth' | 'timeGridWeek' | 'timeGridDay'>('dayGridMonth');
-  const [calendarHeaderRight, setCalendarHeaderRight] = useState('dayGridMonth,timeGridWeek,timeGridDay');
-
-  useEffect(() => {
-    const handleResize = () => {
-      const width = window.innerWidth;
-      if (width < 640) {
-        setCalendarHeaderRight('today');
-      } else if (width < 768) {
-        setCalendarHeaderRight('prev,next today');
-      } else {
-        setCalendarHeaderRight('dayGridMonth,timeGridWeek,timeGridDay');
-      }
-    };
-
-    handleResize(); // Init on mount
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  const [listFilter, setListFilter] = useState<'week' | 'month' | 'upcoming'>('upcoming');
 
   // Query all active societies for the filter dropdown
   const { data: societiesData } = useQuery({
@@ -43,29 +22,40 @@ export const CampusCalendarPage: React.FC = () => {
   });
   const societies = societiesData?.items || [];
 
-  // Query visible events in active date range [from, to]
-  const {
-    data: eventsData,
-    isLoading,
-    isFetching,
-  } = useQuery({
-    queryKey: [
-      'publicCalendarEvents',
-      dateRange.from,
-      dateRange.to,
-      selectedSociety,
-    ],
-    queryFn: () =>
-      eventService.getAllPublicEvents({
-        from: dateRange.from,
-        to: dateRange.to,
-        societyId: selectedSociety || undefined,
-        limit: 150,
-      }),
+  // Query 1: Visible events in calendar
+  const { data: calendarEventsData, isLoading: isCalendarLoading, isFetching: isCalendarFetching } = useQuery({
+    queryKey: ['publicCalendarEvents', dateRange.from, dateRange.to, selectedSociety],
+    queryFn: () => eventService.getAllPublicEvents({ from: dateRange.from, to: dateRange.to, societyId: selectedSociety || undefined, limit: 150 }),
     enabled: !!dateRange.from && !!dateRange.to,
   });
+  
+  const calendarEventsList = calendarEventsData?.items || [];
 
-  const eventsList = eventsData?.items || [];
+  // Query 2: Events for the list filter
+  const getFilterDates = () => {
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    if (listFilter === 'week') {
+      const toDate = new Date(today);
+      toDate.setDate(today.getDate() + 7);
+      return { from: today.toISOString(), to: toDate.toISOString() };
+    }
+    if (listFilter === 'month') {
+      const toDate = new Date(today);
+      toDate.setMonth(today.getMonth() + 1);
+      return { from: today.toISOString(), to: toDate.toISOString() };
+    }
+    return { from: today.toISOString(), to: undefined };
+  };
+  
+  const filterDates = getFilterDates();
+  
+  const { data: listEventsData, isLoading: isListLoading } = useQuery({
+    queryKey: ['publicListEvents', listFilter, selectedSociety],
+    queryFn: () => eventService.getAllPublicEvents({ from: filterDates.from, to: filterDates.to, societyId: selectedSociety || undefined, limit: 150 }),
+  });
+  
+  const eventsList = listEventsData?.items || [];
 
   // Helper to parse "06:00 PM" into FullCalendar compatible local ISO "YYYY-MM-DDTHH:mm:00"
   const parseLocalIso = (dateStr: string, timeStr: string) => {
@@ -102,7 +92,7 @@ export const CampusCalendarPage: React.FC = () => {
   };
 
   // Map backend EventItem items to FullCalendar format
-  const calendarEvents = eventsList.map((item) => {
+  const calendarEvents = calendarEventsList.map((item) => {
     const eventDateStr = new Date(item.eventDate).toISOString().split('T')[0];
     const startIso = parseLocalIso(eventDateStr, item.startTime);
     const endIso = parseLocalIso(eventDateStr, item.endTime);
@@ -152,7 +142,7 @@ export const CampusCalendarPage: React.FC = () => {
         {/* Controls Bar */}
         <div className="bg-lumen-cream border-2 border-vast-ink rounded-cards p-4 sm:p-6 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4">
           <div className="flex items-center gap-3 w-full sm:w-auto">
-            {(isLoading || isFetching) && (
+            {(isCalendarLoading || isCalendarFetching || isListLoading) && (
               <div className="flex items-center gap-1.5 text-xs text-vast-ink font-semibold bg-lavender-whisper px-3 py-1.5 rounded-badges border-2 border-vast-ink shrink-0">
                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
                 <span>Loading...</span>
@@ -176,38 +166,10 @@ export const CampusCalendarPage: React.FC = () => {
                 ))}
               </select>
             </div>
-          </div>
-
-          {/* View Mode Toggle (Grid vs Mobile Agenda) */}
-          <div className="flex items-center gap-1 bg-pure-white p-1 rounded-inputs border-2 border-vast-ink self-start sm:self-auto">
-            <button
-              type="button"
-              onClick={() => setActiveTabMode('grid')}
-              className={`px-3 py-1.5 text-xs font-bold rounded-inputs transition-colors ${
-                activeTabMode === 'grid'
-                  ? 'bg-vast-ink text-white shadow-sm'
-                  : 'text-vast-ink hover:bg-lumen-stone'
-              }`}
-            >
-              📅 Month Grid
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveTabMode('list')}
-              className={`px-3 py-1.5 text-xs font-bold rounded-inputs transition-colors ${
-                activeTabMode === 'list'
-                  ? 'bg-vast-ink text-white shadow-sm'
-                  : 'text-vast-ink hover:bg-lumen-stone'
-              }`}
-            >
-              📋 Agenda Cards
-            </button>
-          </div>
         </div>
 
-        {/* Calendar / Agenda View Container */}
-        {activeTabMode === 'grid' ? (
-          <div className="bg-lumen-cream border-2 border-vast-ink rounded-cards sm:rounded-[32px] overflow-hidden p-3 sm:p-6 text-vast-ink shadow-none">
+        {/* Calendar Container */}
+        <div className="bg-lumen-cream border-2 border-vast-ink rounded-cards sm:rounded-[32px] overflow-hidden p-3 sm:p-6 text-vast-ink shadow-none">
             <style>{`
               .fc {
                 table-layout: fixed !important;
@@ -274,13 +236,13 @@ export const CampusCalendarPage: React.FC = () => {
               }
             `}</style>
           <FullCalendar
-            key={calendarView} // Force re-render on initial view change to ensure it mounts correctly
+            key="dayGridMonth" // Force re-render on initial view change to ensure it mounts correctly
             plugins={calendarPlugins}
-            initialView={calendarView}
+            initialView="dayGridMonth"
             headerToolbar={{
               left: 'prev,next today',
               center: 'title',
-              right: calendarHeaderRight,
+              right: '',
             }}
             editable={false}
             selectable={false}
@@ -333,14 +295,49 @@ export const CampusCalendarPage: React.FC = () => {
             }}
           />
         </div>
-        ) : null}
 
         {/* Detailed Events List Below Calendar */}
         <div className="pt-8 pb-12">
-          <h2 className="font-eb-garamond text-2xl font-bold text-vast-ink mb-6 flex items-center gap-2">
-            <CalendarIcon className="w-6 h-6" />
-            Events in Selected View
-          </h2>
+          
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+            <h2 className="font-eb-garamond text-2xl font-bold text-vast-ink flex items-center gap-2">
+              <CalendarIcon className="w-6 h-6" />
+              Events 
+            </h2>
+            
+            <div className="flex items-center flex-wrap gap-2">
+              <button
+                onClick={() => setListFilter('week')}
+                className={`px-4 py-2 rounded-full font-bold text-sm border-2 transition-all ${
+                  listFilter === 'week'
+                    ? 'bg-forest-ink text-pure-white border-forest-ink'
+                    : 'bg-pure-white text-vast-ink border-vast-ink/20 hover:border-vast-ink'
+                }`}
+              >
+                This Week
+              </button>
+              <button
+                onClick={() => setListFilter('month')}
+                className={`px-4 py-2 rounded-full font-bold text-sm border-2 transition-all ${
+                  listFilter === 'month'
+                    ? 'bg-forest-ink text-pure-white border-forest-ink'
+                    : 'bg-pure-white text-vast-ink border-vast-ink/20 hover:border-vast-ink'
+                }`}
+              >
+                This Month
+              </button>
+              <button
+                onClick={() => setListFilter('upcoming')}
+                className={`px-4 py-2 rounded-full font-bold text-sm border-2 transition-all ${
+                  listFilter === 'upcoming'
+                    ? 'bg-forest-ink text-pure-white border-forest-ink'
+                    : 'bg-pure-white text-vast-ink border-vast-ink/20 hover:border-vast-ink'
+                }`}
+              >
+                All Upcoming
+              </button>
+            </div>
+          </div>
           
           {eventsList.length === 0 ? (
             <div className="bg-pure-white p-10 rounded-cards border-2 border-vast-ink text-center text-fog">
