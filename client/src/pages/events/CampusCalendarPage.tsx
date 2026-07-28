@@ -136,7 +136,7 @@ export const CampusCalendarPage: React.FC = () => {
     <div className="bg-lumen-cream text-vast-ink min-h-screen pt-4 md:pt-14 pb-12 font-figtree">
       <div className="max-w-[1200px] mx-auto px-4 md:px-6 space-y-10 text-left">
         {/* Page Header */}
-        <header className="space-y-3 border-b-2 border-vast-ink/10 pb-8">
+        <header className="space-y-3 pb-8">
           <h1 className="font-eb-garamond text-heading-lg text-vast-ink leading-tight">
             Campus Events Calendar
           </h1>
