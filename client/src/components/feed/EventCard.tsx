@@ -19,22 +19,26 @@ export const EventCard: React.FC<EventCardProps> = ({ item }) => {
     <article className="bg-lumen-cream border-2 border-vast-ink rounded-cards p-8 space-y-6 text-left transition-transform hover:-translate-y-0.5">
       {/* Card Header: Society Meta */}
       <div className="flex items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
+        <Link
+          to={`/societies/${item.society.id}`}
+          className="flex items-center gap-3 group"
+          onClick={(e) => e.stopPropagation()}
+        >
           {item.society.logoUrl ? (
             <img
               src={item.society.logoUrl}
               alt={item.society.name}
-              className="w-8 h-8 rounded-full border-2 border-vast-ink object-cover bg-lumen-stone shrink-0"
+              className="w-8 h-8 rounded-full border-2 border-vast-ink object-cover bg-lumen-stone shrink-0 group-hover:opacity-80 transition-opacity"
             />
           ) : (
             <div className="w-8 h-8 rounded-full border-2 border-vast-ink bg-lavender-whisper flex items-center justify-center shrink-0 text-vast-ink">
               <Building2 className="w-4 h-4" />
             </div>
           )}
-          <span className="font-medium text-[14px] text-vast-ink truncate">
+          <span className="font-medium text-[14px] text-vast-ink truncate group-hover:underline underline-offset-2">
             {item.society.name}
           </span>
-        </div>
+        </Link>
 
         {item.society.category && (
           <span className="bg-forest-ink text-lumen-cream rounded-badges px-3 py-1 text-xs font-semibold shrink-0">
