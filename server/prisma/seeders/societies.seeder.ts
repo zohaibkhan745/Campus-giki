@@ -72,6 +72,7 @@ export async function seedSocietiesAndFeed(
       shortDescription: 'Fostering theater, music, visual arts, and performance art',
       longDescription: 'GADS is GIKI\'s premier cultural society bringing plays, live acoustic nights, and art exhibitions to the student body.',
       logoUrl: 'https://images.unsplash.com/photo-1460723237483-7a6dc9d0b212?w=150&auto=format&fit=crop&q=80',
+      bannerUrl: 'https://images.unsplash.com/photo-1507676184212-d03ab07a01bf?w=1200&auto=format&fit=crop&q=80',
       categorySlug: 'arts-and-culture',
       events: [
         {
@@ -115,6 +116,7 @@ export async function seedSocietiesAndFeed(
       shortDescription: 'Promoting athletic fitness, inter-departmental tournaments, and sportsmanship',
       longDescription: 'GIKI Sports Club organizes inter-faculty tournaments, marathons, futsal leagues, and table tennis championships.',
       logoUrl: 'https://images.unsplash.com/photo-1517649763962-0c623266010b?w=150&auto=format&fit=crop&q=80',
+      bannerUrl: 'https://images.unsplash.com/photo-1526676037777-05a232554f77?w=1200&auto=format&fit=crop&q=80',
       categorySlug: 'sports',
       events: [
         {
@@ -152,12 +154,13 @@ export async function seedSocietiesAndFeed(
       ],
     },
     {
-      email: 'naqeeb@giki.edu.pk',
-      fullName: 'Project Naqeeb Leadership',
-      name: 'Project Naqeeb Society',
+      email: 'topi@giki.edu.pk',
+      fullName: 'Project Topi Leadership',
+      name: 'Project Topi Society',
       shortDescription: 'Community welfare, blood drives, and social development',
-      longDescription: 'Project Naqeeb is a student-led welfare society dedicated to healthcare, education access, and emergency relief in local communities.',
+      longDescription: 'Project Topi is a student-led welfare society dedicated to healthcare, education access, and emergency relief in local communities.',
       logoUrl: 'https://images.unsplash.com/photo-1532629345422-7515f3d16bb0?w=150&auto=format&fit=crop&q=80',
+      bannerUrl: 'https://images.unsplash.com/photo-1593113580332-ceb4081c7ee2?w=1200&auto=format&fit=crop&q=80',
       categorySlug: 'community-service',
       events: [
         {
@@ -168,7 +171,7 @@ export async function seedSocietiesAndFeed(
           endTime: '05:00 PM',
           venue: 'GIKI Medical Center Grounds',
           coverImageUrl: 'https://images.unsplash.com/photo-1615461066841-6116e61058f4?w=800&auto=format&fit=crop&q=80',
-          registrationLink: 'https://forms.gle/naqeeb-blood-drive',
+          registrationLink: 'https://forms.gle/topi-blood-drive',
         },
       ],
       posts: [
