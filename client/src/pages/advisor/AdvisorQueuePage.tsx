@@ -27,6 +27,8 @@ export const AdvisorQueuePage: React.FC = () => {
   const [page, setPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState<string>('');
   const [activeTab, setActiveTab] = useState<'plans' | 'events'>('plans');
+  const [rejectingEventId, setRejectingEventId] = useState<string | null>(null);
+  const [rejectComment, setRejectComment] = useState<string>('');
 
   const {
     data: queueData,
@@ -61,9 +63,11 @@ export const AdvisorQueuePage: React.FC = () => {
   });
 
   const updateEventStatusMutation = useMutation({
-    mutationFn: ({ eventId, status }: { eventId: string; status: string }) =>
-      advisorService.updateEventStatus(eventId, { status }),
+    mutationFn: ({ eventId, status, comments }: { eventId: string; status: string; comments?: string }) =>
+      advisorService.updateEventStatus(eventId, { status, comments }),
     onSuccess: () => {
+      setRejectingEventId(null);
+      setRejectComment('');
       queryClient.invalidateQueries({ queryKey: ['advisorEventsQueue'] });
     },
   });
@@ -325,27 +329,59 @@ export const AdvisorQueuePage: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="flex flex-col md:flex-row items-center gap-3 pt-3 md:pt-0 w-full md:w-auto">
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-lumen-stone text-vast-ink font-medium rounded-inputs text-xs font-semibold">
-                    {event.approvalStatus}
-                  </span>
-                  
-                  {event.approvalStatus === 'PENDING_ADVISOR' && (
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => updateEventStatusMutation.mutate({ eventId: event.id, status: 'PENDING_ADMIN' })}
-                        disabled={updateEventStatusMutation.isPending}
-                        className="px-3 py-1.5 bg-emerald-500 text-pure-white hover:bg-emerald-600 rounded-inputs text-xs font-bold transition-colors disabled:opacity-50"
-                      >
-                        Approve (Send to DSA)
-                      </button>
-                      <button
-                        onClick={() => updateEventStatusMutation.mutate({ eventId: event.id, status: 'CHANGES_REQUESTED' })}
-                        disabled={updateEventStatusMutation.isPending}
-                        className="px-3 py-1.5 bg-red-500 text-pure-white hover:bg-red-600 rounded-inputs text-xs font-bold transition-colors disabled:opacity-50"
-                      >
-                        Reject
-                      </button>
+                <div className="flex flex-col w-full md:w-auto gap-3 pt-3 md:pt-0">
+                  <div className="flex flex-col md:flex-row items-end md:items-center justify-end gap-3 w-full">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-lumen-stone text-vast-ink font-medium rounded-inputs text-xs font-semibold">
+                      {event.approvalStatus}
+                    </span>
+                    
+                    {event.approvalStatus === 'PENDING_ADVISOR' && rejectingEventId !== event.id && (
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => updateEventStatusMutation.mutate({ eventId: event.id, status: 'PENDING_ADMIN' })}
+                          disabled={updateEventStatusMutation.isPending}
+                          className="px-3 py-1.5 bg-emerald-500 text-pure-white hover:bg-emerald-600 rounded-inputs text-xs font-bold transition-colors disabled:opacity-50"
+                        >
+                          Approve (Send to DSA)
+                        </button>
+                        <button
+                          onClick={() => { setRejectingEventId(event.id); setRejectComment(''); }}
+                          disabled={updateEventStatusMutation.isPending}
+                          className="px-3 py-1.5 bg-pure-white border-2 border-vast-ink hover:bg-red-500/10 text-red-500 rounded-inputs text-xs font-bold transition-colors disabled:opacity-50"
+                        >
+                          Request Changes
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                  {rejectingEventId === event.id && (
+                    <div className="w-full space-y-3 mt-2 bg-lumen-stone p-4 rounded-cards border-2 border-vast-ink animate-in slide-in-from-top-2">
+                      <label className="block text-sm font-bold text-vast-ink">
+                        Reason for requesting changes
+                      </label>
+                      <textarea
+                        value={rejectComment}
+                        onChange={(e) => setRejectComment(e.target.value)}
+                        placeholder="Please provide details so the society can update their event..."
+                        className="w-full p-3 rounded-inputs border-2 border-vast-ink bg-pure-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 min-h-[80px]"
+                      />
+                      <div className="flex items-center gap-2 justify-end">
+                        <button
+                          onClick={() => setRejectingEventId(null)}
+                          className="px-3 py-1.5 text-xs font-bold text-fog hover:text-vast-ink transition-colors"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          onClick={() => updateEventStatusMutation.mutate({ eventId: event.id, status: 'CHANGES_REQUESTED', comments: rejectComment })}
+                          disabled={updateEventStatusMutation.isPending || !rejectComment.trim()}
+                          className="px-4 py-1.5 bg-red-500 text-pure-white hover:bg-red-600 rounded-inputs text-xs font-bold transition-colors disabled:opacity-50 flex items-center gap-1.5"
+                        >
+                          {updateEventStatusMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+                          Submit Feedback
+                        </button>
+                      </div>
                     </div>
                   )}
                 </div>
