@@ -41,6 +41,7 @@ const CreateSocietyPage = React.lazy(() => import('@/pages/admin/CreateSocietyPa
 const AdminEventsPage = React.lazy(() => import('@/pages/admin/AdminEventsPage').then(m => ({ default: m.AdminEventsPage })));
 const AdminEventReviewPage = React.lazy(() => import('@/pages/admin/AdminEventReviewPage').then(m => ({ default: m.AdminEventReviewPage })));
 const AdminPostsPage = React.lazy(() => import('@/pages/admin/AdminPostsPage').then(m => ({ default: m.AdminPostsPage })));
+const AdminAdvisorsPage = React.lazy(() => import('@/pages/admin/AdminAdvisorsPage').then(m => ({ default: m.AdminAdvisorsPage })));
 const NotFoundPage = React.lazy(() => import('@/pages/NotFoundPage').then(m => ({ default: m.NotFoundPage })));
 const SocietyEventsPage = React.lazy(() => import('@/pages/societies/SocietyEventsPage').then(m => ({ default: m.SocietyEventsPage })));
 const SocietyPostsPage = React.lazy(() => import('@/pages/societies/SocietyPostsPage').then(m => ({ default: m.SocietyPostsPage })));
@@ -115,6 +116,7 @@ export const AppRoutes: React.FC = () => {
           <Route path="/admin/events" element={<AdminEventsPage />} />
           <Route path="/admin/events/:id/review" element={<AdminEventReviewPage />} />
           <Route path="/admin/posts" element={<AdminPostsPage />} />
+          <Route path="/admin/advisors" element={<AdminAdvisorsPage />} />
         </Route>
 
         {/* General Authenticated Protected Routes */}

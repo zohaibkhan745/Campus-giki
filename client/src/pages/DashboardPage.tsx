@@ -68,6 +68,9 @@ export const DashboardPage: React.FC = () => {
   const pendingEvents = dashboardData?.pendingEvents || [];
   const yearlyPlan = dashboardData?.yearlyPlanSummary;
 
+  const changesRequestedEventsCount = pendingEvents.filter(e => e.approvalStatus === 'CHANGES_REQUESTED').length;
+  const changesRequestedPlanCount = yearlyPlan?.status === 'CHANGES_REQUESTED' ? 1 : 0;
+
   // First-login redirect if profile setup incomplete
   if (user?.role === 'SOCIETY' && !isLoading) {
     if (!profile || !profile.isSetupComplete) {
@@ -112,6 +115,12 @@ export const DashboardPage: React.FC = () => {
               <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-red-100 text-red-600 rounded border border-red-200 text-[10px] font-bold uppercase tracking-wider">
                 <AlertCircle className="w-3 h-3" />
                 {event.lastChangeRequestBy === 'DSA_ADMIN' ? 'Comment by DSA' : 'Comment by Advisor'}
+              </span>
+            )}
+            {(event.approvalStatus === 'PENDING_ADVISOR' || event.approvalStatus === 'PENDING_ADMIN') && (
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-amber-50 text-amber-600 rounded border border-amber-200 text-[10px] font-bold uppercase tracking-wider">
+                <Clock className="w-3 h-3" />
+                Pending Review
               </span>
             )}
           </div>
@@ -260,17 +269,27 @@ export const DashboardPage: React.FC = () => {
               <div className="grid grid-cols-2 gap-3 z-10">
                 <Link
                   to="/society/events"
-                  className="flex flex-col items-center justify-center gap-2 p-4 bg-vast-ink hover:bg-vast-ink/90 text-pure-white rounded-inputs font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18]"
+                  className="relative flex flex-col items-center justify-center gap-2 p-4 bg-vast-ink hover:bg-vast-ink/90 text-pure-white rounded-inputs font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18]"
                 >
                   <Ticket className="w-6 h-6" />
                   <span>Events</span>
+                  {changesRequestedEventsCount > 0 && (
+                    <span className="absolute -top-2 -right-2 flex items-center justify-center w-6 h-6 bg-ember-glow text-pure-white text-xs rounded-full shadow-sm animate-pulse border-2 border-pure-white">
+                      {changesRequestedEventsCount > 9 ? '9+' : changesRequestedEventsCount}
+                    </span>
+                  )}
                 </Link>
                 <Link
                   to="/society/calendar"
-                  className="flex flex-col items-center justify-center gap-2 p-4 bg-pure-white hover:bg-lumen-stone text-vast-ink border-2 border-vast-ink rounded-inputs font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18]"
+                  className="relative flex flex-col items-center justify-center gap-2 p-4 bg-pure-white hover:bg-lumen-stone text-vast-ink border-2 border-vast-ink rounded-inputs font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18]"
                 >
                   <CalendarDays className="w-6 h-6" />
                   <span>Annual Calendar</span>
+                  {changesRequestedPlanCount > 0 && (
+                    <span className="absolute -top-2 -right-2 flex items-center justify-center w-6 h-6 bg-ember-glow text-pure-white text-xs rounded-full shadow-sm animate-pulse border-2 border-vast-ink">
+                      !
+                    </span>
+                  )}
                 </Link>
               </div>
 
@@ -282,19 +301,23 @@ export const DashboardPage: React.FC = () => {
           {/* 3. Focused Events Overview */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             
-            {/* Action Required Column */}
+            {/* Under Review & Revisions Column */}
             <div className="space-y-4">
               <div className="flex items-center justify-between border-b-2 border-vast-ink pb-3">
                 <div className="flex items-center gap-2 font-extrabold text-lg text-vast-ink">
-                  <AlertCircle className="w-5 h-5 text-ember-glow" />
-                  <h3>Action Required ({pendingEvents.length})</h3>
+                  {changesRequestedEventsCount > 0 ? (
+                    <AlertCircle className="w-5 h-5 text-ember-glow animate-pulse" />
+                  ) : (
+                    <Clock className="w-5 h-5 text-ember-glow" />
+                  )}
+                  <h3>Under Review & Revisions ({pendingEvents.length})</h3>
                 </div>
               </div>
 
               {pendingEvents.length === 0 ? (
                 <div className="bg-pure-white p-10 rounded-cards border-2 border-vast-ink text-center text-fog space-y-3 flex flex-col items-center">
                   <Shield className="w-12 h-12 text-fog opacity-30" />
-                  <p className="font-bold text-sm">You're all caught up! No events pending approval.</p>
+                  <p className="font-bold text-sm">You're all caught up! No events pending approval or revisions.</p>
                 </div>
               ) : (
                 <div className="space-y-4">

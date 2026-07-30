@@ -16,15 +16,18 @@ import {
   Ticket,
   CalendarDays,
   Settings,
+  Users,
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { adminService } from '@/services/admin.service';
 import { Alert } from '@/components/ui/Alert';
 import { MakeAnnouncementDialog } from '@/components/feed/MakeAnnouncementDialog';
+import { usePendingCounts } from '@/hooks/usePendingCounts';
 
 export const AdminDashboardPage: React.FC = () => {
   const { user, logout } = useAuth();
   const [isAnnouncementDialogOpen, setIsAnnouncementDialogOpen] = useState(false);
+  const { totalPending } = usePendingCounts();
   const {
     data,
     isLoading,
@@ -111,7 +114,7 @@ export const AdminDashboardPage: React.FC = () => {
           Command Center
         </h3>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
           <Link
             to="/admin/societies"
             className="flex flex-col items-center justify-center gap-2 p-4 bg-vast-ink hover:bg-vast-ink/90 text-pure-white rounded-inputs font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18]"
@@ -121,8 +124,13 @@ export const AdminDashboardPage: React.FC = () => {
           </Link>
           <Link
             to="/admin/events"
-            className="flex flex-col items-center justify-center gap-2 p-4 bg-pure-white hover:bg-lumen-stone text-vast-ink border-2 border-vast-ink rounded-inputs font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18]"
+            className="flex flex-col items-center justify-center gap-2 p-4 bg-pure-white hover:bg-lumen-stone text-vast-ink border-2 border-vast-ink rounded-inputs font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18] relative"
           >
+            {totalPending > 0 && (
+              <span className="absolute top-2 right-2 flex items-center justify-center w-5 h-5 bg-ember-glow text-pure-white text-[10px] font-bold rounded-full shadow-sm animate-pulse">
+                {totalPending > 9 ? '9+' : totalPending}
+              </span>
+            )}
             <Ticket className="w-6 h-6" />
             <span>Events</span>
           </Link>
@@ -139,6 +147,13 @@ export const AdminDashboardPage: React.FC = () => {
           >
             <CalendarDays className="w-6 h-6" />
             <span>Yearly Plans</span>
+          </Link>
+          <Link
+            to="/admin/advisors"
+            className="flex flex-col items-center justify-center gap-2 p-4 bg-pure-white hover:bg-lumen-stone text-vast-ink border-2 border-vast-ink rounded-inputs font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18]"
+          >
+            <Users className="w-6 h-6" />
+            <span>Advisors</span>
           </Link>
         </div>
       </div>

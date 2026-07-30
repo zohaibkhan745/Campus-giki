@@ -2,10 +2,12 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Home, CalendarDays, Users, User, LogIn } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { usePendingCounts } from '@/hooks/usePendingCounts';
 
 export const MainNavigation: React.FC = () => {
   const { user } = useAuth();
   const location = useLocation();
+  const { totalPending } = usePendingCounts();
 
   const navLinks = [
     { label: 'Home', path: '/', icon: Home },
@@ -38,13 +40,18 @@ export const MainNavigation: React.FC = () => {
                   <Link
                     key={link.path}
                     to={link.path}
-                    className={`px-4 py-2 text-[16px] font-bold rounded-badges transition-all ${
+                    className={`px-4 py-2 text-[16px] font-bold rounded-badges transition-all relative flex items-center gap-1.5 ${
                       isActive
                         ? 'bg-vast-ink text-pure-white shadow-md'
                         : 'text-vast-ink hover:bg-lumen-stone'
                     }`}
                   >
                     {link.label}
+                    {link.path === '/dashboard' && totalPending > 0 && (
+                      <span className="flex items-center justify-center w-5 h-5 bg-ember-glow text-pure-white text-[10px] rounded-full shrink-0 shadow-sm animate-pulse">
+                        {totalPending > 9 ? '9+' : totalPending}
+                      </span>
+                    )}
                   </Link>
                 );
               })}
@@ -70,11 +77,16 @@ export const MainNavigation: React.FC = () => {
                 className="flex flex-col items-center justify-center gap-1 min-w-[64px]"
               >
                 <div
-                  className={`flex items-center justify-center w-14 h-8 rounded-full transition-colors ${
+                  className={`relative flex items-center justify-center w-14 h-8 rounded-full transition-colors ${
                     isActive ? 'bg-forest-ink/15 text-forest-ink' : 'text-vast-ink/60 hover:text-vast-ink'
                   }`}
                 >
                   <Icon className="w-5 h-5" strokeWidth={isActive ? 2.5 : 2} />
+                  {link.path === '/dashboard' && totalPending > 0 && (
+                    <span className="absolute -top-1 -right-1 flex items-center justify-center w-4 h-4 bg-ember-glow text-pure-white text-[9px] font-bold rounded-full shadow-sm">
+                      {totalPending > 9 ? '9+' : totalPending}
+                    </span>
+                  )}
                 </div>
                 <span className={`text-[11px] font-bold transition-colors ${
                   isActive ? 'text-forest-ink' : 'text-vast-ink/60'
