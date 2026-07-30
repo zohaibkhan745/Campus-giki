@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import {
   Shield,
   Search,
@@ -15,6 +15,7 @@ import {
   ArrowRight,
   UserCheck,
   FilterX,
+  ArrowLeft,
 } from 'lucide-react';
 import { adminService } from '@/services/admin.service';
 import type { PlanStatus } from '@/types/yearly-plan.types';
@@ -22,6 +23,7 @@ import { Alert } from '@/components/ui/Alert';
 
 export const AdminYearlyPlansPage: React.FC = () => {
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const initialStatus = searchParams.get('status') || '';
 
   const [page, setPage] = useState(1);
@@ -90,6 +92,17 @@ export const AdminYearlyPlansPage: React.FC = () => {
 
   return (
     <div className="max-w-6xl mx-auto space-y-6 text-left py-4">
+      {/* Top Back Navigation Link */}
+      <div className="flex items-center justify-between">
+        <button
+          onClick={() => navigate(-1)}
+          className="inline-flex items-center gap-2 px-3.5 py-2 bg-pure-white hover:bg-lumen-stone border-2 border-vast-ink text-vast-ink text-xs font-bold rounded-buttons transition-all cursor-pointer shadow-[2px_2px_0px_0px_#1B1B18]"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          <span>Back</span>
+        </button>
+      </div>
+
       {/* Header Banner */}
       <div className="space-y-1 bg-pure-white p-6 rounded-cards border-2 border-vast-ink">
         <div className="flex items-center gap-2 text-vast-ink text-xs font-semibold uppercase tracking-wider mb-1">

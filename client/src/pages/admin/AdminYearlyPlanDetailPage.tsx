@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
@@ -31,6 +31,7 @@ import { Alert } from '@/components/ui/Alert';
 
 export const AdminYearlyPlanDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [serverError, setServerError] = useState<string | null>(null);
@@ -170,14 +171,15 @@ export const AdminYearlyPlanDetailPage: React.FC = () => {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 text-left py-4">
+      {/* Top Back Navigation Link */}
       <div className="flex items-center justify-between">
-        <Link
-          to="/admin/yearly-plans"
-          className="inline-flex items-center gap-2 text-xs font-semibold text-fog hover:text-vast-ink transition-colors"
+        <button
+          onClick={() => navigate(-1)}
+          className="inline-flex items-center gap-2 px-3.5 py-2 bg-pure-white hover:bg-lumen-stone border-2 border-vast-ink text-vast-ink text-xs font-bold rounded-buttons transition-all cursor-pointer shadow-[2px_2px_0px_0px_#1B1B18]"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>Back to DSA Dashboard</span>
-        </Link>
+          <span>Back</span>
+        </button>
         {renderStatusBadge(plan.status)}
       </div>
 

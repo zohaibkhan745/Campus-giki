@@ -15,6 +15,9 @@ import {
   Loader2,
   LogOut,
   MapPin,
+  Ticket,
+  CalendarDays,
+  Settings,
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { advisorService } from '@/services/advisor.service';
@@ -22,13 +25,11 @@ import type { PlanStatus } from '@/types/yearly-plan.types';
 import { Alert } from '@/components/ui/Alert';
 
 export const AdvisorQueuePage: React.FC = () => {
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState<string>('');
   const [activeTab, setActiveTab] = useState<'plans' | 'events'>('events');
-  const [rejectingEventId, setRejectingEventId] = useState<string | null>(null);
-  const [rejectComment, setRejectComment] = useState<string>('');
 
   const { data: profileData } = useQuery({
     queryKey: ['advisorProfile'],
@@ -36,6 +37,7 @@ export const AdvisorQueuePage: React.FC = () => {
   });
 
   const assignedSocietyName = profileData?.societies?.[0]?.name || 'Assigned Society';
+  const assignedSocietyLogo = profileData?.societies?.[0]?.logoUrl;
 
   const {
     data: queueData,
@@ -69,16 +71,6 @@ export const AdvisorQueuePage: React.FC = () => {
     enabled: activeTab === 'events',
   });
 
-  const updateEventStatusMutation = useMutation({
-    mutationFn: ({ eventId, status, comments }: { eventId: string; status: string; comments?: string }) =>
-      advisorService.updateEventStatus(eventId, { status, comments }),
-    onSuccess: () => {
-      setRejectingEventId(null);
-      setRejectComment('');
-      queryClient.invalidateQueries({ queryKey: ['advisorEventsQueue'] });
-    },
-  });
-
   const plans = queueData?.items || [];
   const events = eventsData?.items || [];
   const meta = activeTab === 'plans' ? queueData?.meta : eventsData?.meta;
@@ -92,99 +84,162 @@ export const AdvisorQueuePage: React.FC = () => {
     setPage(1);
   };
 
-  const renderStatusBadge = (status: PlanStatus) => {
+  const renderStatusBadge = (status: PlanStatus | string) => {
     switch (status) {
       case 'APPROVED':
+      case 'PUBLISHED':
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-pure-white border border-forest-ink border border-emerald-500/20 text-forest-ink rounded-inputs text-xs font-semibold">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-pure-white border border-forest-ink text-forest-ink rounded-inputs text-xs font-semibold">
             <CheckCircle2 className="w-3.5 h-3.5" />
-            <span>APPROVED</span>
+            <span>{status === 'PUBLISHED' ? 'PUBLISHED' : 'APPROVED'}</span>
           </span>
         );
       case 'PENDING':
+      case 'PENDING_ADVISOR':
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-pure-white border border-ember-glow border border-amber-500/20 text-ember-glow rounded-inputs text-xs font-semibold">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-pure-white border border-ember-glow text-ember-glow rounded-inputs text-xs font-semibold">
             <Clock className="w-3.5 h-3.5" />
-            <span>PENDING REVIEW</span>
+            <span>PENDING</span>
           </span>
         );
       case 'CHANGES_REQUESTED':
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-pure-white border border-vast-ink border border-red-500/20 text-red-400 rounded-inputs text-xs font-semibold">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-pure-white border border-red-400 text-red-400 rounded-inputs text-xs font-semibold">
             <AlertCircle className="w-3.5 h-3.5" />
-            <span>CHANGES REQUESTED</span>
+            <span>CHANGES REQ.</span>
           </span>
         );
       default:
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-lumen-stone text-vast-ink font-medium rounded-inputs text-xs font-semibold">
-            <span>DRAFT</span>
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-lumen-stone text-vast-ink rounded-inputs text-xs font-semibold">
+            <span>{status}</span>
           </span>
         );
     }
   };
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6 text-left py-4">
-      {/* Header Banner */}
-      <div className="space-y-1 bg-pure-white p-6 rounded-cards border-2 border-vast-ink flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <div className="flex items-center gap-2 text-ember-glow text-xs font-semibold uppercase tracking-wider mb-1">
-            <FileText className="w-4 h-4" />
-            <span>Faculty Advisor Portal • {assignedSocietyName}</span>
+    <div className="max-w-6xl mx-auto space-y-6 text-left py-4">
+      {/* 1. Welcome Banner — matches Society & Admin Dashboard */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-pure-white p-6 rounded-cards border-2 border-vast-ink shadow-sm">
+        <div className="flex items-center gap-4">
+          {user?.avatarUrl ? (
+            <img
+              src={user.avatarUrl}
+              alt={user.fullName}
+              className="w-16 h-16 rounded-full border-2 border-vast-ink object-cover shrink-0"
+            />
+          ) : assignedSocietyLogo ? (
+            <img
+              src={assignedSocietyLogo}
+              alt={assignedSocietyName}
+              className="w-16 h-16 rounded-full object-cover border-2 border-vast-ink bg-lumen-cream shrink-0"
+            />
+          ) : (
+            <div className="w-16 h-16 flex items-center justify-center bg-lumen-stone border-2 border-vast-ink rounded-full text-vast-ink shrink-0">
+              <Building2 className="w-8 h-8" />
+            </div>
+          )}
+          <div>
+            <h1 className="text-2xl font-extrabold text-vast-ink line-clamp-1">
+              Welcome back, {user?.fullName || 'Advisor'}
+            </h1>
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1 text-sm text-fog font-medium">
+              <span className="flex items-center gap-1.5">
+                <FileText className="w-4 h-4 text-ember-glow shrink-0" />
+                Faculty Advisor • <span className="text-vast-ink font-semibold">{assignedSocietyName}</span>
+              </span>
+            </div>
           </div>
-          <h1 className="text-2xl font-extrabold text-vast-ink">
-            {activeTab === 'plans' ? 'Yearly Calendar Review Queue' : 'Events Review Queue'}
-          </h1>
-          <p className="text-sm text-fog">
-            Review, evaluate, and provide official feedback on society submissions.
-          </p>
         </div>
 
-        {/* Status Filter Selector */}
-        <div className="relative flex items-center w-full md:w-56">
-          <div className="absolute left-3 text-fog pointer-events-none flex items-center justify-center">
-            <Filter className="w-4 h-4" />
-          </div>
-          <select
-            value={statusFilter}
-            onChange={handleStatusChange}
-            className="w-full bg-pure-white text-vast-ink placeholder:text-fog text-sm rounded-inputs border-2 border-vast-ink px-3.5 py-2 pl-10 transition-all outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+        <div className="flex items-center gap-3 shrink-0 mt-4 md:mt-0">
+          <Link
+            to="/settings"
+            className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-pure-white border-2 border-vast-ink hover:bg-lumen-stone rounded-inputs text-vast-ink text-sm font-bold transition-colors"
           >
-            <option value="">All Statuses</option>
-            <option value="PENDING">Pending Review</option>
-            <option value="CHANGES_REQUESTED">Changes Requested</option>
-            <option value="APPROVED">Approved</option>
-            {activeTab === 'plans' && <option value="DRAFT">Draft</option>}
-            {activeTab === 'events' && <option value="PENDING_ADVISOR">Pending Advisor</option>}
-            {activeTab === 'events' && <option value="PUBLISHED">Published</option>}
-          </select>
+            <Settings className="w-4 h-4" />
+            <span className="hidden sm:inline">Settings</span>
+          </Link>
           <button
             onClick={logout}
-            className="ml-3 inline-flex items-center gap-2 px-4 py-2 bg-pure-white border border-vast-ink hover:bg-red-500/20 border border-red-500/20 rounded-inputs text-red-400 text-xs font-bold transition-colors shrink-0 h-[38px]"
+            className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-pure-white border-2 border-vast-ink hover:bg-red-500/10 rounded-inputs text-red-500 text-sm font-bold transition-colors"
           >
             <LogOut className="w-4 h-4" />
-            <span className="hidden sm:inline">Log out</span>
+            <span>Log out</span>
           </button>
         </div>
       </div>
 
-      <div className="flex border-b-2 border-vast-ink mt-4">
-        <button
-          onClick={() => { setActiveTab('events'); setPage(1); setStatusFilter(''); }}
-          className={`px-4 py-2 font-bold text-sm transition-colors ${activeTab === 'events' ? 'border-b-4 border-ember-glow text-vast-ink' : 'text-fog hover:text-vast-ink'}`}
-        >
-          Events
-        </button>
-        <button
-          onClick={() => { setActiveTab('plans'); setPage(1); setStatusFilter(''); }}
-          className={`px-4 py-2 font-bold text-sm transition-colors ${activeTab === 'plans' ? 'border-b-4 border-ember-glow text-vast-ink' : 'text-fog hover:text-vast-ink'}`}
-        >
-          Annual Plans
-        </button>
+      {/* 2. Command Center — matching Society & Admin */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Quick Actions */}
+        <div className="bg-lumen-cream p-6 rounded-cards border-2 border-vast-ink flex flex-col justify-center space-y-5">
+          <h3 className="font-extrabold text-lg text-vast-ink flex items-center gap-2">
+            Command Center
+          </h3>
+
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              onClick={() => { setActiveTab('events'); setPage(1); setStatusFilter(''); }}
+              className={`flex flex-col items-center justify-center gap-2 p-4 rounded-inputs font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18] ${
+                activeTab === 'events'
+                  ? 'bg-vast-ink text-pure-white'
+                  : 'bg-pure-white text-vast-ink border-2 border-vast-ink hover:bg-lumen-stone'
+              }`}
+            >
+              <Ticket className="w-6 h-6" />
+              <span>Events</span>
+            </button>
+            <button
+              onClick={() => { setActiveTab('plans'); setPage(1); setStatusFilter(''); }}
+              className={`flex flex-col items-center justify-center gap-2 p-4 rounded-inputs font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18] ${
+                activeTab === 'plans'
+                  ? 'bg-vast-ink text-pure-white'
+                  : 'bg-pure-white text-vast-ink border-2 border-vast-ink hover:bg-lumen-stone'
+              }`}
+            >
+              <CalendarDays className="w-6 h-6" />
+              <span>Annual Plans</span>
+            </button>
+          </div>
+        </div>
+
+        {/* At a Glance */}
+        <div className="bg-lumen-cream p-6 rounded-cards border-2 border-vast-ink flex flex-col justify-center space-y-5 relative overflow-hidden group">
+          <h3 className="font-extrabold text-lg text-vast-ink flex items-center gap-2 z-10">
+            Review Queue
+          </h3>
+          <p className="text-sm font-medium text-fog z-10 leading-snug">
+            Review, evaluate, and provide official feedback on {assignedSocietyName}'s event proposals and annual calendar plans.
+          </p>
+
+          {/* Status Filter */}
+          <div className="relative z-10">
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-fog pointer-events-none">
+              <Filter className="w-4 h-4" />
+            </div>
+            <select
+              value={statusFilter}
+              onChange={handleStatusChange}
+              className="w-full bg-pure-white text-vast-ink text-sm font-semibold rounded-inputs border-2 border-vast-ink px-3.5 py-2 pl-10 transition-all outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 cursor-pointer"
+            >
+              <option value="">All Statuses</option>
+              <option value="PENDING">Pending Review</option>
+              <option value="CHANGES_REQUESTED">Changes Requested</option>
+              <option value="APPROVED">Approved</option>
+              {activeTab === 'plans' && <option value="DRAFT">Draft</option>}
+              {activeTab === 'events' && <option value="PENDING_ADVISOR">Pending Advisor</option>}
+              {activeTab === 'events' && <option value="PUBLISHED">Published</option>}
+            </select>
+          </div>
+
+          {/* Decorative background */}
+          <FileText className="absolute -right-4 -bottom-4 w-40 h-40 text-vast-ink opacity-[0.03] z-0 pointer-events-none group-hover:scale-110 transition-transform duration-500" />
+        </div>
       </div>
 
-      {/* Error Callout */}
+      {/* Error State */}
       {isError && (
         <div className="space-y-3">
           <Alert
@@ -193,20 +248,20 @@ export const AdvisorQueuePage: React.FC = () => {
           />
           <button
             onClick={() => refetch()}
-            className="text-xs text-ember-glow hover:underline font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded"
+            className="text-xs text-ember-glow hover:underline font-semibold"
           >
-            Retry Loading Queue
+            Retry
           </button>
         </div>
       )}
 
-      {/* Loading Skeleton */}
+      {/* 3. Queue Content */}
       {isLoading ? (
         <div className="space-y-4">
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="bg-pure-white p-6 rounded-cards border-2 border-vast-ink space-y-3 animate-pulse"
+              className="bg-pure-white p-5 rounded-cards border-2 border-vast-ink space-y-3 animate-pulse"
             >
               <div className="flex justify-between items-center">
                 <div className="h-5 bg-lumen-stone rounded w-1/3" />
@@ -217,19 +272,19 @@ export const AdvisorQueuePage: React.FC = () => {
           ))}
         </div>
       ) : activeTab === 'plans' && plans.length === 0 ? (
-        <div className="bg-pure-white p-12 rounded-cards border-2 border-vast-ink text-center space-y-3">
-          <FileText className="w-12 h-12 text-fog mx-auto" />
+        <div className="bg-pure-white p-12 rounded-cards border-2 border-vast-ink text-center space-y-3 flex flex-col items-center">
+          <FileText className="w-12 h-12 text-fog opacity-30" />
           <h3 className="font-bold text-vast-ink text-base">No Yearly Plans Found</h3>
-          <p className="text-xs text-fog max-w-sm mx-auto">
-            There are currently no yearly calendar submissions matching your status filter for your assigned society.
+          <p className="text-xs text-fog max-w-sm">
+            There are no yearly calendar submissions matching your current filter.
           </p>
         </div>
       ) : activeTab === 'events' && events.length === 0 ? (
-        <div className="bg-pure-white p-12 rounded-cards border-2 border-vast-ink text-center space-y-3">
-          <Calendar className="w-12 h-12 text-fog mx-auto" />
+        <div className="bg-pure-white p-12 rounded-cards border-2 border-vast-ink text-center space-y-3 flex flex-col items-center">
+          <Calendar className="w-12 h-12 text-fog opacity-30" />
           <h3 className="font-bold text-vast-ink text-base">No Events Found</h3>
-          <p className="text-xs text-fog max-w-sm mx-auto">
-            There are currently no events matching your status filter for your assigned society.
+          <p className="text-xs text-fog max-w-sm">
+            There are no events matching your current filter for {assignedSocietyName}.
           </p>
         </div>
       ) : (
@@ -239,7 +294,7 @@ export const AdvisorQueuePage: React.FC = () => {
               <Link
                 key={plan.id}
                 to={`/advisor/yearly-plans/${plan.id}`}
-                className="bg-pure-white p-5 rounded-cards border-2 border-vast-ink hover:border-2 border-vast-ink transition-all flex flex-col md:flex-row items-start md:items-center justify-between gap-4 group cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+                className="bg-pure-white p-5 rounded-cards border-2 border-vast-ink hover:bg-lavender-whisper transition-all flex flex-col md:flex-row items-start md:items-center justify-between gap-4 group cursor-pointer"
               >
                 <div className="flex items-center gap-4">
                   {plan.society?.logoUrl ? (
@@ -249,7 +304,7 @@ export const AdvisorQueuePage: React.FC = () => {
                       className="w-12 h-12 rounded-inputs object-cover border-2 border-vast-ink shrink-0"
                     />
                   ) : (
-                    <div className="p-3 bg-pure-white border border-ember-glow text-ember-glow rounded-inputs border border-amber-500/20 shrink-0">
+                    <div className="p-3 bg-lumen-stone border-2 border-vast-ink text-vast-ink rounded-inputs shrink-0">
                       <Building2 className="w-6 h-6" />
                     </div>
                   )}
@@ -296,7 +351,7 @@ export const AdvisorQueuePage: React.FC = () => {
               <Link
                 key={event.id}
                 to={`/advisor/events/${event.id}`}
-                className="bg-pure-white p-5 rounded-cards border-2 border-vast-ink hover:border-2 border-vast-ink transition-all flex flex-col md:flex-row items-start md:items-center justify-between gap-4 group cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+                className="bg-pure-white p-5 rounded-cards border-2 border-vast-ink hover:bg-lavender-whisper transition-all flex flex-col md:flex-row items-start md:items-center justify-between gap-4 group cursor-pointer"
               >
                 <div className="flex items-center gap-4">
                   {event.society?.logoUrl ? (
@@ -306,17 +361,15 @@ export const AdvisorQueuePage: React.FC = () => {
                       className="w-12 h-12 rounded-inputs object-cover border-2 border-vast-ink shrink-0"
                     />
                   ) : (
-                    <div className="p-3 bg-pure-white border border-ember-glow text-ember-glow rounded-inputs border border-amber-500/20 shrink-0">
+                    <div className="p-3 bg-lumen-stone border-2 border-vast-ink text-vast-ink rounded-inputs shrink-0">
                       <Building2 className="w-6 h-6" />
                     </div>
                   )}
 
                   <div className="space-y-1">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <h3 className="font-bold text-vast-ink text-base group-hover:text-ember-glow transition-colors">
-                        {event.title}
-                      </h3>
-                    </div>
+                    <h3 className="font-bold text-vast-ink text-base group-hover:text-ember-glow transition-colors">
+                      {event.title}
+                    </h3>
 
                     <div className="flex flex-wrap items-center gap-4 text-xs text-fog">
                       <div className="flex items-center gap-1.5">
@@ -338,9 +391,7 @@ export const AdvisorQueuePage: React.FC = () => {
                 </div>
 
                 <div className="flex items-center justify-between md:justify-end w-full md:w-auto gap-4 pt-3 md:pt-0 border-t md:border-t-0 border-vast-ink">
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-lumen-stone text-vast-ink font-medium rounded-inputs text-xs font-semibold">
-                    {event.approvalStatus}
-                  </span>
+                  {renderStatusBadge(event.approvalStatus)}
 
                   <span className="inline-flex items-center gap-1 text-xs font-semibold text-ember-glow group-hover:translate-x-1 transition-transform">
                     <span>Review Event</span>
@@ -353,18 +404,18 @@ export const AdvisorQueuePage: React.FC = () => {
         </div>
       )}
 
-      {/* Pagination Bar */}
+      {/* Pagination */}
       {meta && meta.totalPages > 1 && (
         <nav aria-label="Pagination" className="flex items-center justify-between pt-4 border-t-2 border-vast-ink text-xs font-semibold text-fog">
           <span>
-            Page {meta.page} of {meta.totalPages} ({meta.total} plans)
+            Page {meta.page} of {meta.totalPages} ({meta.total} items)
           </span>
 
           <div className="flex items-center gap-2">
             <button
               disabled={!meta.hasPreviousPage}
               onClick={() => setPage((p) => Math.max(1, p - 1))}
-              className="inline-flex items-center gap-1 px-3 py-1.5 bg-lumen-stone border-2 border-vast-ink rounded-inputs hover:bg-lumen-stone disabled:opacity-40 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+              className="inline-flex items-center gap-1 px-3 py-1.5 bg-lumen-stone border-2 border-vast-ink rounded-inputs hover:bg-lavender-whisper disabled:opacity-40 transition-colors"
               aria-label="Previous page"
             >
               <ChevronLeft className="w-4 h-4" />
@@ -374,7 +425,7 @@ export const AdvisorQueuePage: React.FC = () => {
             <button
               disabled={!meta.hasNextPage}
               onClick={() => setPage((p) => p + 1)}
-              className="inline-flex items-center gap-1 px-3 py-1.5 bg-lumen-stone border-2 border-vast-ink rounded-inputs hover:bg-lumen-stone disabled:opacity-40 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+              className="inline-flex items-center gap-1 px-3 py-1.5 bg-lumen-stone border-2 border-vast-ink rounded-inputs hover:bg-lavender-whisper disabled:opacity-40 transition-colors"
               aria-label="Next page"
             >
               <span>Next</span>

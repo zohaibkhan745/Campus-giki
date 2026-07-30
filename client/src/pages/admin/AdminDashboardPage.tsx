@@ -1,28 +1,30 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import {
   Shield,
   Building2,
-  CheckCircle2,
   Clock,
-  AlertCircle,
   FileText,
   Calendar,
-  TrendingUp,
-  Sparkles,
   UserPlus,
   ArrowRight,
-  ChevronRight,
   MapPin,
   LogOut,
+  Megaphone,
+  MessageSquare,
+  Ticket,
+  CalendarDays,
+  Settings,
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { adminService } from '@/services/admin.service';
 import { Alert } from '@/components/ui/Alert';
+import { MakeAnnouncementDialog } from '@/components/feed/MakeAnnouncementDialog';
 
 export const AdminDashboardPage: React.FC = () => {
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
+  const [isAnnouncementDialogOpen, setIsAnnouncementDialogOpen] = useState(false);
   const {
     data,
     isLoading,
@@ -34,268 +36,160 @@ export const AdminDashboardPage: React.FC = () => {
   });
 
   const stats = data?.statistics;
-  const approvedPlans = data?.approvedPlansPreview || [];
-  const upcomingEvents = data?.upcomingEventsPreview || [];
   const pendingEvents = data?.pendingEventsPreview || [];
+  const upcomingEvents = data?.upcomingEventsPreview || [];
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6 text-left py-4">
-      {/* Header Banner */}
-      <div className="space-y-1 bg-lumen-cream p-6 rounded-cards border-2 border-vast-ink flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <div className="flex items-center gap-2 text-forest-ink text-xs font-semibold uppercase tracking-wider mb-1">
-            <Shield className="w-4 h-4" />
-            <span>Directorate of Student Affairs</span>
+    <div className="max-w-6xl mx-auto space-y-6 text-left py-4">
+      {/* 1. Welcome Banner — matches Society Dashboard */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-pure-white p-6 rounded-cards border-2 border-vast-ink shadow-sm">
+        <div className="flex items-center gap-4">
+          {user?.avatarUrl ? (
+            <img 
+              src={user.avatarUrl} 
+              alt="Admin Avatar" 
+              className="w-16 h-16 rounded-full border-2 border-vast-ink object-cover shrink-0" 
+            />
+          ) : (
+            <div className="w-16 h-16 flex items-center justify-center bg-vast-ink border-2 border-vast-ink rounded-full text-white shrink-0">
+              <Shield className="w-8 h-8" />
+            </div>
+          )}
+          <div>
+            <h1 className="text-2xl font-extrabold text-vast-ink line-clamp-1">
+              Welcome back, {user?.fullName || 'Admin'}
+            </h1>
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1 text-sm text-fog font-medium">
+              <span className="flex items-center gap-1.5">
+                <Shield className="w-4 h-4 text-vast-ink shrink-0" />
+                Directorate of Student Affairs
+              </span>
+            </div>
           </div>
-          <h1 className="text-2xl font-extrabold text-vast-ink font-eb-garamond">
-            DSA Control Center &amp; Overview
-          </h1>
-          <p className="text-sm font-medium text-fog">
-            Central administrative hub for monitoring campus societies, event schedules, and annual calendar plans.
-          </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 shrink-0 mt-4 md:mt-0">
+          <button
+            onClick={() => setIsAnnouncementDialogOpen(true)}
+            className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-vast-ink hover:opacity-90 text-white rounded-inputs text-sm font-bold transition-colors shadow-lg shadow-blue-600/20"
+          >
+            <Megaphone className="w-4 h-4" />
+            <span>Make Post</span>
+          </button>
+          <Link
+            to="/settings"
+            className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-pure-white border-2 border-vast-ink hover:bg-lumen-stone rounded-inputs text-vast-ink text-sm font-bold transition-colors"
+          >
+            <Settings className="w-4 h-4" />
+            <span className="hidden sm:inline">Settings</span>
+          </Link>
           <button
             onClick={logout}
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-pure-white hover:bg-lumen-stone border-2 border-vast-ink rounded-buttons text-vast-ink text-xs font-bold transition-colors shrink-0"
+            className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-pure-white border-2 border-vast-ink hover:bg-red-500/10 rounded-inputs text-red-500 text-sm font-bold transition-colors"
           >
             <LogOut className="w-4 h-4" />
-            <span className="hidden sm:inline">Log out</span>
+            <span>Log out</span>
           </button>
         </div>
       </div>
 
       {isError && (
         <div className="space-y-3">
-          <Alert variant="error" message="Failed to load DSA dashboard metrics. DSA_ADMIN role required." />
+          <Alert variant="error" message="Failed to load dashboard data. DSA_ADMIN role required." />
           <button
             onClick={() => refetch()}
-            className="text-xs text-indigo-400 hover:underline font-semibold"
+            className="text-xs text-ember-glow hover:underline font-semibold"
           >
-            Retry Loading Dashboard
+            Retry
           </button>
         </div>
       )}
 
-      {/* 8 Statistics Grid Cards */}
-      {isLoading ? (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div key={i} className="bg-pure-white p-5 rounded-cards border-2 border-vast-ink space-y-2 animate-pulse">
-              <div className="h-4 bg-lumen-stone rounded w-1/2" />
-              <div className="h-8 bg-lumen-stone rounded w-1/3" />
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {/* Total Societies */}
+      {/* 2. Command Center */}
+      <div className="bg-lumen-cream p-6 rounded-cards border-2 border-vast-ink space-y-5">
+        <h3 className="font-extrabold text-lg text-vast-ink flex items-center gap-2">
+          Command Center
+        </h3>
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           <Link
             to="/admin/societies"
-            className="bg-pure-white p-5 rounded-cards border-2 border-vast-ink hover:bg-lavender-whisper transition-all space-y-2 group"
+            className="flex flex-col items-center justify-center gap-2 p-4 bg-vast-ink hover:bg-vast-ink/90 text-pure-white rounded-inputs font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18]"
           >
-            <div className="flex items-center justify-between text-fog">
-              <span className="text-xs font-semibold">Total Societies</span>
-              <Building2 className="w-4 h-4 text-vast-ink" />
-            </div>
-            <p className="text-2xl font-extrabold text-vast-ink">
-              {stats?.totalSocieties || 0}
-            </p>
+            <Building2 className="w-6 h-6" />
+            <span>Societies</span>
           </Link>
-
-          {/* Active Societies */}
           <Link
-            to="/admin/societies?status=ACTIVE"
-            className="bg-pure-white p-5 rounded-cards border-2 border-vast-ink hover:bg-lavender-whisper transition-all space-y-2 group"
+            to="/admin/events"
+            className="flex flex-col items-center justify-center gap-2 p-4 bg-pure-white hover:bg-lumen-stone text-vast-ink border-2 border-vast-ink rounded-inputs font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18]"
           >
-            <div className="flex items-center justify-between text-fog">
-              <span className="text-xs font-semibold">Active Societies</span>
-              <CheckCircle2 className="w-4 h-4 text-forest-ink" />
-            </div>
-            <p className="text-2xl font-extrabold text-forest-ink">
-              {stats?.activeSocieties || 0}
-            </p>
+            <Ticket className="w-6 h-6" />
+            <span>Events</span>
           </Link>
-
-          {/* Unconfigured Societies */}
           <Link
-            to="/admin/societies?status=UNCONFIGURED"
-            className="bg-pure-white p-5 rounded-cards border-2 border-vast-ink hover:bg-lavender-whisper transition-all space-y-2 group"
+            to="/admin/posts"
+            className="flex flex-col items-center justify-center gap-2 p-4 bg-pure-white hover:bg-lumen-stone text-vast-ink border-2 border-vast-ink rounded-inputs font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18]"
           >
-            <div className="flex items-center justify-between text-fog">
-              <span className="text-xs font-semibold">Unconfigured</span>
-              <Clock className="w-4 h-4 text-ember-glow" />
-            </div>
-            <p className="text-2xl font-extrabold text-ember-glow">
-              {stats?.unconfiguredSocieties || 0}
-            </p>
+            <MessageSquare className="w-6 h-6" />
+            <span>Posts</span>
           </Link>
-
-          {/* Inactive Societies */}
           <Link
-            to="/admin/societies?status=INACTIVE"
-            className="bg-pure-white p-5 rounded-cards border-2 border-vast-ink hover:bg-lavender-whisper transition-all space-y-2 group"
+            to="/admin/yearly-plans"
+            className="flex flex-col items-center justify-center gap-2 p-4 bg-pure-white hover:bg-lumen-stone text-vast-ink border-2 border-vast-ink rounded-inputs font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18]"
           >
-            <div className="flex items-center justify-between text-fog">
-              <span className="text-xs font-semibold">Inactive Societies</span>
-              <AlertCircle className="w-4 h-4 text-vast-ink" />
-            </div>
-            <p className="text-2xl font-extrabold text-vast-ink">
-              {stats?.inactiveSocieties || 0}
-            </p>
-          </Link>
-
-          {/* Pending Yearly Plans */}
-          <Link
-            to="/admin/yearly-plans?status=PENDING"
-            className="bg-pure-white p-5 rounded-cards border-2 border-vast-ink hover:bg-lavender-whisper transition-all space-y-2 group"
-          >
-            <div className="flex items-center justify-between text-fog">
-              <span className="text-xs font-semibold">Pending Plans</span>
-              <FileText className="w-4 h-4 text-ember-glow" />
-            </div>
-            <p className="text-2xl font-extrabold text-ember-glow">
-              {stats?.pendingYearlyPlans || 0}
-            </p>
-          </Link>
-
-          {/* Approved Plans */}
-          <Link
-            to="/admin/yearly-plans?status=APPROVED"
-            className="bg-pure-white p-5 rounded-cards border-2 border-vast-ink hover:bg-lavender-whisper transition-all space-y-2 group"
-          >
-            <div className="flex items-center justify-between text-fog">
-              <span className="text-xs font-semibold">Approved Plans</span>
-              <CheckCircle2 className="w-4 h-4 text-forest-ink" />
-            </div>
-            <p className="text-2xl font-extrabold text-forest-ink">
-              {stats?.approvedPlans || 0}
-            </p>
+            <CalendarDays className="w-6 h-6" />
+            <span>Yearly Plans</span>
           </Link>
         </div>
-      )}
+      </div>
 
-      {/* Quick Navigation Action Tiles */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-        <Link
-          to="/admin/societies/create"
-          className="bg-pure-white p-4 rounded-cards border-2 border-vast-ink hover:bg-lavender-whisper transition-all flex items-center justify-between group"
-        >
+      {/* 3. Add Society shortcut */}
+      <Link
+        to="/admin/societies/create"
+        className="block bg-pure-white p-4 rounded-cards border-2 border-vast-ink hover:bg-lavender-whisper transition-all group"
+      >
+        <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-lavender-whisper border-2 border-vast-ink text-vast-ink rounded-badges">
+            <div className="p-2.5 bg-vast-ink text-white rounded-inputs">
               <UserPlus className="w-5 h-5" />
             </div>
             <div>
-              <h4 className="font-bold text-vast-ink text-sm">Add Society</h4>
-              <p className="text-[11px] font-medium text-fog">Provision account</p>
+              <h4 className="font-bold text-vast-ink text-sm">Onboard New Society</h4>
+              <p className="text-[11px] font-medium text-fog">Provision a new society account with advisor assignment</p>
             </div>
           </div>
-          <ChevronRight className="w-4 h-4 text-vast-ink group-hover:translate-x-1 transition-transform" />
-        </Link>
+          <ArrowRight className="w-4 h-4 text-vast-ink group-hover:translate-x-1 transition-transform" />
+        </div>
+      </Link>
 
-        <Link
-          to="/admin/societies"
-          className="bg-pure-white p-4 rounded-cards border-2 border-vast-ink hover:bg-lavender-whisper transition-all flex items-center justify-between group"
-        >
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-lavender-whisper border-2 border-vast-ink text-vast-ink rounded-badges">
-              <Building2 className="w-5 h-5" />
-            </div>
-            <div>
-              <h4 className="font-bold text-vast-ink text-sm">Society Directory</h4>
-              <p className="text-[11px] font-medium text-fog">Reassign &amp; reset</p>
-            </div>
-          </div>
-          <ChevronRight className="w-4 h-4 text-vast-ink group-hover:translate-x-1 transition-transform" />
-        </Link>
-
-        <Link
-          to="/admin/yearly-plans"
-          className="bg-pure-white p-4 rounded-cards border-2 border-vast-ink hover:bg-lavender-whisper transition-all flex items-center justify-between group"
-        >
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-lavender-whisper border-2 border-vast-ink text-vast-ink rounded-badges">
-              <FileText className="w-5 h-5" />
-            </div>
-            <div>
-              <h4 className="font-bold text-vast-ink text-sm">Yearly Plan Audit</h4>
-              <p className="text-[11px] font-medium text-fog">Audit logs &amp; plans</p>
-            </div>
-          </div>
-          <ChevronRight className="w-4 h-4 text-vast-ink group-hover:translate-x-1 transition-transform" />
-        </Link>
-
-        <Link
-          to="/admin/events"
-          className="bg-pure-white p-4 rounded-cards border-2 border-vast-ink hover:bg-lavender-whisper transition-all flex items-center justify-between group"
-        >
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-lavender-whisper border-2 border-vast-ink text-vast-ink rounded-badges">
-              <Calendar className="w-5 h-5" />
-            </div>
-            <div>
-              <h4 className="font-bold text-vast-ink text-sm">Events Overview</h4>
-              <p className="text-[11px] font-medium text-fog">Campus event list</p>
-            </div>
-          </div>
-          <ChevronRight className="w-4 h-4 text-vast-ink group-hover:translate-x-1 transition-transform" />
-        </Link>
-      </div>
-
-      {/* Two Column Activity Widgets */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Approved Yearly Plans */}
-        <div className="bg-lumen-cream p-6 rounded-cards border-2 border-vast-ink space-y-4">
+      {/* 4. Activity Section — 2-column */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Pending Events */}
+        <div className="space-y-4">
           <div className="flex items-center justify-between border-b-2 border-vast-ink pb-3">
-            <h3 className="font-bold text-vast-ink text-base flex items-center gap-2">
-              <FileText className="w-4 h-4 text-ember-glow" />
-              <span>Advisor Approved Plans ({approvedPlans.length})</span>
-            </h3>
-            <Link to="/admin/yearly-plans?status=APPROVED" className="text-xs text-vast-ink hover:underline font-semibold">
+            <div className="flex items-center gap-2 font-extrabold text-lg text-vast-ink">
+              <Clock className="w-5 h-5 text-ember-glow" />
+              <h3>Pending Review ({pendingEvents.length})</h3>
+            </div>
+            <Link to="/admin/events?type=pending" className="text-sm font-bold text-vast-ink hover:text-forest-ink transition-colors underline underline-offset-2">
               View All
             </Link>
           </div>
 
-          {approvedPlans.length === 0 ? (
-            <p className="text-sm font-medium text-fog py-6 text-center">No yearly plans have been approved by advisors yet.</p>
-          ) : (
+          {isLoading ? (
             <div className="space-y-3">
-              {approvedPlans.map((plan) => (
-                <Link
-                  key={plan.id}
-                  to={`/admin/yearly-plans/${plan.id}`}
-                  className="bg-pure-white p-4 rounded-cards border-2 border-vast-ink hover:bg-lavender-whisper transition-all flex items-center justify-between group"
-                >
-                  <div className="space-y-1">
-                    <h4 className="font-bold text-vast-ink text-sm">
-                      {plan.society?.name} ({plan.year})
-                    </h4>
-                    <p className="text-xs font-medium text-fog">
-                      Advisor: {plan.society?.advisor?.user?.fullName || 'Assigned Advisor'} • {plan.totalPlannedEvents} Events
-                    </p>
-                  </div>
-                  <ArrowRight className="w-4 h-4 text-vast-ink group-hover:translate-x-1 transition-transform" />
-                </Link>
+              {[1, 2].map((i) => (
+                <div key={i} className="bg-pure-white p-5 rounded-cards border-2 border-vast-ink animate-pulse space-y-2">
+                  <div className="h-5 bg-lumen-stone rounded w-1/3" />
+                  <div className="h-4 bg-lumen-stone rounded w-1/2" />
+                </div>
               ))}
             </div>
-          )}
-        </div>
-
-        {/* Pending Events Preview */}
-        <div className="bg-lumen-cream p-6 rounded-cards border-2 border-vast-ink space-y-4">
-          <div className="flex items-center justify-between border-b-2 border-vast-ink pb-3">
-            <h3 className="font-bold text-vast-ink text-base flex items-center gap-2">
-              <Clock className="w-4 h-4 text-ember-glow" />
-              <span>Pending DSA Review Events ({pendingEvents.length})</span>
-            </h3>
-            <Link to="/admin/events?type=pending" className="text-xs text-vast-ink hover:underline font-semibold">
-              View All
-            </Link>
-          </div>
-
-          {pendingEvents.length === 0 ? (
-            <p className="text-sm font-medium text-fog py-6 text-center">No events currently pending DSA admin review.</p>
+          ) : pendingEvents.length === 0 ? (
+            <div className="bg-pure-white p-10 rounded-cards border-2 border-vast-ink text-center text-fog space-y-3 flex flex-col items-center">
+              <Shield className="w-12 h-12 text-fog opacity-30" />
+              <p className="font-bold text-sm">You're all caught up! No events pending review.</p>
+            </div>
           ) : (
             <div className="space-y-3">
               {pendingEvents.map((evt) => (
@@ -305,9 +199,7 @@ export const AdminDashboardPage: React.FC = () => {
                   className="bg-pure-white p-4 rounded-cards border-2 border-vast-ink hover:bg-lavender-whisper transition-all flex items-center justify-between group"
                 >
                   <div className="space-y-1">
-                    <h4 className="font-bold text-vast-ink text-sm">
-                      {evt.title}
-                    </h4>
+                    <h4 className="font-bold text-vast-ink text-sm">{evt.title}</h4>
                     <div className="flex items-center gap-3 text-xs font-medium text-fog">
                       <span>Host: <strong className="text-vast-ink">{evt.society?.name}</strong></span>
                       <span className="flex items-center gap-1">
@@ -323,20 +215,32 @@ export const AdminDashboardPage: React.FC = () => {
           )}
         </div>
 
-        {/* Upcoming Events Preview */}
-        <div className="bg-lumen-cream p-6 rounded-cards border-2 border-vast-ink space-y-4">
+        {/* Upcoming Events */}
+        <div className="space-y-4">
           <div className="flex items-center justify-between border-b-2 border-vast-ink pb-3">
-            <h3 className="font-bold text-vast-ink text-base flex items-center gap-2">
-              <Calendar className="w-4 h-4 text-vast-ink" />
-              <span>Upcoming Campus Events ({upcomingEvents.length})</span>
-            </h3>
-            <Link to="/admin/events?type=upcoming" className="text-xs text-vast-ink hover:underline font-semibold">
+            <div className="flex items-center gap-2 font-extrabold text-lg text-vast-ink">
+              <Calendar className="w-5 h-5 text-forest-ink" />
+              <h3>Upcoming Events ({upcomingEvents.length})</h3>
+            </div>
+            <Link to="/admin/events?type=upcoming" className="text-sm font-bold text-vast-ink hover:text-forest-ink transition-colors underline underline-offset-2">
               View All
             </Link>
           </div>
 
-          {upcomingEvents.length === 0 ? (
-            <p className="text-sm font-medium text-fog py-6 text-center">No upcoming campus events scheduled.</p>
+          {isLoading ? (
+            <div className="space-y-3">
+              {[1, 2].map((i) => (
+                <div key={i} className="bg-pure-white p-5 rounded-cards border-2 border-vast-ink animate-pulse space-y-2">
+                  <div className="h-5 bg-lumen-stone rounded w-1/3" />
+                  <div className="h-4 bg-lumen-stone rounded w-1/2" />
+                </div>
+              ))}
+            </div>
+          ) : upcomingEvents.length === 0 ? (
+            <div className="bg-pure-white p-10 rounded-cards border-2 border-vast-ink text-center text-fog space-y-3 flex flex-col items-center">
+              <Calendar className="w-12 h-12 text-fog opacity-30" />
+              <p className="font-bold text-sm">No upcoming events scheduled.</p>
+            </div>
           ) : (
             <div className="space-y-3">
               {upcomingEvents.map((evt) => (
@@ -346,9 +250,7 @@ export const AdminDashboardPage: React.FC = () => {
                   className="bg-pure-white p-4 rounded-cards border-2 border-vast-ink hover:bg-lavender-whisper transition-all flex items-center justify-between group"
                 >
                   <div className="space-y-1">
-                    <h4 className="font-bold text-vast-ink text-sm">
-                      {evt.title}
-                    </h4>
+                    <h4 className="font-bold text-vast-ink text-sm">{evt.title}</h4>
                     <div className="flex items-center gap-3 text-xs font-medium text-fog">
                       <span>Host: <strong className="text-vast-ink">{evt.society?.name}</strong></span>
                       <span className="flex items-center gap-1">
@@ -364,6 +266,11 @@ export const AdminDashboardPage: React.FC = () => {
           )}
         </div>
       </div>
+
+      <MakeAnnouncementDialog
+        isOpen={isAnnouncementDialogOpen}
+        onClose={() => setIsAnnouncementDialogOpen(false)}
+      />
     </div>
   );
 };

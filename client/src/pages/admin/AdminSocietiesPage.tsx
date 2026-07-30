@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   Building2,
   Search,
@@ -20,6 +20,7 @@ import {
   Check,
   Sparkles,
   FilterX,
+  ArrowLeft,
 } from 'lucide-react';
 import {
   adminService,
@@ -35,6 +36,7 @@ import type { AxiosError } from 'axios';
 
 export const AdminSocietiesPage: React.FC = () => {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState<string>('');
   const [categoryFilter, setCategoryFilter] = useState<string>('');
@@ -86,7 +88,7 @@ export const AdminSocietiesPage: React.FC = () => {
 
   // Edit Mutation
   const updateMutation = useMutation({
-    mutationFn: (data: { id: string; payload: { name?: string; categoryId?: string; advisorId?: string } }) =>
+    mutationFn: (data: { id: string; payload: { name?: string; categoryId?: string; advisorId?: string | null } }) =>
       adminService.updateSociety(data.id, data.payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['adminSocietiesList'] });
@@ -142,14 +144,14 @@ export const AdminSocietiesPage: React.FC = () => {
       payload: {
         name: editName.trim() || undefined,
         categoryId: editCategoryId || undefined,
-        advisorId: editAdvisorId || undefined,
+        advisorId: editAdvisorId || null,
       },
     });
   };
 
   const handleCopyResetCredentials = () => {
     if (!resetCredentialsData) return;
-    const textToCopy = `Society: ${resetCredentialsData.societyName}\nPresident Email: ${resetCredentialsData.presidentEmail}\nNew Password: ${resetCredentialsData.temporaryPassword}`;
+    const textToCopy = `Society: ${resetCredentialsData.societyName}\nSociety Email: ${resetCredentialsData.presidentEmail}\nNew Password: ${resetCredentialsData.temporaryPassword}`;
     navigator.clipboard.writeText(textToCopy);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -183,6 +185,17 @@ export const AdminSocietiesPage: React.FC = () => {
 
   return (
     <div className="max-w-6xl mx-auto space-y-6 text-left py-4">
+      {/* Top Back Navigation Link */}
+      <div className="flex items-center justify-between">
+        <button
+          onClick={() => navigate(-1)}
+          className="inline-flex items-center gap-2 px-3.5 py-2 bg-pure-white hover:bg-lumen-stone border-2 border-vast-ink text-vast-ink text-xs font-bold rounded-buttons transition-all cursor-pointer shadow-[2px_2px_0px_0px_#1B1B18]"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          <span>Back</span>
+        </button>
+      </div>
+
       {/* Header Banner */}
       <div className="space-y-1 bg-pure-white p-6 rounded-cards border-2 border-vast-ink flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
@@ -202,7 +215,7 @@ export const AdminSocietiesPage: React.FC = () => {
           <Button
             variant="primary"
             size="md"
-            className="bg-indigo-600 hover:bg-indigo-500 text-white shrink-0"
+            className="shrink-0"
             leftIcon={<Plus className="w-4 h-4" />}
           >
             Onboard New Society
@@ -226,7 +239,7 @@ export const AdminSocietiesPage: React.FC = () => {
               setSearchQuery(e.target.value);
               setPage(1);
             }}
-            className="w-full bg-pure-white text-vast-ink text-sm rounded-inputs border-2 border-vast-ink px-3.5 py-2 pl-10 transition-all outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+            className="w-full bg-pure-white text-vast-ink text-sm rounded-inputs border-2 border-vast-ink px-3.5 py-2 pl-10 transition-all outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
           />
         </div>
 
@@ -341,9 +354,9 @@ export const AdminSocietiesPage: React.FC = () => {
 
                 <div className="space-y-1">
                   <div className="flex flex-wrap items-center gap-2">
-                    <h3 className="font-bold text-vast-ink text-base">
+                    <Link to={`/societies/${society.id}`} className="font-bold text-vast-ink text-base hover:underline hover:text-blue-600 transition-colors">
                       {society.name}
-                    </h3>
+                    </Link>
                     {renderStatusBadge(society.status)}
                     {society.category && (
                       <span className="text-[11px] font-semibold text-vast-ink bg-lavender-whisper border border-vast-ink px-2.5 py-0.5 rounded-inputs border border-indigo-500/20">
@@ -353,7 +366,7 @@ export const AdminSocietiesPage: React.FC = () => {
                   </div>
 
                   <div className="flex flex-wrap items-center gap-4 text-xs text-fog">
-                    <span>President Email: <strong className="text-vast-ink font-medium">{society.presidentEmail}</strong></span>
+                    <span>Society Email: <strong className="text-vast-ink font-medium">{society.presidentEmail}</strong></span>
 
                     {society.advisor && (
                       <div className="flex items-center gap-1">
@@ -459,7 +472,7 @@ export const AdminSocietiesPage: React.FC = () => {
                 <select
                   value={editCategoryId}
                   onChange={(e) => setEditCategoryId(e.target.value)}
-                  className="w-full bg-pure-white text-vast-ink text-sm rounded-inputs border-2 border-vast-ink px-3 py-2 outline-none focus:border-indigo-500"
+                  className="w-full bg-pure-white text-vast-ink text-sm rounded-inputs border-2 border-vast-ink px-3 py-2 outline-none focus:border-amber-500"
                 >
                   <option value="">Select Category...</option>
                   {categories.map((c) => (
@@ -475,9 +488,9 @@ export const AdminSocietiesPage: React.FC = () => {
                 <select
                   value={editAdvisorId}
                   onChange={(e) => setEditAdvisorId(e.target.value)}
-                  className="w-full bg-pure-white text-vast-ink text-sm rounded-inputs border-2 border-vast-ink px-3 py-2 outline-none focus:border-indigo-500"
+                  className="w-full bg-pure-white text-vast-ink text-sm rounded-inputs border-2 border-vast-ink px-3 py-2 outline-none focus:border-amber-500"
                 >
-                  <option value="">Select Advisor...</option>
+                  <option value="">None / Unassign Advisor</option>
                   {advisors.map((a) => (
                     <option key={a.id} value={a.id}>
                       {a.user.fullName} ({a.department})
@@ -498,7 +511,6 @@ export const AdminSocietiesPage: React.FC = () => {
               <Button
                 type="button"
                 variant="primary"
-                className="bg-indigo-600 hover:bg-indigo-500 text-white"
                 isLoading={updateMutation.isPending}
                 onClick={handleSaveEdit}
               >
@@ -527,7 +539,7 @@ export const AdminSocietiesPage: React.FC = () => {
               </div>
 
               <div>
-                <span className="text-fog">President Email:</span>
+                <span className="text-fog">Society Email:</span>
                 <p className="font-bold text-vast-ink font-mono text-sm">{resetCredentialsData.presidentEmail}</p>
               </div>
 

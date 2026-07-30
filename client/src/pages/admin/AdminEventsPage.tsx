@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import {
   Calendar,
   Search,
@@ -15,6 +15,7 @@ import {
   ArrowRight,
   Shield,
   FilterX,
+  ArrowLeft,
 } from 'lucide-react';
 import { adminService } from '@/services/admin.service';
 import { societyService } from '@/services/society.service';
@@ -22,6 +23,7 @@ import { Alert } from '@/components/ui/Alert';
 
 export const AdminEventsPage: React.FC = () => {
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const rawType = searchParams.get('type');
 
   let defaultType: 'all' | 'this_week' | 'this_month' | 'upcoming' | 'past' = 'all';
@@ -49,7 +51,9 @@ export const AdminEventsPage: React.FC = () => {
 
   const [page, setPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [statusFilter, setStatusFilter] = useState<string>(searchParams.get('status') || '');
   const [societyFilter, setSocietyFilter] = useState<string>('');
+  const [categoryFilter, setCategoryFilter] = useState<string>('');
   const [fromDate, setFromDate] = useState<string>(defaultFrom);
   const [toDate, setToDate] = useState<string>(defaultTo);
   const [typeToggle, setTypeToggle] = useState<'all' | 'this_week' | 'this_month' | 'upcoming' | 'past'>(defaultType);
@@ -116,6 +120,7 @@ export const AdminEventsPage: React.FC = () => {
       page,
       searchQuery,
       societyFilter,
+      statusFilter,
       fromDate,
       toDate,
       typeToggle,
@@ -126,6 +131,7 @@ export const AdminEventsPage: React.FC = () => {
         limit: 10,
         search: searchQuery || undefined,
         society: societyFilter || undefined,
+        status: statusFilter || undefined,
         from: fromDate || undefined,
         to: toDate || undefined,
         type: typeToggle === 'upcoming' || typeToggle === 'past' ? typeToggle : undefined,
@@ -138,6 +144,7 @@ export const AdminEventsPage: React.FC = () => {
   const handleClearFilters = () => {
     setSearchQuery('');
     setSocietyFilter('');
+    setStatusFilter('');
     setFromDate('');
     setToDate('');
     setTypeToggle('all');
@@ -146,6 +153,17 @@ export const AdminEventsPage: React.FC = () => {
 
   return (
     <div className="max-w-6xl mx-auto space-y-6 text-left py-4">
+      {/* Top Back Navigation Link */}
+      <div className="flex items-center justify-between">
+        <button
+          onClick={() => navigate(-1)}
+          className="inline-flex items-center gap-2 px-3.5 py-2 bg-pure-white hover:bg-lumen-stone border-2 border-vast-ink text-vast-ink text-xs font-bold rounded-buttons transition-all cursor-pointer shadow-[2px_2px_0px_0px_#1B1B18]"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          <span>Back</span>
+        </button>
+      </div>
+
       {/* Header Banner */}
       <div className="space-y-1 bg-pure-white p-6 rounded-cards border-2 border-vast-ink flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
@@ -243,7 +261,28 @@ export const AdminEventsPage: React.FC = () => {
         </div>
 
         {/* Bottom Row: Society, Date Range Filters */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 pt-2 border-t border-vast-ink">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 pt-2 border-t border-vast-ink">
+          
+          {/* Status Select Dropdown */}
+          <div className="relative flex items-center">
+            <div className="absolute left-3 text-fog pointer-events-none flex items-center justify-center z-10">
+              <Filter className="w-4 h-4" />
+            </div>
+            <select
+              value={statusFilter}
+              onChange={(e) => {
+                setStatusFilter(e.target.value);
+                setPage(1);
+              }}
+              className="w-full bg-pure-white text-vast-ink text-xs rounded-inputs border-2 border-vast-ink px-3 py-2 pl-9 outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 cursor-pointer"
+            >
+              <option value="">All Statuses</option>
+              <option value="PENDING_ADMIN">Pending Review</option>
+              <option value="PUBLISHED">Published / Approved</option>
+              <option value="CHANGES_REQUESTED">Changes Requested</option>
+            </select>
+          </div>
+
           {/* Society Select Dropdown */}
           <div className="relative flex items-center">
             <div className="absolute left-3 text-fog pointer-events-none flex items-center justify-center z-10">
@@ -299,7 +338,7 @@ export const AdminEventsPage: React.FC = () => {
               />
             </div>
 
-            {(searchQuery || societyFilter || categoryFilter || fromDate || toDate || typeToggle !== 'all') && (
+            {(searchQuery || societyFilter || statusFilter || categoryFilter || fromDate || toDate || typeToggle !== 'all') && (
               <button
                 onClick={handleClearFilters}
                 className="p-2 text-fog hover:text-vast-ink bg-lumen-stone rounded-inputs transition-colors shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
