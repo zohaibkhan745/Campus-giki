@@ -35,6 +35,10 @@ export const eventFormSchema = z
       .max(100, 'Venue cannot exceed 100 characters'),
     coverImageUrl: optionalUrl,
     registrationLink: optionalUrl,
+    eventType: z.string().optional(),
+    inChargeName: z.string().optional(),
+    inChargeRegNum: z.string().optional(),
+    inChargeContact: z.string().optional(),
     submitForApproval: z.boolean().optional(),
   })
   .refine(

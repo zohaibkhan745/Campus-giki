@@ -8,8 +8,17 @@ export interface EventItem {
   venue: string;
   coverImageUrl?: string | null;
   registrationLink?: string | null;
+  eventType?: string | null;
+  inChargeName?: string | null;
+  inChargeRegNum?: string | null;
+  inChargeContact?: string | null;
   isPublished: boolean;
-  approvalStatus?: 'PUBLISHED' | 'PENDING_ADVISOR' | 'PENDING_ADMIN' | 'CHANGES_REQUESTED';
+  approvalStatus?: 'DRAFT' | 'PUBLISHED' | 'PENDING_ADVISOR' | 'PENDING_ADMIN' | 'CHANGES_REQUESTED' | 'APPROVED';
+  advisorComments?: string | null;
+  dsaComments?: string | null;
+  advisorApprovedAt?: string | null;
+  dsaApprovedAt?: string | null;
+  lastChangeRequestBy?: string | null;
   societyId: string;
   society?: {
     id: string;
@@ -39,6 +48,10 @@ export interface CreateEventPayload {
   venue: string;
   coverImageUrl?: string | null;
   registrationLink?: string | null;
+  eventType?: string | null;
+  inChargeName?: string | null;
+  inChargeRegNum?: string | null;
+  inChargeContact?: string | null;
   submitForApproval?: boolean;
 }
 

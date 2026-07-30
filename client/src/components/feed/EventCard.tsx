@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar, MapPin, ArrowRight, Building2 } from 'lucide-react';
 import type { EventFeedItem } from '@/types/feed.types';
@@ -8,6 +8,9 @@ interface EventCardProps {
 }
 
 export const EventCard: React.FC<EventCardProps> = ({ item }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const isLongDescription = item.description && item.description.length > 180;
+
   const formattedDate = new Date(item.eventDate).toLocaleDateString('en-US', {
     weekday: 'short',
     month: 'short',
@@ -65,9 +68,22 @@ export const EventCard: React.FC<EventCardProps> = ({ item }) => {
           </div>
         </div>
 
-        <p className="text-vast-ink/80 text-[16px] leading-relaxed line-clamp-3">
-          {item.description}
-        </p>
+        <div className="space-y-1">
+          <p className={`text-vast-ink/80 text-[16px] leading-relaxed whitespace-pre-line ${!isExpanded ? 'line-clamp-3' : ''}`}>
+            {item.description}
+          </p>
+          {isLongDescription && (
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                setIsExpanded(!isExpanded);
+              }}
+              className="text-sm font-semibold text-vast-ink/70 hover:text-vast-ink underline underline-offset-2 focus:outline-none transition-colors mt-1"
+            >
+              {isExpanded ? 'Read less' : 'Read more'}
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Optional Event Image */}
@@ -85,7 +101,7 @@ export const EventCard: React.FC<EventCardProps> = ({ item }) => {
       )}
 
       {/* Card Footer: Action */}
-      <div className="pt-2 flex items-center justify-between border-t-2 border-vast-ink/10">
+      <div className="pt-2 flex items-center justify-between">
         <Link
           to={`/events/${item.id}`}
           className="inline-flex items-center gap-2 font-semibold text-[14px] text-vast-ink hover:text-forest-ink transition-colors group"

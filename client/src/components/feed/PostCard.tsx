@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Building2, Megaphone } from 'lucide-react';
 import type { PostFeedItem } from '@/types/feed.types';
@@ -8,6 +8,9 @@ interface PostCardProps {
 }
 
 export const PostCard: React.FC<PostCardProps> = ({ item }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const isLongContent = item.content && item.content.length > 250;
+
   const formattedTime = new Date(item.createdAt).toLocaleDateString('en-US', {
     month: 'short',
     day: 'numeric',
@@ -46,9 +49,22 @@ export const PostCard: React.FC<PostCardProps> = ({ item }) => {
       </div>
 
       {/* Post Content */}
-      <p className="font-normal text-[16px] md:text-[20px] text-vast-ink leading-relaxed whitespace-pre-line">
-        {item.content}
-      </p>
+      <div className="space-y-1">
+        <p className={`font-normal text-[16px] md:text-[20px] text-vast-ink leading-relaxed whitespace-pre-line ${!isExpanded ? 'line-clamp-3 md:line-clamp-4' : ''}`}>
+          {item.content}
+        </p>
+        {isLongContent && (
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              setIsExpanded(!isExpanded);
+            }}
+            className="text-sm font-semibold text-vast-ink/70 hover:text-vast-ink underline underline-offset-2 focus:outline-none transition-colors mt-1"
+          >
+            {isExpanded ? 'Read less' : 'Read more'}
+          </button>
+        )}
+      </div>
 
       {/* Optional Post Image */}
       {item.imageUrl && (

@@ -84,14 +84,7 @@ export const EventDetailPage: React.FC = () => {
         <div className="space-y-4 border-b-2 border-vast-ink pb-6">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="space-y-1">
-              <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-inputs text-xs font-semibold ${
-                isPast
-                  ? 'bg-lumen-stone text-fog'
-                  : 'bg-pure-white border border-forest-ink border border-emerald-500/20 text-forest-ink'
-              }`}>
-                <CheckCircle className="w-3.5 h-3.5" />
-                {isPast ? 'CONCLUDED CAMPUS EVENT' : 'ACTIVE CAMPUS EVENT'}
-              </span>
+
               <h1 className="text-2xl sm:text-3xl font-extrabold text-vast-ink">
                 {eventItem.title}
               </h1>
@@ -156,9 +149,9 @@ export const EventDetailPage: React.FC = () => {
 
         {/* 5. Event Overview & Information */}
         <div className="space-y-3">
-          <div className="flex items-center gap-2 text-sm font-bold text-vast-ink">
-            <Info className="w-4 h-4 text-vast-ink" />
-            <h3>Event Information & Agenda</h3>
+          <div className="flex items-center gap-2 text-sm font-bold text-vast-ink group cursor-default w-fit">
+            <Info className="w-4 h-4 text-vast-ink group-hover:text-blue-600 group-hover:scale-110 transition-all duration-300 ease-in-out" />
+            <h3>About this Event</h3>
           </div>
           <p className="text-sm text-vast-ink font-medium leading-relaxed whitespace-pre-line bg-lumen-cream/40 p-5 rounded-cards border border-vast-ink">
             {eventItem.description}

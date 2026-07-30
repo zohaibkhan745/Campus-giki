@@ -18,6 +18,7 @@ import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
 import { QueryEventsDto } from './dto/query-events.dto';
 import { EventResponseDto } from './dto/event-response.dto';
+import { ReviewEventDto } from './dto/review-event.dto';
 import { Auth } from '../../core/decorators/auth.decorator';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { UserProfileDto } from '../auth/dto/auth-response.dto';
@@ -104,10 +105,10 @@ export class EventsController {
   }
 
   @Patch(':id')
-  @Auth(Role.SOCIETY)
+  @Auth(Role.SOCIETY, Role.ADVISOR, Role.DSA_ADMIN)
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth('JWT-auth')
-  @ApiOperation({ summary: 'Update an event with ownership validation' })
+  @ApiOperation({ summary: 'Update an event with ownership/role validation' })
   @ApiParam({ name: 'id', description: 'Event UUID' })
   @ApiResponse({
     status: 200,
@@ -127,7 +128,7 @@ export class EventsController {
     @CurrentUser() user: UserProfileDto,
     @Body() dto: UpdateEventDto,
   ): Promise<EventResponseDto> {
-    return this.eventsService.updateEvent(id, user.id, dto);
+    return this.eventsService.updateEvent(id, user.id, dto, user.role);
   }
 
   @Delete(':id')
@@ -153,5 +154,33 @@ export class EventsController {
     @CurrentUser() user: UserProfileDto,
   ): Promise<{ message: string; id: string }> {
     return this.eventsService.deleteEvent(id, user.id);
+  }
+
+  @Patch(':id/advisor-review')
+  @Auth(Role.ADVISOR)
+  @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Advisor reviews a pending event' })
+  @ApiParam({ name: 'id', description: 'Event UUID' })
+  async reviewEventByAdvisor(
+    @Param('id', ParseUUIDPipe) id: string,
+    @CurrentUser() user: UserProfileDto,
+    @Body() dto: ReviewEventDto,
+  ): Promise<EventResponseDto> {
+    return this.eventsService.reviewEventByAdvisor(id, user.id, dto);
+  }
+
+  @Patch(':id/dsa-review')
+  @Auth(Role.DSA_ADMIN)
+  @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'DSA Admin reviews a pending event' })
+  @ApiParam({ name: 'id', description: 'Event UUID' })
+  async reviewEventByDsa(
+    @Param('id', ParseUUIDPipe) id: string,
+    @CurrentUser() user: UserProfileDto,
+    @Body() dto: ReviewEventDto,
+  ): Promise<EventResponseDto> {
+    return this.eventsService.reviewEventByDsa(id, user.id, dto);
   }
 }

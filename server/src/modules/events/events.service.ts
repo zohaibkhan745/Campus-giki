@@ -9,7 +9,8 @@ import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
 import { QueryEventsDto } from './dto/query-events.dto';
 import { EventResponseDto } from './dto/event-response.dto';
-import { Society, Event, Prisma } from '@prisma/client';
+import { ReviewEventDto } from './dto/review-event.dto';
+import { Society, Event, Prisma, EventApprovalStatus } from '@prisma/client';
 
 export interface SocietyEventsGroupDto {
   upcoming: EventResponseDto[];
@@ -133,6 +134,7 @@ export class EventsService {
   public async validateEventOwnership(
     eventId: string,
     userId: string,
+    userRole?: string,
   ): Promise<{ event: Event; society: Society }> {
     const event = await this.prisma.event.findUnique({
       where: { id: eventId },
@@ -143,7 +145,11 @@ export class EventsService {
       throw new NotFoundException(`Event with ID '${eventId}' was not found`);
     }
 
-    if (event.society.userId !== userId) {
+    const isSociety = event.society.userId === userId;
+    const isAdvisor = userRole === 'ADVISOR' && event.society.advisorId === userId;
+    const isDsaAdmin = userRole === 'DSA_ADMIN';
+
+    if (!isSociety && !isAdvisor && !isDsaAdmin) {
       throw new ForbiddenException(
         'Access denied: You do not have ownership rights to modify or delete this event resource',
       );
@@ -227,6 +233,10 @@ export class EventsService {
         venue: dto.venue,
         coverImageUrl,
         registrationLink: dto.registrationLink || null,
+        eventType: dto.eventType || null,
+        inChargeName: dto.inChargeName || null,
+        inChargeRegNum: dto.inChargeRegNum || null,
+        inChargeContact: dto.inChargeContact || null,
         isPublished,
         approvalStatus,
         societyId: society.id,
@@ -321,8 +331,9 @@ export class EventsService {
     eventId: string,
     userId: string,
     dto: UpdateEventDto,
+    userRole?: string,
   ): Promise<EventResponseDto> {
-    const { event } = await this.validateEventOwnership(eventId, userId);
+    const { event } = await this.validateEventOwnership(eventId, userId, userRole);
 
     const targetStartTime = dto.startTime || event.startTime;
     const targetEndTime = dto.endTime || event.endTime;
@@ -347,6 +358,11 @@ export class EventsService {
         ...(dto.registrationLink !== undefined && {
           registrationLink: dto.registrationLink || null,
         }),
+        ...(dto.eventType !== undefined && { eventType: dto.eventType || null }),
+        ...(dto.inChargeName !== undefined && { inChargeName: dto.inChargeName || null }),
+        ...(dto.inChargeRegNum !== undefined && { inChargeRegNum: dto.inChargeRegNum || null }),
+        ...(dto.inChargeContact !== undefined && { inChargeContact: dto.inChargeContact || null }),
+        ...(dto.submitForApproval === true && { approvalStatus: 'PENDING_ADVISOR', isPublished: false, lastChangeRequestBy: null }),
       },
       include: {
         society: {
@@ -376,5 +392,69 @@ export class EventsService {
       message: 'Event deleted successfully',
       id: eventId,
     };
+  }
+
+  /**
+   * Advisor reviews a pending event.
+   */
+  async reviewEventByAdvisor(eventId: string, userId: string, dto: ReviewEventDto): Promise<EventResponseDto> {
+    const event = await this.prisma.event.findUnique({
+      where: { id: eventId },
+      include: { society: true },
+    });
+
+    if (!event) {
+      throw new NotFoundException(`Event not found`);
+    }
+
+    if (event.society.advisorId !== userId) {
+      throw new ForbiddenException('You are not the advisor for this society');
+    }
+
+    const updated = await this.prisma.event.update({
+      where: { id: eventId },
+      data: {
+        approvalStatus: dto.status,
+        advisorComments: dto.comments || null,
+        advisorApprovedAt: dto.status === EventApprovalStatus.PENDING_ADMIN ? new Date() : null,
+      },
+      include: {
+        society: {
+          select: { id: true, name: true, logoUrl: true },
+        },
+      },
+    });
+
+    return updated as any; // Typecasting for brevity here, normally you would map to EventResponseDto precisely
+  }
+
+  /**
+   * DSA Admin reviews a pending event.
+   */
+  async reviewEventByDsa(eventId: string, userId: string, dto: ReviewEventDto): Promise<EventResponseDto> {
+    const event = await this.prisma.event.findUnique({ where: { id: eventId } });
+
+    if (!event) {
+      throw new NotFoundException(`Event not found`);
+    }
+
+    const isApproved = dto.status === EventApprovalStatus.APPROVED;
+
+    const updated = await this.prisma.event.update({
+      where: { id: eventId },
+      data: {
+        approvalStatus: dto.status,
+        dsaComments: dto.comments || null,
+        dsaApprovedAt: isApproved ? new Date() : null,
+        isPublished: isApproved, // Automatically publish if approved
+      },
+      include: {
+        society: {
+          select: { id: true, name: true, logoUrl: true },
+        },
+      },
+    });
+
+    return updated as any;
   }
 }

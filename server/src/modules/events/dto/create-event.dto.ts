@@ -86,4 +86,36 @@ export class CreateEventDto {
   @IsOptional()
   @IsBoolean()
   submitForApproval?: boolean;
+
+  @ApiPropertyOptional({ example: 'Lecture/Seminar' })
+  @IsOptional()
+  @IsString()
+  @Transform(({ value }: { value: unknown }) =>
+    typeof value === 'string' ? value.trim() : (value as string),
+  )
+  eventType?: string;
+
+  @ApiPropertyOptional({ example: 'Jane Doe' })
+  @IsOptional()
+  @IsString()
+  @Transform(({ value }: { value: unknown }) =>
+    typeof value === 'string' ? value.trim() : (value as string),
+  )
+  inChargeName?: string;
+
+  @ApiPropertyOptional({ example: '2022000' })
+  @IsOptional()
+  @IsString()
+  @Transform(({ value }: { value: unknown }) =>
+    typeof value === 'string' ? value.trim() : (value as string),
+  )
+  inChargeRegNum?: string;
+
+  @ApiPropertyOptional({ example: '+923001234567' })
+  @IsOptional()
+  @IsString()
+  @Transform(({ value }: { value: unknown }) =>
+    typeof value === 'string' ? value.trim() : (value as string),
+  )
+  inChargeContact?: string;
 }

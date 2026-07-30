@@ -13,6 +13,7 @@ import {
   ArrowLeft,
   Save,
   Loader2,
+  ShieldCheck,
 } from 'lucide-react';
 import { eventService } from '@/services/event.service';
 import {
@@ -66,6 +67,10 @@ export const EditEventPage: React.FC = () => {
         venue: eventData.venue,
         coverImageUrl: eventData.coverImageUrl || '',
         registrationLink: eventData.registrationLink || '',
+        eventType: eventData.eventType || '',
+        inChargeName: eventData.inChargeName || '',
+        inChargeRegNum: eventData.inChargeRegNum || '',
+        inChargeContact: eventData.inChargeContact || '',
       });
     }
   }, [eventData, reset]);
@@ -100,9 +105,9 @@ export const EditEventPage: React.FC = () => {
     },
   });
 
-  const onSubmit = (data: EventFormData) => {
+  const onSubmit = (data: EventFormData, submitForApproval = false) => {
     setServerError(null);
-    updateMutation.mutate(data);
+    updateMutation.mutate({ ...data, submitForApproval });
   };
 
   if (isLoadingEvent) {
@@ -150,10 +155,26 @@ export const EditEventPage: React.FC = () => {
         </p>
       </div>
 
+      {eventData.approvalStatus === 'CHANGES_REQUESTED' && eventData.advisorComments && (
+        <Alert
+          variant="error"
+          title="Comment by Advisor"
+          message={eventData.advisorComments}
+        />
+      )}
+
+      {eventData.approvalStatus === 'CHANGES_REQUESTED' && eventData.dsaComments && (
+        <Alert
+          variant="error"
+          title="Comment by DSA"
+          message={eventData.dsaComments}
+        />
+      )}
+
       {serverError && <Alert variant="error" message={serverError} />}
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" noValidate>
-        <div className="bg-lumen-cream p-6 rounded-cards border-2 border-vast-ink space-y-4">
+      <form onSubmit={(e) => e.preventDefault()} className="bg-lumen-cream p-6 md:p-8 rounded-cards border-2 border-vast-ink space-y-8" noValidate>
+        <div className="space-y-4">
           <h2 className="text-base font-bold text-vast-ink border-b-2 border-vast-ink pb-2">
             Event Overview
           </h2>
@@ -191,7 +212,62 @@ export const EditEventPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="bg-lumen-cream p-6 rounded-cards border-2 border-vast-ink space-y-4">
+        <div className="space-y-4">
+          <h2 className="text-base font-bold text-vast-ink border-b-2 border-vast-ink pb-2">
+            Event Type & In-Charge Details
+          </h2>
+
+          <div className="space-y-1.5 text-left">
+            <label className="block text-xs font-semibold text-vast-ink font-medium uppercase tracking-wider">
+              Event Type
+            </label>
+            <select
+              disabled={updateMutation.isPending}
+              className="w-full bg-pure-white text-vast-ink text-sm rounded-inputs border-2 border-vast-ink px-3.5 py-2.5 transition-all outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50"
+              {...register('eventType')}
+            >
+              <option value="">-- Select Event Type --</option>
+              <option value="Workshop/Training">Workshop / Training</option>
+              <option value="Hackathon/Competition">Hackathon / Competition</option>
+              <option value="Cultural/Social">Cultural / Social Event</option>
+              <option value="Lecture/Seminar">Lecture / Seminar</option>
+              <option value="Conference/Symposium">Conference / Symposium</option>
+              <option value="Entertainment">Entertainment</option>
+              <option value="Sports/Esports">Sports / E-Sports</option>
+              <option value="Exhibition/Showcase">Exhibition / Showcase</option>
+              <option value="Community Service">Community Service</option>
+              <option value="Literary">Literary</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Input
+              label="In-Charge Name"
+              placeholder="e.g. Zohaib Khan"
+              disabled={updateMutation.isPending}
+              error={errors.inChargeName?.message}
+              {...register('inChargeName')}
+            />
+            <Input
+              label="In-Charge Reg. No"
+              placeholder="e.g. 2023787"
+              disabled={updateMutation.isPending}
+              error={errors.inChargeRegNum?.message}
+              {...register('inChargeRegNum')}
+            />
+          </div>
+
+          <Input
+            label="In-Charge Contact Number"
+            placeholder="e.g. +923001234567"
+            disabled={updateMutation.isPending}
+            error={errors.inChargeContact?.message}
+            {...register('inChargeContact')}
+          />
+        </div>
+
+        <div className="space-y-4">
           <h2 className="text-base font-bold text-vast-ink border-b-2 border-vast-ink pb-2">
             Date, Time & Venue
           </h2>
@@ -234,7 +310,7 @@ export const EditEventPage: React.FC = () => {
           />
         </div>
 
-        <div className="bg-lumen-cream p-6 rounded-cards border-2 border-vast-ink space-y-4">
+        <div className="space-y-4">
           <h2 className="text-base font-bold text-vast-ink border-b-2 border-vast-ink pb-2">
             Media & External Registration (Optional)
           </h2>
@@ -258,16 +334,33 @@ export const EditEventPage: React.FC = () => {
           />
         </div>
 
-        <Button
-          type="submit"
-          variant="primary"
-          size="lg"
-          className="w-full"
-          isLoading={updateMutation.isPending}
-          leftIcon={<Save className="w-5 h-5" />}
-        >
-          Save Changes
-        </Button>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-6 border-t-2 border-vast-ink mt-4">
+          <Button
+            type="button"
+            variant="primary"
+            size="lg"
+            className="w-full"
+            isLoading={updateMutation.isPending}
+            onClick={handleSubmit((data) => onSubmit(data, false))}
+            leftIcon={<Save className="w-5 h-5" />}
+          >
+            Save Changes
+          </Button>
+
+          {eventData.approvalStatus === 'CHANGES_REQUESTED' && (
+            <Button
+              type="button"
+              variant="outline"
+              size="lg"
+              className="w-full bg-pure-white border-2 border-vast-ink hover:bg-lavender-whisper"
+              isLoading={updateMutation.isPending}
+              onClick={handleSubmit((data) => onSubmit(data, true))}
+              leftIcon={<ShieldCheck className="w-5 h-5 text-forest-ink" />}
+            >
+              Resubmit for Advisor Review
+            </Button>
+          )}
+        </div>
       </form>
     </div>
   );

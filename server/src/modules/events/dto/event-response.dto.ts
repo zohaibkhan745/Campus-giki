@@ -49,6 +49,36 @@ export class EventResponseDto {
   @ApiProperty({ example: true })
   isPublished: boolean;
 
+  @ApiPropertyOptional({ example: 'Lecture/Seminar' })
+  eventType?: string | null;
+
+  @ApiPropertyOptional({ example: 'Jane Doe' })
+  inChargeName?: string | null;
+
+  @ApiPropertyOptional({ example: '2022000' })
+  inChargeRegNum?: string | null;
+
+  @ApiPropertyOptional({ example: '+923001234567' })
+  inChargeContact?: string | null;
+
+  @ApiProperty({ example: 'PUBLISHED' })
+  approvalStatus: string;
+
+  @ApiPropertyOptional({ example: 'Approved by Advisor' })
+  advisorComments?: string | null;
+
+  @ApiPropertyOptional({ example: 'Approved by DSA' })
+  dsaComments?: string | null;
+
+  @ApiPropertyOptional({ example: 'ADVISOR' })
+  lastChangeRequestBy?: string | null;
+
+  @ApiPropertyOptional()
+  advisorApprovedAt?: Date | null;
+
+  @ApiPropertyOptional()
+  dsaApprovedAt?: Date | null;
+
   @ApiProperty({ example: 'society-uuid-1234' })
   societyId: string;
 
