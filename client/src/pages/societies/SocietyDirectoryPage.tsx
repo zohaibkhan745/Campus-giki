@@ -36,7 +36,7 @@ export const SocietyDirectoryPage: React.FC = () => {
     queryFn: () =>
       societyService.getPublicSocieties({
         page,
-        limit: 9,
+        limit: 100,
         category: selectedCategory || undefined,
         search: searchQuery || undefined,
       }),
@@ -216,36 +216,7 @@ export const SocietyDirectoryPage: React.FC = () => {
         </div>
       )}
 
-      {/* Pagination Bar */}
-      {meta && meta.totalPages > 1 && (
-        <nav aria-label="Pagination" className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-8 border-t-2 border-vast-ink/20 text-sm font-semibold text-vast-ink">
-          <span>
-            Page {meta.page} of {meta.totalPages} ({meta.total} societies)
-          </span>
-
-          <div className="flex items-center gap-3">
-            <button
-              disabled={!meta.hasPreviousPage}
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-lumen-cream border-2 border-vast-ink rounded-buttons hover:bg-lumen-stone disabled:opacity-40 disabled:hover:bg-lumen-cream transition-colors focus:outline-none"
-              aria-label="Previous page"
-            >
-              <ChevronLeft className="w-4 h-4" />
-              <span>Previous</span>
-            </button>
-
-            <button
-              disabled={!meta.hasNextPage}
-              onClick={() => setPage((p) => p + 1)}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-lumen-cream border-2 border-vast-ink rounded-buttons hover:bg-lumen-stone disabled:opacity-40 disabled:hover:bg-lumen-cream transition-colors focus:outline-none"
-              aria-label="Next page"
-            >
-              <span>Next</span>
-              <ChevronRight className="w-4 h-4" />
-            </button>
-          </div>
-        </nav>
-      )}
+      {/* Pagination removed for all-on-one-page view */}
     </div>
   );
 };

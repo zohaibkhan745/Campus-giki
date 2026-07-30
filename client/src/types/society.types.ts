@@ -46,6 +46,9 @@ export interface Society {
   linkedin?: string | null;
   website?: string | null;
   email?: string | null;
+  presidentName?: string | null;
+  presidentRegNum?: string | null;
+  presidentContact?: string | null;
   isSetupComplete: boolean;
   userId: string;
   advisorId?: string | null;
@@ -95,6 +98,9 @@ export interface SetupSocietyPayload {
   linkedin?: string;
   website?: string;
   email?: string;
+  presidentName?: string;
+  presidentRegNum?: string;
+  presidentContact?: string;
 }
 
 export type UpdateSocietyPayload = Partial<SetupSocietyPayload>;

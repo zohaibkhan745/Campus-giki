@@ -63,6 +63,9 @@ export const SocietySetupPage: React.FC = () => {
       linkedin: '',
       website: '',
       email: '',
+      presidentName: '',
+      presidentRegNum: '',
+      presidentContact: '',
     },
   });
 
@@ -80,6 +83,9 @@ export const SocietySetupPage: React.FC = () => {
         linkedin: mySociety.linkedin || '',
         website: mySociety.website || '',
         email: mySociety.email || '',
+        presidentName: mySociety.presidentName || '',
+        presidentRegNum: mySociety.presidentRegNum || '',
+        presidentContact: mySociety.presidentContact || '',
       });
     }
   }, [mySociety, isEditing, reset]);
@@ -224,6 +230,36 @@ export const SocietySetupPage: React.FC = () => {
               </p>
             )}
           </div>
+        </div>
+
+        {/* President Details Section */}
+        <div className="bg-lumen-cream p-6 rounded-cards border-2 border-vast-ink space-y-4">
+          <h2 className="text-base font-bold text-vast-ink border-b-2 border-vast-ink pb-2">
+            President Details
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Input
+              label="President Name"
+              placeholder="e.g. John Doe"
+              disabled={setupMutation.isPending}
+              error={errors.presidentName?.message}
+              {...register('presidentName')}
+            />
+            <Input
+              label="President Reg. No"
+              placeholder="e.g. 2022000"
+              disabled={setupMutation.isPending}
+              error={errors.presidentRegNum?.message}
+              {...register('presidentRegNum')}
+            />
+          </div>
+          <Input
+            label="President Contact Number"
+            placeholder="e.g. +923001234567"
+            disabled={setupMutation.isPending}
+            error={errors.presidentContact?.message}
+            {...register('presidentContact')}
+          />
         </div>
 
         {/* Media & Social Links Section */}

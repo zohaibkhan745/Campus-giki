@@ -38,6 +38,9 @@ export const societySetupSchema = z.object({
   linkedin: optionalUrl,
   website: optionalUrl,
   email: optionalEmail,
+  presidentName: z.string().optional(),
+  presidentRegNum: z.string().optional(),
+  presidentContact: z.string().optional(),
 });
 
 export type SocietySetupFormData = z.infer<typeof societySetupSchema>;

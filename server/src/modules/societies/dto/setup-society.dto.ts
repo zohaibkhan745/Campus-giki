@@ -102,4 +102,22 @@ export class SetupSocietyDto {
   @IsOptional()
   @IsEmail({}, { message: 'Official society email must be a valid email format' })
   email?: string;
+
+  @ApiPropertyOptional({ example: 'John Doe' })
+  @Transform(({ value }: { value: unknown }) => (value === '' ? undefined : value))
+  @IsOptional()
+  @IsString()
+  presidentName?: string;
+
+  @ApiPropertyOptional({ example: '2023123' })
+  @Transform(({ value }: { value: unknown }) => (value === '' ? undefined : value))
+  @IsOptional()
+  @IsString()
+  presidentRegNum?: string;
+
+  @ApiPropertyOptional({ example: '+923001234567' })
+  @Transform(({ value }: { value: unknown }) => (value === '' ? undefined : value))
+  @IsOptional()
+  @IsString()
+  presidentContact?: string;
 }
