@@ -51,6 +51,7 @@ export class AdminService {
       approvedPlansRaw,
       upcomingEventsRaw,
       pendingEventsRaw,
+      recentlyApprovedEventsRaw,
     ] = await Promise.all([
       this.prisma.society.count(),
       this.prisma.society.count({
@@ -145,6 +146,26 @@ export class AdminService {
           },
         },
       }),
+
+      this.prisma.event.findMany({
+        where: { approvalStatus: 'PUBLISHED' },
+        take: 5,
+        orderBy: { dsaApprovedAt: 'desc' },
+        include: {
+          society: {
+            select: {
+              id: true,
+              name: true,
+              logoUrl: true,
+              category: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          },
+        },
+      }),
     ]);
 
     const approvedPlansPreview = approvedPlansRaw.map((plan) => ({
@@ -177,6 +198,17 @@ export class AdminService {
       society: evt.society,
     }));
 
+    const recentlyApprovedEventsPreview = recentlyApprovedEventsRaw.map((evt) => ({
+      id: evt.id,
+      title: evt.title,
+      eventDate: evt.eventDate,
+      startTime: evt.startTime,
+      endTime: evt.endTime,
+      venue: evt.venue,
+      society: evt.society,
+      dsaApprovedAt: evt.dsaApprovedAt,
+    }));
+
     return {
       statistics: {
         totalSocieties,
@@ -192,6 +224,7 @@ export class AdminService {
       approvedPlansPreview,
       pendingEventsPreview,
       upcomingEventsPreview,
+      recentlyApprovedEventsPreview,
     };
   }
 
@@ -296,6 +329,12 @@ export class AdminService {
         { description: { contains: term, mode: 'insensitive' } },
         { venue: { contains: term, mode: 'insensitive' } },
       ];
+    }
+
+    if (query.status) {
+      whereClause.approvalStatus = query.status;
+    } else {
+      whereClause.approvalStatus = { notIn: ['DRAFT', 'PENDING_ADVISOR'] };
     }
 
     const sortOrder: Prisma.SortOrder = query.type === EventTimeType.PAST ? 'desc' : 'asc';
@@ -512,7 +551,7 @@ export class AdminService {
       data: {
         ...(dto.name && { name: dto.name }),
         ...(dto.categoryId && { categoryId: dto.categoryId }),
-        ...(dto.advisorId && { advisorId: dto.advisorId }),
+        ...(dto.advisorId !== undefined && { advisorId: dto.advisorId }),
       },
       include: {
         category: true,

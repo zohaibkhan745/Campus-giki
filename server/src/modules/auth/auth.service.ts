@@ -1,4 +1,4 @@
-import { Injectable, ConflictException, UnauthorizedException } from '@nestjs/common';
+import { Injectable, ConflictException, UnauthorizedException, BadRequestException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Role, User } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
@@ -7,6 +7,7 @@ import { RegisterStudentDto } from './dto/register-student.dto';
 import { LoginDto } from './dto/login.dto';
 import { AuthResponseDto, UserProfileDto } from './dto/auth-response.dto';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 
 @Injectable()
 export class AuthService {
@@ -43,6 +44,9 @@ export class AuthService {
         fullName: dto.fullName.trim(),
         role: Role.STUDENT,
       },
+      include: {
+        advisor: true,
+      }
     });
 
     // Generate JWT access token
@@ -62,6 +66,9 @@ export class AuthService {
 
     const user = await this.prisma.user.findUnique({
       where: { email: normalizedEmail },
+      include: {
+        advisor: true,
+      }
     });
 
     if (!user || !user.isActive) {
@@ -84,6 +91,63 @@ export class AuthService {
   }
 
   /**
+   * Updates a user's profile settings.
+   */
+  async updateProfile(userId: string, dto: UpdateProfileDto): Promise<UserProfileDto> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      include: { advisor: true },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+
+    const updateData: any = {};
+
+    if (dto.fullName) {
+      updateData.fullName = dto.fullName.trim();
+    }
+
+    if (dto.avatarUrl !== undefined) {
+      updateData.avatarUrl = dto.avatarUrl;
+    }
+
+    // Handle password change
+    if (dto.newPassword) {
+      if (!dto.currentPassword) {
+        throw new BadRequestException('Current password is required to set a new password');
+      }
+
+      const isPasswordValid = await bcrypt.compare(dto.currentPassword, user.password);
+      if (!isPasswordValid) {
+        throw new BadRequestException('Incorrect current password');
+      }
+
+      updateData.password = await bcrypt.hash(dto.newPassword, this.SALT_ROUNDS);
+    }
+
+    // If user is an advisor, handle advisor profile updates
+    if (user.role === Role.ADVISOR && user.advisor && (dto.department || dto.designation)) {
+      await this.prisma.advisor.update({
+        where: { id: user.advisor.id },
+        data: {
+          department: dto.department || user.advisor.department,
+          designation: dto.designation || user.advisor.designation,
+        },
+      });
+    }
+
+    const updatedUser = await this.prisma.user.update({
+      where: { id: userId },
+      data: updateData,
+      include: { advisor: true },
+    });
+
+    return this.sanitizeUser(updatedUser);
+  }
+
+  /**
    * Signs JWT payload.
    */
   private generateJwtToken(user: User): string {
@@ -99,9 +163,9 @@ export class AuthService {
   /**
    * Strips password hash before returning user object.
    */
-  private sanitizeUser(user: User): UserProfileDto {
+  private sanitizeUser(user: any): UserProfileDto {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...safeUser } = user;
-    return safeUser;
+    return safeUser as UserProfileDto;
   }
 }

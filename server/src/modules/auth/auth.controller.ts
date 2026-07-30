@@ -1,10 +1,11 @@
-import { Controller, Post, Get, Body, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Post, Get, Patch, Body, HttpCode, HttpStatus } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Role } from '@prisma/client';
 import { AuthService } from './auth.service';
 import { RegisterStudentDto } from './dto/register-student.dto';
 import { LoginDto } from './dto/login.dto';
 import { AuthResponseDto, UserProfileDto } from './dto/auth-response.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 import { CurrentUser } from './decorators/current-user.decorator';
 import { Auth } from '../../core/decorators/auth.decorator';
 
@@ -64,6 +65,26 @@ export class AuthController {
   })
   getProfile(@CurrentUser() user: UserProfileDto): UserProfileDto {
     return user;
+  }
+
+  @Patch('profile')
+  @Auth()
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Update authenticated user profile' })
+  @ApiResponse({
+    status: 200,
+    description: 'Profile updated successfully',
+    type: UserProfileDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Validation failed or incorrect current password',
+  })
+  async updateProfile(
+    @CurrentUser() user: UserProfileDto,
+    @Body() dto: UpdateProfileDto,
+  ): Promise<UserProfileDto> {
+    return this.authService.updateProfile(user.id, dto);
   }
 
   @Get('dsa-dashboard')

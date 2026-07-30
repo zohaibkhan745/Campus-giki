@@ -48,12 +48,14 @@ model User {
   fullName  String
   role      Role     @default(STUDENT)
   isActive  Boolean  @default(true)
+  avatarUrl String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   // 1-to-1 optional profile relations
   society Society?
   advisor Advisor?
+  posts   Post[]
 
   @@index([role])
 }
@@ -110,7 +112,6 @@ model Society {
   user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   advisor     Advisor?     @relation(fields: [advisorId], references: [id], onDelete: SetNull)
   events      Event[]
-  posts       Post[]
   yearlyPlans YearlyPlan[]
 
   @@index([advisorId])
@@ -194,17 +195,18 @@ model PlannedEvent {
 }
 
 model Post {
-  id        String   @id @default(uuid())
-  content   String   @db.Text
-  imageUrl  String?
-  societyId String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          String   @id @default(uuid())
+  content     String   @db.Text
+  imageUrl    String?
+  authorId    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   // Relationships
-  society Society @relation(fields: [societyId], references: [id], onDelete: Cascade)
+  author  User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
 
-  @@index([societyId])
+  @@index([authorId])
   @@index([createdAt])
 }
+
 

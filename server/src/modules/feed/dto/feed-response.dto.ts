@@ -69,6 +69,9 @@ export class FeedItemDto {
 
   @ApiPropertyOptional()
   imageUrl?: string | null;
+
+  @ApiPropertyOptional()
+  isAdminPost?: boolean;
 }
 
 export class FeedMetaDto {

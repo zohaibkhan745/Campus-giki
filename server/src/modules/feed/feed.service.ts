@@ -35,16 +35,21 @@ export class FeedService {
       }),
       this.prisma.post.findMany({
         include: {
-          society: {
+          author: {
             select: {
-              id: true,
-              name: true,
-              logoUrl: true,
-              category: {
+              role: true,
+              society: {
                 select: {
                   id: true,
                   name: true,
-                  slug: true,
+                  logoUrl: true,
+                  category: {
+                    select: {
+                      id: true,
+                      name: true,
+                      slug: true,
+                    },
+                  },
                 },
               },
             },
@@ -70,14 +75,28 @@ export class FeedService {
       registrationLink: event.registrationLink,
     }));
 
-    const postItems: FeedItemDto[] = posts.map((post) => ({
-      type: 'post',
-      id: post.id,
-      createdAt: post.createdAt,
-      society: post.society,
-      content: post.content,
-      imageUrl: post.imageUrl,
-    }));
+    const postItems: FeedItemDto[] = posts.map((post) => {
+      const isAdminPost = post.author.role === 'DSA_ADMIN';
+      
+      const societyInfo = isAdminPost
+        ? {
+            id: 'giki-admin',
+            name: 'GIKI',
+            logoUrl: null,
+            category: { id: 'admin', name: 'Administration', slug: 'administration' },
+          }
+        : post.author.society!;
+
+      return {
+        type: 'post',
+        id: post.id,
+        createdAt: post.createdAt,
+        society: societyInfo,
+        content: post.content,
+        imageUrl: post.imageUrl,
+        isAdminPost,
+      } as FeedItemDto;
+    });
 
     // Merge and sort chronologically (most recent createdAt first)
     const combined = [...eventItems, ...postItems].sort(

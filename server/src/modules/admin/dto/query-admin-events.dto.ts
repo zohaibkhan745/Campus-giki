@@ -1,6 +1,7 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsEnum, IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
+import { EventApprovalStatus } from '@prisma/client';
 
 export enum EventTimeType {
   UPCOMING = 'upcoming',
@@ -52,4 +53,9 @@ export class QueryAdminEventsDto {
   @IsOptional()
   @IsString()
   search?: string;
+
+  @ApiPropertyOptional({ enum: EventApprovalStatus, example: EventApprovalStatus.PUBLISHED })
+  @IsOptional()
+  @IsEnum(EventApprovalStatus, { message: 'Status must be a valid EventApprovalStatus' })
+  status?: EventApprovalStatus;
 }

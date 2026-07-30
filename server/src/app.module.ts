@@ -10,6 +10,7 @@ import { YearlyPlansModule } from './modules/yearly-plans/yearly-plans.module';
 import { AdvisorsModule } from './modules/advisors/advisors.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { FeedModule } from './modules/feed/feed.module';
+import { PostsModule } from './modules/posts/posts.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { FeedModule } from './modules/feed/feed.module';
     AdvisorsModule,
     AdminModule,
     FeedModule,
+    PostsModule,
   ],
 })
 export class AppModule {}

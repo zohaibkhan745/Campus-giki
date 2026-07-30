@@ -41,4 +41,7 @@ export class AdminDashboardResponseDto {
 
   @ApiProperty()
   upcomingEventsPreview: any[];
+
+  @ApiProperty()
+  recentlyApprovedEventsPreview: any[];
 }

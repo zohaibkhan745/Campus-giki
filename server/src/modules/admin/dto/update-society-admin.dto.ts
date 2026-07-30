@@ -17,5 +17,5 @@ export class UpdateSocietyAdminDto {
   @ApiPropertyOptional({ example: 'b2c3d4e5-f6a7-8901-bcde-f12345678901' })
   @IsOptional()
   @IsUUID('4', { message: 'Advisor ID must be a valid UUID' })
-  advisorId?: string;
+  advisorId?: string | null;
 }

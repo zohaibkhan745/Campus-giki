@@ -877,7 +877,7 @@ export async function seedSocietiesAndFeed(
     // Seed Posts for this society
     for (const p of sData.posts) {
       const existingPost = await prisma.post.findFirst({
-        where: { societyId: society.id, content: p.content },
+        where: { authorId: society.userId, content: p.content },
       });
 
       if (!existingPost) {
@@ -885,7 +885,7 @@ export async function seedSocietiesAndFeed(
           data: {
             content: p.content,
             imageUrl: p.imageUrl,
-            societyId: society.id,
+            authorId: society.userId,
             createdAt: p.createdAt,
           },
         });
