@@ -3,6 +3,10 @@ import type { PaginatedAdvisorPlansResponse, PaginatedAdvisorEventsResponse } fr
 import type { PlanStatus } from '@/types/yearly-plan.types';
 
 export const advisorService = {
+  async getMe(): Promise<{ societies: Array<{ id: string; name: string; logoUrl: string | null }> }> {
+    return api.get('/advisors/me');
+  },
+
   async getMySocietyYearlyPlans(params?: {
     page?: number;
     limit?: number;

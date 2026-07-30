@@ -26,9 +26,16 @@ export const AdvisorQueuePage: React.FC = () => {
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState<string>('');
-  const [activeTab, setActiveTab] = useState<'plans' | 'events'>('plans');
+  const [activeTab, setActiveTab] = useState<'plans' | 'events'>('events');
   const [rejectingEventId, setRejectingEventId] = useState<string | null>(null);
   const [rejectComment, setRejectComment] = useState<string>('');
+
+  const { data: profileData } = useQuery({
+    queryKey: ['advisorProfile'],
+    queryFn: advisorService.getMe,
+  });
+
+  const assignedSocietyName = profileData?.societies?.[0]?.name || 'Assigned Society';
 
   const {
     data: queueData,
@@ -124,10 +131,10 @@ export const AdvisorQueuePage: React.FC = () => {
         <div>
           <div className="flex items-center gap-2 text-ember-glow text-xs font-semibold uppercase tracking-wider mb-1">
             <FileText className="w-4 h-4" />
-            <span>Faculty Advisor Portal</span>
+            <span>Faculty Advisor Portal • {assignedSocietyName}</span>
           </div>
           <h1 className="text-2xl font-extrabold text-vast-ink">
-            {activeTab === 'plans' ? 'Yearly Calendar Review Queue' : 'Individual Events Review Queue'}
+            {activeTab === 'plans' ? 'Yearly Calendar Review Queue' : 'Events Review Queue'}
           </h1>
           <p className="text-sm text-fog">
             Review, evaluate, and provide official feedback on society submissions.
@@ -164,16 +171,16 @@ export const AdvisorQueuePage: React.FC = () => {
 
       <div className="flex border-b-2 border-vast-ink mt-4">
         <button
+          onClick={() => { setActiveTab('events'); setPage(1); setStatusFilter(''); }}
+          className={`px-4 py-2 font-bold text-sm transition-colors ${activeTab === 'events' ? 'border-b-4 border-ember-glow text-vast-ink' : 'text-fog hover:text-vast-ink'}`}
+        >
+          Events
+        </button>
+        <button
           onClick={() => { setActiveTab('plans'); setPage(1); setStatusFilter(''); }}
           className={`px-4 py-2 font-bold text-sm transition-colors ${activeTab === 'plans' ? 'border-b-4 border-ember-glow text-vast-ink' : 'text-fog hover:text-vast-ink'}`}
         >
           Annual Plans
-        </button>
-        <button
-          onClick={() => { setActiveTab('events'); setPage(1); setStatusFilter(''); }}
-          className={`px-4 py-2 font-bold text-sm transition-colors ${activeTab === 'events' ? 'border-b-4 border-ember-glow text-vast-ink' : 'text-fog hover:text-vast-ink'}`}
-        >
-          Individual Events
         </button>
       </div>
 
@@ -286,9 +293,10 @@ export const AdvisorQueuePage: React.FC = () => {
             ))
           ) : (
             events.map((event: any) => (
-              <div
+              <Link
                 key={event.id}
-                className="bg-pure-white p-5 rounded-cards border-2 border-vast-ink flex flex-col md:flex-row items-start md:items-center justify-between gap-4"
+                to={`/advisor/events/${event.id}`}
+                className="bg-pure-white p-5 rounded-cards border-2 border-vast-ink hover:border-2 border-vast-ink transition-all flex flex-col md:flex-row items-start md:items-center justify-between gap-4 group cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
               >
                 <div className="flex items-center gap-4">
                   {event.society?.logoUrl ? (
@@ -305,7 +313,7 @@ export const AdvisorQueuePage: React.FC = () => {
 
                   <div className="space-y-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <h3 className="font-bold text-vast-ink text-base">
+                      <h3 className="font-bold text-vast-ink text-base group-hover:text-ember-glow transition-colors">
                         {event.title}
                       </h3>
                     </div>
@@ -329,63 +337,17 @@ export const AdvisorQueuePage: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="flex flex-col w-full md:w-auto gap-3 pt-3 md:pt-0">
-                  <div className="flex flex-col md:flex-row items-end md:items-center justify-end gap-3 w-full">
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-lumen-stone text-vast-ink font-medium rounded-inputs text-xs font-semibold">
-                      {event.approvalStatus}
-                    </span>
-                    
-                    {event.approvalStatus === 'PENDING_ADVISOR' && rejectingEventId !== event.id && (
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => updateEventStatusMutation.mutate({ eventId: event.id, status: 'PENDING_ADMIN' })}
-                          disabled={updateEventStatusMutation.isPending}
-                          className="px-3 py-1.5 bg-emerald-500 text-pure-white hover:bg-emerald-600 rounded-inputs text-xs font-bold transition-colors disabled:opacity-50"
-                        >
-                          Approve (Send to DSA)
-                        </button>
-                        <button
-                          onClick={() => { setRejectingEventId(event.id); setRejectComment(''); }}
-                          disabled={updateEventStatusMutation.isPending}
-                          className="px-3 py-1.5 bg-pure-white border-2 border-vast-ink hover:bg-red-500/10 text-red-500 rounded-inputs text-xs font-bold transition-colors disabled:opacity-50"
-                        >
-                          Request Changes
-                        </button>
-                      </div>
-                    )}
-                  </div>
+                <div className="flex items-center justify-between md:justify-end w-full md:w-auto gap-4 pt-3 md:pt-0 border-t md:border-t-0 border-vast-ink">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-lumen-stone text-vast-ink font-medium rounded-inputs text-xs font-semibold">
+                    {event.approvalStatus}
+                  </span>
 
-                  {rejectingEventId === event.id && (
-                    <div className="w-full space-y-3 mt-2 bg-lumen-stone p-4 rounded-cards border-2 border-vast-ink animate-in slide-in-from-top-2">
-                      <label className="block text-sm font-bold text-vast-ink">
-                        Reason for requesting changes
-                      </label>
-                      <textarea
-                        value={rejectComment}
-                        onChange={(e) => setRejectComment(e.target.value)}
-                        placeholder="Please provide details so the society can update their event..."
-                        className="w-full p-3 rounded-inputs border-2 border-vast-ink bg-pure-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 min-h-[80px]"
-                      />
-                      <div className="flex items-center gap-2 justify-end">
-                        <button
-                          onClick={() => setRejectingEventId(null)}
-                          className="px-3 py-1.5 text-xs font-bold text-fog hover:text-vast-ink transition-colors"
-                        >
-                          Cancel
-                        </button>
-                        <button
-                          onClick={() => updateEventStatusMutation.mutate({ eventId: event.id, status: 'CHANGES_REQUESTED', comments: rejectComment })}
-                          disabled={updateEventStatusMutation.isPending || !rejectComment.trim()}
-                          className="px-4 py-1.5 bg-red-500 text-pure-white hover:bg-red-600 rounded-inputs text-xs font-bold transition-colors disabled:opacity-50 flex items-center gap-1.5"
-                        >
-                          {updateEventStatusMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-                          Submit Feedback
-                        </button>
-                      </div>
-                    </div>
-                  )}
+                  <span className="inline-flex items-center gap-1 text-xs font-semibold text-ember-glow group-hover:translate-x-1 transition-transform">
+                    <span>Review Event</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </span>
                 </div>
-              </div>
+              </Link>
             ))
           )}
         </div>

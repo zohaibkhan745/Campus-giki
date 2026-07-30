@@ -15,6 +15,18 @@ import { UserProfileDto } from '../auth/dto/auth-response.dto';
 export class AdvisorsController {
   constructor(private readonly advisorsService: AdvisorsService) {}
 
+  @Get('me')
+  @Auth(Role.ADVISOR)
+  @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Get current advisor profile and assigned societies' })
+  async getMyProfile(@CurrentUser() user: UserProfileDto) {
+    const societies = await this.advisorsService.getAdvisorAssignedSocieties(user.id);
+    return {
+      societies: societies.map(s => ({ id: s.id, name: s.name, logoUrl: s.logoUrl }))
+    };
+  }
+
   @Get('me/yearly-plans')
   @Auth(Role.ADVISOR)
   @HttpCode(HttpStatus.OK)

@@ -171,6 +171,7 @@ export class AdvisorsService {
         approvalStatus: dto.status,
         isPublished,
         advisorComments: dto.comments || null,
+        lastChangeRequestBy: dto.status === 'CHANGES_REQUESTED' ? 'ADVISOR' : null,
       },
       include: {
         society: {
