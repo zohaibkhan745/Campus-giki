@@ -180,8 +180,6 @@ model PlannedEvent {
   endDate                DateTime
   description            String     @db.Text
   venue                  String
-  hasOutsideParticipants Boolean    @default(false)
-  hasOutsideSpeaker      Boolean    @default(false)
   rules                  String?    @db.Text
   societyRules           String?    @db.Text
   yearlyPlanId           String

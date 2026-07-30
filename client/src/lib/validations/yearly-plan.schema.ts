@@ -5,9 +5,7 @@ export const plannedEventSchema = z.object({
     startDate: z.string().min(1, 'Start date is required'),
     endDate: z.string().min(1, 'End date is required'),
     description: z.string().min(10, 'Description must be at least 10 characters'),
-    venue: z.string().min(2, 'Venue is required'),
-    hasOutsideParticipants: z.boolean(),
-    hasOutsideSpeaker: z.boolean(),
+    venue: z.string().min(2, "Venue is required").max(150, "Venue too long"),
     rules: z.string().optional(),
     societyRules: z.string().optional(),
   });
@@ -27,8 +25,6 @@ export interface YearlyPlanFormData {
     endDate: string;
     description: string;
     venue: string;
-    hasOutsideParticipants: boolean;
-    hasOutsideSpeaker: boolean;
     rules?: string;
     societyRules?: string;
   }[];

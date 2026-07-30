@@ -20,12 +20,6 @@ export class PlannedEventResponseDto {
   @ApiProperty()
   venue: string;
 
-  @ApiProperty()
-  hasOutsideParticipants: boolean;
-
-  @ApiProperty()
-  hasOutsideSpeaker: boolean;
-
   @ApiProperty({ required: false })
   rules?: string | null;
 

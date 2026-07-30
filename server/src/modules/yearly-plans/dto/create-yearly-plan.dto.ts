@@ -51,15 +51,9 @@ export class PlannedEventItemDto {
   @IsNotEmpty()
   venue: string;
 
-  @ApiProperty({ example: true, description: 'Will there be outside participants?' })
-  @IsBoolean()
-  hasOutsideParticipants: boolean;
-
-  @ApiProperty({ example: false, description: 'Will there be an outside speaker?' })
-  @IsBoolean()
-  hasOutsideSpeaker: boolean;
-
-  @ApiProperty({ example: 'No smoking allowed.', description: 'Official DSA rules for the event', required: false })
+  @ApiProperty({
+    description: 'DSA rules/directives for the event',
+    required: false, })
   @IsString()
   @IsOptional()
   rules?: string;

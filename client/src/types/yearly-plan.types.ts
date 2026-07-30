@@ -6,8 +6,6 @@ export interface PlannedEventPayload {
   endDate: string;
   description: string;
   venue: string;
-  hasOutsideParticipants: boolean;
-  hasOutsideSpeaker: boolean;
   rules?: string;
   societyRules?: string;
 }
@@ -19,8 +17,6 @@ export interface PlannedEventItem {
   endDate: string;
   description: string;
   venue: string;
-  hasOutsideParticipants: boolean;
-  hasOutsideSpeaker: boolean;
   rules?: string | null;
   societyRules?: string | null;
 }
