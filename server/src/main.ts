@@ -31,7 +31,7 @@ async function bootstrap() {
       callback(null, true);
     },
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'X-Requested-With'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'X-Requested-With', 'ngrok-skip-browser-warning'],
     credentials: true,
   });
 

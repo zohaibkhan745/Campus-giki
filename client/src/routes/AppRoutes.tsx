@@ -33,11 +33,13 @@ const EventDetailPage = React.lazy(() => import('@/pages/events/EventDetailPage'
 const YearlyCalendarPage = React.lazy(() => import('@/pages/calendar/YearlyCalendarPage').then(m => ({ default: m.YearlyCalendarPage })));
 const AdvisorQueuePage = React.lazy(() => import('@/pages/advisor/AdvisorQueuePage').then(m => ({ default: m.AdvisorQueuePage })));
 const AdvisorPlanReviewPage = React.lazy(() => import('@/pages/advisor/AdvisorPlanReviewPage').then(m => ({ default: m.AdvisorPlanReviewPage })));
+const AdvisorEventReviewPage = React.lazy(() => import('@/pages/advisor/AdvisorEventReviewPage').then(m => ({ default: m.AdvisorEventReviewPage })));
 const AdminYearlyPlansPage = React.lazy(() => import('@/pages/admin/AdminYearlyPlansPage').then(m => ({ default: m.AdminYearlyPlansPage })));
 const AdminYearlyPlanDetailPage = React.lazy(() => import('@/pages/admin/AdminYearlyPlanDetailPage').then(m => ({ default: m.AdminYearlyPlanDetailPage })));
 const AdminSocietiesPage = React.lazy(() => import('@/pages/admin/AdminSocietiesPage').then(m => ({ default: m.AdminSocietiesPage })));
 const CreateSocietyPage = React.lazy(() => import('@/pages/admin/CreateSocietyPage').then(m => ({ default: m.CreateSocietyPage })));
 const AdminEventsPage = React.lazy(() => import('@/pages/admin/AdminEventsPage').then(m => ({ default: m.AdminEventsPage })));
+const AdminEventReviewPage = React.lazy(() => import('@/pages/admin/AdminEventReviewPage').then(m => ({ default: m.AdminEventReviewPage })));
 const NotFoundPage = React.lazy(() => import('@/pages/NotFoundPage').then(m => ({ default: m.NotFoundPage })));
 
 export const AppRoutes: React.FC = () => {
@@ -89,6 +91,7 @@ export const AppRoutes: React.FC = () => {
         >
           <Route path="/advisor/yearly-plans" element={<AdvisorQueuePage />} />
           <Route path="/advisor/yearly-plans/:id" element={<AdvisorPlanReviewPage />} />
+          <Route path="/advisor/events/:id" element={<AdvisorEventReviewPage />} />
         </Route>
 
         {/* DSA Admin Role Specific Routes */}
@@ -104,6 +107,7 @@ export const AppRoutes: React.FC = () => {
           <Route path="/admin/yearly-plans" element={<AdminYearlyPlansPage />} />
           <Route path="/admin/yearly-plans/:id" element={<AdminYearlyPlanDetailPage />} />
           <Route path="/admin/events" element={<AdminEventsPage />} />
+          <Route path="/admin/events/:id/review" element={<AdminEventReviewPage />} />
         </Route>
 
         {/* General Authenticated Protected Routes */}

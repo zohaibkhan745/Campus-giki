@@ -29,6 +29,7 @@ import {
   Mail,
   Zap,
   LogOut,
+  AlertCircle,
 } from 'lucide-react';
 
 export const DashboardPage: React.FC = () => {
@@ -76,36 +77,39 @@ export const DashboardPage: React.FC = () => {
   const renderEventCard = (event: EventItem, isPast = false) => (
     <div
       key={event.id}
-      className={`bg-pure-white rounded-cards border p-4 transition-all flex flex-col justify-between ${
+      className={`bg-pure-white rounded-cards border transition-all flex flex-col justify-between ${
         isPast ? 'border-vast-ink opacity-80' : 'border-2 border-vast-ink hover:border-2 border-vast-ink'
       }`}
     >
-      <div className="space-y-3">
+      <Link
+        to={`/events/${event.id}/edit`}
+        className="p-4 block space-y-3 cursor-pointer group focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded-t-cards"
+      >
         {event.coverImageUrl && (
           <div className="w-full h-32 rounded-inputs overflow-hidden bg-lumen-stone">
             <img
               src={event.coverImageUrl}
               alt={event.title}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=1200&auto=format&fit=crop&q=80';
+              }}
             />
           </div>
         )}
 
         <div className="flex items-start justify-between gap-2">
-          <h4 className="font-bold text-sm text-vast-ink leading-snug line-clamp-1">
-            {event.title}
-          </h4>
-          {event.registrationLink && (
-            <a
-              href={event.registrationLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="p-1 bg-pure-white border border-vast-ink text-vast-ink hover:bg-blue-500/20 rounded-md transition-colors shrink-0"
-              title="Open External Registration"
-            >
-              <ExternalLink className="w-3.5 h-3.5" />
-            </a>
-          )}
+          <div className="space-y-1">
+            <h4 className="font-bold text-sm text-vast-ink leading-snug line-clamp-1 group-hover:text-ember-glow transition-colors">
+              {event.title}
+            </h4>
+            {event.approvalStatus === 'CHANGES_REQUESTED' && (
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-red-100 text-red-600 rounded border border-red-200 text-[10px] font-bold uppercase tracking-wider">
+                <AlertCircle className="w-3 h-3" />
+                {event.lastChangeRequestBy === 'DSA_ADMIN' ? 'Comment by DSA' : 'Comment by Advisor'}
+              </span>
+            )}
+          </div>
         </div>
 
         <p className="text-xs text-fog line-clamp-2">{event.description}</p>
@@ -126,9 +130,21 @@ export const DashboardPage: React.FC = () => {
             <span className="truncate">{event.venue}</span>
           </div>
         </div>
-      </div>
+      </Link>
 
-      <div className="flex items-center justify-end gap-2 pt-3 border-t border-vast-ink mt-3">
+      <div className="flex flex-wrap items-center justify-end gap-2 px-4 pb-4 pt-3 border-t border-vast-ink mt-auto">
+        {event.registrationLink && (
+          <a
+            href={event.registrationLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 px-2.5 py-1 bg-pure-white border border-vast-ink text-vast-ink hover:bg-blue-500/20 rounded-inputs text-xs font-semibold transition-colors mr-auto"
+            title="Open External Registration"
+          >
+            <ExternalLink className="w-3 h-3" />
+            <span>Form</span>
+          </a>
+        )}
         <Link
           to={`/events/${event.id}/edit`}
           className="inline-flex items-center gap-1 px-2.5 py-1 bg-lumen-stone hover:bg-lavender-whisper text-vast-ink text-xs font-semibold rounded-inputs transition-colors"
@@ -207,30 +223,33 @@ export const DashboardPage: React.FC = () => {
                 )}
               </div>
 
-              <div className="flex flex-wrap items-center gap-4 text-xs text-fog pt-2 border-t border-vast-ink">
+              <div className="flex flex-col gap-2 pt-2 border-t border-vast-ink text-xs text-fog">
                 {profile.advisor && profile.advisor.user && (
                   <div className="flex items-center gap-1.5 text-vast-ink font-medium">
                     <UserCheck className="w-3.5 h-3.5 text-vast-ink" />
                     <span>Advisor: {profile.advisor.user.fullName} ({profile.advisor.designation})</span>
                   </div>
                 )}
-                {profile.email && (
-                  <div className="flex items-center gap-1.5 text-vast-ink font-medium">
-                    <Mail className="w-3.5 h-3.5 text-vast-ink" />
-                    <span>{profile.email}</span>
-                  </div>
-                )}
-                {profile.website && (
-                  <a
-                    href={profile.website}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-1.5 text-vast-ink hover:underline"
-                  >
-                    <Globe className="w-3.5 h-3.5" />
-                    <span>{profile.website}</span>
-                  </a>
-                )}
+                
+                <div className="flex flex-wrap items-center gap-4">
+                  {profile.email && (
+                    <div className="flex items-center gap-1.5 text-vast-ink font-medium">
+                      <Mail className="w-3.5 h-3.5 text-vast-ink" />
+                      <span>Society Email: {profile.email}</span>
+                    </div>
+                  )}
+                  {profile.website && (
+                    <a
+                      href={profile.website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1.5 text-vast-ink hover:underline"
+                    >
+                      <Globe className="w-3.5 h-3.5" />
+                      <span>{profile.website}</span>
+                    </a>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -382,9 +401,6 @@ export const DashboardPage: React.FC = () => {
                   <CalendarIcon className="w-4 h-4 text-vast-ink" />
                   <h3>Upcoming Events ({upcomingEvents.length})</h3>
                 </div>
-                <Link to="/events/create" className="text-xs text-vast-ink hover:underline">
-                  + Add Event
-                </Link>
               </div>
 
               {upcomingEvents.length === 0 ? (
