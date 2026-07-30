@@ -10,7 +10,7 @@ interface EventCardProps {
 
 export const EventCard: React.FC<EventCardProps> = ({ item, allowExpand = false }) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const isLongContent = allowExpand && item.description && item.description.length > 200;
+  const isLongContent = allowExpand && item.description && item.description.length > 400;
 
   const formattedDate = new Date(item.eventDate).toLocaleDateString('en-US', {
     weekday: 'short',
@@ -70,8 +70,8 @@ export const EventCard: React.FC<EventCardProps> = ({ item, allowExpand = false 
         </div>
 
         <div className="space-y-1">
-          <p className={`text-vast-ink/80 text-[16px] leading-relaxed whitespace-pre-line ${!isExpanded ? 'line-clamp-3 md:line-clamp-4' : ''}`}>
-            {item.description}
+          <p className={`text-vast-ink/80 text-[16px] leading-relaxed whitespace-pre-line ${!allowExpand ? 'line-clamp-3 md:line-clamp-4' : ''}`}>
+            {!isExpanded && isLongContent ? `${item.description.slice(0, 300).trim()}...` : item.description}
           </p>
           {isLongContent && (
             <button

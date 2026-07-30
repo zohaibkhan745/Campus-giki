@@ -9,7 +9,7 @@ interface PostCardProps {
 
 export const PostCard: React.FC<PostCardProps> = ({ item }) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const isLongContent = item.content && item.content.length > 250;
+  const isLongContent = item.content && item.content.length > 400;
 
   const formattedTime = new Date(item.createdAt).toLocaleDateString('en-US', {
     month: 'short',
@@ -65,8 +65,8 @@ export const PostCard: React.FC<PostCardProps> = ({ item }) => {
 
       {/* Post Content */}
       <div className="space-y-1">
-        <p className={`font-normal text-[16px] md:text-[20px] text-vast-ink leading-relaxed whitespace-pre-line ${!isExpanded ? 'line-clamp-3 md:line-clamp-4' : ''}`}>
-          {item.content}
+        <p className="font-normal text-[16px] md:text-[20px] text-vast-ink leading-relaxed whitespace-pre-line">
+          {!isExpanded && isLongContent ? `${item.content.slice(0, 300).trim()}...` : item.content}
         </p>
         {isLongContent && (
           <button
