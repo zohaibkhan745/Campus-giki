@@ -19,6 +19,7 @@ import { CreateSocietyAdminDto } from './dto/create-society-admin.dto';
 import { OnboardSocietyResponseDto } from './dto/onboard-society-response.dto';
 import { QueryAdminSocietiesDto } from './dto/query-admin-societies.dto';
 import { UpdateSocietyAdminDto } from './dto/update-society-admin.dto';
+import { CreateAdvisorDto } from './dto/create-advisor.dto';
 import { QueryAdminEventsDto } from './dto/query-admin-events.dto';
 import { AdminDashboardResponseDto } from './dto/admin-dashboard-response.dto';
 import { AdminUpdateYearlyPlanDto } from './dto/admin-update-yearly-plan.dto';
@@ -113,6 +114,25 @@ export class AdminController {
   })
   async onboardSociety(@Body() dto: CreateSocietyAdminDto): Promise<OnboardSocietyResponseDto> {
     return this.adminService.onboardSociety(dto);
+  }
+
+  @Post('advisors')
+  @Auth(Role.DSA_ADMIN)
+  @HttpCode(HttpStatus.CREATED)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({
+    summary: 'DSA Management: Onboard a new faculty advisor',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Advisor onboarded successfully',
+  })
+  @ApiResponse({
+    status: 409,
+    description: 'Email already exists',
+  })
+  async createAdvisor(@Body() dto: CreateAdvisorDto) {
+    return this.adminService.createAdvisor(dto);
   }
 
   @Patch('societies/:id')

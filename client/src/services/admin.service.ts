@@ -19,6 +19,14 @@ export interface OnboardSocietyPayload {
   advisorId: string;
 }
 
+export interface CreateAdvisorPayload {
+  fullName: string;
+  email: string;
+  password?: string;
+  department: string;
+  designation: string;
+}
+
 export interface OnboardSocietyResult {
   id: string;
   name: string;
@@ -92,6 +100,7 @@ export interface AdminEventItem {
   createdAt: string;
   updatedAt: string;
   isUpcoming: boolean;
+  approvalStatus: string;
   society: {
     id: string;
     name: string;
@@ -258,6 +267,10 @@ export const adminService = {
     return api.get('/admin/advisors');
   },
 
+  async createAdvisor(payload: CreateAdvisorPayload): Promise<AdvisorOption> {
+    return api.post('/admin/advisors', payload);
+  },
+
   async getAllEvents(params?: {
     page?: number;
     limit?: number;
@@ -288,7 +301,7 @@ export const adminService = {
 
   async updateSociety(
     id: string,
-    payload: { name?: string; categoryId?: string; advisorId?: string },
+    payload: { name?: string; categoryId?: string; advisorId?: string | null },
   ): Promise<AdminSocietyItem> {
     return api.patch(`/admin/societies/${id}`, payload);
   },

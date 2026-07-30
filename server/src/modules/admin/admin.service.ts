@@ -18,6 +18,8 @@ import { Prisma, Role, PlanStatus } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 
+import { CreateAdvisorDto } from './dto/create-advisor.dto';
+
 @Injectable()
 export class AdminService {
   constructor(private readonly prisma: PrismaService) {}
@@ -254,6 +256,51 @@ export class AdminService {
   }
 
   /**
+   * DSA creates a new faculty advisor
+   */
+  async createAdvisor(dto: CreateAdvisorDto) {
+    const existingUser = await this.prisma.user.findUnique({
+      where: { email: dto.email.toLowerCase() },
+    });
+
+    if (existingUser) {
+      throw new ConflictException(`User with email ${dto.email} already exists`);
+    }
+
+    const hashedPassword = await bcrypt.hash(dto.password, 10);
+
+    return this.prisma.$transaction(async (prisma) => {
+      const user = await prisma.user.create({
+        data: {
+          fullName: dto.fullName,
+          email: dto.email.toLowerCase(),
+          password: hashedPassword,
+          role: 'ADVISOR',
+        },
+      });
+
+      const advisor = await prisma.advisor.create({
+        data: {
+          department: dto.department,
+          designation: dto.designation,
+          userId: user.id,
+        },
+        include: {
+          user: {
+            select: {
+              id: true,
+              fullName: true,
+              email: true,
+            },
+          },
+        },
+      });
+
+      return advisor;
+    });
+  }
+
+  /**
    * DSA Events Overview Query: Paginated list of all campus events across all societies.
    */
   async getAllEventsAdmin(query: QueryAdminEventsDto) {
@@ -380,6 +427,7 @@ export class AdminService {
       createdAt: evt.createdAt,
       updatedAt: evt.updatedAt,
       society: evt.society,
+      approvalStatus: evt.approvalStatus,
       isUpcoming: new Date(evt.eventDate) >= now,
     }));
 
@@ -878,8 +926,6 @@ export class AdminService {
               endDate: new Date(e.endDate),
               description: e.description,
               venue: e.venue,
-              hasOutsideParticipants: e.hasOutsideParticipants,
-              hasOutsideSpeaker: e.hasOutsideSpeaker,
               rules: e.rules,
               societyRules: e.societyRules,
               yearlyPlanId: id,
