@@ -40,7 +40,11 @@ const AdminSocietiesPage = React.lazy(() => import('@/pages/admin/AdminSocieties
 const CreateSocietyPage = React.lazy(() => import('@/pages/admin/CreateSocietyPage').then(m => ({ default: m.CreateSocietyPage })));
 const AdminEventsPage = React.lazy(() => import('@/pages/admin/AdminEventsPage').then(m => ({ default: m.AdminEventsPage })));
 const AdminEventReviewPage = React.lazy(() => import('@/pages/admin/AdminEventReviewPage').then(m => ({ default: m.AdminEventReviewPage })));
+const AdminPostsPage = React.lazy(() => import('@/pages/admin/AdminPostsPage').then(m => ({ default: m.AdminPostsPage })));
 const NotFoundPage = React.lazy(() => import('@/pages/NotFoundPage').then(m => ({ default: m.NotFoundPage })));
+const SocietyEventsPage = React.lazy(() => import('@/pages/societies/SocietyEventsPage').then(m => ({ default: m.SocietyEventsPage })));
+const SocietyPostsPage = React.lazy(() => import('@/pages/societies/SocietyPostsPage').then(m => ({ default: m.SocietyPostsPage })));
+const SettingsPage = React.lazy(() => import('@/pages/SettingsPage').then(m => ({ default: m.SettingsPage })));
 
 export const AppRoutes: React.FC = () => {
   return (
@@ -77,6 +81,8 @@ export const AppRoutes: React.FC = () => {
         >
           <Route path="/society/setup" element={<SocietySetupPage />} />
           <Route path="/society/calendar" element={<YearlyCalendarPage />} />
+          <Route path="/society/events" element={<SocietyEventsPage />} />
+          <Route path="/society/posts" element={<SocietyPostsPage />} />
           <Route path="/events/create" element={<CreateEventPage />} />
           <Route path="/events/:id/edit" element={<EditEventPage />} />
         </Route>
@@ -108,6 +114,7 @@ export const AppRoutes: React.FC = () => {
           <Route path="/admin/yearly-plans/:id" element={<AdminYearlyPlanDetailPage />} />
           <Route path="/admin/events" element={<AdminEventsPage />} />
           <Route path="/admin/events/:id/review" element={<AdminEventReviewPage />} />
+          <Route path="/admin/posts" element={<AdminPostsPage />} />
         </Route>
 
         {/* General Authenticated Protected Routes */}
@@ -119,6 +126,7 @@ export const AppRoutes: React.FC = () => {
           }
         >
           <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
         </Route>
 
         {/* Catch-all 404 Route */}

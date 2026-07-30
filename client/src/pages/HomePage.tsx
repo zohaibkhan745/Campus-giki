@@ -60,7 +60,7 @@ export const HomePage: React.FC = () => {
           <div className="space-y-8">
             {items.map((item) =>
               item.type === 'event' ? (
-                <EventCard key={`event-${item.id}`} item={item} />
+                <EventCard key={`event-${item.id}`} item={item} allowExpand />
               ) : (
                 <PostCard key={`post-${item.id}`} item={item} />
               ),

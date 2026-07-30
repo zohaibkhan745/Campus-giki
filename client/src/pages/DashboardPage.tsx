@@ -5,6 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { societyService } from '@/services/society.service';
 import { DashboardSkeleton } from '@/components/dashboard/DashboardSkeleton';
 import { DeleteEventDialog } from '@/components/events/DeleteEventDialog';
+import { MakeAnnouncementDialog } from '@/components/feed/MakeAnnouncementDialog';
 import { AdminDashboardPage } from '@/pages/admin/AdminDashboardPage';
 import { AdvisorQueuePage } from '@/pages/advisor/AdvisorQueuePage';
 import type { EventItem } from '@/types/event.types';
@@ -30,6 +31,9 @@ import {
   Zap,
   LogOut,
   AlertCircle,
+  Megaphone,
+  ArrowRight,
+  Ticket,
 } from 'lucide-react';
 
 export const DashboardPage: React.FC = () => {
@@ -38,6 +42,7 @@ export const DashboardPage: React.FC = () => {
     id: string;
     title: string;
   } | null>(null);
+  const [isAnnouncementDialogOpen, setIsAnnouncementDialogOpen] = useState(false);
 
   // If DSA_ADMIN, render central DSA Dashboard
   if (user?.role === 'DSA_ADMIN') {
@@ -165,273 +170,160 @@ export const DashboardPage: React.FC = () => {
 
   return (
     <div className="space-y-6 text-left">
-      {/* 1. Welcome Card */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-pure-white p-6 rounded-cards border-2 border-vast-ink">
-        <div>
-          <h1 className="text-2xl font-bold text-vast-ink">
-            Welcome back, {user?.fullName || 'User'}!
-          </h1>
-          <p className="text-sm text-fog mt-0.5">
-            Manage your society profile, event schedules, and yearly calendar activities.
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-pure-white border border-vast-ink rounded-inputs text-vast-ink text-xs font-semibold">
-            <Shield className="w-4 h-4" />
-            <span>Role: {user?.role}</span>
+      {/* 1. Welcome & Identity Banner */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-pure-white p-6 rounded-cards border-2 border-vast-ink shadow-sm">
+        <div className="flex items-center gap-4">
+          {profile?.logoUrl ? (
+            <img
+              src={profile.logoUrl}
+              alt={profile.name}
+              className="w-16 h-16 rounded-full object-cover border-2 border-vast-ink bg-lumen-cream"
+            />
+          ) : (
+            <div className="w-16 h-16 flex items-center justify-center bg-lumen-stone border-2 border-vast-ink rounded-full text-vast-ink shrink-0">
+              <Building2 className="w-8 h-8" />
+            </div>
+          )}
+          <div>
+            <h1 className="text-2xl font-extrabold text-vast-ink line-clamp-1">
+              Welcome back, {profile?.name || user?.fullName || 'User'}
+            </h1>
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-1 text-sm text-fog font-medium">
+              {profile?.advisor && profile.advisor.user && (
+                <span className="flex items-center gap-1.5">
+                  <UserCheck className="w-4 h-4 text-vast-ink shrink-0" />
+                  Advisor: <span className="text-vast-ink font-semibold">{profile.advisor.user.fullName}</span>
+                </span>
+              )}
+              {/* Removed Yearly Plan Status */}
+            </div>
           </div>
+        </div>
+        
+        <div className="flex items-center gap-3 shrink-0 mt-4 md:mt-0">
+          <Link
+            to="/society/setup"
+            className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-pure-white border-2 border-vast-ink hover:bg-lumen-stone rounded-inputs text-vast-ink text-sm font-bold transition-colors"
+          >
+            <Edit className="w-4 h-4" />
+            <span>Edit Profile</span>
+          </Link>
           <button
             onClick={logout}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-pure-white border border-vast-ink hover:bg-red-500/20 border border-red-500/20 rounded-inputs text-red-400 text-xs font-semibold transition-colors"
+            className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-pure-white border-2 border-vast-ink hover:bg-red-500/10 rounded-inputs text-red-500 text-sm font-bold transition-colors"
           >
             <LogOut className="w-4 h-4" />
-            <span className="hidden sm:inline">Log out</span>
+            <span>Log out</span>
           </button>
         </div>
       </div>
 
       {user?.role === 'SOCIETY' && profile && (
         <>
-          {/* 2. Society Profile Summary & Yearly Plan Widget */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2 bg-lumen-cream p-6 rounded-cards border-2 border-vast-ink flex flex-col justify-between space-y-4">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                <div className="flex items-center gap-3">
-                  {profile.logoUrl ? (
-                    <img
-                      src={profile.logoUrl}
-                      alt={profile.name}
-                      className="w-12 h-12 rounded-inputs object-cover border-2 border-vast-ink"
-                    />
-                  ) : (
-                    <div className="p-3 bg-blue-600/20 border border-blue-500/30 rounded-inputs text-vast-ink">
-                      <Building2 className="w-6 h-6" />
-                    </div>
-                  )}
-                  <div>
-                    <h2 className="text-lg font-extrabold text-vast-ink">{profile.name}</h2>
-                    <p className="text-xs text-fog line-clamp-1">{profile.shortDescription}</p>
-                  </div>
-                </div>
-
-                {profile.category && (
-                  <span className="inline-flex items-center gap-1 px-3 py-1 bg-pure-white border border-vast-ink text-vast-ink rounded-inputs text-xs font-semibold">
-                    <Tag className="w-3.5 h-3.5" />
-                    {profile.category.name}
-                  </span>
-                )}
-              </div>
-
-              <div className="flex flex-col gap-2 pt-2 border-t border-vast-ink text-xs text-fog">
-                {profile.advisor && profile.advisor.user && (
-                  <div className="flex items-center gap-1.5 text-vast-ink font-medium">
-                    <UserCheck className="w-3.5 h-3.5 text-vast-ink" />
-                    <span>Advisor: {profile.advisor.user.fullName} ({profile.advisor.designation})</span>
-                  </div>
-                )}
-                
-                <div className="flex flex-wrap items-center gap-4">
-                  {profile.email && (
-                    <div className="flex items-center gap-1.5 text-vast-ink font-medium">
-                      <Mail className="w-3.5 h-3.5 text-vast-ink" />
-                      <span>Society Email: {profile.email}</span>
-                    </div>
-                  )}
-                  {profile.website && (
-                    <a
-                      href={profile.website}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-1.5 text-vast-ink hover:underline"
-                    >
-                      <Globe className="w-3.5 h-3.5" />
-                      <span>{profile.website}</span>
-                    </a>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* 3. Yearly Plan Status Widget */}
-            <div className="bg-lumen-cream p-6 rounded-cards border-2 border-vast-ink flex flex-col justify-between space-y-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-vast-ink font-medium font-bold text-sm">
-                  <CalendarDays className="w-4 h-4 text-vast-ink" />
-                  <h3>Yearly Plan Status</h3>
-                </div>
-                <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-pure-white border border-ember-glow border border-amber-500/20 text-ember-glow">
-                  {yearlyPlan?.status || 'NOT_STARTED'}
-                </span>
-              </div>
-
-              <div className="space-y-1">
-                <div className="text-2xl font-extrabold text-vast-ink">
-                  {yearlyPlan?.totalEventsInPlan || 0} Events
-                </div>
-                <p className="text-xs text-fog">
-                  Events planned in official society annual calendar draft.
-                </p>
-              </div>
-
-              <div className="pt-2 border-t border-vast-ink">
+          {/* 2. Command Center: Actions & Stats */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            {/* Quick Actions Panel */}
+            <div className="bg-lumen-cream p-6 rounded-cards border-2 border-vast-ink flex flex-col justify-center space-y-5">
+              <h3 className="font-extrabold text-lg text-vast-ink flex items-center gap-2">
+                Command Center
+              </h3>
+              
+              <div className="grid grid-cols-2 gap-3">
                 <Link
-                  to="/society/calendar"
-                  className="block text-center text-xs font-semibold text-vast-ink hover:text-fog transition-colors"
+                  to="/society/posts"
+                  className="flex flex-col items-center justify-center gap-2 p-4 bg-vast-ink hover:bg-vast-ink/90 text-pure-white rounded-inputs font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18]"
                 >
-                  Manage Annual Calendar →
+                  <Megaphone className="w-6 h-6" />
+                  <span>Posts</span>
+                </Link>
+                <Link
+                  to="/events/create"
+                  className="flex flex-col items-center justify-center gap-2 p-4 bg-pure-white hover:bg-lumen-stone text-vast-ink border-2 border-vast-ink rounded-inputs font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18]"
+                >
+                  <Plus className="w-6 h-6" />
+                  <span>Create Event</span>
                 </Link>
               </div>
+              {/* Edit Profile and Plan Calendar moved out */}
+            </div>
+
+            {/* Manage Events & Metrics Area */}
+            <div className="bg-lumen-cream p-6 rounded-cards border-2 border-vast-ink flex flex-col justify-center space-y-5 relative overflow-hidden group">
+              <h3 className="font-extrabold text-lg text-vast-ink flex items-center gap-2 z-10">
+                Manage Events
+              </h3>
+              <p className="text-sm font-medium text-fog z-10 leading-snug">
+                View all your society events, filter by status, and track approvals.
+              </p>
+              
+              <div className="grid grid-cols-2 gap-3 z-10">
+                <Link
+                  to="/society/events"
+                  className="flex flex-col items-center justify-center gap-2 p-4 bg-vast-ink hover:bg-vast-ink/90 text-pure-white rounded-inputs font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18]"
+                >
+                  <Ticket className="w-6 h-6" />
+                  <span>Events</span>
+                </Link>
+                <Link
+                  to="/society/calendar"
+                  className="flex flex-col items-center justify-center gap-2 p-4 bg-pure-white hover:bg-lumen-stone text-vast-ink border-2 border-vast-ink rounded-inputs font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18]"
+                >
+                  <CalendarDays className="w-6 h-6" />
+                  <span>Annual Calendar</span>
+                </Link>
+              </div>
+
+              {/* Decorative background element */}
+              <CalendarIcon className="absolute -right-4 -bottom-4 w-40 h-40 text-vast-ink opacity-[0.03] z-0 pointer-events-none group-hover:scale-110 transition-transform duration-500" />
             </div>
           </div>
 
-          {/* 4. Statistics Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="bg-pure-white p-5 rounded-cards border-2 border-vast-ink space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-fog uppercase tracking-wider">Total Events</span>
-                <div className="p-2 bg-pure-white border border-vast-ink text-vast-ink rounded-inputs">
-                  <CalendarIcon className="w-4 h-4" />
-                </div>
-              </div>
-              <div className="text-2xl font-extrabold text-vast-ink">{stats?.totalEvents || 0}</div>
-              <p className="text-[11px] text-fog">Published society events</p>
-            </div>
-
-            <div className="bg-pure-white p-5 rounded-cards border-2 border-vast-ink space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-fog uppercase tracking-wider">Upcoming</span>
-                <div className="p-2 bg-pure-white border border-forest-ink text-forest-ink rounded-inputs">
-                  <TrendingUp className="w-4 h-4" />
-                </div>
-              </div>
-              <div className="text-2xl font-extrabold text-vast-ink">{stats?.upcomingEvents || 0}</div>
-              <p className="text-[11px] text-fog">Active scheduled events</p>
-            </div>
-
-            <div className="bg-pure-white p-5 rounded-cards border-2 border-vast-ink space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-fog uppercase tracking-wider">Past Events</span>
-                <div className="p-2 bg-lumen-stone text-fog rounded-inputs">
-                  <History className="w-4 h-4" />
-                </div>
-              </div>
-              <div className="text-2xl font-extrabold text-vast-ink">{stats?.pastEvents || 0}</div>
-              <p className="text-[11px] text-fog">Concluded events</p>
-            </div>
-
-            <div className="bg-pure-white p-5 rounded-cards border-2 border-vast-ink space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-fog uppercase tracking-wider">Standing</span>
-                <div className="p-2 bg-pure-white border border-ember-glow text-ember-glow rounded-inputs">
-                  <Award className="w-4 h-4" />
-                </div>
-              </div>
-              <div className="text-2xl font-extrabold text-vast-ink">Active</div>
-              <p className="text-[11px] text-fog">Verified GIKI Society</p>
-            </div>
-          </div>
-
-          {/* 5. Quick Actions Toolbar */}
-          <div className="bg-lumen-cream p-5 rounded-cards border-2 border-vast-ink space-y-3">
-            <div className="flex items-center gap-2 font-bold text-sm text-vast-ink">
-              <h3>Quick Actions</h3>
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <Link
-                to="/events/create"
-                className="flex items-center justify-center gap-2 p-3 bg-vast-ink hover:opacity-90 text-white rounded-inputs text-xs font-semibold transition-colors shadow-lg shadow-blue-600/20"
-              >
-                <Plus className="w-4 h-4" />
-                <span>Create Event</span>
-              </Link>
-
-              <Link
-                to="/society/setup"
-                className="flex items-center justify-center gap-2 p-3 bg-lumen-stone hover:bg-lavender-whisper text-vast-ink rounded-inputs text-xs font-semibold transition-colors border-2 border-vast-ink"
-              >
-                <Edit className="w-4 h-4 text-vast-ink" />
-                <span>Edit Profile</span>
-              </Link>
-
-              <a
-                href="#upcoming-events-section"
-                className="flex items-center justify-center gap-2 p-3 bg-lumen-stone hover:bg-lavender-whisper text-vast-ink rounded-inputs text-xs font-semibold transition-colors border-2 border-vast-ink"
-              >
-                <CalendarIcon className="w-4 h-4 text-forest-ink" />
-                <span>View Events</span>
-              </a>
-
-              <Link
-                to="/society/calendar"
-                className="flex items-center justify-center gap-2 p-3 bg-lumen-stone hover:bg-lavender-whisper text-vast-ink rounded-inputs text-xs font-semibold transition-colors border-2 border-vast-ink"
-              >
-                <CalendarDays className="w-4 h-4 text-vast-ink" />
-                <span>Manage Calendar</span>
-              </Link>
-            </div>
-          </div>
-
-          {/* 6. Upcoming, Pending & Recent Events Overview Grid */}
-          <div id="upcoming-events-section" className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Recent Events Column */}
+          {/* 3. Focused Events Overview */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            
+            {/* Action Required Column */}
             <div className="space-y-4">
               <div className="flex items-center justify-between border-b-2 border-vast-ink pb-3">
-                <div className="flex items-center gap-2 font-bold text-base text-vast-ink">
-                  <History className="w-4 h-4 text-fog" />
-                  <h3>Recent Events ({recentEvents.length})</h3>
-                </div>
-              </div>
-
-              {recentEvents.length === 0 ? (
-                <div className="bg-pure-white p-6 rounded-cards border-2 border-vast-ink text-center text-xs text-fog">
-                  No past events recorded yet.
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {recentEvents.map((event) => renderEventCard(event, true))}
-                </div>
-              )}
-            </div>
-
-            {/* Upcoming Events Column */}
-            <div className="space-y-4">
-              <div className="flex items-center justify-between border-b-2 border-vast-ink pb-3">
-                <div className="flex items-center gap-2 font-bold text-base text-vast-ink">
-                  <CalendarIcon className="w-4 h-4 text-vast-ink" />
-                  <h3>Upcoming Events ({upcomingEvents.length})</h3>
-                </div>
-              </div>
-
-              {upcomingEvents.length === 0 ? (
-                <div className="bg-pure-white p-6 rounded-cards border-2 border-vast-ink text-center text-xs text-fog space-y-2">
-                  <CalendarIcon className="w-8 h-8 text-fog mx-auto" />
-                  <p>No upcoming events scheduled.</p>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {upcomingEvents.map((event) => renderEventCard(event))}
-                </div>
-              )}
-            </div>
-
-            {/* Pending Approvals Column */}
-            <div className="space-y-4">
-              <div className="flex items-center justify-between border-b-2 border-vast-ink pb-3">
-                <div className="flex items-center gap-2 font-bold text-base text-ember-glow">
-                  <Clock className="w-4 h-4 text-ember-glow" />
-                  <h3 className="text-vast-ink">Pending Approvals ({pendingEvents.length})</h3>
+                <div className="flex items-center gap-2 font-extrabold text-lg text-vast-ink">
+                  <AlertCircle className="w-5 h-5 text-ember-glow" />
+                  <h3>Action Required ({pendingEvents.length})</h3>
                 </div>
               </div>
 
               {pendingEvents.length === 0 ? (
-                <div className="bg-pure-white p-6 rounded-cards border-2 border-vast-ink text-center text-xs text-fog space-y-2">
-                  <Shield className="w-8 h-8 text-fog mx-auto opacity-50" />
-                  <p>No events pending approval.</p>
+                <div className="bg-pure-white p-10 rounded-cards border-2 border-vast-ink text-center text-fog space-y-3 flex flex-col items-center">
+                  <Shield className="w-12 h-12 text-fog opacity-30" />
+                  <p className="font-bold text-sm">You're all caught up! No events pending approval.</p>
                 </div>
               ) : (
                 <div className="space-y-4">
                   {pendingEvents.map((event) => renderEventCard(event))}
+                </div>
+              )}
+            </div>
+
+            {/* Next Upcoming Column */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between border-b-2 border-vast-ink pb-3">
+                <div className="flex items-center gap-2 font-extrabold text-lg text-vast-ink">
+                  <CalendarIcon className="w-5 h-5 text-forest-ink" />
+                  <h3>Next Upcoming ({upcomingEvents.length})</h3>
+                </div>
+                {/* Fallback to calendar if there's no general events page for societies */}
+                <Link to="/society/calendar" className="text-sm font-bold text-vast-ink hover:text-forest-ink transition-colors underline underline-offset-2">
+                  View Calendar
+                </Link>
+              </div>
+
+              {upcomingEvents.length === 0 ? (
+                <div className="bg-pure-white p-10 rounded-cards border-2 border-vast-ink text-center text-fog space-y-3 flex flex-col items-center">
+                  <CalendarIcon className="w-12 h-12 text-fog opacity-30" />
+                  <p className="font-bold text-sm">No upcoming events scheduled right now.</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {upcomingEvents.slice(0, 3).map((event) => renderEventCard(event))}
                 </div>
               )}
             </div>
@@ -472,6 +364,11 @@ export const DashboardPage: React.FC = () => {
         eventId={deleteTarget?.id || null}
         eventTitle={deleteTarget?.title || null}
         onClose={() => setDeleteTarget(null)}
+      />
+
+      <MakeAnnouncementDialog
+        isOpen={isAnnouncementDialogOpen}
+        onClose={() => setIsAnnouncementDialogOpen(false)}
       />
     </div>
   );

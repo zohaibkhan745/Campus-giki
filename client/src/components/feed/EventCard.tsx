@@ -5,11 +5,12 @@ import type { EventFeedItem } from '@/types/feed.types';
 
 interface EventCardProps {
   item: EventFeedItem;
+  allowExpand?: boolean;
 }
 
-export const EventCard: React.FC<EventCardProps> = ({ item }) => {
+export const EventCard: React.FC<EventCardProps> = ({ item, allowExpand = false }) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const isLongDescription = item.description && item.description.length > 180;
+  const isLongContent = allowExpand && item.description && item.description.length > 200;
 
   const formattedDate = new Date(item.eventDate).toLocaleDateString('en-US', {
     weekday: 'short',
@@ -69,10 +70,10 @@ export const EventCard: React.FC<EventCardProps> = ({ item }) => {
         </div>
 
         <div className="space-y-1">
-          <p className={`text-vast-ink/80 text-[16px] leading-relaxed whitespace-pre-line ${!isExpanded ? 'line-clamp-3' : ''}`}>
+          <p className={`text-vast-ink/80 text-[16px] leading-relaxed whitespace-pre-line ${!isExpanded ? 'line-clamp-3 md:line-clamp-4' : ''}`}>
             {item.description}
           </p>
-          {isLongDescription && (
+          {isLongContent && (
             <button
               onClick={(e) => {
                 e.preventDefault();
