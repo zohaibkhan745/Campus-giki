@@ -11,7 +11,9 @@ import {
   CheckCircle,
   Sparkles,
   Info,
+  ShieldCheck,
 } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
 import { eventService } from '@/services/event.service';
 import { EventDetailSkeleton } from '@/components/events/EventDetailSkeleton';
 import { Alert } from '@/components/ui/Alert';
@@ -19,6 +21,7 @@ import { Alert } from '@/components/ui/Alert';
 export const EventDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const {
     data: eventItem,
@@ -192,6 +195,30 @@ export const EventDetailPage: React.FC = () => {
                 Visit Profile
               </div>
             </Link>
+          </div>
+        )}
+
+        {/* 8. DSA Admin Audit Trail */}
+        {user?.role === 'DSA_ADMIN' && eventItem.approvalStatus === 'PUBLISHED' && eventItem.dsaApprovedAt && (
+          <div className="space-y-3 pt-4 border-t-2 border-vast-ink">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-fog">
+              Administrative Audit Log
+            </h3>
+            <div className="bg-green-50 p-4 rounded-cards border-2 border-forest-ink space-y-2">
+              <div className="flex items-center gap-2 font-bold text-forest-ink text-sm">
+                <ShieldCheck className="w-5 h-5" />
+                <h4>Approved & Published</h4>
+              </div>
+              <p className="text-sm text-vast-ink font-medium">
+                Approved by DSA Admin on {new Date(eventItem.dsaApprovedAt).toLocaleDateString(undefined, { weekday: 'short', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+              </p>
+              {eventItem.dsaComments && (
+                <div className="mt-2 pt-2 border-t border-forest-ink/20">
+                  <span className="text-xs font-bold text-forest-ink block mb-1">Approval Comments:</span>
+                  <p className="text-xs text-vast-ink">{eventItem.dsaComments}</p>
+                </div>
+              )}
+            </div>
           </div>
         )}
       </div>

@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { Calendar as CalendarIcon, Tag, Loader2, Clock, MapPin, ExternalLink, Building2 } from 'lucide-react';
 import { eventService } from '@/services/event.service';
 import { societyService } from '@/services/society.service';
+import { EventCard } from '@/components/feed/EventCard';
 
 export const CampusCalendarPage: React.FC = () => {
   const navigate = useNavigate();
@@ -363,53 +364,7 @@ export const CampusCalendarPage: React.FC = () => {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {eventsList.map((event) => (
-                <div
-                  key={event.id}
-                  onClick={() => navigate(`/events/${event.id}`)}
-                  className="bg-pure-white rounded-cards border-2 border-vast-ink hover:translate-y-[-4px] hover:shadow-xl transition-all cursor-pointer flex flex-col justify-between overflow-hidden"
-                >
-                  <div className="space-y-4 p-5">
-                    {event.coverImageUrl && (
-                      <div className="w-full h-32 -mx-5 -mt-5 mb-4 border-b-2 border-vast-ink overflow-hidden bg-lumen-stone">
-                        <img
-                          src={event.coverImageUrl}
-                          alt={event.title}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                    )}
-                    
-                    <div className="flex items-start justify-between gap-2">
-                      <h4 className="font-bold text-lg text-vast-ink leading-tight line-clamp-2">
-                        {event.title}
-                      </h4>
-                    </div>
-
-                    <p className="text-sm text-fog line-clamp-2">{event.description}</p>
-
-                    <div className="space-y-2 text-sm text-vast-ink font-medium pt-2 border-t-2 border-vast-ink/10">
-                      <div className="flex items-center gap-2">
-                        <CalendarIcon className="w-4 h-4 text-vast-ink shrink-0" />
-                        <span>{new Date(event.eventDate).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' })}</span>
-                      </div>
-
-                      <div className="flex items-center gap-2">
-                        <Clock className="w-4 h-4 text-vast-ink shrink-0" />
-                        <span>{event.startTime} - {event.endTime}</span>
-                      </div>
-
-                      <div className="flex items-center gap-2">
-                        <MapPin className="w-4 h-4 text-forest-ink shrink-0" />
-                        <span className="truncate">{event.venue}</span>
-                      </div>
-                      
-                      <div className="flex items-center gap-2">
-                        <Building2 className="w-4 h-4 text-ember-glow shrink-0" />
-                        <span className="truncate">{event.society?.name || 'Campus Society'}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                <EventCard key={event.id} item={{ ...event, type: 'event' } as any} />
               ))}
             </div>
           )}

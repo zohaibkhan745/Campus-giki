@@ -18,7 +18,9 @@ import {
 } from 'lucide-react';
 import { societyService } from '@/services/society.service';
 import type { EventItem } from '@/types/event.types';
+import type { EventFeedItem } from '@/types/feed.types';
 import { Alert } from '@/components/ui/Alert';
+import { EventCard } from '@/components/feed/EventCard';
 
 export const SocietyProfilePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -72,73 +74,7 @@ export const SocietyProfilePage: React.FC = () => {
     );
   }
 
-  const renderEventCard = (event: EventItem, isPast = false) => (
-    <Link
-      key={event.id}
-      to={`/events/${event.id}`}
-      className={`bg-pure-white rounded-cards border p-5 transition-all flex flex-col justify-between group ${
-        isPast ? 'border-vast-ink opacity-80' : 'border-2 border-vast-ink hover:border-2 border-vast-ink'
-      }`}
-    >
-      <div className="space-y-3">
-        {event.coverImageUrl && (
-          <div className="w-full h-36 rounded-inputs overflow-hidden bg-lumen-stone">
-            <img
-              src={event.coverImageUrl}
-              alt={event.title}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-            />
-          </div>
-        )}
 
-        <div className="flex items-start justify-between gap-2">
-          <h4 className="font-bold text-vast-ink text-base leading-snug group-hover:text-vast-ink transition-colors">
-            {event.title}
-          </h4>
-          {event.registrationLink && (
-            <a
-              href={event.registrationLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
-              className="p-1 bg-pure-white border border-vast-ink text-vast-ink hover:bg-blue-500/20 rounded-inputs transition-colors shrink-0"
-              title="Open External Registration Link"
-            >
-              <ExternalLink className="w-4 h-4" />
-            </a>
-          )}
-        </div>
-
-        <p className="text-xs text-fog line-clamp-2">{event.description}</p>
-
-        <div className="space-y-1.5 text-xs text-vast-ink font-medium pt-1">
-          <div className="flex items-center gap-2">
-            <CalendarIcon className="w-3.5 h-3.5 text-vast-ink shrink-0" />
-            <span>
-              {new Date(event.eventDate).toLocaleDateString(undefined, {
-                weekday: 'short',
-                month: 'short',
-                day: 'numeric',
-                year: 'numeric',
-              })}
-            </span>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <Clock className="w-3.5 h-3.5 text-vast-ink shrink-0" />
-            <span>
-              {event.startTime} - {event.endTime}
-            </span>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <MapPin className="w-3.5 h-3.5 text-forest-ink shrink-0" />
-            <span className="truncate">{event.venue}</span>
-          </div>
-        </div>
-      </div>
-    </Link>
-  );
 
   return (
     <div className="max-w-5xl mx-auto space-y-6 text-left pt-4 md:pt-14 pb-8 px-4 font-figtree">
@@ -296,7 +232,18 @@ export const SocietyProfilePage: React.FC = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {upcomingEvents.map((event) => renderEventCard(event))}
+            {upcomingEvents.map((event) => (
+              <EventCard
+                key={event.id}
+                item={
+                  {
+                    ...event,
+                    type: 'event',
+                    society: event.society || society,
+                  } as EventFeedItem
+                }
+              />
+            ))}
           </div>
         )}
       </div>
@@ -315,8 +262,19 @@ export const SocietyProfilePage: React.FC = () => {
             No past events recorded for this society.
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {pastEvents.map((event) => renderEventCard(event, true))}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 opacity-80">
+            {pastEvents.map((event) => (
+              <EventCard
+                key={event.id}
+                item={
+                  {
+                    ...event,
+                    type: 'event',
+                    society: event.society || society,
+                  } as EventFeedItem
+                }
+              />
+            ))}
           </div>
         )}
       </div>

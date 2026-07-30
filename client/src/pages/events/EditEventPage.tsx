@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useNavigate, useParams, Link } from 'react-router-dom';
+import { useNavigate, Link, useParams } from 'react-router-dom';
 import {
   Calendar,
   Clock,
@@ -137,13 +137,13 @@ export const EditEventPage: React.FC = () => {
   return (
     <div className="max-w-3xl mx-auto space-y-6 text-left py-4">
       <div className="flex items-center justify-between">
-        <Link
-          to="/dashboard"
-          className="inline-flex items-center gap-2 text-xs font-semibold text-fog hover:text-vast-ink transition-colors"
+        <button
+          onClick={() => navigate(-1)}
+          className="inline-flex items-center gap-2 px-3.5 py-2 bg-pure-white hover:bg-lumen-stone border-2 border-vast-ink text-vast-ink text-xs font-bold rounded-buttons transition-all cursor-pointer shadow-[2px_2px_0px_0px_#1B1B18]"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>Back to Dashboard</span>
-        </Link>
+          <span>Back</span>
+        </button>
       </div>
 
       <div className="space-y-1 bg-pure-white p-6 rounded-cards border-2 border-vast-ink">
