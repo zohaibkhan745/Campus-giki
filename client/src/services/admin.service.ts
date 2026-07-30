@@ -170,7 +170,7 @@ export interface AdminDashboardStatistics {
 
 export interface AdminDashboardData {
   statistics: AdminDashboardStatistics;
-  pendingPlansPreview: Array<{
+  approvedPlansPreview: Array<{
     id: string;
     year: number;
     status: PlanStatus;
@@ -223,6 +223,22 @@ export interface AdminDashboardData {
       } | null;
     };
   }>;
+  recentlyApprovedEventsPreview?: Array<{
+    id: string;
+    title: string;
+    eventDate: string;
+    startTime: string;
+    endTime: string;
+    venue: string;
+    society: {
+      id: string;
+      name: string;
+      logoUrl?: string | null;
+      category?: {
+        name: string;
+      } | null;
+    };
+  }>;
 }
 
 export interface ResetPasswordResult {
@@ -247,6 +263,7 @@ export const adminService = {
     limit?: number;
     society?: string;
     category?: string;
+    status?: string;
     from?: string;
     to?: string;
     type?: 'upcoming' | 'past';

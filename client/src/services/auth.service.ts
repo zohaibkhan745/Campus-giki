@@ -18,4 +18,8 @@ export const authService = {
   async getProfile(): Promise<UserProfile> {
     return api.get('/auth/profile');
   },
+
+  async updateProfile(payload: Partial<UserProfile> & { currentPassword?: string; newPassword?: string; department?: string; designation?: string }): Promise<UserProfile> {
+    return api.patch('/auth/profile', payload);
+  },
 };

@@ -33,6 +33,7 @@ export interface PostFeedItem {
   society: FeedSociety;
   content: string;
   imageUrl?: string | null;
+  isAdminPost?: boolean;
 }
 
 export type FeedItem = EventFeedItem | PostFeedItem;

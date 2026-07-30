@@ -8,7 +8,7 @@ export const onboardSocietySchema = z.object({
   categoryId: z.string().min(1, 'Please select a society category'),
   presidentEmail: z
     .string()
-    .min(1, 'President email is required')
+    .min(1, 'Society email is required')
     .email('Please enter a valid email address'),
   advisorId: z.string().min(1, 'Please select an assigned faculty advisor'),
 });

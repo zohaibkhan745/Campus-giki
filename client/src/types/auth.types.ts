@@ -6,6 +6,12 @@ export interface UserProfile {
   fullName: string;
   role: Role;
   isActive: boolean;
+  avatarUrl?: string | null;
+  advisor?: {
+    id: string;
+    department: string;
+    designation: string;
+  };
   createdAt: string;
   updatedAt: string;
 }
