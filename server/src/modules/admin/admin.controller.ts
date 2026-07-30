@@ -235,4 +235,18 @@ export class AdminController {
   ) {
     return this.adminService.updateYearlyPlan(id, dto);
   }
+
+  @Patch('events/:id/status')
+  @Auth(Role.DSA_ADMIN)
+  @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({
+    summary: 'DSA Management: Approve, reject, or request changes for an event',
+  })
+  async updateEventStatus(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: { status: string; comments?: string },
+  ) {
+    return this.adminService.updateEventStatus(id, dto);
+  }
 }

@@ -34,8 +34,9 @@ export const AdminDashboardPage: React.FC = () => {
   });
 
   const stats = data?.statistics;
-  const pendingPlans = data?.pendingPlansPreview || [];
+  const approvedPlans = data?.approvedPlansPreview || [];
   const upcomingEvents = data?.upcomingEventsPreview || [];
+  const pendingEvents = data?.pendingEventsPreview || [];
 
   return (
     <div className="max-w-7xl mx-auto space-y-6 text-left py-4">
@@ -55,12 +56,6 @@ export const AdminDashboardPage: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-3">
-          <Link to="/admin/societies/create">
-            <button className="inline-flex items-center gap-2 px-4 py-2.5 bg-vast-ink hover:opacity-90 text-pure-white rounded-buttons border-2 border-vast-ink text-xs font-bold transition-colors shrink-0">
-              <UserPlus className="w-4 h-4" />
-              <span className="hidden sm:inline">Onboard Society</span>
-            </button>
-          </Link>
           <button
             onClick={logout}
             className="inline-flex items-center gap-2 px-4 py-2.5 bg-pure-white hover:bg-lumen-stone border-2 border-vast-ink rounded-buttons text-vast-ink text-xs font-bold transition-colors shrink-0"
@@ -86,7 +81,7 @@ export const AdminDashboardPage: React.FC = () => {
       {/* 8 Statistics Grid Cards */}
       {isLoading ? (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+          {[1, 2, 3, 4, 5, 6].map((i) => (
             <div key={i} className="bg-pure-white p-5 rounded-cards border-2 border-vast-ink space-y-2 animate-pulse">
               <div className="h-4 bg-lumen-stone rounded w-1/2" />
               <div className="h-8 bg-lumen-stone rounded w-1/3" />
@@ -178,50 +173,6 @@ export const AdminDashboardPage: React.FC = () => {
               {stats?.approvedPlans || 0}
             </p>
           </Link>
-
-          {/* Events This Week */}
-          <Link
-            to="/admin/events?type=this_week"
-            className="bg-pure-white p-5 rounded-cards border-2 border-vast-ink hover:bg-lavender-whisper transition-all space-y-2 group"
-          >
-            <div className="flex items-center justify-between text-fog">
-              <span className="text-xs font-semibold">Events This Week</span>
-              <Calendar className="w-4 h-4 text-forest-ink" />
-            </div>
-            <p className="text-2xl font-extrabold text-forest-ink">
-              {stats?.eventsThisWeek || 0}
-            </p>
-          </Link>
-
-          {/* Events This Month */}
-          <Link
-            to="/admin/events?type=this_month"
-            className="bg-pure-white p-5 rounded-cards border-2 border-vast-ink hover:bg-lavender-whisper transition-all space-y-2 group"
-          >
-            <div className="flex items-center justify-between text-fog">
-              <span className="text-xs font-semibold">Events This Month</span>
-              <Calendar className="w-4 h-4 text-vast-ink" />
-            </div>
-            <p className="text-2xl font-extrabold text-vast-ink">
-              {stats?.eventsThisMonth || 0}
-            </p>
-          </Link>
-
-          {/* Upcoming Events */}
-          <Link
-            to="/admin/events?type=upcoming"
-            className="bg-pure-white p-5 rounded-cards border-2 border-vast-ink hover:bg-lavender-whisper transition-all space-y-2 group"
-          >
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-fog uppercase tracking-wider">Upcoming</span>
-              <div className="p-2 bg-pure-white border border-forest-ink text-forest-ink rounded-inputs">
-                <TrendingUp className="w-4 h-4" />
-              </div>
-            </div>
-            <p className="text-2xl font-extrabold text-forest-ink">
-              {stats?.upcomingEvents || 0}
-            </p>
-          </Link>
         </div>
       )}
 
@@ -236,7 +187,7 @@ export const AdminDashboardPage: React.FC = () => {
               <UserPlus className="w-5 h-5" />
             </div>
             <div>
-              <h4 className="font-bold text-vast-ink text-sm">Onboard Society</h4>
+              <h4 className="font-bold text-vast-ink text-sm">Add Society</h4>
               <p className="text-[11px] font-medium text-fog">Provision account</p>
             </div>
           </div>
@@ -294,23 +245,23 @@ export const AdminDashboardPage: React.FC = () => {
 
       {/* Two Column Activity Widgets */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Pending Yearly Plans Queue */}
+        {/* Approved Yearly Plans */}
         <div className="bg-lumen-cream p-6 rounded-cards border-2 border-vast-ink space-y-4">
           <div className="flex items-center justify-between border-b-2 border-vast-ink pb-3">
             <h3 className="font-bold text-vast-ink text-base flex items-center gap-2">
               <FileText className="w-4 h-4 text-ember-glow" />
-              <span>Pending Advisor Review Plans ({pendingPlans.length})</span>
+              <span>Advisor Approved Plans ({approvedPlans.length})</span>
             </h3>
-            <Link to="/admin/yearly-plans?status=PENDING" className="text-xs text-vast-ink hover:underline font-semibold">
+            <Link to="/admin/yearly-plans?status=APPROVED" className="text-xs text-vast-ink hover:underline font-semibold">
               View All
             </Link>
           </div>
 
-          {pendingPlans.length === 0 ? (
-            <p className="text-sm font-medium text-fog py-6 text-center">No yearly plans currently pending advisor review.</p>
+          {approvedPlans.length === 0 ? (
+            <p className="text-sm font-medium text-fog py-6 text-center">No yearly plans have been approved by advisors yet.</p>
           ) : (
             <div className="space-y-3">
-              {pendingPlans.map((plan) => (
+              {approvedPlans.map((plan) => (
                 <Link
                   key={plan.id}
                   to={`/admin/yearly-plans/${plan.id}`}
@@ -323,6 +274,47 @@ export const AdminDashboardPage: React.FC = () => {
                     <p className="text-xs font-medium text-fog">
                       Advisor: {plan.society?.advisor?.user?.fullName || 'Assigned Advisor'} • {plan.totalPlannedEvents} Events
                     </p>
+                  </div>
+                  <ArrowRight className="w-4 h-4 text-vast-ink group-hover:translate-x-1 transition-transform" />
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Pending Events Preview */}
+        <div className="bg-lumen-cream p-6 rounded-cards border-2 border-vast-ink space-y-4">
+          <div className="flex items-center justify-between border-b-2 border-vast-ink pb-3">
+            <h3 className="font-bold text-vast-ink text-base flex items-center gap-2">
+              <Clock className="w-4 h-4 text-ember-glow" />
+              <span>Pending DSA Review Events ({pendingEvents.length})</span>
+            </h3>
+            <Link to="/admin/events?type=pending" className="text-xs text-vast-ink hover:underline font-semibold">
+              View All
+            </Link>
+          </div>
+
+          {pendingEvents.length === 0 ? (
+            <p className="text-sm font-medium text-fog py-6 text-center">No events currently pending DSA admin review.</p>
+          ) : (
+            <div className="space-y-3">
+              {pendingEvents.map((evt) => (
+                <Link
+                  key={evt.id}
+                  to={`/admin/events/${evt.id}/review`}
+                  className="bg-pure-white p-4 rounded-cards border-2 border-vast-ink hover:bg-lavender-whisper transition-all flex items-center justify-between group"
+                >
+                  <div className="space-y-1">
+                    <h4 className="font-bold text-vast-ink text-sm">
+                      {evt.title}
+                    </h4>
+                    <div className="flex items-center gap-3 text-xs font-medium text-fog">
+                      <span>Host: <strong className="text-vast-ink">{evt.society?.name}</strong></span>
+                      <span className="flex items-center gap-1">
+                        <MapPin className="w-3 h-3 text-fog" />
+                        {evt.venue}
+                      </span>
+                    </div>
                   </div>
                   <ArrowRight className="w-4 h-4 text-vast-ink group-hover:translate-x-1 transition-transform" />
                 </Link>

@@ -50,7 +50,6 @@ export const AdminEventsPage: React.FC = () => {
   const [page, setPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [societyFilter, setSocietyFilter] = useState<string>('');
-  const [categoryFilter, setCategoryFilter] = useState<string>('');
   const [fromDate, setFromDate] = useState<string>(defaultFrom);
   const [toDate, setToDate] = useState<string>(defaultTo);
   const [typeToggle, setTypeToggle] = useState<'all' | 'this_week' | 'this_month' | 'upcoming' | 'past'>(defaultType);
@@ -98,12 +97,6 @@ export const AdminEventsPage: React.FC = () => {
     setPage(1);
   };
 
-  // Query categories
-  const { data: categories = [] } = useQuery({
-    queryKey: ['categories'],
-    queryFn: societyService.getCategories,
-  });
-
   // Query societies list for dropdown filter
   const { data: societiesData } = useQuery({
     queryKey: ['publicSocietiesList'],
@@ -123,7 +116,6 @@ export const AdminEventsPage: React.FC = () => {
       page,
       searchQuery,
       societyFilter,
-      categoryFilter,
       fromDate,
       toDate,
       typeToggle,
@@ -134,7 +126,6 @@ export const AdminEventsPage: React.FC = () => {
         limit: 10,
         search: searchQuery || undefined,
         society: societyFilter || undefined,
-        category: categoryFilter || undefined,
         from: fromDate || undefined,
         to: toDate || undefined,
         type: typeToggle === 'upcoming' || typeToggle === 'past' ? typeToggle : undefined,
@@ -147,7 +138,6 @@ export const AdminEventsPage: React.FC = () => {
   const handleClearFilters = () => {
     setSearchQuery('');
     setSocietyFilter('');
-    setCategoryFilter('');
     setFromDate('');
     setToDate('');
     setTypeToggle('all');
@@ -252,8 +242,8 @@ export const AdminEventsPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Bottom Row: Society, Category, Date Range Filters */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 pt-2 border-t border-vast-ink">
+        {/* Bottom Row: Society, Date Range Filters */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 pt-2 border-t border-vast-ink">
           {/* Society Select Dropdown */}
           <div className="relative flex items-center">
             <div className="absolute left-3 text-fog pointer-events-none flex items-center justify-center z-10">
@@ -271,28 +261,6 @@ export const AdminEventsPage: React.FC = () => {
               {societies.map((soc) => (
                 <option key={soc.id} value={soc.id}>
                   {soc.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Category Dropdown */}
-          <div className="relative flex items-center">
-            <div className="absolute left-3 text-fog pointer-events-none flex items-center justify-center">
-              <Tag className="w-4 h-4" />
-            </div>
-            <select
-              value={categoryFilter}
-              onChange={(e) => {
-                setCategoryFilter(e.target.value);
-                setPage(1);
-              }}
-              className="w-full bg-pure-white text-vast-ink text-xs rounded-inputs border-2 border-vast-ink px-3 py-2 pl-9 outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
-            >
-              <option value="">All Categories</option>
-              {categories.map((c) => (
-                <option key={c.id} value={c.slug}>
-                  {c.name}
                 </option>
               ))}
             </select>

@@ -48,8 +48,9 @@ export class AdminService {
       eventsThisWeek,
       eventsThisMonth,
       upcomingEvents,
-      pendingPlansRaw,
+      approvedPlansRaw,
       upcomingEventsRaw,
+      pendingEventsRaw,
     ] = await Promise.all([
       this.prisma.society.count(),
       this.prisma.society.count({
@@ -66,15 +67,15 @@ export class AdminService {
         where: { status: PlanStatus.APPROVED },
       }),
       this.prisma.event.count({
-        where: { eventDate: { gte: startOfWeek, lte: endOfWeek } },
+        where: { eventDate: { gte: startOfWeek, lte: endOfWeek }, approvalStatus: 'PUBLISHED' },
       }),
       this.prisma.event.count({
-        where: { eventDate: { gte: startOfMonth, lte: endOfMonth } },
+        where: { eventDate: { gte: startOfMonth, lte: endOfMonth }, approvalStatus: 'PUBLISHED' },
       }),
-      this.prisma.event.count({ where: { eventDate: { gte: now } } }),
+      this.prisma.event.count({ where: { eventDate: { gte: now }, approvalStatus: 'PUBLISHED' } }),
 
       this.prisma.yearlyPlan.findMany({
-        where: { status: PlanStatus.PENDING },
+        where: { status: PlanStatus.APPROVED },
         take: 5,
         orderBy: { updatedAt: 'desc' },
         include: {
@@ -106,7 +107,7 @@ export class AdminService {
       }),
 
       this.prisma.event.findMany({
-        where: { eventDate: { gte: now } },
+        where: { eventDate: { gte: now }, approvalStatus: 'PUBLISHED' },
         take: 5,
         orderBy: { eventDate: 'asc' },
         include: {
@@ -124,9 +125,29 @@ export class AdminService {
           },
         },
       }),
+
+      this.prisma.event.findMany({
+        where: { approvalStatus: 'PENDING_ADMIN' },
+        take: 5,
+        orderBy: { updatedAt: 'desc' },
+        include: {
+          society: {
+            select: {
+              id: true,
+              name: true,
+              logoUrl: true,
+              category: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          },
+        },
+      }),
     ]);
 
-    const pendingPlansPreview = pendingPlansRaw.map((plan) => ({
+    const approvedPlansPreview = approvedPlansRaw.map((plan) => ({
       id: plan.id,
       year: plan.year,
       status: plan.status,
@@ -137,6 +158,16 @@ export class AdminService {
     }));
 
     const upcomingEventsPreview = upcomingEventsRaw.map((evt) => ({
+      id: evt.id,
+      title: evt.title,
+      eventDate: evt.eventDate,
+      startTime: evt.startTime,
+      endTime: evt.endTime,
+      venue: evt.venue,
+      society: evt.society,
+    }));
+
+    const pendingEventsPreview = pendingEventsRaw.map((evt) => ({
       id: evt.id,
       title: evt.title,
       eventDate: evt.eventDate,
@@ -158,7 +189,8 @@ export class AdminService {
         eventsThisMonth,
         upcomingEvents,
       },
-      pendingPlansPreview,
+      approvedPlansPreview,
+      pendingEventsPreview,
       upcomingEventsPreview,
     };
   }
@@ -840,6 +872,30 @@ export class AdminService {
           },
         },
       });
+    });
+  }
+
+  async updateEventStatus(eventId: string, dto: { status: string; comments?: string }) {
+    const event = await this.prisma.event.findUnique({ where: { id: eventId } });
+    if (!event) {
+      throw new NotFoundException('Event not found');
+    }
+
+    const data: any = {
+      approvalStatus: dto.status as any,
+      dsaComments: dto.comments || null,
+      isPublished: dto.status === 'PUBLISHED' || dto.status === 'APPROVED',
+      ...(dto.status === 'CHANGES_REQUESTED' ? { lastChangeRequestBy: 'DSA_ADMIN' } : {}),
+      ...(dto.status === 'PUBLISHED' || dto.status === 'APPROVED' ? { lastChangeRequestBy: null } : {}),
+    };
+
+    if (dto.status === 'PUBLISHED' || dto.status === 'APPROVED') {
+      data.dsaApprovedAt = new Date();
+    }
+
+    return this.prisma.event.update({
+      where: { id: eventId },
+      data,
     });
   }
 }

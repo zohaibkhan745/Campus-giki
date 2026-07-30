@@ -207,6 +207,22 @@ export interface AdminDashboardData {
       } | null;
     };
   }>;
+  pendingEventsPreview: Array<{
+    id: string;
+    title: string;
+    eventDate: string;
+    startTime: string;
+    endTime: string;
+    venue: string;
+    society: {
+      id: string;
+      name: string;
+      logoUrl?: string | null;
+      category?: {
+        name: string;
+      } | null;
+    };
+  }>;
 }
 
 export interface ResetPasswordResult {
@@ -285,5 +301,9 @@ export const adminService = {
 
   async updateYearlyPlan(id: string, payload: { events: PlannedEventPayload[] }): Promise<YearlyPlan> {
     return api.patch(`/admin/yearly-plans/${id}`, payload);
+  },
+
+  async updateEventStatus(id: string, payload: { status: string; comments?: string }) {
+    return api.patch(`/admin/events/${id}/status`, payload);
   },
 };

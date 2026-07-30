@@ -34,7 +34,10 @@ export class AdminDashboardResponseDto {
   statistics: AdminDashboardStatisticsDto;
 
   @ApiProperty()
-  pendingPlansPreview: any[];
+  approvedPlansPreview: any[];
+
+  @ApiProperty()
+  pendingEventsPreview: any[];
 
   @ApiProperty()
   upcomingEventsPreview: any[];
