@@ -17,6 +17,8 @@ import { yearlyPlanService } from '@/services/yearly-plan.service';
 import type { PlanStatus } from '@/types/yearly-plan.types';
 import { Button } from '@/components/ui/Button';
 import { Alert } from '@/components/ui/Alert';
+import { useForm } from 'react-hook-form';
+import { FeedbackHistory } from '@/components/shared/FeedbackHistory';
 import type { AxiosError } from 'axios';
 
 export const AdvisorPlanReviewPage: React.FC = () => {
@@ -45,6 +47,7 @@ export const AdvisorPlanReviewPage: React.FC = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['yearlyPlanDetail', id] });
       queryClient.invalidateQueries({ queryKey: ['advisorYearlyPlansQueue'] });
+      queryClient.invalidateQueries({ queryKey: ['advisorPlans'] });
       navigate('/advisor/yearly-plans');
     },
     onError: (
@@ -202,12 +205,15 @@ export const AdvisorPlanReviewPage: React.FC = () => {
                   <span className="text-xs font-bold text-ember-glow">
                     Event #{idx + 1}: {evt.eventName}
                   </span>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
+                  <div className="grid grid-cols-1 gap-2 mt-2">
                     <p className="text-xs text-fog"><strong className="text-vast-ink">Venue:</strong> {evt.venue}</p>
-                    <p className="text-xs text-fog"><strong className="text-vast-ink">Outside Participants:</strong> {evt.hasOutsideParticipants ? 'Yes' : 'No'}</p>
-                    <p className="text-xs text-fog"><strong className="text-vast-ink">Outside Speaker:</strong> {evt.hasOutsideSpeaker ? 'Yes' : 'No'}</p>
                   </div>
                   <p className="text-xs text-fog mt-2"><strong className="text-vast-ink">Description:</strong> {evt.description}</p>
+                  {evt.societyRules && (
+                    <p className="text-xs text-fog mt-1">
+                      <strong className="text-vast-ink">Society Guidelines:</strong> {evt.societyRules}
+                    </p>
+                  )}
                   {evt.rules && (
                     <p className="text-xs text-fog mt-1">
                       <strong className="text-vast-ink">Rules:</strong> {evt.rules}
@@ -247,9 +253,8 @@ export const AdvisorPlanReviewPage: React.FC = () => {
 
         {/* Existing Comments Callout */}
         {plan.advisorComments && (
-          <div className="p-4 bg-pure-white rounded-inputs border-2 border-vast-ink space-y-1">
-            <p className="text-xs text-ember-glow font-semibold">Previous Advisor Feedback:</p>
-            <p className="text-xs text-vast-ink font-medium whitespace-pre-line">&quot;{plan.advisorComments}&quot;</p>
+          <div className="p-4 bg-lumen-cream rounded-inputs border-2 border-vast-ink shadow-sm space-y-1">
+            <FeedbackHistory rawComments={plan.advisorComments} />
           </div>
         )}
 
@@ -273,7 +278,7 @@ export const AdvisorPlanReviewPage: React.FC = () => {
                 type="button"
                 variant="outline"
                 size="lg"
-                className="w-full sm:w-1/2 border-amber-500/30 text-ember-glow hover:bg-pure-white border border-ember-glow"
+                className="w-full sm:w-1/2"
                 isLoading={isSaving}
                 onClick={handleRequestChanges}
                 leftIcon={<Send className="w-4 h-4" />}
@@ -285,7 +290,7 @@ export const AdvisorPlanReviewPage: React.FC = () => {
                 type="button"
                 variant="primary"
                 size="lg"
-                className="w-full sm:w-1/2 bg-emerald-600 hover:bg-emerald-500 text-white"
+                className="w-full sm:w-1/2"
                 isLoading={isSaving}
                 onClick={handleApprove}
                 leftIcon={<CheckCircle2 className="w-5 h-5" />}

@@ -103,6 +103,7 @@ export const AdvisorEventReviewPage: React.FC = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['event', id] });
       queryClient.invalidateQueries({ queryKey: ['advisorEventsQueue'] });
+      queryClient.invalidateQueries({ queryKey: ['advisorEvents'] });
       navigate('/advisor/yearly-plans', { replace: true });
     },
     onError: (
@@ -200,9 +201,9 @@ export const AdvisorEventReviewPage: React.FC = () => {
           <div className="flex flex-wrap items-center gap-3 pt-2">
             <Button
               type="button"
+              variant="primary"
               onClick={() => updateEventStatusMutation.mutate({ status: 'PENDING_ADMIN' })}
               isLoading={updateEventStatusMutation.isPending}
-              className="bg-emerald-500 hover:bg-emerald-600 text-pure-white"
               leftIcon={<CheckCircle2 className="w-4 h-4" />}
             >
               Approve (Send to DSA)
@@ -212,7 +213,6 @@ export const AdvisorEventReviewPage: React.FC = () => {
               variant="outline"
               onClick={() => updateEventStatusMutation.mutate({ status: 'CHANGES_REQUESTED' })}
               isLoading={updateEventStatusMutation.isPending}
-              className="border-red-500 text-red-500 hover:bg-red-50"
               leftIcon={<AlertCircle className="w-4 h-4" />}
             >
               Request Changes

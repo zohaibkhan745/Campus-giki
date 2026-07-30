@@ -409,7 +409,7 @@ export const AdminEventsPage: React.FC = () => {
                 <div className="space-y-1">
                   <div className="flex flex-wrap items-center gap-2">
                     <Link
-                      to={`/events/${evt.id}`}
+                      to={evt.approvalStatus === 'PENDING_ADMIN' ? `/admin/events/${evt.id}/review` : `/events/${evt.id}`}
                       className="font-bold text-vast-ink text-base group-hover:text-vast-ink transition-colors hover:underline"
                     >
                       {evt.title}
@@ -470,11 +470,13 @@ export const AdminEventsPage: React.FC = () => {
                 )}
 
                 <Link
-                  to={`/events/${evt.id}`}
-                  className="inline-flex items-center gap-1 text-xs font-semibold text-vast-ink group-hover:translate-x-1 transition-transform focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 rounded p-0.5"
+                  to={evt.approvalStatus === 'PENDING_ADMIN' ? `/admin/events/${evt.id}/review` : `/events/${evt.id}`}
+                  className={`inline-flex items-center gap-1 text-xs font-semibold group-hover:translate-x-1 transition-transform focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 rounded p-0.5 ${
+                    evt.approvalStatus === 'PENDING_ADMIN' ? 'text-amber-600 hover:text-amber-700' : 'text-vast-ink'
+                  }`}
                   aria-label={`View details for ${evt.title}`}
                 >
-                  <span>View Details</span>
+                  <span>{evt.approvalStatus === 'PENDING_ADMIN' ? 'Review Event' : 'View Details'}</span>
                   <ArrowRight className="w-4 h-4" />
                 </Link>
               </div>

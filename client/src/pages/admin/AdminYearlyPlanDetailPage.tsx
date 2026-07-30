@@ -27,6 +27,7 @@ import {
 } from 'lucide-react';
 import { adminService } from '@/services/admin.service';
 import type { PlanStatus } from '@/types/yearly-plan.types';
+import { FeedbackHistory } from '@/components/shared/FeedbackHistory';
 import { Alert } from '@/components/ui/Alert';
 
 export const AdminYearlyPlanDetailPage: React.FC = () => {
@@ -56,7 +57,7 @@ export const AdminYearlyPlanDetailPage: React.FC = () => {
     watch,
   } = useForm({
     defaultValues: {
-      events: [{ eventName: '', startDate: '', endDate: '', description: '', venue: '', hasOutsideParticipants: false, hasOutsideSpeaker: false, rules: '', societyRules: '' }],
+      events: [{ eventName: '', startDate: '', endDate: '', description: '', venue: '', rules: '', societyRules: '' }],
     },
   });
 
@@ -74,8 +75,6 @@ export const AdminYearlyPlanDetailPage: React.FC = () => {
           endDate: e.endDate ? new Date(e.endDate).toISOString().split('T')[0] : '',
           description: e.description || '',
           venue: e.venue || '',
-          hasOutsideParticipants: e.hasOutsideParticipants || false,
-          hasOutsideSpeaker: e.hasOutsideSpeaker || false,
           rules: e.rules || '',
           societyRules: e.societyRules || '',
         })),
@@ -293,11 +292,8 @@ export const AdminYearlyPlanDetailPage: React.FC = () => {
         </h2>
 
         {plan.advisorComments ? (
-          <div className="p-4 bg-pure-white rounded-inputs border-2 border-vast-ink space-y-1">
-            <p className="text-xs font-semibold text-vast-ink">Advisor Feedback Log:</p>
-            <p className="text-xs text-vast-ink font-medium whitespace-pre-line leading-relaxed">
-              &quot;{plan.advisorComments}&quot;
-            </p>
+          <div className="p-4 bg-lumen-cream rounded-inputs border-2 border-vast-ink shadow-sm space-y-1">
+            <FeedbackHistory rawComments={plan.advisorComments} />
           </div>
         ) : (
           <p className="text-xs text-fog">No advisor feedback comments recorded for this plan.</p>
@@ -379,20 +375,24 @@ export const AdminYearlyPlanDetailPage: React.FC = () => {
                           <strong className="text-vast-ink">Venue:</strong>{' '}
                           {getValues(`events.${index}.venue`) || 'N/A'}
                         </p>
-                        <p className="text-fog">
-                          <strong className="text-vast-ink">Outside Participants:</strong>{' '}
-                          {getValues(`events.${index}.hasOutsideParticipants`) ? 'Yes' : 'No'}
-                        </p>
-                        <p className="text-fog">
-                          <strong className="text-vast-ink">Outside Speaker:</strong>{' '}
-                          {getValues(`events.${index}.hasOutsideSpeaker`) ? 'Yes' : 'No'}
-                        </p>
                       </div>
 
                       <p className="text-xs text-fog leading-relaxed">
                         <strong className="text-vast-ink">Description:</strong>{' '}
                         {getValues(`events.${index}.description`) || 'No description provided.'}
                       </p>
+
+                      {getValues(`events.${index}.societyRules`) && (
+                        <div className="p-3 bg-lumen-stone/60 border-2 border-vast-ink/20 rounded-inputs text-xs mb-2">
+                          <div className="flex items-center gap-1.5 font-bold text-vast-ink uppercase tracking-wider text-[11px] mb-1">
+                            <FileText className="w-3.5 h-3.5 text-vast-ink" />
+                            <span>Society Guidelines:</span>
+                          </div>
+                          <p className="text-vast-ink font-medium whitespace-pre-line leading-relaxed">
+                            {getValues(`events.${index}.societyRules`)}
+                          </p>
+                        </div>
+                      )}
 
                       {getValues(`events.${index}.rules`) ? (
                         <div className="p-3 bg-lavender-whisper border-2 border-vast-ink rounded-inputs text-xs">
@@ -454,66 +454,6 @@ export const AdminYearlyPlanDetailPage: React.FC = () => {
                           placeholder="e.g. AHA Auditorium"
                           {...register(`events.${index}.venue`)}
                         />
-
-                        <div className="flex flex-col justify-center space-y-2">
-                          <label className="text-xs font-bold text-vast-ink uppercase tracking-wider">
-                            Outside Participants?
-                          </label>
-                          <div className="flex items-center gap-4">
-                            <label className="flex items-center gap-2 cursor-pointer">
-                              <input
-                                type="radio"
-                                value="true"
-                                {...register(`events.${index}.hasOutsideParticipants`, {
-                                  setValueAs: (v) => v === 'true' || v === true,
-                                })}
-                                className="w-4 h-4 text-forest-ink"
-                              />
-                              <span className="text-xs font-bold text-vast-ink">Yes</span>
-                            </label>
-                            <label className="flex items-center gap-2 cursor-pointer">
-                              <input
-                                type="radio"
-                                value="false"
-                                {...register(`events.${index}.hasOutsideParticipants`, {
-                                  setValueAs: (v) => v === 'true' || v === true,
-                                })}
-                                className="w-4 h-4 text-forest-ink"
-                              />
-                              <span className="text-xs font-bold text-vast-ink">No</span>
-                            </label>
-                          </div>
-                        </div>
-
-                        <div className="flex flex-col justify-center space-y-2">
-                          <label className="text-xs font-bold text-vast-ink uppercase tracking-wider">
-                            Outside Speaker?
-                          </label>
-                          <div className="flex items-center gap-4">
-                            <label className="flex items-center gap-2 cursor-pointer">
-                              <input
-                                type="radio"
-                                value="true"
-                                {...register(`events.${index}.hasOutsideSpeaker`, {
-                                  setValueAs: (v) => v === 'true' || v === true,
-                                })}
-                                className="w-4 h-4 text-forest-ink"
-                              />
-                              <span className="text-xs font-bold text-vast-ink">Yes</span>
-                            </label>
-                            <label className="flex items-center gap-2 cursor-pointer">
-                              <input
-                                type="radio"
-                                value="false"
-                                {...register(`events.${index}.hasOutsideSpeaker`, {
-                                  setValueAs: (v) => v === 'true' || v === true,
-                                })}
-                                className="w-4 h-4 text-forest-ink"
-                              />
-                              <span className="text-xs font-bold text-vast-ink">No</span>
-                            </label>
-                          </div>
-                        </div>
 
                         <div className="col-span-1 md:col-span-2 lg:col-span-3 space-y-3">
                           <div className="flex flex-col space-y-1">

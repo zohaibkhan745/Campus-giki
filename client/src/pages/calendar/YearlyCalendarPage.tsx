@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
+import { FeedbackHistory } from '@/components/shared/FeedbackHistory';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
@@ -62,7 +63,7 @@ export const YearlyCalendarPage: React.FC = () => {
     resolver: zodResolver(yearlyPlanFormSchema),
     defaultValues: {
       year: currentYear,
-      events: [{ eventName: '', startDate: '', endDate: '', description: '', venue: '', hasOutsideParticipants: false, hasOutsideSpeaker: false, rules: '', societyRules: '' }],
+      events: [{ eventName: '', startDate: '', endDate: '', description: '', venue: '', rules: '', societyRules: '' }],
     },
   });
 
@@ -82,8 +83,6 @@ export const YearlyCalendarPage: React.FC = () => {
           endDate: e.endDate ? new Date(e.endDate).toISOString().split('T')[0] : '',
           description: e.description || '',
           venue: e.venue || '',
-          hasOutsideParticipants: e.hasOutsideParticipants || false,
-          hasOutsideSpeaker: e.hasOutsideSpeaker || false,
           rules: e.rules || '',
           societyRules: e.societyRules || '',
         })),
@@ -168,6 +167,10 @@ export const YearlyCalendarPage: React.FC = () => {
     }
   };
 
+  const handleInvalid = (errors: any) => {
+    setServerError('Please fill in all required fields properly. Check the form for details.');
+  };
+
   const renderStatusBadge = (status?: PlanStatus) => {
     switch (status) {
       case 'APPROVED':
@@ -243,18 +246,13 @@ export const YearlyCalendarPage: React.FC = () => {
 
       {/* Advisor Feedback Callout Box if Changes Requested or Comments Available */}
       {existingPlan?.advisorComments && (
-        <div className="bg-lumen-cream p-5 rounded-cards border border-amber-500/30 bg-amber-500/5 space-y-2">
-          <div className="flex items-center gap-2 font-bold text-sm text-ember-glow">
-            <MessageSquare className="w-4 h-4" />
-            <span>Faculty Advisor Feedback:</span>
-          </div>
-          <p className="text-sm text-vast-ink leading-relaxed bg-lumen-cream/40 p-3 rounded-inputs border border-amber-500/20">
-            &quot;{existingPlan.advisorComments}&quot;
-          </p>
+        <div className="bg-lumen-cream p-5 rounded-cards border-2 border-vast-ink shadow-sm space-y-2">
+          <FeedbackHistory rawComments={existingPlan.advisorComments} />
           {isChangesRequested && (
-            <p className="text-xs text-amber-300/80">
-              Please adjust your planned event dates or notes as requested above and click &quot;Resubmit for Approval&quot;.
-            </p>
+            <div className="p-3 bg-ember-glow text-pure-white rounded-inputs border border-amber-600/30 text-xs font-semibold shadow-sm animate-pulse flex items-center gap-2 mt-4">
+              <AlertCircle className="w-4 h-4 shrink-0" />
+              <span>Please adjust your planned event dates or notes as requested above and click &quot;Resubmit for Approval&quot;.</span>
+            </div>
           )}
         </div>
       )}
@@ -273,7 +271,7 @@ export const YearlyCalendarPage: React.FC = () => {
                 type="button"
                 variant="outline"
                 size="sm"
-                onClick={() => append({ eventName: '', startDate: '', endDate: '', description: '', venue: '', hasOutsideParticipants: false, hasOutsideSpeaker: false, rules: '', societyRules: '' })}
+                onClick={() => append({ eventName: '', startDate: '', endDate: '', description: '', venue: '', rules: '', societyRules: '' })}
                 leftIcon={<Plus className="w-4 h-4" />}
               >
                 Add Event Row
@@ -332,66 +330,6 @@ export const YearlyCalendarPage: React.FC = () => {
                     error={errors.events?.[index]?.venue?.message}
                     {...register(`events.${index}.venue`)}
                   />
-
-                  <div className="flex flex-col justify-center space-y-2">
-                    <label className="text-sm font-semibold text-vast-ink">Outside Participants?</label>
-                    <div className="flex items-center gap-4">
-                      <label className="flex items-center gap-2">
-                        <input
-                          type="radio"
-                          value="true"
-                          disabled={isReadOnly || isSaving}
-                          {...register(`events.${index}.hasOutsideParticipants`, {
-                            setValueAs: (v) => v === 'true' || v === true
-                          })}
-                          className="w-4 h-4 text-forest-ink focus:ring-forest-ink"
-                        />
-                        <span className="text-sm font-medium">Yes</span>
-                      </label>
-                      <label className="flex items-center gap-2">
-                        <input
-                          type="radio"
-                          value="false"
-                          disabled={isReadOnly || isSaving}
-                          {...register(`events.${index}.hasOutsideParticipants`, {
-                            setValueAs: (v) => v === 'true' || v === true
-                          })}
-                          className="w-4 h-4 text-forest-ink focus:ring-forest-ink"
-                        />
-                        <span className="text-sm font-medium">No</span>
-                      </label>
-                    </div>
-                  </div>
-
-                  <div className="flex flex-col justify-center space-y-2">
-                    <label className="text-sm font-semibold text-vast-ink">Outside Speaker?</label>
-                    <div className="flex items-center gap-4">
-                      <label className="flex items-center gap-2">
-                        <input
-                          type="radio"
-                          value="true"
-                          disabled={isReadOnly || isSaving}
-                          {...register(`events.${index}.hasOutsideSpeaker`, {
-                            setValueAs: (v) => v === 'true' || v === true
-                          })}
-                          className="w-4 h-4 text-forest-ink focus:ring-forest-ink"
-                        />
-                        <span className="text-sm font-medium">Yes</span>
-                      </label>
-                      <label className="flex items-center gap-2">
-                        <input
-                          type="radio"
-                          value="false"
-                          disabled={isReadOnly || isSaving}
-                          {...register(`events.${index}.hasOutsideSpeaker`, {
-                            setValueAs: (v) => v === 'true' || v === true
-                          })}
-                          className="w-4 h-4 text-forest-ink focus:ring-forest-ink"
-                        />
-                        <span className="text-sm font-medium">No</span>
-                      </label>
-                    </div>
-                  </div>
 
                   <div className="col-span-1 md:col-span-2 lg:col-span-3 space-y-4">
                     <div className="flex flex-col space-y-1">
@@ -461,7 +399,7 @@ export const YearlyCalendarPage: React.FC = () => {
               size="lg"
               className="w-full sm:w-1/2"
               isLoading={isSaving}
-              onClick={handleSubmit(handleSaveDraft)}
+              onClick={handleSubmit(handleSaveDraft, handleInvalid)}
               leftIcon={<Save className="w-5 h-5" />}
             >
               Save as Draft
@@ -473,7 +411,7 @@ export const YearlyCalendarPage: React.FC = () => {
               size="lg"
               className="w-full sm:w-1/2"
               isLoading={isSaving}
-              onClick={handleSubmit(handleSubmitForReview)}
+              onClick={handleSubmit(handleSubmitForReview, handleInvalid)}
               leftIcon={<Send className="w-5 h-5" />}
             >
               {isChangesRequested ? 'Resubmit for Advisor Approval' : 'Submit for Advisor Approval'}

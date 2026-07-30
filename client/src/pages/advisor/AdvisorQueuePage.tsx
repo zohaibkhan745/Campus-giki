@@ -23,6 +23,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { advisorService } from '@/services/advisor.service';
 import type { PlanStatus } from '@/types/yearly-plan.types';
 import { Alert } from '@/components/ui/Alert';
+import { usePendingCounts } from '@/hooks/usePendingCounts';
 
 export const AdvisorQueuePage: React.FC = () => {
   const { user, logout } = useAuth();
@@ -30,6 +31,7 @@ export const AdvisorQueuePage: React.FC = () => {
   const [page, setPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState<string>('');
   const [activeTab, setActiveTab] = useState<'plans' | 'events'>('events');
+  const { pendingEventsCount, pendingPlansCount } = usePendingCounts();
 
   const { data: profileData } = useQuery({
     queryKey: ['advisorProfile'],
@@ -182,23 +184,33 @@ export const AdvisorQueuePage: React.FC = () => {
           <div className="grid grid-cols-2 gap-3">
             <button
               onClick={() => { setActiveTab('events'); setPage(1); setStatusFilter(''); }}
-              className={`flex flex-col items-center justify-center gap-2 p-4 rounded-inputs font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18] ${
+              className={`flex flex-col items-center justify-center gap-2 p-4 rounded-inputs font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18] relative ${
                 activeTab === 'events'
                   ? 'bg-vast-ink text-pure-white'
                   : 'bg-pure-white text-vast-ink border-2 border-vast-ink hover:bg-lumen-stone'
               }`}
             >
+              {pendingEventsCount > 0 && (
+                <span className="absolute top-2 right-2 flex items-center justify-center w-5 h-5 bg-ember-glow text-pure-white text-[10px] font-bold rounded-full shadow-sm animate-pulse">
+                  {pendingEventsCount > 9 ? '9+' : pendingEventsCount}
+                </span>
+              )}
               <Ticket className="w-6 h-6" />
               <span>Events</span>
             </button>
             <button
               onClick={() => { setActiveTab('plans'); setPage(1); setStatusFilter(''); }}
-              className={`flex flex-col items-center justify-center gap-2 p-4 rounded-inputs font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18] ${
+              className={`flex flex-col items-center justify-center gap-2 p-4 rounded-inputs font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18] relative ${
                 activeTab === 'plans'
                   ? 'bg-vast-ink text-pure-white'
                   : 'bg-pure-white text-vast-ink border-2 border-vast-ink hover:bg-lumen-stone'
               }`}
             >
+              {pendingPlansCount > 0 && (
+                <span className="absolute top-2 right-2 flex items-center justify-center w-5 h-5 bg-ember-glow text-pure-white text-[10px] font-bold rounded-full shadow-sm animate-pulse">
+                  {pendingPlansCount > 9 ? '9+' : pendingPlansCount}
+                </span>
+              )}
               <CalendarDays className="w-6 h-6" />
               <span>Annual Plans</span>
             </button>
