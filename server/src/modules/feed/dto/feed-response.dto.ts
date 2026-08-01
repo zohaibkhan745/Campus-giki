@@ -61,6 +61,9 @@ export class FeedItemDto {
   coverImageUrl?: string | null;
 
   @ApiPropertyOptional()
+  videoUrl?: string | null;
+
+  @ApiPropertyOptional()
   registrationLink?: string | null;
 
   // Post specific fields

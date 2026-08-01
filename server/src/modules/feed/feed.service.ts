@@ -72,6 +72,7 @@ export class FeedService {
       endTime: event.endTime,
       venue: event.venue,
       coverImageUrl: event.coverImageUrl,
+      videoUrl: event.videoUrl,
       registrationLink: event.registrationLink,
     }));
 
@@ -94,6 +95,7 @@ export class FeedService {
         society: societyInfo,
         content: post.content,
         imageUrl: post.imageUrl,
+        videoUrl: post.videoUrl,
         isAdminPost,
       } as FeedItemDto;
     });

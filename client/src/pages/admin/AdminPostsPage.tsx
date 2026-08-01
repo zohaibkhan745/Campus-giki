@@ -292,7 +292,17 @@ export const AdminPostsPage: React.FC = () => {
                 
                 <p className="text-sm text-vast-ink whitespace-pre-wrap flex-1">{post.content}</p>
                 
-                {post.imageUrl && (
+                {post.videoUrl && (
+                  <div className="mt-4 rounded-inputs overflow-hidden border-2 border-vast-ink bg-black">
+                    <video 
+                      controls
+                      src={post.videoUrl} 
+                      className="w-full max-h-56 object-contain"
+                    />
+                  </div>
+                )}
+
+                {post.imageUrl && !post.videoUrl && (
                   <div className="mt-4 rounded-inputs overflow-hidden border-2 border-vast-ink">
                     <img 
                       src={post.imageUrl} 
