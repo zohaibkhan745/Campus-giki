@@ -23,6 +23,7 @@ import {
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { Alert } from '@/components/ui/Alert';
+import { ImageUploader } from '@/components/common/ImageUploader';
 import type { AxiosError } from 'axios';
 
 export const EditEventPage: React.FC = () => {
@@ -45,11 +46,15 @@ export const EditEventPage: React.FC = () => {
   const {
     register,
     handleSubmit,
+    setValue,
+    watch,
     reset,
     formState: { errors },
   } = useForm<EventFormData>({
     resolver: zodResolver(eventFormSchema),
   });
+
+  const coverImageUrl = watch('coverImageUrl');
 
   // Pre-fill form when event data is loaded
   useEffect(() => {
@@ -315,13 +320,11 @@ export const EditEventPage: React.FC = () => {
             Media & External Registration (Optional)
           </h2>
 
-          <Input
-            label="Cover Image URL"
-            placeholder="https://giki.edu.pk/events/softdesk-banner.png"
-            leftIcon={<Image className="w-4 h-4" />}
-            disabled={updateMutation.isPending}
-            error={errors.coverImageUrl?.message}
-            {...register('coverImageUrl')}
+          <ImageUploader
+            value={coverImageUrl || ''}
+            onChange={(url) => setValue('coverImageUrl', url, { shouldValidate: true })}
+            folder="events"
+            label="Event Cover Image (Banner)"
           />
 
           <Input

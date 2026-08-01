@@ -25,6 +25,7 @@ import {
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { Alert } from '@/components/ui/Alert';
+import { ImageUploader } from '@/components/common/ImageUploader';
 import type { AxiosError } from 'axios';
 
 export const CreateEventPage: React.FC = () => {
@@ -38,6 +39,7 @@ export const CreateEventPage: React.FC = () => {
     register,
     handleSubmit,
     setValue,
+    watch,
     formState: { errors },
   } = useForm<EventFormData>({
     resolver: zodResolver(eventFormSchema),
@@ -56,6 +58,8 @@ export const CreateEventPage: React.FC = () => {
       inChargeContact: '',
     },
   });
+
+  const coverImageUrl = watch('coverImageUrl');
 
   const { data: myPlans } = useQuery({
     queryKey: ['myYearlyPlans'],
@@ -325,13 +329,11 @@ export const CreateEventPage: React.FC = () => {
             Media & External Registration (Optional)
           </h2>
 
-          <Input
-            label="Cover Image URL"
-            placeholder="https://giki.edu.pk/events/softdesk-banner.png"
-            leftIcon={<Image className="w-4 h-4" />}
-            disabled={createMutation.isPending}
-            error={errors.coverImageUrl?.message}
-            {...register('coverImageUrl')}
+          <ImageUploader
+            value={coverImageUrl || ''}
+            onChange={(url) => setValue('coverImageUrl', url, { shouldValidate: true })}
+            folder="events"
+            label="Event Cover Image (Banner)"
           />
 
           <Input

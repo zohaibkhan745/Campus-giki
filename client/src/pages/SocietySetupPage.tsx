@@ -24,6 +24,7 @@ import {
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { Alert } from '@/components/ui/Alert';
+import { ImageUploader } from '@/components/common/ImageUploader';
 import type { AxiosError } from 'axios';
 
 export const SocietySetupPage: React.FC = () => {
@@ -47,6 +48,8 @@ export const SocietySetupPage: React.FC = () => {
   const {
     register,
     handleSubmit,
+    setValue,
+    watch,
     reset,
     formState: { errors },
   } = useForm<SocietySetupFormData>({
@@ -68,6 +71,9 @@ export const SocietySetupPage: React.FC = () => {
       presidentContact: '',
     },
   });
+
+  const logoUrl = watch('logoUrl');
+  const bannerUrl = watch('bannerUrl');
 
   useEffect(() => {
     if (mySociety && isEditing) {
@@ -269,22 +275,18 @@ export const SocietySetupPage: React.FC = () => {
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Input
-              label="Logo URL"
-              placeholder="https://giki.edu.pk/societies/acm-logo.png"
-              leftIcon={<Image className="w-4 h-4" />}
-              disabled={setupMutation.isPending}
-              error={errors.logoUrl?.message}
-              {...register('logoUrl')}
+            <ImageUploader
+              value={logoUrl || ''}
+              onChange={(url) => setValue('logoUrl', url, { shouldValidate: true })}
+              folder="societies"
+              label="Society Logo"
             />
 
-            <Input
-              label="Banner URL"
-              placeholder="https://giki.edu.pk/societies/acm-banner.png"
-              leftIcon={<Image className="w-4 h-4" />}
-              disabled={setupMutation.isPending}
-              error={errors.bannerUrl?.message}
-              {...register('bannerUrl')}
+            <ImageUploader
+              value={bannerUrl || ''}
+              onChange={(url) => setValue('bannerUrl', url, { shouldValidate: true })}
+              folder="societies"
+              label="Society Banner Image"
             />
           </div>
 
