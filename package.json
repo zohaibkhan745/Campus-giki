@@ -14,7 +14,8 @@
     "prisma:generate": "cd server && npm run prisma:generate",
     "prisma:migrate:dev": "cd server && npm run prisma:migrate:dev",
     "prisma:studio": "cd server && npm run prisma:studio",
-    "seed": "cd server && npm run seed"
+    "seed": "cd server && npm run seed",
+    "tunnel": "ngrok http 3000"
   },
   "keywords": [
     "giki",

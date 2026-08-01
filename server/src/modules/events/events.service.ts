@@ -232,6 +232,7 @@ export class EventsService {
         endTime: dto.endTime,
         venue: dto.venue,
         coverImageUrl,
+        videoUrl: dto.videoUrl || null,
         registrationLink: dto.registrationLink || null,
         eventType: dto.eventType || null,
         inChargeName: dto.inChargeName || null,
@@ -354,6 +355,9 @@ export class EventsService {
         ...(dto.venue && { venue: dto.venue }),
         ...(dto.coverImageUrl !== undefined && {
           coverImageUrl: dto.coverImageUrl || null,
+        }),
+        ...(dto.videoUrl !== undefined && {
+          videoUrl: dto.videoUrl || null,
         }),
         ...(dto.registrationLink !== undefined && {
           registrationLink: dto.registrationLink || null,

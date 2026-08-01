@@ -23,6 +23,7 @@ export interface EventFeedItem {
   endTime: string;
   venue: string;
   coverImageUrl?: string | null;
+  videoUrl?: string | null;
   registrationLink?: string | null;
 }
 
@@ -33,6 +34,7 @@ export interface PostFeedItem {
   society: FeedSociety;
   content: string;
   imageUrl?: string | null;
+  videoUrl?: string | null;
   isAdminPost?: boolean;
 }
 

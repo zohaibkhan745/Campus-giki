@@ -17,6 +17,7 @@ export class PostsService {
       data: {
         content: dto.content,
         imageUrl: dto.imageUrl,
+        videoUrl: dto.videoUrl,
         authorId: user.id,
       },
     });

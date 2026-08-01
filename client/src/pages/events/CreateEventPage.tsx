@@ -26,6 +26,7 @@ import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { Alert } from '@/components/ui/Alert';
 import { ImageUploader } from '@/components/common/ImageUploader';
+import { VideoUploader } from '@/components/common/VideoUploader';
 import type { AxiosError } from 'axios';
 
 export const CreateEventPage: React.FC = () => {
@@ -60,6 +61,7 @@ export const CreateEventPage: React.FC = () => {
   });
 
   const coverImageUrl = watch('coverImageUrl');
+  const videoUrl = watch('videoUrl');
 
   const { data: myPlans } = useQuery({
     queryKey: ['myYearlyPlans'],
@@ -334,6 +336,13 @@ export const CreateEventPage: React.FC = () => {
             onChange={(url) => setValue('coverImageUrl', url, { shouldValidate: true })}
             folder="events"
             label="Event Cover Image (Banner)"
+          />
+
+          <VideoUploader
+            value={videoUrl || ''}
+            onChange={(url) => setValue('videoUrl', url, { shouldValidate: true })}
+            folder="events"
+            label="Event Promotional Video (Optional)"
           />
 
           <Input

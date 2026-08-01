@@ -7,6 +7,7 @@ export interface EventItem {
   endTime: string;
   venue: string;
   coverImageUrl?: string | null;
+  videoUrl?: string | null;
   registrationLink?: string | null;
   eventType?: string | null;
   inChargeName?: string | null;

@@ -34,6 +34,7 @@ export const eventFormSchema = z
       .min(2, 'Venue location must be at least 2 characters')
       .max(100, 'Venue cannot exceed 100 characters'),
     coverImageUrl: optionalUrl,
+    videoUrl: optionalUrl,
     registrationLink: optionalUrl,
     eventType: z.string().optional(),
     inChargeName: z.string().optional(),

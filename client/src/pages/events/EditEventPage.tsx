@@ -24,6 +24,7 @@ import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { Alert } from '@/components/ui/Alert';
 import { ImageUploader } from '@/components/common/ImageUploader';
+import { VideoUploader } from '@/components/common/VideoUploader';
 import type { AxiosError } from 'axios';
 
 export const EditEventPage: React.FC = () => {
@@ -55,6 +56,7 @@ export const EditEventPage: React.FC = () => {
   });
 
   const coverImageUrl = watch('coverImageUrl');
+  const videoUrl = watch('videoUrl');
 
   // Pre-fill form when event data is loaded
   useEffect(() => {
@@ -71,6 +73,7 @@ export const EditEventPage: React.FC = () => {
         endTime: eventData.endTime,
         venue: eventData.venue,
         coverImageUrl: eventData.coverImageUrl || '',
+        videoUrl: eventData.videoUrl || '',
         registrationLink: eventData.registrationLink || '',
         eventType: eventData.eventType || '',
         inChargeName: eventData.inChargeName || '',
@@ -325,6 +328,13 @@ export const EditEventPage: React.FC = () => {
             onChange={(url) => setValue('coverImageUrl', url, { shouldValidate: true })}
             folder="events"
             label="Event Cover Image (Banner)"
+          />
+
+          <VideoUploader
+            value={videoUrl || ''}
+            onChange={(url) => setValue('videoUrl', url, { shouldValidate: true })}
+            folder="events"
+            label="Event Promotional Video (Optional)"
           />
 
           <Input

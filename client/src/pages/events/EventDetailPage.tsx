@@ -83,6 +83,17 @@ export const EventDetailPage: React.FC = () => {
           </div>
         )}
 
+        {/* 1.1 Event Promotional Video */}
+        {eventItem.videoUrl && (
+          <div className="w-full rounded-cards overflow-hidden bg-black border-2 border-vast-ink shadow-xl">
+            <video
+              controls
+              src={eventItem.videoUrl}
+              className="w-full max-h-[480px] object-contain"
+            />
+          </div>
+        )}
+
         {/* 2. Hero Header */}
         <div className="space-y-4 border-b-2 border-vast-ink pb-6">
           <div className="flex flex-wrap items-center justify-between gap-4">

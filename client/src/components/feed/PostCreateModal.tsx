@@ -1,15 +1,16 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { X, Image as ImageIcon, Loader2 } from 'lucide-react';
+import { X, Image as ImageIcon, Video, Loader2 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { uploadService } from '@/services/upload.service';
 
 interface PostCreateModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: { content: string; imageUrl?: string }) => Promise<void> | void;
+  onSubmit: (data: { content: string; imageUrl?: string; videoUrl?: string }) => Promise<void> | void;
   isSubmitting?: boolean;
   initialContent?: string;
   initialImageUrl?: string;
+  initialVideoUrl?: string;
 }
 
 export const PostCreateModal: React.FC<PostCreateModalProps> = ({
@@ -19,67 +20,92 @@ export const PostCreateModal: React.FC<PostCreateModalProps> = ({
   isSubmitting = false,
   initialContent = '',
   initialImageUrl = '',
+  initialVideoUrl = '',
 }) => {
   const { user } = useAuth();
   const [content, setContent] = useState(initialContent);
   const [imageUrl, setImageUrl] = useState(initialImageUrl);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(initialImageUrl || null);
+  const [videoUrl, setVideoUrl] = useState(initialVideoUrl);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(initialImageUrl || initialVideoUrl || null);
+  const [mediaType, setMediaType] = useState<'image' | 'video' | null>(
+    initialVideoUrl ? 'video' : initialImageUrl ? 'image' : null,
+  );
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
 
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const imageInputRef = useRef<HTMLInputElement>(null);
+  const videoInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (isOpen) {
       setContent(initialContent);
       setImageUrl(initialImageUrl);
-      setPreviewUrl(initialImageUrl || null);
+      setVideoUrl(initialVideoUrl);
+      setPreviewUrl(initialImageUrl || initialVideoUrl || null);
+      setMediaType(initialVideoUrl ? 'video' : initialImageUrl ? 'image' : null);
       setUploadError(null);
     }
-  }, [isOpen, initialContent, initialImageUrl]);
+  }, [isOpen, initialContent, initialImageUrl, initialVideoUrl]);
 
-  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>, type: 'image' | 'video') => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     setUploadError(null);
-    if (!file.type.startsWith('image/')) {
+
+    if (type === 'image' && !file.type.startsWith('image/')) {
       setUploadError('Please select a valid image file');
       return;
     }
 
-    if (file.size > 5 * 1024 * 1024) {
-      setUploadError('File size must be under 5MB');
+    if (type === 'video' && !file.type.startsWith('video/')) {
+      setUploadError('Please select a valid video file (MP4, WebM, MOV)');
       return;
     }
 
-    // Instant local preview
+    const maxSize = type === 'video' ? 50 * 1024 * 1024 : 5 * 1024 * 1024;
+    if (file.size > maxSize) {
+      setUploadError(`File size must be under ${type === 'video' ? '50MB' : '5MB'}`);
+      return;
+    }
+
+    // Local Preview
     const localUrl = URL.createObjectURL(file);
     setPreviewUrl(localUrl);
+    setMediaType(type);
     setIsUploading(true);
 
     try {
-      const res = await uploadService.uploadImage(file, 'posts');
+      const res = await uploadService.uploadMedia(file, 'posts');
       const finalUrl = res.url || res.relativePath;
-      setImageUrl(finalUrl);
+      if (type === 'image') {
+        setImageUrl(finalUrl);
+        setVideoUrl('');
+      } else {
+        setVideoUrl(finalUrl);
+        setImageUrl('');
+      }
       setPreviewUrl(finalUrl);
     } catch (err: any) {
-      console.error('Failed to upload image:', err);
-      setUploadError(err?.response?.data?.message || 'Failed to upload image');
+      console.error('Failed to upload file:', err);
+      setUploadError(err?.response?.data?.message || 'Failed to upload media file');
       setPreviewUrl(null);
       setImageUrl('');
+      setVideoUrl('');
+      setMediaType(null);
     } finally {
       setIsUploading(false);
     }
   };
 
-  const handleRemoveImage = () => {
+  const handleRemoveMedia = () => {
     setImageUrl('');
+    setVideoUrl('');
     setPreviewUrl(null);
+    setMediaType(null);
     setUploadError(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
+    if (imageInputRef.current) imageInputRef.current.value = '';
+    if (videoInputRef.current) videoInputRef.current.value = '';
   };
 
   const handleSubmitForm = async (e: React.FormEvent) => {
@@ -89,6 +115,7 @@ export const PostCreateModal: React.FC<PostCreateModalProps> = ({
     await onSubmit({
       content: content.trim(),
       imageUrl: imageUrl.trim() || undefined,
+      videoUrl: videoUrl.trim() || undefined,
     });
   };
 
@@ -104,13 +131,20 @@ export const PostCreateModal: React.FC<PostCreateModalProps> = ({
         className="bg-white w-full max-w-xl rounded-[28px] p-6 shadow-2xl relative border border-slate-100 flex flex-col justify-between min-h-[300px] transition-all"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Hidden File Input */}
+        {/* Hidden File Inputs */}
         <input
-          ref={fileInputRef}
+          ref={imageInputRef}
           type="file"
-          accept="image/*"
+          accept="image/png, image/jpeg, image/webp, image/gif"
           className="hidden"
-          onChange={handleFileSelect}
+          onChange={(e) => handleFileSelect(e, 'image')}
+        />
+        <input
+          ref={videoInputRef}
+          type="file"
+          accept="video/mp4, video/webm, video/quicktime, video/x-matroska"
+          className="hidden"
+          onChange={(e) => handleFileSelect(e, 'video')}
         />
 
         <div>
@@ -156,25 +190,35 @@ export const PostCreateModal: React.FC<PostCreateModalProps> = ({
               className="w-full text-slate-800 text-base placeholder:text-slate-400 placeholder:font-normal font-normal bg-transparent border-none outline-none focus:ring-0 resize-none p-0 mt-2"
             />
 
-            {/* Attached Image Preview */}
+            {/* Attached Media Preview */}
             {previewUrl && (
-              <div className="relative rounded-2xl overflow-hidden border border-slate-100 bg-slate-50 group max-h-60 flex items-center justify-center my-2">
-                <img
-                  src={previewUrl}
-                  alt="Attachment preview"
-                  className="w-full h-auto max-h-60 object-cover"
-                />
+              <div className="relative rounded-2xl overflow-hidden border border-slate-100 bg-black group max-h-64 flex items-center justify-center my-2">
+                {mediaType === 'video' || videoUrl ? (
+                  <video
+                    src={previewUrl}
+                    controls
+                    className="w-full max-h-64 object-contain rounded-2xl"
+                  />
+                ) : (
+                  <img
+                    src={previewUrl}
+                    alt="Attachment preview"
+                    className="w-full h-auto max-h-64 object-cover"
+                  />
+                )}
+
                 {isUploading && (
-                  <div className="absolute inset-0 bg-slate-900/60 flex items-center justify-center text-white text-xs font-semibold gap-2 backdrop-blur-[2px]">
-                    <Loader2 className="w-6 h-6 animate-spin text-white" />
-                    <span>Uploading Image...</span>
+                  <div className="absolute inset-0 bg-slate-950/70 flex flex-col items-center justify-center text-white text-xs font-semibold gap-2 backdrop-blur-[2px]">
+                    <Loader2 className="w-7 h-7 animate-spin text-white" />
+                    <span>Uploading {mediaType === 'video' ? 'Video...' : 'Image...'}</span>
                   </div>
                 )}
+
                 <button
                   type="button"
-                  onClick={handleRemoveImage}
-                  className="absolute top-2.5 right-2.5 p-1.5 rounded-full bg-slate-900/80 hover:bg-slate-950 text-white shadow-md transition-all active:scale-95"
-                  title="Remove image"
+                  onClick={handleRemoveMedia}
+                  className="absolute top-2.5 right-2.5 p-2 rounded-full bg-slate-900/80 hover:bg-slate-950 text-white shadow-md transition-all active:scale-95 z-10"
+                  title="Remove media"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -185,15 +229,24 @@ export const PostCreateModal: React.FC<PostCreateModalProps> = ({
 
         {/* Bottom Actions Bar */}
         <div className="flex items-center justify-between pt-3 mt-4 border-t border-slate-100/80">
-          {/* Left Action: Image Upload Icon */}
-          <div className="flex items-center">
+          {/* Left Actions: Image & Video Buttons */}
+          <div className="flex items-center gap-1">
             <button
               type="button"
-              onClick={() => fileInputRef.current?.click()}
+              onClick={() => imageInputRef.current?.click()}
               className="p-2.5 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-full transition-colors flex items-center justify-center"
               title="Add Image"
             >
               <ImageIcon className="w-6 h-6 stroke-[1.75]" />
+            </button>
+
+            <button
+              type="button"
+              onClick={() => videoInputRef.current?.click()}
+              className="p-2.5 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-full transition-colors flex items-center justify-center"
+              title="Add Video"
+            >
+              <Video className="w-6 h-6 stroke-[1.75]" />
             </button>
           </div>
 

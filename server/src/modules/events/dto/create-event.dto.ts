@@ -75,6 +75,14 @@ export class CreateEventDto {
   coverImageUrl?: string;
 
   @ApiPropertyOptional({
+    example: 'https://giki.edu.pk/events/promo-video.mp4',
+  })
+  @IsOptional()
+  @Transform(({ value }: { value: unknown }) => (value === '' ? undefined : value))
+  @IsString()
+  videoUrl?: string;
+
+  @ApiPropertyOptional({
     example: 'https://forms.gle/sampleRegistrationFormId',
   })
   @IsOptional()

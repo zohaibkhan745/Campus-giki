@@ -81,8 +81,19 @@ export const PostCard: React.FC<PostCardProps> = ({ item }) => {
         )}
       </div>
 
+      {/* Optional Post Video */}
+      {item.videoUrl && (
+        <div className="overflow-hidden rounded-[24px] border-2 border-vast-ink mt-4 bg-black">
+          <video
+            controls
+            src={item.videoUrl}
+            className="w-full max-h-[450px] object-contain"
+          />
+        </div>
+      )}
+
       {/* Optional Post Image */}
-      {item.imageUrl && (
+      {item.imageUrl && !item.videoUrl && (
         <div className="overflow-hidden rounded-[24px] border-2 border-vast-ink mt-4">
           <img
             src={item.imageUrl}
