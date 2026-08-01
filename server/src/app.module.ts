@@ -1,3 +1,5 @@
+import { join } from 'path';
+import { ServeStaticModule } from '@nestjs/serve-static';
 import { Module } from '@nestjs/common';
 import { AppConfigModule } from './core/config/config.module';
 import { PrismaModule } from './core/database/prisma.module';
@@ -11,11 +13,19 @@ import { AdvisorsModule } from './modules/advisors/advisors.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { FeedModule } from './modules/feed/feed.module';
 import { PostsModule } from './modules/posts/posts.module';
+import { UploadsModule } from './modules/uploads/uploads.module';
 
 @Module({
   imports: [
     AppConfigModule,
     PrismaModule,
+    ServeStaticModule.forRoot({
+      rootPath: join(process.cwd(), 'uploads'),
+      serveRoot: '/uploads',
+      serveStaticOptions: {
+        maxAge: 31536000000, // 1 year cache for static images
+      },
+    }),
     HealthModule,
     AuthModule,
     CategoriesModule,
@@ -26,6 +36,7 @@ import { PostsModule } from './modules/posts/posts.module';
     AdminModule,
     FeedModule,
     PostsModule,
+    UploadsModule,
   ],
 })
 export class AppModule {}

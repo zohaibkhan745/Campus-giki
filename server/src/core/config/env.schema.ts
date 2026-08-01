@@ -21,4 +21,9 @@ export const envSchema = Joi.object({
     .messages({ 'any.required': 'JWT_SECRET environment variable is required' }),
 
   JWT_EXPIRES_IN: Joi.string().default('1d'),
+
+  STORAGE_DRIVER: Joi.string().valid('local', 's3', 'minio').default('local'),
+  STORAGE_LOCAL_PATH: Joi.string().default('./uploads'),
+  UPLOAD_MAX_SIZE_MB: Joi.number().default(5),
+  APP_URL: Joi.string().default('http://localhost:5000'),
 });

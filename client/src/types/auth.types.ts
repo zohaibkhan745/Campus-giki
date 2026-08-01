@@ -12,6 +12,12 @@ export interface UserProfile {
     department: string;
     designation: string;
   };
+  society?: {
+    id: string;
+    name: string;
+    logoUrl?: string | null;
+    bannerUrl?: string | null;
+  };
   createdAt: string;
   updatedAt: string;
 }

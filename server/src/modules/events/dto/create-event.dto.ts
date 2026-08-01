@@ -71,7 +71,7 @@ export class CreateEventDto {
   })
   @IsOptional()
   @Transform(({ value }: { value: unknown }) => (value === '' ? undefined : value))
-  @IsUrl({}, { message: 'Cover Image URL must be a valid URL address' })
+  @IsString()
   coverImageUrl?: string;
 
   @ApiPropertyOptional({

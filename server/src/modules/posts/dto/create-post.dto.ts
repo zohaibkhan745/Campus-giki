@@ -10,6 +10,5 @@ export class CreatePostDto {
   @ApiPropertyOptional({ example: 'https://example.com/image.jpg', description: 'Optional attachment' })
   @IsOptional()
   @IsString()
-  @IsUrl()
   imageUrl?: string;
 }

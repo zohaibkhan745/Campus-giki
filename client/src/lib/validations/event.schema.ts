@@ -5,8 +5,8 @@ const optionalUrl = z
   .optional()
   .nullable()
   .refine(
-    (val) => !val || val.trim() === '' || z.string().url().safeParse(val).success,
-    { message: 'Must be a valid URL address (e.g. https://example.com)' }
+    (val) => !val || val.trim() === '' || val.startsWith('/uploads/') || val.startsWith('http://') || val.startsWith('https://') || z.string().url().safeParse(val).success,
+    { message: 'Must be a valid URL address (e.g. https://example.com) or uploaded image' }
   );
 
 const timeRegex = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;

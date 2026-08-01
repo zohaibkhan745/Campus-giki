@@ -46,6 +46,7 @@ export class AuthService {
       },
       include: {
         advisor: true,
+        society: true,
       }
     });
 
@@ -68,6 +69,7 @@ export class AuthService {
       where: { email: normalizedEmail },
       include: {
         advisor: true,
+        society: true,
       }
     });
 
@@ -96,7 +98,7 @@ export class AuthService {
   async updateProfile(userId: string, dto: UpdateProfileDto): Promise<UserProfileDto> {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
-      include: { advisor: true },
+      include: { advisor: true, society: true },
     });
 
     if (!user) {
@@ -141,7 +143,7 @@ export class AuthService {
     const updatedUser = await this.prisma.user.update({
       where: { id: userId },
       data: updateData,
-      include: { advisor: true },
+      include: { advisor: true, society: true },
     });
 
     return this.sanitizeUser(updatedUser);
