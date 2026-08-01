@@ -19,11 +19,12 @@ import {
 import { postService, type PostItem } from '@/services/post.service';
 import { Button } from '@/components/ui/Button';
 import { Alert } from '@/components/ui/Alert';
+import { PostCreateModal } from '@/components/feed/PostCreateModal';
 import type { AxiosError } from 'axios';
 
 const postSchema = z.object({
   content: z.string().min(1, 'Post content is required').max(2000, 'Too long'),
-  imageUrl: z.string().url('Must be a valid URL').or(z.literal('')).optional(),
+  imageUrl: z.string().optional(),
 });
 type PostFormData = z.infer<typeof postSchema>;
 
@@ -240,62 +241,20 @@ export const SocietyPostsPage: React.FC = () => {
       )}
 
       {/* Create/Edit Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-vast-ink/40 backdrop-blur-sm">
-          <div className="bg-pure-white w-full max-w-lg rounded-cards border-2 border-vast-ink p-6 shadow-2xl">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-extrabold text-vast-ink">
-                {editingPost ? 'Edit Post' : 'New Post'}
-              </h2>
-              <button onClick={closeModal} className="p-1 text-fog hover:text-vast-ink rounded-full">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            
-            {serverError && <Alert variant="error" message={serverError} className="mb-4" />}
-            
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-              <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-vast-ink uppercase tracking-wider">Message Content *</label>
-                <textarea
-                  {...register('content')}
-                  rows={5}
-                  placeholder="What do you want to announce to the campus?"
-                  className="w-full bg-lumen-cream text-vast-ink placeholder:text-fog text-sm rounded-inputs border-2 border-vast-ink px-3.5 py-2.5 transition-all outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 resize-y"
-                />
-                {errors.content && <p className="text-xs text-red-500 font-medium">{errors.content.message}</p>}
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-vast-ink uppercase tracking-wider flex items-center gap-1.5">
-                  <ImageIcon className="w-3.5 h-3.5" /> Image URL (Optional)
-                </label>
-                <input
-                  type="text"
-                  {...register('imageUrl')}
-                  placeholder="https://example.com/poster.jpg"
-                  className="w-full bg-lumen-cream text-vast-ink placeholder:text-fog text-sm rounded-inputs border-2 border-vast-ink px-3.5 py-2.5 transition-all outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
-                />
-                {errors.imageUrl && <p className="text-xs text-red-500 font-medium">{errors.imageUrl.message}</p>}
-                <p className="text-xs text-fog">Provide a direct link to an image file if you want to attach a poster or graphic.</p>
-              </div>
-
-              <div className="flex justify-end gap-3 pt-4 border-t-2 border-vast-ink/10">
-                <Button type="button" variant="outline" onClick={closeModal} className="bg-pure-white">
-                  Cancel
-                </Button>
-                <Button type="submit" variant="primary">
-                  {editingPost ? 'Save Changes' : 'Publish Post'}
-                </Button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      <PostCreateModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        initialContent={editingPost?.content || ''}
+        initialImageUrl={editingPost?.imageUrl || ''}
+        isSubmitting={saveMutation.isPending}
+        onSubmit={async (data) => {
+          await saveMutation.mutateAsync(data);
+        }}
+      />
 
       {/* Delete Confirmation Modal */}
       {postToDelete && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-vast-ink/40 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-950/40">
           <div className="bg-pure-white w-full max-w-sm rounded-cards border-2 border-vast-ink p-6 shadow-2xl space-y-4">
             <div className="flex items-center gap-3 text-red-500">
               <AlertTriangle className="w-6 h-6 shrink-0" />
