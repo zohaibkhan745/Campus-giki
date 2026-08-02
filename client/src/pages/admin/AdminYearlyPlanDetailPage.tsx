@@ -135,21 +135,21 @@ export const AdminYearlyPlanDetailPage: React.FC = () => {
     switch (status) {
       case 'APPROVED':
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-pure-white border border-emerald-500/20 text-forest-ink rounded-inputs text-xs font-semibold">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-transparent border border-emerald-500/20 text-forest-ink rounded-inputs text-xs font-semibold">
             <CheckCircle2 className="w-3.5 h-3.5" />
             <span>APPROVED</span>
           </span>
         );
       case 'PENDING':
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-pure-white border border-amber-500/20 text-ember-glow rounded-inputs text-xs font-semibold">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-transparent border border-amber-500/20 text-ember-glow rounded-inputs text-xs font-semibold">
             <Clock className="w-3.5 h-3.5" />
             <span>PENDING REVIEW</span>
           </span>
         );
       case 'CHANGES_REQUESTED':
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-pure-white border border-red-500/20 text-red-400 rounded-inputs text-xs font-semibold">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-transparent border border-red-500/20 text-red-400 rounded-inputs text-xs font-semibold">
             <AlertCircle className="w-3.5 h-3.5" />
             <span>CHANGES REQUESTED</span>
           </span>
@@ -174,7 +174,7 @@ export const AdminYearlyPlanDetailPage: React.FC = () => {
       <div className="flex items-center justify-between">
         <button
           onClick={() => navigate(-1)}
-          className="inline-flex items-center gap-2 px-3.5 py-2 bg-pure-white hover:bg-lumen-stone border-2 border-vast-ink text-vast-ink text-xs font-bold rounded-buttons transition-all cursor-pointer shadow-[2px_2px_0px_0px_#1B1B18]"
+          className="inline-flex items-center gap-2 px-3.5 py-2 bg-transparent hover:bg-lumen-stone border border-vast-ink/20 text-vast-ink text-xs font-bold rounded-buttons transition-all cursor-pointer shadow-[2px_2px_0px_0px_#1B1B18]"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back</span>
@@ -182,13 +182,13 @@ export const AdminYearlyPlanDetailPage: React.FC = () => {
         {renderStatusBadge(plan.status)}
       </div>
 
-      <div className="bg-lumen-cream p-6 rounded-cards border-2 border-vast-ink flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div className="bg-lumen-cream p-6 rounded-cards border border-vast-ink/20 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div className="flex items-center gap-4">
           {plan.society?.logoUrl ? (
             <img
               src={plan.society.logoUrl}
               alt={plan.society.name}
-              className="w-14 h-14 rounded-cards object-cover border-2 border-vast-ink"
+              className="w-14 h-14 rounded-cards object-cover border border-vast-ink/20"
             />
           ) : (
             <div className="p-3 bg-lavender-whisper border border-vast-ink text-vast-ink rounded-cards border border-indigo-500/20">
@@ -206,14 +206,14 @@ export const AdminYearlyPlanDetailPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex items-center gap-2 px-3.5 py-1.5 bg-lumen-stone/90 rounded-inputs border-2 border-vast-ink text-vast-ink font-medium text-xs font-semibold">
+        <div className="flex items-center gap-2 px-3.5 py-1.5 bg-lumen-stone/90 rounded-inputs border border-vast-ink/20 text-vast-ink font-medium text-xs font-semibold">
           <Shield className="w-4 h-4 text-vast-ink" />
           <span>DSA Administrative Control</span>
         </div>
       </div>
 
       {plan.society?.advisor && (
-        <div className="bg-lumen-cream p-4 rounded-cards border-2 border-vast-ink flex items-center justify-between gap-4 text-xs">
+        <div className="bg-lumen-cream p-4 rounded-cards border border-vast-ink/20 flex items-center justify-between gap-4 text-xs">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-lavender-whisper border border-vast-ink text-vast-ink rounded-inputs">
               <UserCheck className="w-5 h-5" />
@@ -243,14 +243,14 @@ export const AdminYearlyPlanDetailPage: React.FC = () => {
         </div>
       )}
 
-      <div className="bg-lumen-cream p-6 rounded-cards border-2 border-vast-ink space-y-4">
+      <div className="bg-lumen-cream p-6 rounded-cards border border-vast-ink/20 space-y-4">
         <h2 className="text-base font-bold text-vast-ink border-b-2 border-vast-ink pb-3 flex items-center gap-2">
           <FileCheck className="w-4 h-4 text-vast-ink" />
           <span>Workflow Progress &amp; Review Timeline</span>
         </h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-center">
-          <div className={`p-3 rounded-inputs border-2 border-vast-ink space-y-1 ${
+          <div className={`p-3 rounded-inputs border border-vast-ink/20 space-y-1 ${
             isPending || isChangesRequested || isApproved
               ? 'bg-lavender-whisper text-vast-ink font-bold'
               : 'bg-lumen-stone text-fog'
@@ -261,9 +261,9 @@ export const AdminYearlyPlanDetailPage: React.FC = () => {
 
           <div className={`p-3 rounded-inputs border-2 space-y-1 ${
             isChangesRequested
-              ? 'bg-pure-white border-vast-ink text-red-500 font-bold'
+              ? 'bg-transparent border-vast-ink text-red-500 font-bold'
               : isApproved
-              ? 'bg-pure-white border-forest-ink text-forest-ink font-bold'
+              ? 'bg-transparent border-forest-ink text-forest-ink font-bold'
               : 'bg-amber-50 border-amber-300 text-ember-glow font-bold'
           }`}>
             <p className="text-xs font-bold">2. Advisor Evaluation</p>
@@ -274,7 +274,7 @@ export const AdminYearlyPlanDetailPage: React.FC = () => {
 
           <div className={`p-3 rounded-inputs border-2 space-y-1 ${
             isApproved
-              ? 'bg-pure-white border-forest-ink text-forest-ink font-bold'
+              ? 'bg-transparent border-forest-ink text-forest-ink font-bold'
               : 'bg-lumen-stone border-vast-ink text-fog'
           }`}>
             <p className="text-xs font-bold">3. Official Record</p>
@@ -285,14 +285,14 @@ export const AdminYearlyPlanDetailPage: React.FC = () => {
         </div>
       </div>
 
-      <div className="bg-lumen-cream p-6 rounded-cards border-2 border-vast-ink space-y-3">
+      <div className="bg-lumen-cream p-6 rounded-cards border border-vast-ink/20 space-y-3">
         <h2 className="text-base font-bold text-vast-ink border-b-2 border-vast-ink pb-3 flex items-center gap-2">
           <MessageSquare className="w-4 h-4 text-vast-ink" />
           <span>Advisor Review History &amp; Audit Comments</span>
         </h2>
 
         {plan.advisorComments ? (
-          <div className="p-4 bg-lumen-cream rounded-inputs border-2 border-vast-ink shadow-sm space-y-1">
+          <div className="p-4 bg-lumen-cream rounded-inputs border border-vast-ink/20 shadow-sm space-y-1">
             <FeedbackHistory rawComments={plan.advisorComments} />
           </div>
         ) : (
@@ -300,7 +300,7 @@ export const AdminYearlyPlanDetailPage: React.FC = () => {
         )}
       </div>
 
-      <div className="bg-lumen-cream p-6 rounded-cards border-2 border-vast-ink space-y-4">
+      <div className="bg-lumen-cream p-6 rounded-cards border border-vast-ink/20 space-y-4">
         <div className="flex items-center justify-between border-b-2 border-vast-ink pb-3">
           <h2 className="text-base font-bold text-vast-ink flex items-center gap-2">
             <Calendar className="w-4 h-4 text-vast-ink" />
@@ -320,7 +320,7 @@ export const AdminYearlyPlanDetailPage: React.FC = () => {
               return (
                 <div
                   key={field.id}
-                  className="bg-pure-white p-5 rounded-cards border-2 border-vast-ink space-y-4 relative"
+                  className="bg-transparent p-5 rounded-cards border border-vast-ink/20 space-y-4 relative"
                 >
                   <div className="flex items-center justify-between border-b-2 border-vast-ink/10 pb-2">
                     <span className="text-xs font-extrabold text-vast-ink uppercase tracking-wider">
@@ -333,7 +333,7 @@ export const AdminYearlyPlanDetailPage: React.FC = () => {
                           <button
                             type="button"
                             onClick={() => setEditingIndex(index)}
-                            className="flex items-center gap-1.5 px-3 py-1 bg-lumen-stone hover:bg-lavender-whisper border-2 border-vast-ink text-vast-ink text-xs font-bold rounded-inputs transition-colors"
+                            className="flex items-center gap-1.5 px-3 py-1 bg-lumen-stone hover:bg-lavender-whisper border border-vast-ink/20 text-vast-ink text-xs font-bold rounded-inputs transition-colors"
                           >
                             <Edit className="w-3.5 h-3.5" />
                             <span>Edit Event</span>
@@ -341,7 +341,7 @@ export const AdminYearlyPlanDetailPage: React.FC = () => {
                           <button
                             type="button"
                             onClick={() => handleDeleteEvent(index)}
-                            className="p-1 bg-pure-white hover:bg-red-50 text-red-500 border border-vast-ink rounded-inputs transition-colors"
+                            className="p-1 bg-transparent hover:bg-red-50 text-red-500 border border-vast-ink rounded-inputs transition-colors"
                             title="Delete Event"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
@@ -355,7 +355,7 @@ export const AdminYearlyPlanDetailPage: React.FC = () => {
                         <button
                           type="button"
                           onClick={() => setEditingIndex(null)}
-                          className="flex items-center gap-1 px-2.5 py-1 bg-lumen-stone hover:bg-pure-white border-2 border-vast-ink text-vast-ink text-xs font-bold rounded-inputs transition-colors"
+                          className="flex items-center gap-1 px-2.5 py-1 bg-lumen-stone hover:bg-transparent border border-vast-ink/20 text-vast-ink text-xs font-bold rounded-inputs transition-colors"
                         >
                           <X className="w-3.5 h-3.5" />
                           <span>Cancel</span>
@@ -383,7 +383,7 @@ export const AdminYearlyPlanDetailPage: React.FC = () => {
                       </p>
 
                       {getValues(`events.${index}.societyRules`) && (
-                        <div className="p-3 bg-lumen-stone/60 border-2 border-vast-ink/20 rounded-inputs text-xs mb-2">
+                        <div className="p-3 bg-lumen-stone/60 border border-vast-ink/20/20 rounded-inputs text-xs mb-2">
                           <div className="flex items-center gap-1.5 font-bold text-vast-ink uppercase tracking-wider text-[11px] mb-1">
                             <FileText className="w-3.5 h-3.5 text-vast-ink" />
                             <span>Society Guidelines:</span>
@@ -395,7 +395,7 @@ export const AdminYearlyPlanDetailPage: React.FC = () => {
                       )}
 
                       {getValues(`events.${index}.rules`) ? (
-                        <div className="p-3 bg-lavender-whisper border-2 border-vast-ink rounded-inputs text-xs">
+                        <div className="p-3 bg-lavender-whisper border border-vast-ink/20 rounded-inputs text-xs">
                           <div className="flex items-center gap-1.5 font-bold text-vast-ink uppercase tracking-wider text-[11px] mb-1">
                             <FileText className="w-3.5 h-3.5 text-forest-ink" />
                             <span>Rules &amp; Regulations:</span>
@@ -462,7 +462,7 @@ export const AdminYearlyPlanDetailPage: React.FC = () => {
                             </label>
                             <textarea
                               rows={3}
-                              className="w-full px-3.5 py-2 bg-pure-white border-2 border-vast-ink rounded-inputs text-xs text-vast-ink focus:outline-none"
+                              className="w-full px-3.5 py-2 bg-transparent border border-vast-ink/20 rounded-inputs text-xs text-vast-ink focus:outline-none"
                               placeholder="Event description..."
                               {...register(`events.${index}.description`)}
                             />
@@ -470,7 +470,7 @@ export const AdminYearlyPlanDetailPage: React.FC = () => {
 
                           {/* Display Society-provided Guidelines if present */}
                           {getValues(`events.${index}.societyRules`) && (
-                            <div className="p-3 bg-lumen-stone/60 border-2 border-vast-ink/20 rounded-inputs space-y-1">
+                            <div className="p-3 bg-lumen-stone/60 border border-vast-ink/20/20 rounded-inputs space-y-1">
                               <span className="text-[11px] font-bold text-vast-ink uppercase tracking-wider block">
                                 Society Submitted Guidelines &amp; Participant Notes
                               </span>
@@ -488,7 +488,7 @@ export const AdminYearlyPlanDetailPage: React.FC = () => {
                             </label>
                             <textarea
                               rows={3}
-                              className="w-full px-3.5 py-2 bg-pure-white border-2 border-vast-ink rounded-inputs text-xs text-vast-ink focus:outline-none focus:ring-2 focus:ring-vast-ink placeholder:text-fog/60 font-medium"
+                              className="w-full px-3.5 py-2 bg-transparent border border-vast-ink/20 rounded-inputs text-xs text-vast-ink focus:outline-none focus:ring-2 focus:ring-vast-ink placeholder:text-fog/60 font-medium"
                               placeholder="Add official DSA security guidelines, time curfews, speaker rules, or administrative directives..."
                               {...register(`events.${index}.rules`)}
                             />

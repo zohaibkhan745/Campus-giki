@@ -157,7 +157,7 @@ export const AdminEventsPage: React.FC = () => {
       <div className="flex items-center justify-between">
         <button
           onClick={() => navigate(-1)}
-          className="inline-flex items-center gap-2 px-3.5 py-2 bg-pure-white hover:bg-lumen-stone border-2 border-vast-ink text-vast-ink text-xs font-bold rounded-buttons transition-all cursor-pointer shadow-[2px_2px_0px_0px_#1B1B18]"
+          className="inline-flex items-center gap-2 px-3.5 py-2 bg-transparent hover:bg-lumen-stone border border-vast-ink/20 text-vast-ink text-xs font-bold rounded-buttons transition-all cursor-pointer shadow-[2px_2px_0px_0px_#1B1B18]"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back</span>
@@ -165,7 +165,7 @@ export const AdminEventsPage: React.FC = () => {
       </div>
 
       {/* Header Banner */}
-      <div className="space-y-1 bg-pure-white p-6 rounded-cards border-2 border-vast-ink flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div className="space-y-1 bg-transparent p-6 rounded-cards border border-vast-ink/20 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <div className="flex items-center gap-2 text-vast-ink text-xs font-semibold uppercase tracking-wider mb-1">
             <Shield className="w-4 h-4" />
@@ -181,7 +181,7 @@ export const AdminEventsPage: React.FC = () => {
       </div>
 
       {/* Filter & Search Toolbar */}
-      <div className="bg-lumen-cream p-5 rounded-cards border-2 border-vast-ink space-y-4">
+      <div className="bg-lumen-cream p-5 rounded-cards border border-vast-ink/20 space-y-4">
         {/* Top Row: Search + Upcoming/Past Toggle */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="relative w-full md:w-80 flex items-center">
@@ -196,12 +196,12 @@ export const AdminEventsPage: React.FC = () => {
                 setSearchQuery(e.target.value);
                 setPage(1);
               }}
-              className="w-full bg-pure-white text-vast-ink text-sm rounded-inputs border-2 border-vast-ink px-3.5 py-2 pl-10 transition-all outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:border-indigo-500"
+              className="w-full bg-transparent text-vast-ink text-sm rounded-inputs border border-vast-ink/20 px-3.5 py-2 pl-10 transition-all outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:border-indigo-500"
             />
           </div>
 
           {/* Time Window Pills Toggle */}
-          <div className="flex flex-wrap items-center bg-lumen-stone p-1 rounded-inputs border-2 border-vast-ink w-full md:w-auto gap-1">
+          <div className="flex flex-wrap items-center bg-lumen-stone p-1 rounded-inputs border border-vast-ink/20 w-full md:w-auto gap-1">
             <button
               type="button"
               onClick={setAllFilter}
@@ -274,7 +274,7 @@ export const AdminEventsPage: React.FC = () => {
                 setStatusFilter(e.target.value);
                 setPage(1);
               }}
-              className="w-full bg-pure-white text-vast-ink text-xs rounded-inputs border-2 border-vast-ink px-3 py-2 pl-9 outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 cursor-pointer"
+              className="w-full bg-transparent text-vast-ink text-xs rounded-inputs border border-vast-ink/20 px-3 py-2 pl-9 outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 cursor-pointer"
             >
               <option value="">All Statuses</option>
               <option value="PENDING_ADMIN">Pending Review</option>
@@ -294,7 +294,7 @@ export const AdminEventsPage: React.FC = () => {
                 setSocietyFilter(e.target.value);
                 setPage(1);
               }}
-              className="w-full bg-pure-white text-vast-ink text-xs rounded-inputs border-2 border-vast-ink px-3 py-2 pl-9 outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 cursor-pointer"
+              className="w-full bg-transparent text-vast-ink text-xs rounded-inputs border border-vast-ink/20 px-3 py-2 pl-9 outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 cursor-pointer"
             >
               <option value="">All Societies</option>
               {societies.map((soc) => (
@@ -317,7 +317,7 @@ export const AdminEventsPage: React.FC = () => {
                 setFromDate(e.target.value);
                 setPage(1);
               }}
-              className="w-full bg-pure-white text-vast-ink text-xs rounded-inputs border-2 border-vast-ink px-3 py-2 pl-9 outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+              className="w-full bg-transparent text-vast-ink text-xs rounded-inputs border border-vast-ink/20 px-3 py-2 pl-9 outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
             />
           </div>
 
@@ -334,7 +334,7 @@ export const AdminEventsPage: React.FC = () => {
                   setToDate(e.target.value);
                   setPage(1);
                 }}
-                className="w-full bg-pure-white text-vast-ink text-xs rounded-inputs border-2 border-vast-ink px-3 py-2 pl-9 outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+                className="w-full bg-transparent text-vast-ink text-xs rounded-inputs border border-vast-ink/20 px-3 py-2 pl-9 outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
               />
             </div>
 
@@ -369,7 +369,7 @@ export const AdminEventsPage: React.FC = () => {
       {isLoading ? (
         <div className="space-y-4">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="bg-pure-white p-5 rounded-cards border-2 border-vast-ink space-y-3 animate-pulse">
+            <div key={i} className="bg-transparent p-5 rounded-cards border border-vast-ink/20 space-y-3 animate-pulse">
               <div className="flex justify-between">
                 <div className="h-5 bg-lumen-stone rounded w-1/3" />
                 <div className="h-5 bg-lumen-stone rounded w-20" />
@@ -379,7 +379,7 @@ export const AdminEventsPage: React.FC = () => {
           ))}
         </div>
       ) : events.length === 0 ? (
-        <div className="bg-pure-white p-12 rounded-cards border-2 border-vast-ink text-center space-y-3">
+        <div className="bg-transparent p-12 rounded-cards border border-vast-ink/20 text-center space-y-3">
           <Calendar className="w-12 h-12 text-fog mx-auto" />
           <h3 className="font-bold text-vast-ink text-base">No Campus Events Found</h3>
           <p className="text-xs text-fog max-w-sm mx-auto">
@@ -391,14 +391,14 @@ export const AdminEventsPage: React.FC = () => {
           {events.map((evt) => (
             <div
               key={evt.id}
-              className="bg-pure-white p-5 rounded-cards border-2 border-vast-ink hover:border-2 border-vast-ink transition-all flex flex-col md:flex-row items-start md:items-center justify-between gap-4 group"
+              className="bg-transparent p-5 rounded-cards border border-vast-ink/20 hover:border border-vast-ink/20 transition-all flex flex-col md:flex-row items-start md:items-center justify-between gap-4 group"
             >
               <div className="flex items-start md:items-center gap-4">
                 {evt.society?.logoUrl ? (
                   <img
                     src={evt.society.logoUrl}
                     alt={evt.society.name}
-                    className="w-12 h-12 rounded-inputs object-cover border-2 border-vast-ink shrink-0"
+                    className="w-12 h-12 rounded-inputs object-cover border border-vast-ink/20 shrink-0"
                   />
                 ) : (
                   <div className="p-3 bg-lavender-whisper border border-vast-ink text-vast-ink rounded-inputs border border-indigo-500/20 shrink-0">
@@ -416,7 +416,7 @@ export const AdminEventsPage: React.FC = () => {
                     </Link>
 
                     {evt.isUpcoming ? (
-                      <span className="text-[11px] font-semibold text-forest-ink bg-pure-white border border-forest-ink px-2.5 py-0.5 rounded-inputs border border-emerald-500/20">
+                      <span className="text-[11px] font-semibold text-forest-ink bg-transparent border border-forest-ink px-2.5 py-0.5 rounded-inputs border border-emerald-500/20">
                         Upcoming
                       </span>
                     ) : (

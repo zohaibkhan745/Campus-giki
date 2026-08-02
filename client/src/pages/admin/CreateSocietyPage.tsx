@@ -96,7 +96,7 @@ export const CreateSocietyPage: React.FC = () => {
       <div className="flex items-center justify-between">
         <button
           onClick={() => navigate(-1)}
-          className="inline-flex items-center gap-2 px-3.5 py-2 bg-pure-white hover:bg-lumen-stone border-2 border-vast-ink text-vast-ink text-xs font-bold rounded-buttons transition-all cursor-pointer shadow-[2px_2px_0px_0px_#1B1B18]"
+          className="inline-flex items-center gap-2 px-3.5 py-2 bg-transparent hover:bg-lumen-stone border border-vast-ink/20 text-vast-ink text-xs font-bold rounded-buttons transition-all cursor-pointer shadow-[2px_2px_0px_0px_#1B1B18]"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back</span>
@@ -104,7 +104,7 @@ export const CreateSocietyPage: React.FC = () => {
       </div>
 
       {/* Header Banner */}
-      <div className="space-y-1 bg-pure-white p-6 rounded-cards border-2 border-vast-ink">
+      <div className="space-y-1 bg-transparent p-6 rounded-cards border border-vast-ink/20">
         <div className="flex items-center gap-2 text-vast-ink text-xs font-semibold uppercase tracking-wider mb-1">
           <Shield className="w-4 h-4" />
           <span>DSA Administration</span>
@@ -120,7 +120,7 @@ export const CreateSocietyPage: React.FC = () => {
       {serverError && <Alert variant="error" message={serverError} />}
 
       {/* Onboarding Form */}
-      <form onSubmit={handleSubmit(onSubmit)} className="bg-lumen-cream p-6 sm:p-8 rounded-cards border-2 border-vast-ink space-y-6" noValidate>
+      <form onSubmit={handleSubmit(onSubmit)} className="bg-lumen-cream p-6 sm:p-8 rounded-cards border border-vast-ink/20 space-y-6" noValidate>
         <div className="space-y-4">
           <Input
             label="Society Name *"
@@ -137,7 +137,7 @@ export const CreateSocietyPage: React.FC = () => {
               </label>
               <select
                 {...register('categoryId')}
-                className="w-full bg-pure-white text-vast-ink text-sm rounded-inputs border-2 border-vast-ink px-3.5 py-2.5 transition-all outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 cursor-pointer"
+                className="w-full bg-transparent text-vast-ink text-sm rounded-inputs border border-vast-ink/20 px-3.5 py-2.5 transition-all outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 cursor-pointer"
               >
                 <option value="">Select Category...</option>
                 {categories.map((cat) => (
@@ -158,7 +158,7 @@ export const CreateSocietyPage: React.FC = () => {
               </label>
               <select
                 {...register('advisorId')}
-                className="w-full bg-pure-white text-vast-ink text-sm rounded-inputs border-2 border-vast-ink px-3.5 py-2.5 transition-all outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 cursor-pointer"
+                className="w-full bg-transparent text-vast-ink text-sm rounded-inputs border border-vast-ink/20 px-3.5 py-2.5 transition-all outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 cursor-pointer"
               >
                 <option value="">Select Advisor...</option>
                 {advisors.map((adv) => (
@@ -199,7 +199,7 @@ export const CreateSocietyPage: React.FC = () => {
       {/* Success Credentials Modal */}
       {provisionedData && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-vast-ink/40 backdrop-blur-sm p-4">
-          <div className="bg-pure-white p-6 sm:p-8 rounded-cards border-2 border-vast-ink max-w-lg w-full space-y-6 shadow-2xl text-left">
+          <div className="bg-transparent p-6 sm:p-8 rounded-cards border border-vast-ink/20 max-w-lg w-full space-y-6 shadow-2xl text-left">
             {/* Header */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -222,12 +222,12 @@ export const CreateSocietyPage: React.FC = () => {
 
             {/* Credential Cards */}
             <div className="space-y-3">
-              <div className="bg-lumen-cream p-4 rounded-inputs border-2 border-vast-ink space-y-0.5">
+              <div className="bg-lumen-cream p-4 rounded-inputs border border-vast-ink/20 space-y-0.5">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-fog">Society Name</span>
                 <p className="text-sm font-bold text-vast-ink">{provisionedData.name}</p>
               </div>
 
-              <div className="bg-lumen-cream p-4 rounded-inputs border-2 border-vast-ink space-y-0.5">
+              <div className="bg-lumen-cream p-4 rounded-inputs border border-vast-ink/20 space-y-0.5">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-fog flex items-center gap-1">
                   <Mail className="w-3 h-3" /> Activation Email Dispatched To
                 </span>
@@ -252,7 +252,7 @@ export const CreateSocietyPage: React.FC = () => {
             </div>
 
             {/* Delivery Instruction */}
-            <div className="flex items-start gap-2.5 text-xs text-fog bg-lumen-cream border-2 border-vast-ink/20 p-3 rounded-inputs">
+            <div className="flex items-start gap-2.5 text-xs text-fog bg-lumen-cream border border-vast-ink/20/20 p-3 rounded-inputs">
               <Info className="w-4 h-4 text-ember-glow shrink-0 mt-0.5" />
               <p className="leading-relaxed font-medium">
                 An activation link has been sent to the society email. The society president must click the link within 48 hours to set their password.

@@ -13,7 +13,7 @@ import {
   LogOut,
   Megaphone,
   MessageSquare,
-  Mic,
+  MicVocal,
   CalendarDays,
   Settings,
   Users,
@@ -45,16 +45,16 @@ export const AdminDashboardPage: React.FC = () => {
   return (
     <div className="max-w-6xl mx-auto space-y-6 text-left py-4">
       {/* 1. Welcome Banner — matches Society Dashboard */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-pure-white p-6 rounded-cards border-2 border-vast-ink shadow-sm">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-transparent p-6 rounded-cards border border-vast-ink/20 shadow-sm">
         <div className="flex items-center gap-4">
           {user?.avatarUrl ? (
             <img 
               src={user.avatarUrl} 
               alt="Admin Avatar" 
-              className="w-16 h-16 rounded-full border-2 border-vast-ink object-cover shrink-0" 
+              className="w-16 h-16 rounded-full border border-vast-ink/20 object-cover shrink-0" 
             />
           ) : (
-            <div className="w-16 h-16 flex items-center justify-center bg-vast-ink border-2 border-vast-ink rounded-full text-white shrink-0">
+            <div className="w-16 h-16 flex items-center justify-center bg-vast-ink border border-vast-ink/20 rounded-full text-white shrink-0">
               <Shield className="w-8 h-8" />
             </div>
           )}
@@ -81,14 +81,14 @@ export const AdminDashboardPage: React.FC = () => {
           </button>
           <Link
             to="/settings"
-            className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-pure-white border-2 border-vast-ink hover:bg-lumen-stone rounded-inputs text-vast-ink text-sm font-bold transition-colors"
+            className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-transparent border border-vast-ink/20 hover:bg-lumen-stone rounded-inputs text-vast-ink text-sm font-bold transition-colors"
           >
             <Settings className="w-4 h-4" />
             <span className="hidden sm:inline">Settings</span>
           </Link>
           <button
             onClick={logout}
-            className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-pure-white border-2 border-vast-ink hover:bg-red-500/10 rounded-inputs text-red-500 text-sm font-bold transition-colors"
+            className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-transparent border border-vast-ink/20 hover:bg-red-500/10 rounded-inputs text-red-500 text-sm font-bold transition-colors"
           >
             <LogOut className="w-4 h-4" />
             <span>Log out</span>
@@ -109,7 +109,7 @@ export const AdminDashboardPage: React.FC = () => {
       )}
 
       {/* 2. Command Center */}
-      <div className="bg-lumen-cream p-6 rounded-cards border-2 border-vast-ink space-y-5">
+      <div className="bg-lumen-cream p-6 rounded-cards border border-vast-ink/20 space-y-5">
         <h3 className="font-extrabold text-lg text-vast-ink flex items-center gap-2">
           Command Center
         </h3>
@@ -124,33 +124,33 @@ export const AdminDashboardPage: React.FC = () => {
           </Link>
           <Link
             to="/admin/events"
-            className="flex flex-col items-center justify-center gap-2 p-4 bg-pure-white hover:bg-lumen-stone text-vast-ink border-2 border-vast-ink rounded-inputs font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18] relative"
+            className="flex flex-col items-center justify-center gap-2 p-4 bg-transparent hover:bg-lumen-stone text-vast-ink border border-vast-ink/20 rounded-inputs font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18] relative"
           >
             {totalPending > 0 && (
               <span className="absolute top-2 right-2 flex items-center justify-center w-5 h-5 bg-ember-glow text-pure-white text-[10px] font-bold rounded-full shadow-sm animate-pulse">
                 {totalPending > 9 ? '9+' : totalPending}
               </span>
             )}
-            <Mic className="w-6 h-6" />
+            <MicVocal className="w-6 h-6" />
             <span>Events</span>
           </Link>
           <Link
             to="/admin/posts"
-            className="flex flex-col items-center justify-center gap-2 p-4 bg-pure-white hover:bg-lumen-stone text-vast-ink border-2 border-vast-ink rounded-inputs font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18]"
+            className="flex flex-col items-center justify-center gap-2 p-4 bg-transparent hover:bg-lumen-stone text-vast-ink border border-vast-ink/20 rounded-inputs font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18]"
           >
             <MessageSquare className="w-6 h-6" />
             <span>Posts</span>
           </Link>
           <Link
             to="/admin/yearly-plans"
-            className="flex flex-col items-center justify-center gap-2 p-4 bg-pure-white hover:bg-lumen-stone text-vast-ink border-2 border-vast-ink rounded-inputs font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18]"
+            className="flex flex-col items-center justify-center gap-2 p-4 bg-transparent hover:bg-lumen-stone text-vast-ink border border-vast-ink/20 rounded-inputs font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18]"
           >
             <CalendarDays className="w-6 h-6" />
             <span>Yearly Plans</span>
           </Link>
           <Link
             to="/admin/advisors"
-            className="flex flex-col items-center justify-center gap-2 p-4 bg-pure-white hover:bg-lumen-stone text-vast-ink border-2 border-vast-ink rounded-inputs font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18]"
+            className="flex flex-col items-center justify-center gap-2 p-4 bg-transparent hover:bg-lumen-stone text-vast-ink border border-vast-ink/20 rounded-inputs font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18]"
           >
             <Users className="w-6 h-6" />
             <span>Advisors</span>
@@ -161,7 +161,7 @@ export const AdminDashboardPage: React.FC = () => {
       {/* 3. Add Society shortcut */}
       <Link
         to="/admin/societies/create"
-        className="block bg-pure-white p-4 rounded-cards border-2 border-vast-ink hover:bg-lavender-whisper transition-all group"
+        className="block bg-transparent p-4 rounded-cards border border-vast-ink/20 hover:bg-lavender-whisper transition-all group"
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -194,14 +194,14 @@ export const AdminDashboardPage: React.FC = () => {
           {isLoading ? (
             <div className="space-y-3">
               {[1, 2].map((i) => (
-                <div key={i} className="bg-pure-white p-5 rounded-cards border-2 border-vast-ink animate-pulse space-y-2">
+                <div key={i} className="bg-transparent p-5 rounded-cards border border-vast-ink/20 animate-pulse space-y-2">
                   <div className="h-5 bg-lumen-stone rounded w-1/3" />
                   <div className="h-4 bg-lumen-stone rounded w-1/2" />
                 </div>
               ))}
             </div>
           ) : pendingEvents.length === 0 ? (
-            <div className="bg-pure-white p-10 rounded-cards border-2 border-vast-ink text-center text-fog space-y-3 flex flex-col items-center">
+            <div className="bg-transparent p-10 rounded-cards border border-vast-ink/20 text-center text-fog space-y-3 flex flex-col items-center">
               <Shield className="w-12 h-12 text-fog opacity-30" />
               <p className="font-bold text-sm">You're all caught up! No events pending review.</p>
             </div>
@@ -211,7 +211,7 @@ export const AdminDashboardPage: React.FC = () => {
                 <Link
                   key={evt.id}
                   to={`/admin/events/${evt.id}/review`}
-                  className="bg-pure-white p-4 rounded-cards border-2 border-vast-ink hover:bg-lavender-whisper transition-all flex items-center justify-between group"
+                  className="bg-transparent p-4 rounded-cards border border-vast-ink/20 hover:bg-lavender-whisper transition-all flex items-center justify-between group"
                 >
                   <div className="space-y-1">
                     <h4 className="font-bold text-vast-ink text-sm">{evt.title}</h4>
@@ -245,14 +245,14 @@ export const AdminDashboardPage: React.FC = () => {
           {isLoading ? (
             <div className="space-y-3">
               {[1, 2].map((i) => (
-                <div key={i} className="bg-pure-white p-5 rounded-cards border-2 border-vast-ink animate-pulse space-y-2">
+                <div key={i} className="bg-transparent p-5 rounded-cards border border-vast-ink/20 animate-pulse space-y-2">
                   <div className="h-5 bg-lumen-stone rounded w-1/3" />
                   <div className="h-4 bg-lumen-stone rounded w-1/2" />
                 </div>
               ))}
             </div>
           ) : upcomingEvents.length === 0 ? (
-            <div className="bg-pure-white p-10 rounded-cards border-2 border-vast-ink text-center text-fog space-y-3 flex flex-col items-center">
+            <div className="bg-transparent p-10 rounded-cards border border-vast-ink/20 text-center text-fog space-y-3 flex flex-col items-center">
               <Calendar className="w-12 h-12 text-fog opacity-30" />
               <p className="font-bold text-sm">No upcoming events scheduled.</p>
             </div>
@@ -262,7 +262,7 @@ export const AdminDashboardPage: React.FC = () => {
                 <Link
                   key={evt.id}
                   to={`/events/${evt.id}`}
-                  className="bg-pure-white p-4 rounded-cards border-2 border-vast-ink hover:bg-lavender-whisper transition-all flex items-center justify-between group"
+                  className="bg-transparent p-4 rounded-cards border border-vast-ink/20 hover:bg-lavender-whisper transition-all flex items-center justify-between group"
                 >
                   <div className="space-y-1">
                     <h4 className="font-bold text-vast-ink text-sm">{evt.title}</h4>

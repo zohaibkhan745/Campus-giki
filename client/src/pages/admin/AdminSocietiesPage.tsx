@@ -161,21 +161,21 @@ export const AdminSocietiesPage: React.FC = () => {
     switch (status) {
       case 'ACTIVE':
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-pure-white border border-forest-ink border border-emerald-500/20 text-forest-ink rounded-inputs text-xs font-semibold">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-transparent border border-forest-ink border border-emerald-500/20 text-forest-ink rounded-inputs text-xs font-semibold">
             <CheckCircle2 className="w-3.5 h-3.5" />
             <span>ACTIVE</span>
           </span>
         );
       case 'UNCONFIGURED':
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-pure-white border border-ember-glow border border-amber-500/20 text-ember-glow rounded-inputs text-xs font-semibold">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-transparent border border-ember-glow border border-amber-500/20 text-ember-glow rounded-inputs text-xs font-semibold">
             <Clock className="w-3.5 h-3.5" />
             <span>UNCONFIGURED</span>
           </span>
         );
       case 'INACTIVE':
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-pure-white border border-vast-ink border border-red-500/20 text-red-400 rounded-inputs text-xs font-semibold">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-transparent border border-vast-ink border border-red-500/20 text-red-400 rounded-inputs text-xs font-semibold">
             <AlertCircle className="w-3.5 h-3.5" />
             <span>INACTIVE</span>
           </span>
@@ -189,7 +189,7 @@ export const AdminSocietiesPage: React.FC = () => {
       <div className="flex items-center justify-between">
         <button
           onClick={() => navigate(-1)}
-          className="inline-flex items-center gap-2 px-3.5 py-2 bg-pure-white hover:bg-lumen-stone border-2 border-vast-ink text-vast-ink text-xs font-bold rounded-buttons transition-all cursor-pointer shadow-[2px_2px_0px_0px_#1B1B18]"
+          className="inline-flex items-center gap-2 px-3.5 py-2 bg-transparent hover:bg-lumen-stone border border-vast-ink/20 text-vast-ink text-xs font-bold rounded-buttons transition-all cursor-pointer shadow-[2px_2px_0px_0px_#1B1B18]"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back</span>
@@ -197,7 +197,7 @@ export const AdminSocietiesPage: React.FC = () => {
       </div>
 
       {/* Header Banner */}
-      <div className="space-y-1 bg-pure-white p-6 rounded-cards border-2 border-vast-ink flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div className="space-y-1 bg-transparent p-6 rounded-cards border border-vast-ink/20 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <div className="flex items-center gap-2 text-vast-ink text-xs font-semibold uppercase tracking-wider mb-1">
             <Building2 className="w-4 h-4" />
@@ -226,7 +226,7 @@ export const AdminSocietiesPage: React.FC = () => {
       {actionError && <Alert variant="error" message={actionError} />}
 
       {/* Filter Toolbar */}
-      <div className="bg-lumen-cream p-4 rounded-cards border-2 border-vast-ink flex flex-col md:flex-row items-center justify-between gap-4">
+      <div className="bg-lumen-cream p-4 rounded-cards border border-vast-ink/20 flex flex-col md:flex-row items-center justify-between gap-4">
         <div className="relative w-full md:w-72 flex items-center">
           <div className="absolute left-3 text-fog pointer-events-none flex items-center justify-center">
             <Search className="w-4 h-4" />
@@ -239,7 +239,7 @@ export const AdminSocietiesPage: React.FC = () => {
               setSearchQuery(e.target.value);
               setPage(1);
             }}
-            className="w-full bg-pure-white text-vast-ink text-sm rounded-inputs border-2 border-vast-ink px-3.5 py-2 pl-10 transition-all outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+            className="w-full bg-transparent text-vast-ink text-sm rounded-inputs border border-vast-ink/20 px-3.5 py-2 pl-10 transition-all outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
           />
         </div>
 
@@ -254,7 +254,7 @@ export const AdminSocietiesPage: React.FC = () => {
                 setStatusFilter(e.target.value);
                 setPage(1);
               }}
-              className="w-full bg-pure-white text-vast-ink text-sm rounded-inputs border-2 border-vast-ink px-3.5 py-2 pl-10 transition-all outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+              className="w-full bg-transparent text-vast-ink text-sm rounded-inputs border border-vast-ink/20 px-3.5 py-2 pl-10 transition-all outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
             >
               <option value="">All Statuses</option>
               <option value="ACTIVE">Active</option>
@@ -273,7 +273,7 @@ export const AdminSocietiesPage: React.FC = () => {
                 setCategoryFilter(e.target.value);
                 setPage(1);
               }}
-              className="w-full bg-pure-white text-vast-ink text-sm rounded-inputs border-2 border-vast-ink px-3.5 py-2 pl-10 transition-all outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+              className="w-full bg-transparent text-vast-ink text-sm rounded-inputs border border-vast-ink/20 px-3.5 py-2 pl-10 transition-all outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
             >
               <option value="">All Categories</option>
               {categories.map((cat) => (
@@ -318,14 +318,14 @@ export const AdminSocietiesPage: React.FC = () => {
       {isLoading ? (
         <div className="space-y-4">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="bg-pure-white p-5 rounded-cards border-2 border-vast-ink space-y-3 animate-pulse">
+            <div key={i} className="bg-transparent p-5 rounded-cards border border-vast-ink/20 space-y-3 animate-pulse">
               <div className="h-5 bg-lumen-stone rounded w-1/3" />
               <div className="h-4 bg-lumen-stone rounded w-1/2" />
             </div>
           ))}
         </div>
       ) : societies.length === 0 ? (
-        <div className="bg-pure-white p-12 rounded-cards border-2 border-vast-ink text-center space-y-3">
+        <div className="bg-transparent p-12 rounded-cards border border-vast-ink/20 text-center space-y-3">
           <Building2 className="w-12 h-12 text-fog mx-auto" />
           <h3 className="font-bold text-vast-ink text-base">No Societies Found</h3>
           <p className="text-xs text-fog max-w-sm mx-auto">
@@ -337,14 +337,14 @@ export const AdminSocietiesPage: React.FC = () => {
           {societies.map((society) => (
             <div
               key={society.id}
-              className="bg-pure-white p-5 rounded-cards border-2 border-vast-ink flex flex-col md:flex-row items-start md:items-center justify-between gap-4"
+              className="bg-transparent p-5 rounded-cards border border-vast-ink/20 flex flex-col md:flex-row items-start md:items-center justify-between gap-4"
             >
               <div className="flex items-start md:items-center gap-4">
                 {society.logoUrl ? (
                   <img
                     src={society.logoUrl}
                     alt={society.name}
-                    className="w-12 h-12 rounded-inputs object-cover border-2 border-vast-ink shrink-0"
+                    className="w-12 h-12 rounded-inputs object-cover border border-vast-ink/20 shrink-0"
                   />
                 ) : (
                   <div className="p-3 bg-lavender-whisper border border-vast-ink text-vast-ink rounded-inputs border border-indigo-500/20 shrink-0">
@@ -395,7 +395,7 @@ export const AdminSocietiesPage: React.FC = () => {
                   type="button"
                   variant="outline"
                   size="sm"
-                  className="border-amber-500/30 text-ember-glow hover:bg-pure-white border border-ember-glow"
+                  className="border-amber-500/30 text-ember-glow hover:bg-transparent border border-ember-glow"
                   onClick={() => resetPasswordMutation.mutate(society.id)}
                   isLoading={resetPasswordMutation.isPending && resetPasswordMutation.variables === society.id}
                   leftIcon={<KeyRound className="w-3.5 h-3.5" />}
@@ -409,7 +409,7 @@ export const AdminSocietiesPage: React.FC = () => {
                     type="button"
                     variant="outline"
                     size="sm"
-                    className="border-red-500/30 text-red-400 hover:bg-pure-white border border-vast-ink"
+                    className="border-red-500/30 text-red-400 hover:bg-transparent border border-vast-ink"
                     onClick={() => setDeactivatingSociety(society)}
                     leftIcon={<UserX className="w-3.5 h-3.5" />}
                     title="Soft Deactivate Account"
@@ -434,7 +434,7 @@ export const AdminSocietiesPage: React.FC = () => {
             <button
               disabled={!meta.hasPreviousPage}
               onClick={() => setPage((p) => Math.max(1, p - 1))}
-              className="inline-flex items-center gap-1 px-3 py-1.5 bg-lumen-stone border-2 border-vast-ink rounded-inputs hover:bg-lumen-stone disabled:opacity-40 transition-colors"
+              className="inline-flex items-center gap-1 px-3 py-1.5 bg-lumen-stone border border-vast-ink/20 rounded-inputs hover:bg-lumen-stone disabled:opacity-40 transition-colors"
             >
               <ChevronLeft className="w-4 h-4" />
               <span>Previous</span>
@@ -443,7 +443,7 @@ export const AdminSocietiesPage: React.FC = () => {
             <button
               disabled={!meta.hasNextPage}
               onClick={() => setPage((p) => p + 1)}
-              className="inline-flex items-center gap-1 px-3 py-1.5 bg-lumen-stone border-2 border-vast-ink rounded-inputs hover:bg-lumen-stone disabled:opacity-40 transition-colors"
+              className="inline-flex items-center gap-1 px-3 py-1.5 bg-lumen-stone border border-vast-ink/20 rounded-inputs hover:bg-lumen-stone disabled:opacity-40 transition-colors"
             >
               <span>Next</span>
               <ChevronRight className="w-4 h-4" />
@@ -455,7 +455,7 @@ export const AdminSocietiesPage: React.FC = () => {
       {/* 1. Edit & Reassign Advisor Modal */}
       {editingSociety && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-lumen-cream/80 backdrop-blur-sm p-4">
-          <div className="bg-lumen-cream p-6 sm:p-8 rounded-cards border-2 border-vast-ink max-w-md w-full space-y-5 bg-lumen-stone text-left">
+          <div className="bg-lumen-cream p-6 sm:p-8 rounded-cards border border-vast-ink/20 max-w-md w-full space-y-5 bg-lumen-stone text-left">
             <h3 className="font-extrabold text-vast-ink text-lg border-b-2 border-vast-ink pb-3">
               Edit Society &amp; Reassign Advisor
             </h3>
@@ -472,7 +472,7 @@ export const AdminSocietiesPage: React.FC = () => {
                 <select
                   value={editCategoryId}
                   onChange={(e) => setEditCategoryId(e.target.value)}
-                  className="w-full bg-pure-white text-vast-ink text-sm rounded-inputs border-2 border-vast-ink px-3 py-2 outline-none focus:border-amber-500"
+                  className="w-full bg-transparent text-vast-ink text-sm rounded-inputs border border-vast-ink/20 px-3 py-2 outline-none focus:border-amber-500"
                 >
                   <option value="">Select Category...</option>
                   {categories.map((c) => (
@@ -488,7 +488,7 @@ export const AdminSocietiesPage: React.FC = () => {
                 <select
                   value={editAdvisorId}
                   onChange={(e) => setEditAdvisorId(e.target.value)}
-                  className="w-full bg-pure-white text-vast-ink text-sm rounded-inputs border-2 border-vast-ink px-3 py-2 outline-none focus:border-amber-500"
+                  className="w-full bg-transparent text-vast-ink text-sm rounded-inputs border border-vast-ink/20 px-3 py-2 outline-none focus:border-amber-500"
                 >
                   <option value="">None / Unassign Advisor</option>
                   {advisors.map((a) => (
@@ -532,7 +532,7 @@ export const AdminSocietiesPage: React.FC = () => {
               </h3>
             </div>
 
-            <div className="space-y-3 bg-lumen-cream/80 p-4 rounded-cards border-2 border-vast-ink text-xs">
+            <div className="space-y-3 bg-lumen-cream/80 p-4 rounded-cards border border-vast-ink/20 text-xs">
               <div>
                 <span className="text-fog">Society:</span>
                 <p className="font-bold text-vast-ink text-sm">{resetCredentialsData.societyName}</p>

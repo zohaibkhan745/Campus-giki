@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { UserPlus, UserCircle2, Briefcase, Mail, Building } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { UserPlus, UserCircle2, Briefcase, Mail, Building, ArrowLeft } from 'lucide-react';
 import { adminService, type AdvisorOption, type CreateAdvisorPayload } from '@/services/admin.service';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -8,6 +9,7 @@ import { Alert } from '@/components/ui/Alert';
 import type { AxiosError } from 'axios';
 
 export const AdminAdvisorsPage: React.FC = () => {
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
@@ -61,6 +63,16 @@ export const AdminAdvisorsPage: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <button
+          onClick={() => navigate(-1)}
+          className="inline-flex items-center gap-2 px-3.5 py-2 bg-transparent hover:bg-lumen-stone border border-vast-ink/20 text-vast-ink text-xs font-bold rounded-buttons transition-all cursor-pointer shadow-[2px_2px_0px_0px_#1B1B18]"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          <span>Back</span>
+        </button>
+      </div>
+
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-black text-vast-ink tracking-tight">Faculty Advisors</h1>
@@ -77,12 +89,12 @@ export const AdminAdvisorsPage: React.FC = () => {
         </Button>
       </div>
 
-      <div className="bg-lumen-cream border-2 border-vast-ink rounded-cards overflow-hidden shadow-[4px_4px_0px_0px_#1B1B18]">
+      <div className="bg-lumen-cream border border-vast-ink/20 rounded-cards overflow-hidden shadow-[4px_4px_0px_0px_#1B1B18]">
         {isLoading ? (
           <div className="p-8 text-center text-vast-ink font-semibold animate-pulse">Loading advisors...</div>
         ) : advisors.length === 0 ? (
           <div className="p-12 flex flex-col items-center justify-center text-center">
-            <div className="w-16 h-16 bg-pure-white rounded-full border-2 border-vast-ink flex items-center justify-center mb-4">
+            <div className="w-16 h-16 bg-transparent rounded-full border border-vast-ink/20 flex items-center justify-center mb-4">
               <UserCircle2 className="w-8 h-8 text-vast-ink opacity-50" />
             </div>
             <h3 className="text-lg font-bold text-vast-ink mb-1">No Advisors Found</h3>
@@ -103,7 +115,7 @@ export const AdminAdvisorsPage: React.FC = () => {
               </thead>
               <tbody className="divide-y-2 divide-vast-ink">
                 {advisors.map((advisor: AdvisorOption) => (
-                  <tr key={advisor.id} className="hover:bg-pure-white/50 transition-colors">
+                  <tr key={advisor.id} className="hover:bg-transparent/50 transition-colors">
                     <td className="py-3 px-4 border-r-2 border-vast-ink">
                       <div className="flex items-center gap-2">
                         <UserCircle2 className="w-4 h-4 text-fog" />
@@ -138,7 +150,7 @@ export const AdminAdvisorsPage: React.FC = () => {
 
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-lumen-cream/80 backdrop-blur-sm p-4">
-          <div className="bg-lumen-cream p-6 sm:p-8 rounded-cards border-2 border-vast-ink max-w-md w-full space-y-5 shadow-[4px_4px_0px_0px_#1B1B18] text-left">
+          <div className="bg-lumen-cream p-6 sm:p-8 rounded-cards border border-vast-ink/20 max-w-md w-full space-y-5 shadow-[4px_4px_0px_0px_#1B1B18] text-left">
             <h3 className="font-extrabold text-vast-ink text-xl border-b-2 border-vast-ink pb-3 flex items-center gap-2">
               <UserPlus className="w-5 h-5" />
               Onboard New Advisor
