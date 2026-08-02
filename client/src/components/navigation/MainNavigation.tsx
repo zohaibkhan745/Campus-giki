@@ -13,9 +13,7 @@ export const MainNavigation: React.FC = () => {
     { label: 'Home', path: '/', icon: Home },
     { label: 'Calendar', path: '/events', icon: CalendarDays },
     { label: 'Clubs', path: '/societies', icon: Users },
-    ...(user
-      ? [{ label: 'Profile', path: '/dashboard', icon: User }]
-      : [{ label: 'Log in', path: '/login', icon: LogIn }]),
+    ...(user ? [{ label: 'Dashboard', path: '/dashboard', icon: User }] : []),
   ];
 
   return (

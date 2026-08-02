@@ -15,7 +15,7 @@ import {
   Loader2,
   LogOut,
   MapPin,
-  Ticket,
+  Mic,
   CalendarDays,
   Settings,
 } from 'lucide-react';
@@ -195,7 +195,7 @@ export const AdvisorQueuePage: React.FC = () => {
                   {pendingEventsCount > 9 ? '9+' : pendingEventsCount}
                 </span>
               )}
-              <Ticket className="w-6 h-6" />
+              <Mic className="w-6 h-6" />
               <span>Events</span>
             </button>
             <button

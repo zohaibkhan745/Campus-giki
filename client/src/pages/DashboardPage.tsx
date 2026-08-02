@@ -33,7 +33,7 @@ import {
   AlertCircle,
   Megaphone,
   ArrowRight,
-  Ticket,
+  Mic,
 } from 'lucide-react';
 
 export const DashboardPage: React.FC = () => {
@@ -271,7 +271,7 @@ export const DashboardPage: React.FC = () => {
                   to="/society/events"
                   className="relative flex flex-col items-center justify-center gap-2 p-4 bg-vast-ink hover:bg-vast-ink/90 text-pure-white rounded-inputs font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18]"
                 >
-                  <Ticket className="w-6 h-6" />
+                  <Mic className="w-6 h-6" />
                   <span>Events</span>
                   {changesRequestedEventsCount > 0 && (
                     <span className="absolute -top-2 -right-2 flex items-center justify-center w-6 h-6 bg-ember-glow text-pure-white text-xs rounded-full shadow-sm animate-pulse border-2 border-pure-white">

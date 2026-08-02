@@ -82,9 +82,11 @@ export const LoginPage: React.FC = () => {
   return (
     <div className="space-y-6 text-left">
       <div className="space-y-1">
-        <h2 className="text-2xl font-extrabold text-vast-ink font-eb-garamond">Welcome Back</h2>
+        <h1 className="text-[26px] font-extrabold text-vast-ink leading-tight font-eb-garamond">
+          Management Portal
+        </h1>
         <p className="text-sm font-medium text-fog">
-          Sign in to your Campus GIKI account to continue
+          Authorized sign-in for Society Executives, Faculty Advisors, and DSA Administration.
         </p>
       </div>
 
@@ -92,31 +94,31 @@ export const LoginPage: React.FC = () => {
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
         <Input
-          variant="wispr"
-          label="Email Address"
+          label="Email Address *"
           type="email"
-          placeholder="student@giki.edu.pk"
-          leftIcon={<Mail className="w-4 h-4" />}
+          placeholder="e.g. acm@giki.edu.pk"
+          leftIcon={<Mail className="w-4 h-4 text-vast-ink" />}
           disabled={loginMutation.isPending}
           error={errors.email?.message}
           {...register('email')}
         />
 
         <Input
-          variant="wispr"
-          label="Password"
+          label="Password *"
           type={showPassword ? 'text' : 'password'}
           placeholder="••••••••"
-          leftIcon={<Lock className="w-4 h-4" />}
+          leftIcon={<Lock className="w-4 h-4 text-vast-ink" />}
           rightIcon={
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="text-vast-ink hover:text-fog transition-colors focus:outline-none"
-              tabIndex={-1}
-              aria-label={showPassword ? 'Hide password' : 'Show password'}
+              className="text-fog hover:text-vast-ink transition-colors cursor-pointer p-1"
             >
-              {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              {showPassword ? (
+                <EyeOff className="w-4 h-4" />
+              ) : (
+                <Eye className="w-4 h-4" />
+              )}
             </button>
           }
           disabled={loginMutation.isPending}
@@ -136,14 +138,8 @@ export const LoginPage: React.FC = () => {
         </Button>
       </form>
 
-      <div className="text-center pt-2 text-sm font-medium text-fog border-t border-vast-ink">
-        Don&apos;t have a student account?{' '}
-        <Link
-          to="/register"
-          className="text-forest-ink hover:text-vast-ink font-semibold transition-colors underline"
-        >
-          Register here
-        </Link>
+      <div className="text-center pt-3 text-xs font-medium text-fog border-t border-vast-ink/20">
+        Authorized personnel only. Society accounts are provisioned via DSA invitation.
       </div>
     </div>
   );

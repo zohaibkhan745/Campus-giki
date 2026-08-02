@@ -13,7 +13,7 @@ import {
   LogOut,
   Megaphone,
   MessageSquare,
-  Ticket,
+  Mic,
   CalendarDays,
   Settings,
   Users,
@@ -131,7 +131,7 @@ export const AdminDashboardPage: React.FC = () => {
                 {totalPending > 9 ? '9+' : totalPending}
               </span>
             )}
-            <Ticket className="w-6 h-6" />
+            <Mic className="w-6 h-6" />
             <span>Events</span>
           </Link>
           <Link
