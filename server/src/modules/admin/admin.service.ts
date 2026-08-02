@@ -18,11 +18,17 @@ import { Prisma, Role, PlanStatus } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 
+import { ConfigService } from '@nestjs/config';
+import { EmailService } from '../email/email.service';
 import { CreateAdvisorDto } from './dto/create-advisor.dto';
 
 @Injectable()
 export class AdminService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly emailService: EmailService,
+    private readonly configService: ConfigService,
+  ) {}
 
   /**
    * DSA Aggregated Dashboard API: Returns system-wide metrics, active statistics, and pending action queues.
@@ -733,21 +739,26 @@ export class AdminService {
       throw new NotFoundException('Selected faculty advisor does not exist');
     }
 
-    // 5. Generate secure temporary password
-    const randomSuffix = crypto.randomBytes(3).toString('hex').toUpperCase();
-    const prefix = ['GIKI', 'Pass'].join('-');
-    const temporaryPassword = `${prefix}#${randomSuffix}`;
-    const hashedPassword = await bcrypt.hash(temporaryPassword, 10);
+    // 5. Generate secure activation token (48 hours expiration)
+    const rawToken = crypto.randomBytes(32).toString('hex');
+    const hashedToken = crypto.createHash('sha256').update(rawToken).digest('hex');
+    const tokenExpires = new Date(Date.now() + 48 * 60 * 60 * 1000); // 48 hours
+
+    // Generate temporary locked password hash
+    const initialPlaceholderPass = await bcrypt.hash(crypto.randomBytes(16).toString('hex'), 10);
 
     // 6. Perform provisioning inside a Prisma transaction
-    return this.prisma.$transaction(async (tx) => {
+    const result = await this.prisma.$transaction(async (tx) => {
       const user = await tx.user.create({
         data: {
           email,
-          password: hashedPassword,
+          password: initialPlaceholderPass,
           fullName: `${name} President`,
           role: Role.SOCIETY,
           isActive: true,
+          isEmailVerified: false,
+          verificationToken: hashedToken,
+          verificationExpires: tokenExpires,
         },
       });
 
@@ -761,26 +772,45 @@ export class AdminService {
         },
       });
 
-      return {
-        id: society.id,
-        name: society.name,
-        presidentEmail: user.email,
-        temporaryPassword,
-        isSetupComplete: false,
-        category: {
-          id: category.id,
-          name: category.name,
-        },
-        advisor: {
-          id: advisor.id,
-          designation: advisor.designation,
-          user: {
-            fullName: advisor.user.fullName,
-          },
-        },
-        createdAt: society.createdAt,
-      };
+      return { society, user };
     });
+
+    // 7. Dispatch activation email to Society/President Email
+    const clientUrl = this.configService.get<string>('CLIENT_URL') || 'http://localhost:5173';
+    const activationUrl = `${clientUrl}/activate-society?token=${rawToken}&email=${encodeURIComponent(email)}`;
+
+    let emailResult: { messageId: string; previewUrl?: string } = { messageId: '' };
+    try {
+      emailResult = await this.emailService.sendSocietyActivationEmail(
+        email,
+        name,
+        activationUrl,
+      );
+    } catch (err) {
+      // Log error but allow transaction return
+      console.error('Failed to send activation email:', err);
+    }
+
+    return {
+      id: result.society.id,
+      name: result.society.name,
+      presidentEmail: result.user.email,
+      activationEmailSent: true,
+      emailPreviewUrl: emailResult.previewUrl,
+      isSetupComplete: false,
+      category: {
+        id: category.id,
+        name: category.name,
+      },
+      advisor: {
+        id: advisor.id,
+        designation: advisor.designation,
+        user: {
+          fullName: advisor.user.fullName,
+        },
+      },
+      createdAt: result.society.createdAt,
+    };
   }
 
   /**

@@ -10,8 +10,14 @@ export class OnboardSocietyResponseDto {
   @ApiProperty({ example: 'president.acm@giki.edu.pk' })
   presidentEmail: string;
 
-  @ApiProperty({ example: 'TempKey#8a9f2b' })
-  temporaryPassword: string;
+  @ApiProperty({ example: 'TempKey#8a9f2b', required: false })
+  temporaryPassword?: string;
+
+  @ApiProperty({ example: true })
+  activationEmailSent: boolean;
+
+  @ApiProperty({ example: 'https://ethereal.email/message/...', required: false })
+  emailPreviewUrl?: string;
 
   @ApiProperty({ example: false })
   isSetupComplete: boolean;

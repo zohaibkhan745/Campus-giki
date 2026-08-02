@@ -31,7 +31,9 @@ export interface OnboardSocietyResult {
   id: string;
   name: string;
   presidentEmail: string;
-  temporaryPassword: string;
+  temporaryPassword?: string;
+  activationEmailSent: boolean;
+  emailPreviewUrl?: string;
   isSetupComplete: boolean;
   category: {
     id: string;

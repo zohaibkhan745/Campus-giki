@@ -229,45 +229,42 @@ export const CreateSocietyPage: React.FC = () => {
 
               <div className="bg-lumen-cream p-4 rounded-inputs border-2 border-vast-ink space-y-0.5">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-fog flex items-center gap-1">
-                  <Mail className="w-3 h-3" /> Login Email
+                  <Mail className="w-3 h-3" /> Activation Email Dispatched To
                 </span>
                 <p className="text-sm font-bold text-vast-ink font-mono">{provisionedData.presidentEmail}</p>
               </div>
 
-              <div className="bg-vast-ink p-4 rounded-inputs border-2 border-vast-ink space-y-0.5">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-fog flex items-center gap-1">
-                  <KeyRound className="w-3 h-3 text-amber-400" /> Temporary Password
-                </span>
-                <p className="text-base font-extrabold text-white font-mono tracking-widest">
-                  {provisionedData.temporaryPassword}
-                </p>
-              </div>
+              {provisionedData.emailPreviewUrl && (
+                <div className="bg-blue-950 p-4 rounded-inputs border-2 border-blue-600 space-y-1">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-blue-300 flex items-center gap-1">
+                    <Info className="w-3 h-3 text-blue-400" /> Local Test Email Inbox
+                  </span>
+                  <a
+                    href={provisionedData.emailPreviewUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-xs font-semibold text-blue-400 underline hover:text-blue-200 block truncate"
+                  >
+                    Open Ethereal Email Preview &rarr;
+                  </a>
+                </div>
+              )}
             </div>
 
             {/* Delivery Instruction */}
             <div className="flex items-start gap-2.5 text-xs text-fog bg-lumen-cream border-2 border-vast-ink/20 p-3 rounded-inputs">
               <Info className="w-4 h-4 text-ember-glow shrink-0 mt-0.5" />
               <p className="leading-relaxed font-medium">
-                Credentials are not emailed automatically. Copy and deliver them manually to the society president.
+                An activation link has been sent to the society email. The society president must click the link within 48 hours to set their password.
               </p>
             </div>
 
             {/* Actions */}
-            <div className="flex items-center gap-3 pt-2 border-t-2 border-vast-ink/10">
-              <Button
-                type="button"
-                variant="outline"
-                className="flex-1 bg-pure-white"
-                onClick={handleCopyCredentials}
-                leftIcon={copied ? <Check className="w-4 h-4 text-forest-ink" /> : <Copy className="w-4 h-4" />}
-              >
-                {copied ? 'Copied!' : 'Copy Credentials'}
-              </Button>
-
+            <div className="flex items-center justify-end gap-3 pt-2 border-t-2 border-vast-ink/10">
               <Button
                 type="button"
                 variant="primary"
-                className="flex-1"
+                className="w-full sm:w-auto px-8"
                 onClick={() => setProvisionedData(null)}
               >
                 Done
