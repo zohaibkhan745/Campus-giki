@@ -53,7 +53,7 @@ export const EventCard: React.FC<EventCardProps> = ({ item, allowExpand = false 
 
       {/* Event Content */}
       <div className="space-y-3">
-        <h2 className="font-semibold text-[20px] text-vast-ink leading-snug">
+        <h2 className="font-eb-garamond font-normal text-[24px] md:text-[28px] text-vast-ink leading-tight">
           {item.title}
         </h2>
 
@@ -89,11 +89,11 @@ export const EventCard: React.FC<EventCardProps> = ({ item, allowExpand = false 
 
       {/* Optional Event Image */}
       {item.coverImageUrl && (
-        <div className="overflow-hidden rounded-[24px] border-2 border-vast-ink">
+        <div className="w-full aspect-[16/9] overflow-hidden rounded-[24px] border-2 border-vast-ink">
           <img
             src={item.coverImageUrl}
             alt={item.title}
-            className="w-full max-h-[360px] object-cover"
+            className="w-full h-full object-cover"
             onError={(e) => {
               (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=1200&auto=format&fit=crop&q=80';
             }}

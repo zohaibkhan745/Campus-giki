@@ -1,21 +1,33 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Building2, Megaphone } from 'lucide-react';
+import { Building2 } from 'lucide-react';
 import type { PostFeedItem } from '@/types/feed.types';
 
 interface PostCardProps {
   item: PostFeedItem;
 }
 
+const getRelativeTime = (dateInput: string | Date): string => {
+  const now = new Date();
+  const date = new Date(dateInput);
+  const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+  if (isNaN(date.getTime()) || diffInSeconds < 30) return 'Just now';
+  const diffInMinutes = Math.floor(diffInSeconds / 60);
+  if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
+  const diffInHours = Math.floor(diffInMinutes / 60);
+  if (diffInHours < 24) return `${diffInHours}h ago`;
+  const diffInDays = Math.floor(diffInHours / 24);
+  if (diffInDays < 7) return `${diffInDays}d ago`;
+  const diffInWeeks = Math.floor(diffInDays / 7);
+  if (diffInWeeks < 4) return `${diffInWeeks}w ago`;
+
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+};
+
 export const PostCard: React.FC<PostCardProps> = ({ item }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const isLongContent = item.content && item.content.length > 400;
-
-  const formattedTime = new Date(item.createdAt).toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  });
 
   return (
     <article className="bg-lumen-cream border-2 border-vast-ink rounded-cards p-8 space-y-6 text-left transition-transform hover:-translate-y-0.5">
@@ -55,11 +67,8 @@ export const PostCard: React.FC<PostCardProps> = ({ item }) => {
           </Link>
         )}
 
-        <span className={`inline-flex items-center gap-1 rounded-badges px-3 py-1 text-xs font-semibold shrink-0 border ${
-          item.isAdminPost ? 'bg-vast-ink text-white border-vast-ink' : 'bg-lumen-stone text-vast-ink border-vast-ink/20'
-        }`}>
-          <Megaphone className={`w-3 h-3 ${item.isAdminPost ? 'text-white' : 'text-forest-ink'}`} />
-          <span>{item.isAdminPost ? 'Campus Notice' : 'Post'}</span>
+        <span className="text-fog text-[14px] font-medium shrink-0">
+          {getRelativeTime(item.createdAt)}
         </span>
       </div>
 
@@ -83,22 +92,22 @@ export const PostCard: React.FC<PostCardProps> = ({ item }) => {
 
       {/* Optional Post Video */}
       {item.videoUrl && (
-        <div className="overflow-hidden rounded-[24px] border-2 border-vast-ink mt-4 bg-black">
+        <div className="w-full aspect-[16/9] overflow-hidden rounded-[24px] border-2 border-vast-ink mt-4">
           <video
             controls
             src={item.videoUrl}
-            className="w-full max-h-[450px] object-contain"
+            className="w-full h-full object-cover"
           />
         </div>
       )}
 
       {/* Optional Post Image */}
       {item.imageUrl && !item.videoUrl && (
-        <div className="overflow-hidden rounded-[24px] border-2 border-vast-ink mt-4">
+        <div className="w-full aspect-[16/9] overflow-hidden rounded-[24px] border-2 border-vast-ink mt-4">
           <img
             src={item.imageUrl}
             alt="Post Attachment"
-            className="w-full max-h-[400px] object-cover"
+            className="w-full h-full object-cover"
             onError={(e) => {
               e.currentTarget.style.display = 'none';
               if (e.currentTarget.parentElement) {
@@ -108,11 +117,6 @@ export const PostCard: React.FC<PostCardProps> = ({ item }) => {
           />
         </div>
       )}
-
-      {/* Footer Timestamp */}
-      <div className="pt-2 border-t-2 border-vast-ink/10 text-fog text-[14px] font-medium">
-        Posted on {formattedTime}
-      </div>
     </article>
   );
 };
