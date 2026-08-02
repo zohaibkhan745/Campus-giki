@@ -37,6 +37,12 @@ enum EventApprovalStatus {
   APPROVED
 }
 
+enum OrganizationType {
+  SOCIETY
+  CLUB
+  TEAM
+}
+
 // ==========================================
 // Models
 // ==========================================
@@ -104,7 +110,8 @@ model Society {
   presidentName    String?
   presidentRegNum  String?
   presidentContact String?
-  isSetupComplete  Boolean      @default(false)
+  isSetupComplete  Boolean          @default(false)
+  type             OrganizationType @default(SOCIETY)
   categoryId       String?
   category         Category?    @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   userId           String       @unique
@@ -121,6 +128,7 @@ model Society {
   @@index([advisorId])
   @@index([categoryId])
   @@index([isSetupComplete])
+  @@index([type])
 }
 
 model Event {

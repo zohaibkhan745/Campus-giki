@@ -825,6 +825,7 @@ export async function seedSocietiesAndFeed(
         logoUrl: sData.logoUrl,
         bannerUrl: (sData as any).bannerUrl || null,
         categoryId: categoryId || null,
+        type: (sData as any).type || 'SOCIETY',
         isSetupComplete: true,
       },
       create: {
@@ -836,6 +837,7 @@ export async function seedSocietiesAndFeed(
         userId: user.id,
         advisorId: sData.email === 'acm@giki.edu.pk' ? advisorId : null,
         categoryId: categoryId || null,
+        type: (sData as any).type || 'SOCIETY',
         isSetupComplete: true,
       },
     });

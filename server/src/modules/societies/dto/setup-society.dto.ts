@@ -1,6 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsEmail,
+  IsEnum,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -10,6 +11,7 @@ import {
   MinLength,
 } from 'class-validator';
 import { Transform } from 'class-transformer';
+import { OrganizationType } from '@prisma/client';
 
 export class SetupSocietyDto {
   @ApiProperty({ example: 'ACM GIKI Student Chapter' })
@@ -21,6 +23,11 @@ export class SetupSocietyDto {
     typeof value === 'string' ? value.trim() : (value as string),
   )
   name: string;
+
+  @ApiPropertyOptional({ enum: OrganizationType, example: 'SOCIETY' })
+  @IsOptional()
+  @IsEnum(OrganizationType, { message: 'Invalid organization type' })
+  type?: OrganizationType;
 
   @ApiProperty({
     example: 'Premier computing and competitive programming society',

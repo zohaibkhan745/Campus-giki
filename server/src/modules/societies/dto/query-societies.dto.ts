@@ -1,6 +1,7 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
+import { IsEnum, IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
+import { OrganizationType } from '@prisma/client';
 
 export class QuerySocietiesDto {
   @ApiPropertyOptional({ example: 1, default: 1 })
@@ -22,6 +23,11 @@ export class QuerySocietiesDto {
   @IsOptional()
   @IsString()
   category?: string;
+
+  @ApiPropertyOptional({ enum: OrganizationType, example: 'SOCIETY' })
+  @IsOptional()
+  @IsEnum(OrganizationType, { message: 'Invalid organization type' })
+  type?: OrganizationType;
 
   @ApiPropertyOptional({ example: 'computing' })
   @IsOptional()

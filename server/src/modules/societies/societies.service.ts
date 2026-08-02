@@ -45,6 +45,10 @@ export class SocietiesService {
       };
     }
 
+    if (query.type) {
+      whereClause.type = query.type;
+    }
+
     if (query.search) {
       const searchFilter = query.search.trim();
       whereClause.OR = [
@@ -63,6 +67,7 @@ export class SocietiesService {
         select: {
           id: true,
           name: true,
+          type: true,
           shortDescription: true,
           logoUrl: true,
           category: {
@@ -101,6 +106,7 @@ export class SocietiesService {
       select: {
         id: true,
         name: true,
+        type: true,
         shortDescription: true,
         longDescription: true,
         logoUrl: true,
@@ -356,6 +362,7 @@ export class SocietiesService {
         where: { userId },
         update: {
           name: dto.name,
+          ...(dto.type && { type: dto.type }),
           shortDescription: dto.shortDescription,
           longDescription: dto.longDescription,
           categoryId: dto.categoryId,
@@ -374,6 +381,7 @@ export class SocietiesService {
         create: {
           userId,
           name: dto.name,
+          type: dto.type || 'SOCIETY',
           shortDescription: dto.shortDescription,
           longDescription: dto.longDescription,
           categoryId: dto.categoryId,
@@ -434,6 +442,7 @@ export class SocietiesService {
       where: { userId },
       data: {
         ...(dto.name && { name: dto.name }),
+        ...(dto.type && { type: dto.type }),
         ...(dto.shortDescription !== undefined && {
           shortDescription: dto.shortDescription,
         }),

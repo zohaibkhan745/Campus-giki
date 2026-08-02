@@ -1,4 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { OrganizationType } from '@prisma/client';
 
 export class MinimalCategoryDto {
   @ApiProperty({ example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
@@ -17,6 +18,9 @@ export class PublicSocietyItemDto {
 
   @ApiProperty({ example: 'ACM GIKI Student Chapter' })
   name: string;
+
+  @ApiProperty({ enum: OrganizationType, example: 'SOCIETY' })
+  type: OrganizationType;
 
   @ApiPropertyOptional({ example: 'Premier computing society' })
   shortDescription?: string | null;
