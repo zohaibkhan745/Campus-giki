@@ -110,7 +110,8 @@ export const AdminAdvisorsPage: React.FC = () => {
                   <th className="py-3 px-4 border-r-2 border-vast-ink">Advisor Name</th>
                   <th className="py-3 px-4 border-r-2 border-vast-ink">Email</th>
                   <th className="py-3 px-4 border-r-2 border-vast-ink">Designation</th>
-                  <th className="py-3 px-4">Department</th>
+                  <th className="py-3 px-4 border-r-2 border-vast-ink">Department</th>
+                  <th className="py-3 px-4">Assigned Societies</th>
                 </tr>
               </thead>
               <tbody className="divide-y-2 divide-vast-ink">
@@ -134,11 +135,24 @@ export const AdminAdvisorsPage: React.FC = () => {
                         <span className="text-sm font-medium text-vast-ink">{advisor.designation}</span>
                       </div>
                     </td>
-                    <td className="py-3 px-4">
+                    <td className="py-3 px-4 border-r-2 border-vast-ink">
                       <div className="flex items-center gap-2">
                         <Building className="w-4 h-4 text-fog" />
                         <span className="text-sm font-medium text-vast-ink">{advisor.department}</span>
                       </div>
+                    </td>
+                    <td className="py-3 px-4">
+                      {advisor.societies && advisor.societies.length > 0 ? (
+                        <div className="flex flex-wrap gap-1">
+                          {advisor.societies.map((soc, idx) => (
+                            <span key={idx} className="px-2 py-0.5 bg-lavender-whisper border border-vast-ink/20 text-vast-ink rounded-full text-xs font-semibold">
+                              {soc.name}
+                            </span>
+                          ))}
+                        </div>
+                      ) : (
+                        <span className="text-xs font-medium text-fog italic">Unassigned</span>
+                      )}
                     </td>
                   </tr>
                 ))}

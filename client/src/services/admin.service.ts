@@ -10,6 +10,7 @@ export interface AdvisorOption {
     fullName: string;
     email: string;
   };
+  societies?: { name: string }[];
 }
 
 export interface OnboardSocietyPayload {

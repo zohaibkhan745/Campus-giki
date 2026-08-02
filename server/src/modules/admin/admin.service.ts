@@ -252,6 +252,11 @@ export class AdminService {
             email: true,
           },
         },
+        societies: {
+          select: {
+            name: true,
+          },
+        },
       },
       orderBy: {
         user: {
