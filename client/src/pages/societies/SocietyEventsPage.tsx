@@ -221,14 +221,14 @@ export const SocietyEventsPage: React.FC = () => {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-full bg-transparent text-vast-ink font-bold text-xs rounded-inputs border border-vast-ink/20 px-3 py-2.5 pl-9 outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 cursor-pointer appearance-none"
+              className="w-full bg-lumen-cream text-vast-ink font-bold text-xs rounded-inputs border border-vast-ink/20 px-3 py-2.5 pl-9 outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 cursor-pointer appearance-none"
             >
-              <option value="">All Statuses</option>
-              <option value="DRAFT">Draft</option>
-              <option value="PENDING_ADVISOR">Pending Advisor</option>
-              <option value="PENDING_ADMIN">Pending Admin (DSA)</option>
-              <option value="CHANGES_REQUESTED">Changes Requested</option>
-              <option value="PUBLISHED">Published / Approved</option>
+              <option value="" className="bg-lumen-cream text-vast-ink font-semibold">All Statuses</option>
+              <option value="DRAFT" className="bg-lumen-cream text-vast-ink font-semibold">Draft</option>
+              <option value="PENDING_ADVISOR" className="bg-lumen-cream text-vast-ink font-semibold">Pending Advisor</option>
+              <option value="PENDING_ADMIN" className="bg-lumen-cream text-vast-ink font-semibold">Pending Admin (DSA)</option>
+              <option value="CHANGES_REQUESTED" className="bg-lumen-cream text-vast-ink font-semibold">Changes Requested</option>
+              <option value="PUBLISHED" className="bg-lumen-cream text-vast-ink font-semibold">Published / Approved</option>
             </select>
           </div>
 

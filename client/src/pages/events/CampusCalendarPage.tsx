@@ -165,10 +165,10 @@ export const CampusCalendarPage: React.FC = () => {
         </header>
 
         {/* Controls Bar */}
-        <div className="bg-lumen-cream border-2 border-vast-ink rounded-cards p-4 sm:p-6 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4">
+        <div className="bg-lumen-cream border border-vast-ink/20 rounded-cards p-4 sm:p-6 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4">
           <div className="flex items-center gap-3 w-full sm:w-auto">
             {(isCalendarLoading || isCalendarFetching || isListLoading) && (
-              <div className="flex items-center gap-1.5 text-xs text-vast-ink font-semibold bg-lavender-whisper px-3 py-1.5 rounded-badges border-2 border-vast-ink shrink-0">
+              <div className="flex items-center gap-1.5 text-xs text-vast-ink font-semibold bg-lavender-whisper px-3 py-1.5 rounded-badges border border-vast-ink/20 shrink-0">
                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
                 <span>Loading...</span>
               </div>
@@ -181,11 +181,11 @@ export const CampusCalendarPage: React.FC = () => {
               <select
                 value={selectedSociety}
                 onChange={(e) => setSelectedSociety(e.target.value)}
-                className="w-full bg-pure-white text-vast-ink font-bold text-xs rounded-inputs border-2 border-vast-ink px-3.5 py-2.5 pl-10 transition-all outline-none focus:ring-2 focus:ring-vast-ink cursor-pointer"
+                className="w-full bg-lumen-cream text-vast-ink font-bold text-xs rounded-inputs border border-vast-ink/20 px-3.5 py-2.5 pl-10 transition-all outline-none focus:ring-2 focus:ring-vast-ink cursor-pointer"
               >
-                <option value="">All Societies</option>
+                <option value="" className="bg-lumen-cream text-vast-ink font-semibold">All Societies</option>
                 {societies.map((soc) => (
-                  <option key={soc.id} value={soc.id}>
+                  <option key={soc.id} value={soc.id} className="bg-lumen-cream text-vast-ink font-semibold">
                     {soc.name}
                   </option>
                 ))}
@@ -195,7 +195,7 @@ export const CampusCalendarPage: React.FC = () => {
         </div>
 
         {/* Calendar Container */}
-        <div id="calendar-view" className="bg-lumen-cream border-2 border-vast-ink rounded-cards sm:rounded-[32px] overflow-hidden p-3 sm:p-6 text-vast-ink shadow-none">
+        <div id="calendar-view" className="bg-lumen-cream border border-vast-ink/20 rounded-cards sm:rounded-[32px] overflow-hidden p-3 sm:p-6 text-vast-ink shadow-none">
             <style>{`
               .fc {
                 table-layout: fixed !important;
@@ -334,40 +334,40 @@ export const CampusCalendarPage: React.FC = () => {
             <div className="flex items-center flex-wrap gap-2">
               <button
                 onClick={() => setListFilter('today')}
-                className={`px-4 py-2 rounded-full font-bold text-sm border-2 transition-all ${
+                className={`px-4 py-2 rounded-full font-bold text-sm border transition-all ${
                   listFilter === 'today'
                     ? 'bg-vast-ink text-pure-white border-vast-ink'
-                    : 'bg-pure-white text-vast-ink border-vast-ink/20 hover:border-vast-ink'
+                    : 'bg-transparent text-vast-ink border-vast-ink/20 hover:border-vast-ink'
                 }`}
               >
                 Today
               </button>
               <button
                 onClick={() => setListFilter('week')}
-                className={`px-4 py-2 rounded-full font-bold text-sm border-2 transition-all ${
+                className={`px-4 py-2 rounded-full font-bold text-sm border transition-all ${
                   listFilter === 'week'
                     ? 'bg-vast-ink text-pure-white border-vast-ink'
-                    : 'bg-pure-white text-vast-ink border-vast-ink/20 hover:border-vast-ink'
+                    : 'bg-transparent text-vast-ink border-vast-ink/20 hover:border-vast-ink'
                 }`}
               >
                 This Week
               </button>
               <button
                 onClick={() => setListFilter('month')}
-                className={`px-4 py-2 rounded-full font-bold text-sm border-2 transition-all ${
+                className={`px-4 py-2 rounded-full font-bold text-sm border transition-all ${
                   listFilter === 'month'
                     ? 'bg-vast-ink text-pure-white border-vast-ink'
-                    : 'bg-pure-white text-vast-ink border-vast-ink/20 hover:border-vast-ink'
+                    : 'bg-transparent text-vast-ink border-vast-ink/20 hover:border-vast-ink'
                 }`}
               >
                 This Month
               </button>
               <button
                 onClick={() => setListFilter('upcoming')}
-                className={`px-4 py-2 rounded-full font-bold text-sm border-2 transition-all ${
+                className={`px-4 py-2 rounded-full font-bold text-sm border transition-all ${
                   listFilter === 'upcoming'
                     ? 'bg-vast-ink text-pure-white border-vast-ink'
-                    : 'bg-pure-white text-vast-ink border-vast-ink/20 hover:border-vast-ink'
+                    : 'bg-transparent text-vast-ink border-vast-ink/20 hover:border-vast-ink'
                 }`}
               >
                 All Upcoming
@@ -376,7 +376,7 @@ export const CampusCalendarPage: React.FC = () => {
           </div>
           
           {eventsList.length === 0 ? (
-            <div className="bg-pure-white p-10 rounded-cards border-2 border-vast-ink text-center text-fog">
+            <div className="bg-transparent p-10 rounded-cards border border-vast-ink/20 text-center text-fog">
               No events scheduled for the current date range.
             </div>
           ) : (

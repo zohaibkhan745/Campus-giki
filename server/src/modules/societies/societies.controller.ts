@@ -131,6 +131,16 @@ export class SocietiesController {
     return this.societiesService.getPublicSocietyEvents(id);
   }
 
+  @Get(':id/posts')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get public posts/announcements published by society' })
+  @ApiParam({ name: 'id', description: 'Society UUID' })
+  async getPublicSocietyPosts(
+    @Param('id', ParseUUIDPipe) id: string,
+  ) {
+    return this.societiesService.getPublicSocietyPosts(id);
+  }
+
   @Post('setup')
   @Auth(Role.SOCIETY)
   @HttpCode(HttpStatus.CREATED)

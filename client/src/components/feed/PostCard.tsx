@@ -35,7 +35,7 @@ export const PostCard: React.FC<PostCardProps> = ({ item }) => {
       <div className="flex items-center justify-between gap-4">
         {item.isAdminPost ? (
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full border-2 border-vast-ink bg-vast-ink flex items-center justify-center shrink-0 text-white">
+            <div className="w-8 h-8 rounded-full border border-vast-ink/20 bg-vast-ink flex items-center justify-center shrink-0 text-white">
               <Building2 className="w-4 h-4" />
             </div>
             <div className="flex flex-col">
@@ -54,10 +54,10 @@ export const PostCard: React.FC<PostCardProps> = ({ item }) => {
               <img
                 src={item.society.logoUrl}
                 alt={item.society.name}
-                className="w-8 h-8 rounded-full border-2 border-vast-ink object-cover bg-lumen-stone shrink-0 group-hover:opacity-80 transition-opacity"
+                className="w-8 h-8 rounded-full border border-vast-ink/20 object-cover bg-lumen-stone shrink-0 group-hover:opacity-80 transition-opacity"
               />
             ) : (
-              <div className="w-8 h-8 rounded-full border-2 border-vast-ink bg-lavender-whisper flex items-center justify-center shrink-0 text-vast-ink">
+              <div className="w-8 h-8 rounded-full border border-vast-ink/20 bg-lavender-whisper flex items-center justify-center shrink-0 text-vast-ink">
                 <Building2 className="w-4 h-4" />
               </div>
             )}

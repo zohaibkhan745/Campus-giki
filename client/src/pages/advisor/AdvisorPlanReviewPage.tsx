@@ -140,7 +140,7 @@ export const AdvisorPlanReviewPage: React.FC = () => {
       <div className="flex items-center justify-between">
         <button
           onClick={() => navigate(-1)}
-          className="inline-flex items-center gap-2 px-3.5 py-2 bg-pure-white hover:bg-lumen-stone border-2 border-vast-ink text-vast-ink text-xs font-bold rounded-buttons transition-all cursor-pointer shadow-[2px_2px_0px_0px_#1B1B18]"
+          className="inline-flex items-center gap-2 px-3.5 py-2 bg-transparent hover:bg-lumen-stone border border-vast-ink/20 text-vast-ink text-xs font-bold rounded-buttons transition-all cursor-pointer shadow-[2px_2px_0px_0px_#1B1B18]"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back</span>
@@ -150,16 +150,16 @@ export const AdvisorPlanReviewPage: React.FC = () => {
       </div>
 
       {/* Society Header */}
-      <div className="bg-lumen-cream p-6 rounded-cards border-2 border-vast-ink flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div className="bg-lumen-cream p-6 rounded-cards border border-vast-ink/20 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div className="flex items-center gap-4">
           {plan.society?.logoUrl ? (
             <img
               src={plan.society.logoUrl}
               alt={plan.society.name}
-              className="w-14 h-14 rounded-cards object-cover border-2 border-vast-ink"
+              className="w-14 h-14 rounded-cards object-cover border border-vast-ink/20"
             />
           ) : (
-            <div className="p-3 bg-pure-white border border-ember-glow text-ember-glow rounded-cards border border-amber-500/20">
+            <div className="p-3 bg-transparent border border-ember-glow text-ember-glow rounded-cards border border-amber-500/20">
               <Building2 className="w-8 h-8" />
             </div>
           )}
@@ -175,7 +175,7 @@ export const AdvisorPlanReviewPage: React.FC = () => {
         </div>
 
         {isApproved && (
-          <div className="flex items-center gap-2 px-3.5 py-1.5 bg-pure-white border border-forest-ink rounded-inputs border border-emerald-500/20 text-forest-ink text-xs font-semibold">
+          <div className="flex items-center gap-2 px-3.5 py-1.5 bg-transparent border border-forest-ink rounded-inputs border border-emerald-500/20 text-forest-ink text-xs font-semibold">
             <Lock className="w-4 h-4" />
             <span>Approved &amp; Permanently Locked</span>
           </div>
@@ -186,8 +186,8 @@ export const AdvisorPlanReviewPage: React.FC = () => {
       {serverError && <Alert variant="error" message={serverError} />}
 
       {/* Events Table */}
-      <div className="bg-lumen-cream p-6 rounded-cards border-2 border-vast-ink space-y-4">
-        <h2 className="text-base font-bold text-vast-ink border-b-2 border-vast-ink pb-3 flex items-center gap-2">
+      <div className="bg-lumen-cream p-6 rounded-cards border border-vast-ink/20 space-y-4">
+        <h2 className="text-base font-bold text-vast-ink border-b border-vast-ink/20 pb-3 flex items-center gap-2">
           <Calendar className="w-4 h-4 text-ember-glow" />
           <span>Submitted Calendar Events ({plan.plannedEvents?.length || 0})</span>
         </h2>
@@ -199,7 +199,7 @@ export const AdvisorPlanReviewPage: React.FC = () => {
             {plan.plannedEvents.map((evt, idx) => (
               <div
                 key={evt.id}
-                className="bg-pure-white p-4 rounded-inputs border-2 border-vast-ink flex flex-col md:flex-row justify-between items-start md:items-center gap-3"
+                className="bg-transparent p-4 rounded-inputs border border-vast-ink/20 flex flex-col md:flex-row justify-between items-start md:items-center gap-3"
               >
                 <div className="space-y-1 w-full">
                   <span className="text-xs font-bold text-ember-glow">
@@ -209,18 +209,14 @@ export const AdvisorPlanReviewPage: React.FC = () => {
                     <p className="text-xs text-fog"><strong className="text-vast-ink">Venue:</strong> {evt.venue}</p>
                   </div>
                   <p className="text-xs text-fog mt-2"><strong className="text-vast-ink">Description:</strong> {evt.description}</p>
-                  {evt.societyRules && (
-                    <p className="text-xs text-fog mt-1">
-                      <strong className="text-vast-ink">Society Guidelines:</strong> {evt.societyRules}
-                    </p>
-                  )}
+
                   {evt.rules && (
                     <p className="text-xs text-fog mt-1">
                       <strong className="text-vast-ink">Rules:</strong> {evt.rules}
                     </p>
                   )}
                   <div className="flex gap-2 mt-2">
-                    <div className="text-xs font-semibold text-vast-ink font-medium bg-lumen-stone px-3 py-1.5 rounded-inputs border-2 border-vast-ink shrink-0 inline-block">
+                    <div className="text-xs font-semibold text-vast-ink font-medium bg-lumen-stone px-3 py-1.5 rounded-inputs border border-vast-ink/20 shrink-0 inline-block">
                       Start:{' '}
                       {new Date(evt.startDate).toLocaleDateString(undefined, {
                         month: 'short',
@@ -228,7 +224,7 @@ export const AdvisorPlanReviewPage: React.FC = () => {
                         year: 'numeric',
                       })}
                     </div>
-                    <div className="text-xs font-semibold text-vast-ink font-medium bg-lumen-stone px-3 py-1.5 rounded-inputs border-2 border-vast-ink shrink-0 inline-block">
+                    <div className="text-xs font-semibold text-vast-ink font-medium bg-lumen-stone px-3 py-1.5 rounded-inputs border border-vast-ink/20 shrink-0 inline-block">
                       End:{' '}
                       {new Date(evt.endDate).toLocaleDateString(undefined, {
                         month: 'short',
@@ -245,15 +241,15 @@ export const AdvisorPlanReviewPage: React.FC = () => {
       </div>
 
       {/* Review Comments & Decision Controls */}
-      <div className="bg-lumen-cream p-6 rounded-cards border-2 border-vast-ink space-y-4">
-        <h2 className="text-base font-bold text-vast-ink border-b-2 border-vast-ink pb-3 flex items-center gap-2">
+      <div className="bg-lumen-cream p-6 rounded-cards border border-vast-ink/20 space-y-4">
+        <h2 className="text-base font-bold text-vast-ink border-b border-vast-ink/20 pb-3 flex items-center gap-2">
           <MessageSquare className="w-4 h-4 text-ember-glow" />
           <span>Faculty Advisor Feedback &amp; Decision</span>
         </h2>
 
         {/* Existing Comments Callout */}
         {plan.advisorComments && (
-          <div className="p-4 bg-lumen-cream rounded-inputs border-2 border-vast-ink shadow-sm space-y-1">
+          <div className="p-4 bg-lumen-cream rounded-inputs border border-vast-ink/20 shadow-sm space-y-1">
             <FeedbackHistory rawComments={plan.advisorComments} />
           </div>
         )}
@@ -269,7 +265,7 @@ export const AdvisorPlanReviewPage: React.FC = () => {
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
                 placeholder="Type revision comments or feedback notes for the society officers..."
-                className="w-full bg-pure-white text-vast-ink placeholder:text-fog text-sm rounded-inputs border-2 border-vast-ink p-3.5 transition-all outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20"
+                className="w-full bg-transparent text-vast-ink placeholder:text-fog text-sm rounded-inputs border border-vast-ink/20 p-3.5 transition-all outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
               />
             </div>
 

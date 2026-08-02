@@ -150,14 +150,14 @@ export const AdvisorEventReviewPage: React.FC = () => {
       <div className="flex items-center justify-between">
         <button
           onClick={() => navigate(-1)}
-          className="inline-flex items-center gap-2 px-3.5 py-2 bg-pure-white hover:bg-lumen-stone border-2 border-vast-ink text-vast-ink text-xs font-bold rounded-buttons transition-all cursor-pointer shadow-[2px_2px_0px_0px_#1B1B18]"
+          className="inline-flex items-center gap-2 px-3.5 py-2 bg-transparent hover:bg-lumen-stone border border-vast-ink/20 text-vast-ink text-xs font-bold rounded-buttons transition-all cursor-pointer shadow-[2px_2px_0px_0px_#1B1B18]"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back</span>
         </button>
       </div>
 
-      <div className="space-y-1 bg-pure-white p-6 rounded-cards border-2 border-vast-ink">
+      <div className="space-y-1 bg-transparent p-6 rounded-cards border border-vast-ink/20">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-extrabold text-vast-ink">
             Review Event: {eventData.title}
@@ -176,10 +176,10 @@ export const AdvisorEventReviewPage: React.FC = () => {
         <Alert variant="success" message="Event details updated successfully." />
       )}
 
-      <div className="bg-lumen-cream p-6 md:p-8 rounded-cards border-2 border-vast-ink space-y-8">
+      <div className="bg-lumen-cream p-6 md:p-8 rounded-cards border border-vast-ink/20 space-y-8">
         {/* Review Actions */}
         <div className="space-y-4">
-          <h2 className="text-base font-bold text-vast-ink border-b-2 border-vast-ink pb-2">
+          <h2 className="text-base font-bold text-vast-ink border-b border-vast-ink/20 pb-2">
             Advisor Review & Comments
           </h2>
         
@@ -193,7 +193,7 @@ export const AdvisorEventReviewPage: React.FC = () => {
             onChange={(e) => setAdvisorComment(e.target.value)}
             placeholder="Provide feedback or reasons for requesting changes..."
             disabled={updateEventStatusMutation.isPending}
-            className="w-full bg-pure-white text-vast-ink placeholder:text-fog text-sm rounded-inputs border-2 border-vast-ink px-3.5 py-2.5 transition-all outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50 resize-y"
+            className="w-full bg-transparent text-vast-ink placeholder:text-fog text-sm rounded-inputs border border-vast-ink/20 px-3.5 py-2.5 transition-all outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50 resize-y"
           />
         </div>
 
@@ -225,9 +225,9 @@ export const AdvisorEventReviewPage: React.FC = () => {
         )}
         </div>
 
-        <form onSubmit={(e) => e.preventDefault()} className="space-y-8 pt-6 border-t-2 border-vast-ink" noValidate>
+        <form onSubmit={(e) => e.preventDefault()} className="space-y-8 pt-6 border-t border-vast-ink/20" noValidate>
           <div className="space-y-4">
-            <div className="flex items-center justify-between border-b-2 border-vast-ink pb-2">
+            <div className="flex items-center justify-between border-b border-vast-ink/20 pb-2">
               <h2 className="text-base font-bold text-vast-ink">
                 Event Overview
               </h2>
@@ -254,7 +254,7 @@ export const AdvisorEventReviewPage: React.FC = () => {
                 rows={4}
                 placeholder="Describe your event agenda, prerequisites, target audience, and guidelines..."
                 disabled={true}
-                className="w-full bg-pure-white text-vast-ink placeholder:text-fog text-sm rounded-inputs border-2 border-vast-ink px-3.5 py-2.5 pl-10 transition-all outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50 resize-y"
+                className="w-full bg-transparent text-vast-ink placeholder:text-fog text-sm rounded-inputs border border-vast-ink/20 px-3.5 py-2.5 pl-10 transition-all outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50 resize-y"
                 {...register('description')}
               />
             </div>
@@ -267,7 +267,7 @@ export const AdvisorEventReviewPage: React.FC = () => {
 
           </div>
 
-          <div className="space-y-4 pt-4 border-t-2 border-vast-ink/20">
+          <div className="space-y-4 pt-4 border-t border-vast-ink/20">
             <h2 className="text-base font-bold text-vast-ink pb-2">
               Event Type & In-Charge Details
             </h2>
@@ -278,7 +278,7 @@ export const AdvisorEventReviewPage: React.FC = () => {
               </label>
             <select
               disabled={true}
-              className="w-full bg-pure-white text-vast-ink text-sm rounded-inputs border-2 border-vast-ink px-3.5 py-2.5 transition-all outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50"
+              className="w-full bg-lumen-cream text-vast-ink text-sm rounded-inputs border border-vast-ink/20 px-3.5 py-2.5 transition-all outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50"
               {...register('eventType')}
             >
               <option value="">-- Select Event Type --</option>
@@ -369,14 +369,22 @@ export const AdvisorEventReviewPage: React.FC = () => {
               Media & External Registration (Optional)
             </h2>
 
-            <Input
-              label="Cover Image URL"
-              placeholder="https://giki.edu.pk/events/softdesk-banner.png"
-              leftIcon={<Image className="w-4 h-4" />}
-              disabled={true}
-              error={errors.coverImageUrl?.message}
-              {...register('coverImageUrl')}
-            />
+            <div className="space-y-2">
+              <label className="block text-sm font-bold text-vast-ink">Cover Image</label>
+              {eventData?.coverImageUrl ? (
+                <div className="relative rounded-cards overflow-hidden border-2 border-vast-ink bg-lumen-stone shadow-sm w-full max-h-64 flex items-center justify-center">
+                  <img
+                    src={eventData.coverImageUrl}
+                    alt="Event Cover"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ) : (
+                <div className="text-sm text-fog p-4 bg-lumen-stone/50 border border-vast-ink/20 rounded-inputs text-center">
+                  No cover image provided.
+                </div>
+              )}
+            </div>
 
             <Input
               label="Registration Form Link (Optional)"

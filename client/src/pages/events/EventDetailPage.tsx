@@ -60,7 +60,7 @@ export const EventDetailPage: React.FC = () => {
       <div className="flex items-center justify-between">
         <button
           onClick={() => navigate(-1)}
-          className="inline-flex items-center gap-2 px-3.5 py-2 bg-pure-white hover:bg-lumen-stone border-2 border-vast-ink text-vast-ink text-xs font-bold rounded-buttons transition-all cursor-pointer shadow-[2px_2px_0px_0px_#1B1B18]"
+          className="inline-flex items-center gap-2 px-3.5 py-2 bg-transparent hover:bg-lumen-stone border border-vast-ink/20 text-vast-ink text-xs font-bold rounded-buttons transition-all cursor-pointer shadow-[2px_2px_0px_0px_#1B1B18]"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back</span>
@@ -68,10 +68,10 @@ export const EventDetailPage: React.FC = () => {
       </div>
 
       {/* Main Container */}
-      <div className="bg-lumen-cream p-6 sm:p-8 rounded-cards border-2 border-vast-ink space-y-8">
+      <div className="bg-lumen-cream p-6 sm:p-8 rounded-cards border border-vast-ink/20 space-y-8">
         {/* 1. Hero Cover Image */}
         {eventItem.coverImageUrl && (
-          <div className="w-full h-56 sm:h-80 rounded-cards overflow-hidden bg-lumen-stone border-2 border-vast-ink shadow-xl">
+          <div className="w-full h-56 sm:h-80 rounded-cards overflow-hidden bg-lumen-stone border border-vast-ink/20 shadow-xl">
             <img
               src={eventItem.coverImageUrl}
               alt={eventItem.title}
@@ -85,7 +85,7 @@ export const EventDetailPage: React.FC = () => {
 
         {/* 1.1 Event Promotional Video */}
         {eventItem.videoUrl && (
-          <div className="w-full rounded-cards overflow-hidden bg-black border-2 border-vast-ink shadow-xl">
+          <div className="w-full rounded-cards overflow-hidden bg-black border border-vast-ink/20 shadow-xl">
             <video
               controls
               src={eventItem.videoUrl}
@@ -95,7 +95,7 @@ export const EventDetailPage: React.FC = () => {
         )}
 
         {/* 2. Hero Header */}
-        <div className="space-y-4 border-b-2 border-vast-ink pb-6">
+        <div className="space-y-4 border-b border-vast-ink/20 pb-6">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="space-y-1">
 
@@ -120,9 +120,9 @@ export const EventDetailPage: React.FC = () => {
         </div>
 
         {/* 4. Schedule & Location Details Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-pure-white p-5 rounded-cards border-2 border-vast-ink">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-transparent p-5 rounded-cards border border-vast-ink/20">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-pure-white border border-vast-ink text-vast-ink rounded-inputs shrink-0">
+            <div className="p-2.5 bg-lumen-cream border border-vast-ink/20 text-vast-ink rounded-inputs shrink-0">
               <CalendarIcon className="w-5 h-5" />
             </div>
             <div>
@@ -139,7 +139,7 @@ export const EventDetailPage: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-lavender-whisper border border-vast-ink text-vast-ink rounded-inputs shrink-0">
+            <div className="p-2.5 bg-lavender-whisper border border-vast-ink/20 text-vast-ink rounded-inputs shrink-0">
               <Clock className="w-5 h-5" />
             </div>
             <div>
@@ -151,7 +151,7 @@ export const EventDetailPage: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-pure-white border border-forest-ink text-forest-ink rounded-inputs shrink-0">
+            <div className="p-2.5 bg-lumen-cream border border-vast-ink/20 text-forest-ink rounded-inputs shrink-0">
               <MapPin className="w-5 h-5" />
             </div>
             <div>
@@ -167,7 +167,7 @@ export const EventDetailPage: React.FC = () => {
             <Info className="w-4 h-4 text-vast-ink group-hover:text-blue-600 group-hover:scale-110 transition-all duration-300 ease-in-out" />
             <h3>About this Event</h3>
           </div>
-          <p className="text-sm text-vast-ink font-medium leading-relaxed whitespace-pre-line bg-lumen-cream/40 p-5 rounded-cards border border-vast-ink">
+          <p className="text-sm text-vast-ink font-medium leading-relaxed whitespace-pre-line bg-lumen-cream/40 p-5 rounded-cards border border-vast-ink/20">
             {eventItem.description}
           </p>
         </div>
@@ -180,14 +180,14 @@ export const EventDetailPage: React.FC = () => {
             </h3>
             <Link
               to={`/societies/${eventItem.societyId}`}
-              className="flex items-center justify-between p-4 bg-pure-white hover:bg-lumen-stone rounded-cards border-2 border-vast-ink transition-all group"
+              className="flex items-center justify-between p-4 bg-transparent hover:bg-lumen-stone rounded-cards border border-vast-ink/20 transition-all group"
             >
               <div className="flex items-center gap-3">
                 {eventItem.society.logoUrl ? (
                   <img
                     src={eventItem.society.logoUrl}
                     alt={eventItem.society.name}
-                    className="w-12 h-12 rounded-inputs object-cover border-2 border-vast-ink"
+                    className="w-12 h-12 rounded-inputs object-cover border border-vast-ink/20"
                   />
                 ) : (
                   <div className="p-3 bg-blue-600/20 text-vast-ink rounded-inputs">

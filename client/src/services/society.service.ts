@@ -10,6 +10,7 @@ import type {
   OrganizationType,
 } from '@/types/society.types';
 import type { EventItem } from '@/types/event.types';
+import type { PostFeedItem } from '@/types/feed.types';
 
 export interface PublicSocietyEventsGroup {
   upcoming: EventItem[];
@@ -37,6 +38,10 @@ export const societyService = {
 
   async getPublicSocietyEvents(id: string): Promise<PublicSocietyEventsGroup> {
     return api.get(`/societies/${id}/events`);
+  },
+
+  async getPublicSocietyPosts(id: string): Promise<PostFeedItem[]> {
+    return api.get(`/societies/${id}/posts`);
   },
 
   async getMySociety(): Promise<Society | null> {

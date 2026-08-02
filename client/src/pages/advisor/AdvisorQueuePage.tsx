@@ -184,7 +184,7 @@ export const AdvisorQueuePage: React.FC = () => {
           <div className="grid grid-cols-2 gap-3">
             <button
               onClick={() => { setActiveTab('events'); setPage(1); setStatusFilter(''); }}
-              className={`flex flex-col items-center justify-center gap-2 p-4 rounded-inputs font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18] relative ${
+              className={`flex flex-col items-center justify-center gap-2 p-4 rounded-inputs font-bold transition-all relative ${
                 activeTab === 'events'
                   ? 'bg-vast-ink text-pure-white'
                   : 'bg-transparent text-vast-ink border border-vast-ink/20 hover:bg-lumen-stone'
@@ -200,7 +200,7 @@ export const AdvisorQueuePage: React.FC = () => {
             </button>
             <button
               onClick={() => { setActiveTab('plans'); setPage(1); setStatusFilter(''); }}
-              className={`flex flex-col items-center justify-center gap-2 p-4 rounded-inputs font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18] relative ${
+              className={`flex flex-col items-center justify-center gap-2 p-4 rounded-inputs font-bold transition-all relative ${
                 activeTab === 'plans'
                   ? 'bg-vast-ink text-pure-white'
                   : 'bg-transparent text-vast-ink border border-vast-ink/20 hover:bg-lumen-stone'
@@ -237,11 +237,11 @@ export const AdvisorQueuePage: React.FC = () => {
               className="w-full bg-transparent text-vast-ink text-sm font-semibold rounded-inputs border border-vast-ink/20 px-3.5 py-2 pl-10 transition-all outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 cursor-pointer"
             >
               <option value="">All Statuses</option>
-              <option value="PENDING">Pending Review</option>
+              {activeTab === 'plans' && <option value="PENDING">Pending Review</option>}
+              {activeTab === 'events' && <option value="PENDING_ADVISOR">Pending Review</option>}
               <option value="CHANGES_REQUESTED">Changes Requested</option>
               <option value="APPROVED">Approved</option>
               {activeTab === 'plans' && <option value="DRAFT">Draft</option>}
-              {activeTab === 'events' && <option value="PENDING_ADVISOR">Pending Advisor</option>}
               {activeTab === 'events' && <option value="PUBLISHED">Published</option>}
             </select>
           </div>

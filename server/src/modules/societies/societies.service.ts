@@ -33,7 +33,11 @@ export class SocietiesService {
     const limit = Math.min(200, Math.max(1, query.limit || 12));
     const skip = (page - 1) * limit;
 
-    const whereClause: Prisma.SocietyWhereInput = {};
+    const whereClause: Prisma.SocietyWhereInput = {
+      user: {
+        isActive: true,
+      }
+    };
 
     if (query.category) {
       const catFilter = query.category.trim();
@@ -188,6 +192,47 @@ export class SocietiesService {
     ]);
 
     return { upcoming, past };
+  }
+
+  /**
+   * Retrieves public announcements/posts published by a specific society.
+   */
+  async getPublicSocietyPosts(societyId: string) {
+    const posts = await this.prisma.post.findMany({
+      where: {
+        author: {
+          society: {
+            id: societyId,
+          },
+        },
+      },
+      include: {
+        author: {
+          select: {
+            role: true,
+            society: {
+              select: {
+                id: true,
+                name: true,
+                logoUrl: true,
+              },
+            },
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    return posts.map((post) => ({
+      type: 'post' as const,
+      id: post.id,
+      content: post.content,
+      imageUrl: post.imageUrl,
+      videoUrl: post.videoUrl,
+      createdAt: post.createdAt,
+      society: post.author.society || { id: societyId, name: '', logoUrl: null },
+      isAdminPost: post.author.role === 'DSA_ADMIN',
+    }));
   }
 
   /**

@@ -245,7 +245,7 @@ export const EditEventPage: React.FC = () => {
             </label>
             <select
               disabled={updateMutation.isPending}
-              className="w-full bg-transparent text-vast-ink text-sm rounded-inputs border border-vast-ink/20 px-3.5 py-2.5 transition-all outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50"
+              className="w-full bg-lumen-cream text-vast-ink text-sm rounded-inputs border border-vast-ink/20 px-3.5 py-2.5 transition-all outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50"
               {...register('eventType')}
             >
               <option value="">-- Select Event Type --</option>

@@ -253,13 +253,7 @@ export interface AdminDashboardData {
   }>;
 }
 
-export interface ResetPasswordResult {
-  message: string;
-  societyId: string;
-  societyName: string;
-  presidentEmail: string;
-  temporaryPassword: string;
-}
+
 
 export const adminService = {
   async getDashboardData(): Promise<AdminDashboardData> {
@@ -309,8 +303,8 @@ export const adminService = {
     return api.patch(`/admin/societies/${id}`, payload);
   },
 
-  async resetSocietyPassword(id: string): Promise<ResetPasswordResult> {
-    return api.patch(`/admin/societies/${id}/reset-password`);
+  async deleteSociety(id: string): Promise<{ message: string; id: string; name: string }> {
+    return api.delete(`/admin/societies/${id}`);
   },
 
   async deactivateSociety(id: string): Promise<{ message: string; id: string; name: string }> {

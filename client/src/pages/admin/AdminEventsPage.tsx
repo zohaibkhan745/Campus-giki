@@ -274,12 +274,12 @@ export const AdminEventsPage: React.FC = () => {
                 setStatusFilter(e.target.value);
                 setPage(1);
               }}
-              className="w-full bg-transparent text-vast-ink text-xs rounded-inputs border border-vast-ink/20 px-3 py-2 pl-9 outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 cursor-pointer"
+              className="w-full bg-lumen-cream text-vast-ink text-xs rounded-inputs border border-vast-ink/20 px-3 py-2 pl-9 outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 cursor-pointer"
             >
-              <option value="">All Statuses</option>
-              <option value="PENDING_ADMIN">Pending Review</option>
-              <option value="PUBLISHED">Published / Approved</option>
-              <option value="CHANGES_REQUESTED">Changes Requested</option>
+              <option value="" className="bg-lumen-cream text-vast-ink font-semibold">All Statuses</option>
+              <option value="PENDING_ADMIN" className="bg-lumen-cream text-vast-ink font-semibold">Pending Review</option>
+              <option value="PUBLISHED" className="bg-lumen-cream text-vast-ink font-semibold">Published / Approved</option>
+              <option value="CHANGES_REQUESTED" className="bg-lumen-cream text-vast-ink font-semibold">Changes Requested</option>
             </select>
           </div>
 
@@ -294,11 +294,11 @@ export const AdminEventsPage: React.FC = () => {
                 setSocietyFilter(e.target.value);
                 setPage(1);
               }}
-              className="w-full bg-transparent text-vast-ink text-xs rounded-inputs border border-vast-ink/20 px-3 py-2 pl-9 outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 cursor-pointer"
+              className="w-full bg-lumen-cream text-vast-ink text-xs rounded-inputs border border-vast-ink/20 px-3 py-2 pl-9 outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 cursor-pointer"
             >
-              <option value="">All Societies</option>
+              <option value="" className="bg-lumen-cream text-vast-ink font-semibold">All Societies</option>
               {societies.map((soc) => (
-                <option key={soc.id} value={soc.id}>
+                <option key={soc.id} value={soc.id} className="bg-lumen-cream text-vast-ink font-semibold">
                   {soc.name}
                 </option>
               ))}
@@ -487,7 +487,7 @@ export const AdminEventsPage: React.FC = () => {
 
       {/* Pagination Bar */}
       {meta && meta.totalPages > 1 && (
-        <nav aria-label="Pagination" className="flex items-center justify-between pt-4 border-t-2 border-vast-ink text-xs font-semibold text-fog">
+        <nav aria-label="Pagination" className="flex items-center justify-between pt-4 border-t border-vast-ink/20 text-xs font-semibold text-fog">
           <span>
             Page {meta.page} of {meta.totalPages} ({meta.total} events)
           </span>
@@ -496,7 +496,7 @@ export const AdminEventsPage: React.FC = () => {
             <button
               disabled={!meta.hasPreviousPage}
               onClick={() => setPage((p) => Math.max(1, p - 1))}
-              className="inline-flex items-center gap-1 px-3 py-1.5 bg-lumen-stone border-2 border-vast-ink rounded-inputs hover:bg-lumen-stone disabled:opacity-40 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+              className="inline-flex items-center gap-1 px-3 py-1.5 bg-lumen-stone border border-vast-ink/20 rounded-inputs hover:bg-lumen-stone disabled:opacity-40 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
               aria-label="Previous page"
             >
               <ChevronLeft className="w-4 h-4" />
@@ -506,7 +506,7 @@ export const AdminEventsPage: React.FC = () => {
             <button
               disabled={!meta.hasNextPage}
               onClick={() => setPage((p) => p + 1)}
-              className="inline-flex items-center gap-1 px-3 py-1.5 bg-lumen-stone border-2 border-vast-ink rounded-inputs hover:bg-lumen-stone disabled:opacity-40 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+              className="inline-flex items-center gap-1 px-3 py-1.5 bg-lumen-stone border border-vast-ink/20 rounded-inputs hover:bg-lumen-stone disabled:opacity-40 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
               aria-label="Next page"
             >
               <span>Next</span>

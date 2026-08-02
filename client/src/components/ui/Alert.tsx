@@ -17,15 +17,15 @@ export const Alert: React.FC<AlertProps> = ({
 }) => {
   const styles = {
     error: {
-      container: 'bg-pure-white border border-vast-ink border-red-500/25 text-red-400',
+      container: 'bg-red-50/50 border border-vast-ink border-red-500/25 text-red-400',
       icon: <AlertCircle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />,
     },
     success: {
-      container: 'bg-pure-white border border-forest-ink border-emerald-500/25 text-forest-ink',
+      container: 'bg-emerald-50/50 border border-forest-ink border-emerald-500/25 text-forest-ink',
       icon: <CheckCircle2 className="w-5 h-5 text-forest-ink shrink-0 mt-0.5" />,
     },
     info: {
-      container: 'bg-pure-white border border-vast-ink border-blue-500/25 text-vast-ink',
+      container: 'bg-blue-50/50 border border-vast-ink border-blue-500/25 text-vast-ink',
       icon: <Info className="w-5 h-5 text-vast-ink shrink-0 mt-0.5" />,
     },
   };

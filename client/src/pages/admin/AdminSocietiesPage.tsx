@@ -21,12 +21,12 @@ import {
   Sparkles,
   FilterX,
   ArrowLeft,
+  Trash2,
 } from 'lucide-react';
 import {
   adminService,
   type AdminSocietyItem,
   type AdminSocietyStatusType,
-  type ResetPasswordResult,
 } from '@/services/admin.service';
 import { societyService } from '@/services/society.service';
 import { Button } from '@/components/ui/Button';
@@ -49,8 +49,7 @@ export const AdminSocietiesPage: React.FC = () => {
   const [editAdvisorId, setEditAdvisorId] = useState('');
 
   const [deactivatingSociety, setDeactivatingSociety] = useState<AdminSocietyItem | null>(null);
-  const [resetCredentialsData, setResetCredentialsData] = useState<ResetPasswordResult | null>(null);
-  const [copied, setCopied] = useState(false);
+  const [deletingSociety, setDeletingSociety] = useState<AdminSocietyItem | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
 
   // Query categories
@@ -101,17 +100,17 @@ export const AdminSocietiesPage: React.FC = () => {
     },
   });
 
-  // Reset Credentials Mutation
-  const resetPasswordMutation = useMutation({
-    mutationFn: (id: string) => adminService.resetSocietyPassword(id),
-    onSuccess: (data) => {
+  // Delete Mutation
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => adminService.deleteSociety(id),
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['adminSocietiesList'] });
-      setResetCredentialsData(data);
+      setDeletingSociety(null);
       setActionError(null);
     },
     onError: (error: AxiosError<{ message?: string | string[] }>) => {
       const msg = error.response?.data?.message;
-      setActionError(Array.isArray(msg) ? msg.join(', ') : msg || 'Failed to reset password.');
+      setActionError(Array.isArray(msg) ? msg.join(', ') : msg || 'Failed to delete society.');
     },
   });
 
@@ -149,13 +148,7 @@ export const AdminSocietiesPage: React.FC = () => {
     });
   };
 
-  const handleCopyResetCredentials = () => {
-    if (!resetCredentialsData) return;
-    const textToCopy = `Society: ${resetCredentialsData.societyName}\nSociety Email: ${resetCredentialsData.presidentEmail}\nNew Password: ${resetCredentialsData.temporaryPassword}`;
-    navigator.clipboard.writeText(textToCopy);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
+
 
   const renderStatusBadge = (status: AdminSocietyStatusType) => {
     switch (status) {
@@ -395,13 +388,12 @@ export const AdminSocietiesPage: React.FC = () => {
                   type="button"
                   variant="outline"
                   size="sm"
-                  className="border-amber-500/30 text-ember-glow hover:bg-transparent border border-ember-glow"
-                  onClick={() => resetPasswordMutation.mutate(society.id)}
-                  isLoading={resetPasswordMutation.isPending && resetPasswordMutation.variables === society.id}
-                  leftIcon={<KeyRound className="w-3.5 h-3.5" />}
-                  title="Reset President Password"
+                  className="border-red-500/30 text-red-500 hover:bg-transparent border border-red-500/50"
+                  onClick={() => setDeletingSociety(society)}
+                  leftIcon={<Trash2 className="w-3.5 h-3.5" />}
+                  title="Hard Delete Account"
                 >
-                  Reset Credentials
+                  Delete
                 </Button>
 
                 {society.status !== 'INACTIVE' && (
@@ -521,51 +513,35 @@ export const AdminSocietiesPage: React.FC = () => {
         </div>
       )}
 
-      {/* 2. Reset Password Modal */}
-      {resetCredentialsData && (
+      {/* 2. Delete Confirmation Dialog */}
+      {deletingSociety && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-lumen-cream/80 backdrop-blur-sm p-4">
-          <div className="bg-lumen-cream p-6 sm:p-8 rounded-cards border border-amber-500/30 max-w-md w-full space-y-5 bg-lumen-stone text-left">
-            <div className="flex items-center gap-3 border-b-2 border-vast-ink pb-3">
-              <Sparkles className="w-6 h-6 text-ember-glow" />
-              <h3 className="font-extrabold text-vast-ink text-lg">
-                President Password Reset!
-              </h3>
-            </div>
+          <div className="bg-lumen-cream p-6 sm:p-8 rounded-cards border border-red-500/30 max-w-md w-full space-y-4 bg-lumen-stone text-left">
+            <h3 className="font-extrabold text-vast-ink text-lg text-red-500 flex items-center gap-2">
+              <Trash2 className="w-5 h-5" />
+              <span>Delete Society Account?</span>
+            </h3>
 
-            <div className="space-y-3 bg-lumen-cream/80 p-4 rounded-cards border border-vast-ink/20 text-xs">
-              <div>
-                <span className="text-fog">Society:</span>
-                <p className="font-bold text-vast-ink text-sm">{resetCredentialsData.societyName}</p>
-              </div>
+            <p className="text-xs text-vast-ink font-medium leading-relaxed">
+              Are you sure you want to completely delete <strong className="text-vast-ink">{deletingSociety.name}</strong>?
+              This will permanently delete the society, all associated events, posts, and yearly plans. This action cannot be undone.
+            </p>
 
-              <div>
-                <span className="text-fog">Society Email:</span>
-                <p className="font-bold text-vast-ink font-mono text-sm">{resetCredentialsData.presidentEmail}</p>
-              </div>
-
-              <div>
-                <span className="text-fog">New Temporary Password:</span>
-                <p className="font-extrabold text-ember-glow font-mono text-base tracking-wider mt-1 bg-lumen-stone px-3 py-1 rounded-inputs border border-amber-500/30 inline-block">
-                  {resetCredentialsData.temporaryPassword}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex justify-end gap-3 pt-2">
+            <div className="flex justify-end gap-3 pt-3">
               <Button
                 type="button"
                 variant="outline"
-                onClick={handleCopyResetCredentials}
-                leftIcon={copied ? <Check className="w-4 h-4 text-forest-ink" /> : <Copy className="w-4 h-4" />}
+                onClick={() => setDeletingSociety(null)}
               >
-                {copied ? 'Copied!' : 'Copy New Credentials'}
+                Cancel
               </Button>
               <Button
                 type="button"
-                variant="primary"
-                onClick={() => setResetCredentialsData(null)}
+                variant="destructive"
+                isLoading={deleteMutation.isPending}
+                onClick={() => deleteMutation.mutate(deletingSociety.id)}
               >
-                Done
+                Confirm Delete
               </Button>
             </div>
           </div>

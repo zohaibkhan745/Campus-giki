@@ -101,7 +101,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
       )}
 
       {previewUrl ? (
-        <div className="relative group rounded-cards overflow-hidden border-2 border-vast-ink bg-pure-white shadow-md max-h-56 flex items-center justify-center">
+        <div className="relative group rounded-cards overflow-hidden border-2 border-vast-ink bg-lumen-stone shadow-md max-h-56 flex items-center justify-center">
           <img
             src={previewUrl}
             alt="Uploaded preview"
@@ -135,7 +135,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
           onDragOver={handleDrag}
           onDrop={handleDrop}
           onClick={() => fileInputRef.current?.click()}
-          className={`relative border-2 border-dashed rounded-cards p-6 text-center cursor-pointer transition-all duration-200 bg-pure-white ${
+          className={`relative border-2 border-dashed rounded-cards p-6 text-center cursor-pointer transition-all duration-200 bg-lumen-stone ${
             dragActive
               ? 'border-vast-ink bg-slate-100 scale-[0.99]'
               : 'border-vast-ink/30 hover:border-vast-ink hover:bg-slate-50/80 shadow-sm'

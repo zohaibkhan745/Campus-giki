@@ -134,11 +134,11 @@ export const SocietySetupPage: React.FC = () => {
 
   return (
     <div className="max-w-3xl mx-auto space-y-6 text-left py-6">
-      <div className="space-y-1 bg-pure-white p-6 rounded-cards border-2 border-vast-ink relative">
+      <div className="space-y-1 bg-transparent p-6 rounded-cards border border-vast-ink/20 relative">
         {isEditing && (
           <button
             onClick={() => navigate('/dashboard')}
-            className="absolute top-6 right-6 flex items-center gap-2 px-3 py-1.5 bg-lumen-stone hover:bg-lavender-whisper border-2 border-vast-ink text-vast-ink text-xs font-semibold rounded-inputs transition-colors"
+            className="absolute top-6 right-6 flex items-center gap-2 px-3 py-1.5 bg-lumen-stone hover:bg-lavender-whisper border border-vast-ink/20 text-vast-ink text-xs font-semibold rounded-inputs transition-colors"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>Back to Dashboard</span>
@@ -162,8 +162,8 @@ export const SocietySetupPage: React.FC = () => {
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" noValidate>
         {/* Core Society Profile Section */}
-        <div className="bg-lumen-cream p-6 rounded-cards border-2 border-vast-ink space-y-4">
-          <h2 className="text-base font-bold text-vast-ink border-b-2 border-vast-ink pb-2">
+        <div className="bg-lumen-cream p-6 rounded-cards border border-vast-ink/20 space-y-4">
+          <h2 className="text-base font-bold text-vast-ink border-b border-vast-ink/20 pb-2">
             General Information
           </h2>
 
@@ -184,10 +184,10 @@ export const SocietySetupPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setValue('type', 'SOCIETY', { shouldValidate: true })}
-                className={`p-3 rounded-inputs border-2 font-bold text-xs flex flex-col items-center gap-1.5 transition-all ${
+                className={`p-3 rounded-inputs border font-bold text-xs flex flex-col items-center gap-1.5 transition-all ${
                   selectedType === 'SOCIETY'
                     ? 'bg-blue-50 border-blue-600 text-blue-700 shadow-sm'
-                    : 'bg-pure-white border-vast-ink text-vast-ink hover:bg-lumen-stone'
+                    : 'bg-lumen-stone/40 border-vast-ink/20 text-vast-ink hover:bg-lumen-stone'
                 }`}
               >
                 <span className="text-base">🏛️</span>
@@ -197,10 +197,10 @@ export const SocietySetupPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setValue('type', 'CLUB', { shouldValidate: true })}
-                className={`p-3 rounded-inputs border-2 font-bold text-xs flex flex-col items-center gap-1.5 transition-all ${
+                className={`p-3 rounded-inputs border font-bold text-xs flex flex-col items-center gap-1.5 transition-all ${
                   selectedType === 'CLUB'
                     ? 'bg-purple-50 border-purple-600 text-purple-700 shadow-sm'
-                    : 'bg-pure-white border-vast-ink text-vast-ink hover:bg-lumen-stone'
+                    : 'bg-lumen-stone/40 border-vast-ink/20 text-vast-ink hover:bg-lumen-stone'
                 }`}
               >
                 <span className="text-base">🎨</span>
@@ -210,10 +210,10 @@ export const SocietySetupPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setValue('type', 'TEAM', { shouldValidate: true })}
-                className={`p-3 rounded-inputs border-2 font-bold text-xs flex flex-col items-center gap-1.5 transition-all ${
+                className={`p-3 rounded-inputs border font-bold text-xs flex flex-col items-center gap-1.5 transition-all ${
                   selectedType === 'TEAM'
                     ? 'bg-emerald-50 border-emerald-600 text-emerald-700 shadow-sm'
-                    : 'bg-pure-white border-vast-ink text-vast-ink hover:bg-lumen-stone'
+                    : 'bg-lumen-stone/40 border-vast-ink/20 text-vast-ink hover:bg-lumen-stone'
                 }`}
               >
                 <span className="text-base">🚀</span>
@@ -232,16 +232,16 @@ export const SocietySetupPage: React.FC = () => {
               </div>
               <select
                 disabled={setupMutation.isPending || isLoadingCategories}
-                className="w-full bg-pure-white text-vast-ink placeholder:text-fog text-sm rounded-inputs border-2 border-vast-ink px-3.5 py-2.5 pl-10 transition-all outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50"
+                className="w-full bg-lumen-cream text-vast-ink placeholder:text-fog text-sm rounded-inputs border border-vast-ink/20 px-3.5 py-2.5 pl-10 transition-all outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50"
                 {...register('categoryId')}
               >
-                <option value="">
+                <option value="" className="bg-lumen-cream text-vast-ink font-semibold">
                   {isLoadingCategories
                     ? 'Loading categories...'
                     : '-- Select Category --'}
                 </option>
                 {categories.map((cat) => (
-                  <option key={cat.id} value={cat.id}>
+                  <option key={cat.id} value={cat.id} className="bg-lumen-cream text-vast-ink font-semibold">
                     {cat.name}
                   </option>
                 ))}
@@ -275,7 +275,7 @@ export const SocietySetupPage: React.FC = () => {
                 rows={4}
                 placeholder="Provide a detailed overview of your society's mission, annual events, and student opportunities..."
                 disabled={setupMutation.isPending}
-                className="w-full bg-pure-white text-vast-ink placeholder:text-fog text-sm rounded-inputs border-2 border-vast-ink px-3.5 py-2.5 pl-10 transition-all outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50 resize-y"
+                className="w-full bg-transparent text-vast-ink placeholder:text-fog text-sm rounded-inputs border border-vast-ink/20 px-3.5 py-2.5 pl-10 transition-all outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50 resize-y"
                 {...register('longDescription')}
               />
             </div>

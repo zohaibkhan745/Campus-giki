@@ -117,7 +117,7 @@ export const AdminDashboardPage: React.FC = () => {
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
           <Link
             to="/admin/societies"
-            className="flex flex-col items-center justify-center gap-2 p-4 bg-vast-ink hover:bg-vast-ink/90 text-pure-white rounded-inputs font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18]"
+            className="flex flex-col items-center justify-center gap-2 p-4 bg-transparent hover:bg-lumen-stone text-vast-ink border border-vast-ink/20 rounded-inputs font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18]"
           >
             <Building2 className="w-6 h-6" />
             <span>Societies</span>

@@ -3,6 +3,7 @@ import {
   Get,
   Post,
   Patch,
+  Delete,
   Body,
   Query,
   Param,
@@ -155,25 +156,24 @@ export class AdminController {
     return this.adminService.updateSocietyAdmin(id, dto);
   }
 
-  @Patch('societies/:id/reset-password')
+  @Delete('societies/:id')
   @Auth(Role.DSA_ADMIN)
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({
-    summary:
-      'DSA Management: Reset society president account password and return new temporary credentials',
+    summary: 'DSA Management: Hard delete a society and its associated account completely',
   })
   @ApiParam({ name: 'id', description: 'Society UUID' })
   @ApiResponse({
     status: 200,
-    description: 'President credentials reset successfully',
+    description: 'Society deleted successfully',
   })
   @ApiResponse({
     status: 404,
     description: 'Society not found',
   })
-  async resetPassword(@Param('id', ParseUUIDPipe) id: string) {
-    return this.adminService.resetSocietyPassword(id);
+  async deleteSociety(@Param('id', ParseUUIDPipe) id: string) {
+    return this.adminService.deleteSociety(id);
   }
 
   @Patch('societies/:id/deactivate')

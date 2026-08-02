@@ -23,7 +23,7 @@ export const societySetupSchema = z.object({
     .string()
     .min(2, 'Society name must be at least 2 characters')
     .max(100, 'Society name cannot exceed 100 characters'),
-  type: z.enum(['SOCIETY', 'CLUB', 'TEAM']).default('SOCIETY'),
+  type: z.enum(['SOCIETY', 'CLUB', 'TEAM']),
   categoryId: z.string().min(1, 'Please select a category'),
   shortDescription: z
     .string()

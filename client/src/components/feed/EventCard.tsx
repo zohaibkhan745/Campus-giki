@@ -32,10 +32,10 @@ export const EventCard: React.FC<EventCardProps> = ({ item, allowExpand = false 
             <img
               src={item.society.logoUrl}
               alt={item.society.name}
-              className="w-8 h-8 rounded-full border-2 border-vast-ink object-cover bg-lumen-stone shrink-0 group-hover:opacity-80 transition-opacity"
+              className="w-8 h-8 rounded-full border border-vast-ink/20 object-cover bg-lumen-stone shrink-0 group-hover:opacity-80 transition-opacity"
             />
           ) : (
-            <div className="w-8 h-8 rounded-full border-2 border-vast-ink bg-lavender-whisper flex items-center justify-center shrink-0 text-vast-ink">
+            <div className="w-8 h-8 rounded-full border border-vast-ink/20 bg-lavender-whisper flex items-center justify-center shrink-0 text-vast-ink">
               <Building2 className="w-4 h-4" />
             </div>
           )}

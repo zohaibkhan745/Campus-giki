@@ -107,7 +107,7 @@ export const SocietyDirectoryPage: React.FC = () => {
       </div>
 
       {/* Primary Type Filter Tabs */}
-      <div className="flex flex-wrap items-center gap-2 p-1.5 bg-lumen-cream border-2 border-vast-ink rounded-cards w-fit">
+      <div className="flex flex-wrap items-center gap-2 p-1.5 bg-lumen-cream border border-vast-ink/20 rounded-cards w-fit">
         <button
           onClick={() => handleTypeChange('')}
           className={`px-4 py-2 text-xs sm:text-sm font-extrabold rounded-inputs transition-all ${
@@ -165,7 +165,7 @@ export const SocietyDirectoryPage: React.FC = () => {
             placeholder="Search by organization name..."
             value={searchQuery}
             onChange={handleSearchChange}
-            className="w-full bg-lumen-cream text-vast-ink placeholder:text-fog text-body-sm rounded-inputs border-2 border-vast-ink px-4 py-3 pl-12 transition-all outline-none focus:ring-2 focus:ring-vast-ink focus:ring-offset-2 focus:ring-offset-lumen-cream"
+            className="w-full bg-transparent text-vast-ink placeholder:text-fog text-body-sm rounded-inputs border border-vast-ink/20 px-4 py-3 pl-12 transition-all outline-none focus:ring-2 focus:ring-vast-ink focus:ring-offset-2 focus:ring-offset-lumen-cream"
           />
         </div>
 
@@ -173,10 +173,10 @@ export const SocietyDirectoryPage: React.FC = () => {
         <div className="flex flex-wrap items-center gap-2.5">
           <button
             onClick={() => handleCategoryChange('')}
-            className={`px-3.5 py-1.5 text-xs font-bold rounded-badges border-2 border-vast-ink transition-colors focus:outline-none ${
+            className={`px-3.5 py-1.5 text-xs font-bold rounded-badges border transition-all focus:outline-none ${
               selectedCategory === ''
-                ? 'bg-forest-ink text-lumen-cream'
-                : 'bg-lumen-cream text-vast-ink hover:bg-lumen-stone'
+                ? 'bg-vast-ink text-pure-white border-vast-ink shadow-sm'
+                : 'bg-transparent text-vast-ink border-vast-ink/20 hover:bg-lumen-stone'
             }`}
           >
             All Domains
@@ -185,10 +185,10 @@ export const SocietyDirectoryPage: React.FC = () => {
             <button
               key={cat.id}
               onClick={() => handleCategoryChange(cat.slug)}
-              className={`px-3.5 py-1.5 text-xs font-bold rounded-badges border-2 border-vast-ink transition-colors focus:outline-none ${
+              className={`px-3.5 py-1.5 text-xs font-bold rounded-badges border transition-all focus:outline-none ${
                 selectedCategory === cat.slug
-                  ? 'bg-forest-ink text-lumen-cream'
-                  : 'bg-lumen-cream text-vast-ink hover:bg-lumen-stone'
+                  ? 'bg-vast-ink text-pure-white border-vast-ink shadow-sm'
+                  : 'bg-transparent text-vast-ink border-vast-ink/20 hover:bg-lumen-stone'
               }`}
             >
               {cat.name}
@@ -198,7 +198,7 @@ export const SocietyDirectoryPage: React.FC = () => {
           {(selectedCategory || selectedType || searchQuery) && (
             <button
               onClick={handleClearFilters}
-              className="ml-auto inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-extrabold text-vast-ink bg-lumen-cream rounded-buttons border-2 border-vast-ink hover:bg-ember-glow transition-colors focus:outline-none"
+              className="ml-auto inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-extrabold text-vast-ink bg-transparent rounded-buttons border border-vast-ink/20 hover:bg-ember-glow hover:text-white transition-colors focus:outline-none"
               title="Clear all filters"
             >
               <FilterX className="w-3.5 h-3.5" />
@@ -229,7 +229,7 @@ export const SocietyDirectoryPage: React.FC = () => {
           ))}
         </div>
       ) : societies.length === 0 ? (
-        <div className="p-12 rounded-cards border-2 border-vast-ink bg-lumen-cream text-center space-y-4">
+        <div className="p-12 rounded-cards border border-vast-ink/20 bg-transparent text-center space-y-4">
           <Building2 className="w-16 h-16 text-vast-ink/50 mx-auto" />
           <h3 className="font-eb-garamond text-heading-sm text-vast-ink">No Communities Found</h3>
           <p className="text-body-sm text-vast-ink max-w-sm mx-auto">
@@ -238,7 +238,7 @@ export const SocietyDirectoryPage: React.FC = () => {
           {(selectedCategory || selectedType || searchQuery) && (
             <button
               onClick={handleClearFilters}
-              className="px-6 py-3 bg-lavender-whisper text-vast-ink border-2 border-vast-ink rounded-buttons text-sm font-bold hover:bg-lumen-stone transition-colors mt-4"
+              className="px-6 py-3 bg-lavender-whisper text-vast-ink border border-vast-ink/20 rounded-buttons text-sm font-bold hover:bg-lumen-stone transition-colors mt-4"
             >
               Clear Search Filters
             </button>
@@ -250,7 +250,7 @@ export const SocietyDirectoryPage: React.FC = () => {
             <Link
               key={society.id}
               to={`/societies/${society.id}`}
-              className="flex flex-col h-full bg-lumen-cream border-2 border-vast-ink rounded-cards p-6 transition-transform hover:-translate-y-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-vast-ink focus-visible:ring-offset-4 focus-visible:ring-offset-lumen-cream group"
+              className="flex flex-col h-full bg-lumen-cream border border-vast-ink/20 rounded-cards p-6 transition-all hover:border-vast-ink hover:-translate-y-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-vast-ink focus-visible:ring-offset-4 focus-visible:ring-offset-lumen-cream group"
               aria-label={`View profile for ${society.name}`}
             >
               <div className="space-y-4 flex-1">
@@ -259,10 +259,10 @@ export const SocietyDirectoryPage: React.FC = () => {
                     <img
                       src={society.logoUrl}
                       alt={society.name}
-                      className="w-14 h-14 rounded-buttons object-cover border-2 border-vast-ink shrink-0 bg-lumen-stone"
+                      className="w-14 h-14 rounded-buttons object-cover border border-vast-ink/20 shrink-0 bg-lumen-stone"
                     />
                   ) : (
-                    <div className="w-14 h-14 bg-lavender-whisper border-2 border-vast-ink rounded-buttons flex items-center justify-center text-vast-ink shrink-0">
+                    <div className="w-14 h-14 bg-lavender-whisper border border-vast-ink/20 rounded-buttons flex items-center justify-center text-vast-ink shrink-0">
                       <Building2 className="w-7 h-7" />
                     </div>
                   )}

@@ -332,32 +332,20 @@ export const YearlyCalendarPage: React.FC = () => {
                   />
 
                   <div className="col-span-1 md:col-span-2 lg:col-span-3 space-y-4">
-                    <div className="flex flex-col space-y-1">
-                      <label className="text-sm font-semibold text-vast-ink block">
+                    <div className="flex flex-col space-y-1.5">
+                      <label className="text-xs font-semibold text-vast-ink uppercase tracking-wider block">
                         Description *
                       </label>
                       <textarea
                         disabled={isReadOnly || isSaving}
                         rows={3}
-                        className="w-full px-4 py-2 bg-transparent border border-vast-ink/20 rounded-inputs shadow-inputs focus:outline-none focus:ring-2 focus:ring-vast-ink focus:border-vast-ink transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full px-3.5 py-2.5 text-sm bg-transparent border border-vast-ink/20 rounded-inputs placeholder:text-fog focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                         placeholder="Event description..."
                         {...register(`events.${index}.description`)}
                       />
                       {errors.events?.[index]?.description?.message && (
                         <p className="text-xs text-red-500 mt-1">{errors.events?.[index]?.description?.message}</p>
                       )}
-                    </div>
-                    <div className="flex flex-col space-y-1">
-                      <label className="text-xs font-bold text-vast-ink uppercase tracking-wider block">
-                        Society Guidelines &amp; Participant Notes (Optional)
-                      </label>
-                      <textarea
-                        disabled={isReadOnly || isSaving}
-                        rows={2}
-                        className="w-full px-4 py-2 bg-transparent border border-vast-ink/20 rounded-inputs shadow-inputs focus:outline-none focus:ring-2 focus-visible:ring-2 focus-visible:ring-indigo-500 font-medium text-xs text-vast-ink transition-all disabled:opacity-50"
-                        placeholder="e.g. Laptops required, formal dress code, registration deadline..."
-                        {...register(`events.${index}.societyRules`)}
-                      />
                     </div>
 
                     {/* Official DSA / Admin Directives Display (Read-Only to Society) */}

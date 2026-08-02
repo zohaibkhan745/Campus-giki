@@ -631,9 +631,9 @@ export class AdminService {
   }
 
   /**
-   * DSA Credential Reset: Resets president password for a society account.
+   * DSA Hard Delete: Deletes society account and all associated records permanently.
    */
-  async resetSocietyPassword(id: string) {
+  async deleteSociety(id: string) {
     const society = await this.prisma.society.findUnique({
       where: { id },
       include: { user: true },
@@ -643,22 +643,14 @@ export class AdminService {
       throw new NotFoundException(`Society with ID '${id}' was not found`);
     }
 
-    const randomSuffix = crypto.randomBytes(3).toString('hex').toUpperCase();
-    const prefix = ['GIKI', 'Pass'].join('-');
-    const temporaryPassword = `${prefix}#${randomSuffix}`;
-    const hashedPassword = await bcrypt.hash(temporaryPassword, 10);
-
-    await this.prisma.user.update({
+    await this.prisma.user.delete({
       where: { id: society.userId },
-      data: { password: hashedPassword },
     });
 
     return {
-      message: 'Society credentials reset successfully',
-      societyId: society.id,
-      societyName: society.name,
-      presidentEmail: society.user.email,
-      temporaryPassword,
+      message: 'Society account deleted successfully',
+      id: society.id,
+      name: society.name,
     };
   }
 

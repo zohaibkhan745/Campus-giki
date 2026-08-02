@@ -75,6 +75,14 @@ body {
   select,
   textarea {
     border-color: rgba(26, 26, 26, 0.20);
+    background-color: var(--color-lumen-cream);
+    color: var(--color-vast-ink);
+  }
+
+  option {
+    background-color: var(--color-lumen-cream);
+    color: var(--color-vast-ink);
+    font-weight: 600;
   }
 
   /* Focus states → full strength */
