@@ -30,7 +30,7 @@ export const PostCard: React.FC<PostCardProps> = ({ item }) => {
   const isLongContent = item.content && item.content.length > 400;
 
   return (
-    <article className="bg-lumen-cream border-2 border-vast-ink rounded-cards p-8 space-y-6 text-left transition-transform hover:-translate-y-0.5">
+    <article className="bg-lumen-cream rounded-cards p-8 space-y-6 text-left border-b border-vast-ink/10 pb-10">
       {/* Card Header: Society Meta */}
       <div className="flex items-center justify-between gap-4">
         {item.isAdminPost ? (
@@ -92,7 +92,7 @@ export const PostCard: React.FC<PostCardProps> = ({ item }) => {
 
       {/* Optional Post Video */}
       {item.videoUrl && (
-        <div className="w-full aspect-[16/9] overflow-hidden rounded-[24px] border-2 border-vast-ink mt-4">
+        <div className="w-full aspect-[16/9] overflow-hidden rounded-[24px] mt-4">
           <video
             controls
             src={item.videoUrl}
@@ -103,7 +103,7 @@ export const PostCard: React.FC<PostCardProps> = ({ item }) => {
 
       {/* Optional Post Image */}
       {item.imageUrl && !item.videoUrl && (
-        <div className="w-full aspect-[16/9] overflow-hidden rounded-[24px] border-2 border-vast-ink mt-4">
+        <div className="w-full aspect-[16/9] overflow-hidden rounded-[24px] mt-4">
           <img
             src={item.imageUrl}
             alt="Post Attachment"

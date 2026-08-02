@@ -20,7 +20,7 @@ export const EventCard: React.FC<EventCardProps> = ({ item, allowExpand = false 
   });
 
   return (
-    <article className="bg-lumen-cream border-2 border-vast-ink rounded-cards p-8 space-y-6 text-left transition-transform hover:-translate-y-0.5">
+    <article className="bg-lumen-cream rounded-cards p-8 space-y-6 text-left border-b border-vast-ink/10 pb-10">
       {/* Card Header: Society Meta */}
       <div className="flex items-center justify-between gap-4">
         <Link
@@ -43,12 +43,6 @@ export const EventCard: React.FC<EventCardProps> = ({ item, allowExpand = false 
             {item.society.name}
           </span>
         </Link>
-
-        {item.society.category && (
-          <span className="bg-forest-ink text-lumen-cream rounded-badges px-3 py-1 text-xs font-semibold shrink-0">
-            {item.society.category.name}
-          </span>
-        )}
       </div>
 
       {/* Event Content */}
@@ -89,7 +83,7 @@ export const EventCard: React.FC<EventCardProps> = ({ item, allowExpand = false 
 
       {/* Optional Event Image */}
       {item.coverImageUrl && (
-        <div className="w-full aspect-[16/9] overflow-hidden rounded-[24px] border-2 border-vast-ink">
+        <div className="w-full aspect-[16/9] overflow-hidden rounded-[24px]">
           <img
             src={item.coverImageUrl}
             alt={item.title}

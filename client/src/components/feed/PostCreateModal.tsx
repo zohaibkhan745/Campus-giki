@@ -128,7 +128,7 @@ export const PostCreateModal: React.FC<PostCreateModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/40 animate-in fade-in duration-200">
       <div
-        className="bg-white w-full max-w-xl rounded-[28px] p-6 shadow-2xl relative border border-slate-100 flex flex-col justify-between min-h-[300px] transition-all"
+        className="bg-lumen-cream w-full max-w-xl rounded-[28px] p-6 shadow-2xl relative border border-vast-ink/20 flex flex-col justify-between min-h-[300px] transition-all"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Hidden File Inputs */}
@@ -155,7 +155,7 @@ export const PostCreateModal: React.FC<PostCreateModalProps> = ({
                 <img
                   src={displayAvatar}
                   alt={displayName}
-                  className="w-11 h-11 rounded-full object-cover border border-slate-100 shadow-sm"
+                  className="w-11 h-11 rounded-full object-cover border border-vast-ink/20 shadow-sm"
                 />
               ) : (
                 <div className="w-11 h-11 rounded-full bg-slate-800 text-white font-bold flex items-center justify-center text-lg shadow-sm">
@@ -192,7 +192,7 @@ export const PostCreateModal: React.FC<PostCreateModalProps> = ({
 
             {/* Attached Media Preview */}
             {previewUrl && (
-              <div className="relative rounded-2xl overflow-hidden border border-slate-100 bg-black group max-h-64 flex items-center justify-center my-2">
+              <div className="relative rounded-2xl overflow-hidden border border-vast-ink/20 bg-black group max-h-64 flex items-center justify-center my-2">
                 {mediaType === 'video' || videoUrl ? (
                   <video
                     src={previewUrl}
