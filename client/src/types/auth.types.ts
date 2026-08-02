@@ -37,3 +37,12 @@ export interface RegisterStudentPayload {
   fullName: string;
   password: string;
 }
+
+export interface ActivateSocietyPayload {
+  token: string;
+  email: string;
+  password: string;
+  presidentName: string;
+  presidentRegNum: string;
+  presidentContact: string;
+}

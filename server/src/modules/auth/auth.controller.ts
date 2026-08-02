@@ -4,6 +4,7 @@ import { Role } from '@prisma/client';
 import { AuthService } from './auth.service';
 import { RegisterStudentDto } from './dto/register-student.dto';
 import { LoginDto } from './dto/login.dto';
+import { ActivateSocietyDto } from './dto/activate-society.dto';
 import { AuthResponseDto, UserProfileDto } from './dto/auth-response.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { CurrentUser } from './decorators/current-user.decorator';
@@ -48,6 +49,22 @@ export class AuthController {
   })
   async login(@Body() dto: LoginDto): Promise<AuthResponseDto> {
     return this.authService.login(dto);
+  }
+
+  @Post('activate-society')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Activate provisioned society account using single-use token' })
+  @ApiResponse({
+    status: 200,
+    description: 'Account activated successfully, returns access token',
+    type: AuthResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid or expired activation link',
+  })
+  async activateSociety(@Body() dto: ActivateSocietyDto): Promise<AuthResponseDto> {
+    return this.authService.activateSociety(dto);
   }
 
   @Get('profile')

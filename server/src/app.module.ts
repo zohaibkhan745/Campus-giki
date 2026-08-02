@@ -14,11 +14,13 @@ import { AdminModule } from './modules/admin/admin.module';
 import { FeedModule } from './modules/feed/feed.module';
 import { PostsModule } from './modules/posts/posts.module';
 import { UploadsModule } from './modules/uploads/uploads.module';
+import { EmailModule } from './modules/email/email.module';
 
 @Module({
   imports: [
     AppConfigModule,
     PrismaModule,
+    EmailModule,
     ServeStaticModule.forRoot({
       rootPath: join(process.cwd(), 'uploads'),
       serveRoot: '/uploads',

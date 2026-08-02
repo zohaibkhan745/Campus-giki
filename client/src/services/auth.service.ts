@@ -3,6 +3,7 @@ import type {
   AuthResponse,
   LoginPayload,
   RegisterStudentPayload,
+  ActivateSocietyPayload,
   UserProfile,
 } from '@/types/auth.types';
 
@@ -13,6 +14,10 @@ export const authService = {
 
   async login(payload: LoginPayload): Promise<AuthResponse> {
     return api.post('/auth/login', payload);
+  },
+
+  async activateSociety(payload: ActivateSocietyPayload): Promise<AuthResponse> {
+    return api.post('/auth/activate-society', payload);
   },
 
   async getProfile(): Promise<UserProfile> {

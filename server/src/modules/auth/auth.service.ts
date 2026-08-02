@@ -1,10 +1,12 @@
-import { Injectable, ConflictException, UnauthorizedException, BadRequestException } from '@nestjs/common';
+import { Injectable, ConflictException, UnauthorizedException, BadRequestException, NotFoundException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Role, User } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
+import * as crypto from 'crypto';
 import { PrismaService } from '../../core/database/prisma.service';
 import { RegisterStudentDto } from './dto/register-student.dto';
 import { LoginDto } from './dto/login.dto';
+import { ActivateSocietyDto } from './dto/activate-society.dto';
 import { AuthResponseDto, UserProfileDto } from './dto/auth-response.dto';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 import { UpdateProfileDto } from './dto/update-profile.dto';
@@ -147,6 +149,81 @@ export class AuthService {
     });
 
     return this.sanitizeUser(updatedUser);
+  }
+
+  /**
+   * Activates a newly provisioned society account using a single-use email invitation token.
+   */
+  async activateSociety(dto: ActivateSocietyDto): Promise<AuthResponseDto> {
+    const normalizedEmail = dto.email.toLowerCase().trim();
+
+    // 1. Hash incoming token with SHA-256
+    const hashedIncoming = crypto.createHash('sha256').update(dto.token.trim()).digest('hex');
+
+    // 2. Find user matching email and hashed verification token
+    const user = await this.prisma.user.findFirst({
+      where: {
+        email: normalizedEmail,
+        verificationToken: hashedIncoming,
+      },
+      include: {
+        society: true,
+        advisor: true,
+      },
+    });
+
+    if (!user) {
+      throw new BadRequestException('Invalid or expired activation link');
+    }
+
+    if (user.verificationExpires && user.verificationExpires < new Date()) {
+      throw new BadRequestException('Activation token has expired. Please ask DSA for a new invitation.');
+    }
+
+    // 3. Hash new password
+    const hashedPassword = await bcrypt.hash(dto.password, this.SALT_ROUNDS);
+
+    // 4. Perform activation in transaction
+    const updatedUser = await this.prisma.$transaction(async (tx) => {
+      // Update User
+      const u = await tx.user.update({
+        where: { id: user.id },
+        data: {
+          password: hashedPassword,
+          fullName: dto.presidentName.trim(),
+          isEmailVerified: true,
+          verificationToken: null,
+          verificationExpires: null,
+        },
+        include: {
+          society: true,
+          advisor: true,
+        },
+      });
+
+      // Update Society Details
+      if (user.society) {
+        await tx.society.update({
+          where: { id: user.society.id },
+          data: {
+            presidentName: dto.presidentName.trim(),
+            presidentRegNum: dto.presidentRegNum.trim(),
+            presidentContact: dto.presidentContact.trim(),
+            isSetupComplete: true,
+          },
+        });
+      }
+
+      return u;
+    });
+
+    // 5. Generate JWT access token
+    const accessToken = this.generateJwtToken(updatedUser);
+
+    return {
+      accessToken,
+      user: this.sanitizeUser(updatedUser),
+    };
   }
 
   /**

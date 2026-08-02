@@ -22,6 +22,7 @@ const PageFallback = () => (
 const HomePage = React.lazy(() => import('@/pages/HomePage').then(m => ({ default: m.HomePage })));
 const LoginPage = React.lazy(() => import('@/pages/LoginPage').then(m => ({ default: m.LoginPage })));
 const RegisterPage = React.lazy(() => import('@/pages/RegisterPage').then(m => ({ default: m.RegisterPage })));
+const ActivateSocietyPage = React.lazy(() => import('@/pages/ActivateSocietyPage').then(m => ({ default: m.ActivateSocietyPage })));
 const DashboardPage = React.lazy(() => import('@/pages/DashboardPage').then(m => ({ default: m.DashboardPage })));
 const SocietySetupPage = React.lazy(() => import('@/pages/SocietySetupPage').then(m => ({ default: m.SocietySetupPage })));
 const SocietyDirectoryPage = React.lazy(() => import('@/pages/societies/SocietyDirectoryPage').then(m => ({ default: m.SocietyDirectoryPage })));
@@ -70,6 +71,7 @@ export const AppRoutes: React.FC = () => {
         >
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/activate-society" element={<ActivateSocietyPage />} />
         </Route>
 
         {/* Society Role Specific Routes */}

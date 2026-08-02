@@ -20,6 +20,7 @@ interface AuthContextType {
   isLoading: boolean;
   login: (payload: LoginPayload) => Promise<AuthResponse>;
   registerStudent: (payload: RegisterStudentPayload) => Promise<AuthResponse>;
+  activateSociety: (payload: import('@/types/auth.types').ActivateSocietyPayload) => Promise<AuthResponse>;
   logout: () => void;
   refetchUser: () => Promise<void>;
 }
@@ -90,6 +91,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     return response;
   };
 
+  const activateSociety = async (
+    payload: import('@/types/auth.types').ActivateSocietyPayload,
+  ): Promise<AuthResponse> => {
+    const response = await authService.activateSociety(payload);
+    saveAuthSession(response);
+    return response;
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -99,6 +108,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         isLoading,
         login,
         registerStudent,
+        activateSociety,
         logout,
         refetchUser,
       }}
