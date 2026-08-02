@@ -76,7 +76,7 @@ export const SocietySetupPage: React.FC = () => {
   const bannerUrl = watch('bannerUrl');
 
   useEffect(() => {
-    if (mySociety && isEditing) {
+    if (mySociety) {
       reset({
         name: mySociety.name || '',
         categoryId: mySociety.category?.id || '',
@@ -94,7 +94,7 @@ export const SocietySetupPage: React.FC = () => {
         presidentContact: mySociety.presidentContact || '',
       });
     }
-  }, [mySociety, isEditing, reset]);
+  }, [mySociety, reset]);
 
   const setupMutation = useMutation({
     mutationFn: (data: SocietySetupFormData) => 

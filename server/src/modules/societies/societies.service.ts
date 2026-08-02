@@ -366,6 +366,9 @@ export class SocietiesService {
           linkedin: dto.linkedin || null,
           website: dto.website || null,
           email: dto.email || null,
+          ...(dto.presidentName !== undefined && { presidentName: dto.presidentName || null }),
+          ...(dto.presidentRegNum !== undefined && { presidentRegNum: dto.presidentRegNum || null }),
+          ...(dto.presidentContact !== undefined && { presidentContact: dto.presidentContact || null }),
           isSetupComplete: true,
         },
         create: {
@@ -381,6 +384,9 @@ export class SocietiesService {
           linkedin: dto.linkedin || null,
           website: dto.website || null,
           email: dto.email || null,
+          presidentName: dto.presidentName || null,
+          presidentRegNum: dto.presidentRegNum || null,
+          presidentContact: dto.presidentContact || null,
           isSetupComplete: true,
         },
         include: {
@@ -446,6 +452,15 @@ export class SocietiesService {
         ...(dto.linkedin !== undefined && { linkedin: dto.linkedin || null }),
         ...(dto.website !== undefined && { website: dto.website || null }),
         ...(dto.email !== undefined && { email: dto.email || null }),
+        ...(dto.presidentName !== undefined && {
+          presidentName: dto.presidentName || null,
+        }),
+        ...(dto.presidentRegNum !== undefined && {
+          presidentRegNum: dto.presidentRegNum || null,
+        }),
+        ...(dto.presidentContact !== undefined && {
+          presidentContact: dto.presidentContact || null,
+        }),
       },
       include: {
         category: true,
