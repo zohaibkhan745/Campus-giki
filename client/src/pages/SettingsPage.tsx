@@ -107,7 +107,7 @@ export const SettingsPage: React.FC = () => {
       <div className="flex items-center justify-between">
         <button
           onClick={() => navigate(-1)}
-          className="inline-flex items-center gap-2 px-3.5 py-2 bg-pure-white hover:bg-lumen-stone border-2 border-vast-ink text-vast-ink text-xs font-bold rounded-buttons transition-all cursor-pointer shadow-[2px_2px_0px_0px_#1B1B18]"
+          className="inline-flex items-center gap-2 px-3.5 py-2 bg-transparent hover:bg-lumen-stone border border-vast-ink/20 text-vast-ink text-xs font-bold rounded-buttons transition-all cursor-pointer shadow-[2px_2px_0px_0px_#1B1B18]"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back</span>
@@ -115,11 +115,11 @@ export const SettingsPage: React.FC = () => {
       </div>
 
       {/* Header Banner */}
-      <div className="flex items-center gap-4 bg-pure-white p-6 rounded-cards border-2 border-vast-ink">
+      <div className="flex items-center gap-4 bg-transparent p-6 rounded-cards border border-vast-ink/20">
         {user.avatarUrl ? (
-          <img src={user.avatarUrl} alt="Avatar" className="w-16 h-16 rounded-full border-2 border-vast-ink object-cover shrink-0" />
+          <img src={user.avatarUrl} alt="Avatar" className="w-16 h-16 rounded-full border border-vast-ink/20 object-cover shrink-0" />
         ) : (
-          <div className="w-16 h-16 rounded-full border-2 border-vast-ink bg-lumen-stone flex items-center justify-center shrink-0">
+          <div className="w-16 h-16 rounded-full border border-vast-ink/20 bg-lumen-stone flex items-center justify-center shrink-0">
             <User className="w-8 h-8 text-vast-ink" />
           </div>
         )}
@@ -139,7 +139,7 @@ export const SettingsPage: React.FC = () => {
 
       <div className="grid grid-cols-1 gap-6">
         {/* Profile Information Panel */}
-        <div className="bg-lumen-cream p-6 rounded-cards border-2 border-vast-ink space-y-5">
+        <div className="bg-lumen-cream p-6 rounded-cards border border-vast-ink/20 space-y-5">
           <h3 className="font-extrabold text-lg text-vast-ink flex items-center gap-2 border-b-2 border-vast-ink/10 pb-3">
             <User className="w-5 h-5 text-indigo-600" />
             General Information
@@ -151,7 +151,7 @@ export const SettingsPage: React.FC = () => {
           <form onSubmit={handleProfileSubmit} className="space-y-4">
             <div className="space-y-1">
               <label className="text-xs font-semibold text-fog">Account Email</label>
-              <div className="w-full bg-lavender-whisper text-fog text-sm rounded-inputs border-2 border-vast-ink/20 px-3.5 py-2.5 font-mono cursor-not-allowed">
+              <div className="w-full bg-lavender-whisper text-fog text-sm rounded-inputs border border-vast-ink/20/20 px-3.5 py-2.5 font-mono cursor-not-allowed">
                 {user.email}
               </div>
             </div>
@@ -205,7 +205,7 @@ export const SettingsPage: React.FC = () => {
         </div>
 
         {/* Security / Password Panel */}
-        <div className="bg-lumen-cream p-6 rounded-cards border-2 border-vast-ink space-y-5">
+        <div className="bg-lumen-cream p-6 rounded-cards border border-vast-ink/20 space-y-5">
           <h3 className="font-extrabold text-lg text-vast-ink flex items-center gap-2 border-b-2 border-vast-ink/10 pb-3">
             <KeyRound className="w-5 h-5 text-amber-500" />
             Security & Password

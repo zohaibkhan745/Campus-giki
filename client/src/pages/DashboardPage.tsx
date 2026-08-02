@@ -33,7 +33,7 @@ import {
   AlertCircle,
   Megaphone,
   ArrowRight,
-  Mic,
+  MicVocal,
 } from 'lucide-react';
 
 export const DashboardPage: React.FC = () => {
@@ -85,7 +85,7 @@ export const DashboardPage: React.FC = () => {
   const renderEventCard = (event: EventItem, isPast = false) => (
     <div
       key={event.id}
-      className={`bg-pure-white rounded-cards border transition-all flex flex-col justify-between ${
+      className={`bg-transparent rounded-cards border transition-all flex flex-col justify-between ${
         isPast ? 'border-vast-ink opacity-80' : 'border-2 border-vast-ink hover:border-2 border-vast-ink'
       }`}
     >
@@ -146,13 +146,13 @@ export const DashboardPage: React.FC = () => {
         </div>
       </Link>
 
-      <div className="flex flex-wrap items-center justify-end gap-2 px-4 pb-4 pt-3 border-t border-vast-ink mt-auto">
+      <div className="flex flex-wrap items-center justify-end gap-2 px-4 pb-4 pt-3 mt-auto">
         {event.registrationLink && (
           <a
             href={event.registrationLink}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 px-2.5 py-1 bg-pure-white border border-vast-ink text-vast-ink hover:bg-blue-500/20 rounded-inputs text-xs font-semibold transition-colors mr-auto"
+            className="inline-flex items-center gap-1 px-2.5 py-1 bg-transparent border border-vast-ink text-vast-ink hover:bg-blue-500/20 rounded-inputs text-xs font-semibold transition-colors mr-auto"
             title="Open External Registration"
           >
             <ExternalLink className="w-3 h-3" />
@@ -168,7 +168,7 @@ export const DashboardPage: React.FC = () => {
         </Link>
         <button
           onClick={() => setDeleteTarget({ id: event.id, title: event.title })}
-          className="inline-flex items-center gap-1 px-2.5 py-1 bg-pure-white border border-vast-ink hover:bg-red-500/20 text-red-400 text-xs font-semibold rounded-inputs transition-colors"
+          className="inline-flex items-center gap-1 px-2.5 py-1 bg-transparent border border-vast-ink hover:bg-red-500/20 text-red-400 text-xs font-semibold rounded-inputs transition-colors"
         >
           <Trash2 className="w-3 h-3" />
           <span>Delete</span>
@@ -180,16 +180,16 @@ export const DashboardPage: React.FC = () => {
   return (
     <div className="space-y-6 text-left">
       {/* 1. Welcome & Identity Banner */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-pure-white p-6 rounded-cards border-2 border-vast-ink shadow-sm">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-transparent p-6 rounded-cards shadow-sm border border-vast-ink/20">
         <div className="flex items-center gap-4">
           {profile?.logoUrl ? (
             <img
               src={profile.logoUrl}
               alt={profile.name}
-              className="w-16 h-16 rounded-full object-cover border-2 border-vast-ink bg-lumen-cream"
+              className="w-16 h-16 rounded-full object-cover bg-lumen-cream border border-vast-ink/20"
             />
           ) : (
-            <div className="w-16 h-16 flex items-center justify-center bg-lumen-stone border-2 border-vast-ink rounded-full text-vast-ink shrink-0">
+            <div className="w-16 h-16 flex items-center justify-center bg-lumen-stone rounded-full text-vast-ink shrink-0 border border-vast-ink/20">
               <Building2 className="w-8 h-8" />
             </div>
           )}
@@ -212,14 +212,14 @@ export const DashboardPage: React.FC = () => {
         <div className="flex items-center gap-3 shrink-0 mt-4 md:mt-0">
           <Link
             to="/society/setup"
-            className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-pure-white border-2 border-vast-ink hover:bg-lumen-stone rounded-inputs text-vast-ink text-sm font-bold transition-colors"
+            className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-transparent hover:bg-lumen-stone rounded-inputs text-vast-ink text-sm font-bold transition-colors border border-vast-ink/20"
           >
             <Edit className="w-4 h-4" />
             <span>Edit Profile</span>
           </Link>
           <button
             onClick={logout}
-            className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-pure-white border-2 border-vast-ink hover:bg-red-500/10 rounded-inputs text-red-500 text-sm font-bold transition-colors"
+            className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-transparent hover:bg-red-500/10 rounded-inputs text-red-500 text-sm font-bold transition-colors border border-vast-ink/20"
           >
             <LogOut className="w-4 h-4" />
             <span>Log out</span>
@@ -233,7 +233,7 @@ export const DashboardPage: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             
             {/* Quick Actions Panel */}
-            <div className="bg-lumen-cream p-6 rounded-cards border-2 border-vast-ink flex flex-col justify-center space-y-5">
+            <div className="bg-lumen-cream p-6 rounded-cards flex flex-col justify-center space-y-5 border border-vast-ink/20">
               <h3 className="font-extrabold text-lg text-vast-ink flex items-center gap-2">
                 Command Center
               </h3>
@@ -241,14 +241,14 @@ export const DashboardPage: React.FC = () => {
               <div className="grid grid-cols-2 gap-3">
                 <Link
                   to="/society/posts"
-                  className="flex flex-col items-center justify-center gap-2 p-4 bg-vast-ink hover:bg-vast-ink/90 text-pure-white rounded-inputs font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18]"
+                  className="flex flex-col items-center justify-center gap-2 p-4 bg-transparent hover:bg-lumen-stone text-vast-ink rounded-inputs font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18] border border-vast-ink/20"
                 >
                   <Megaphone className="w-6 h-6" />
                   <span>Posts</span>
                 </Link>
                 <Link
                   to="/events/create"
-                  className="flex flex-col items-center justify-center gap-2 p-4 bg-pure-white hover:bg-lumen-stone text-vast-ink border-2 border-vast-ink rounded-inputs font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18]"
+                  className="flex flex-col items-center justify-center gap-2 p-4 bg-transparent hover:bg-lumen-stone text-vast-ink rounded-inputs font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18] border border-vast-ink/20"
                 >
                   <Plus className="w-6 h-6" />
                   <span>Create Event</span>
@@ -258,20 +258,17 @@ export const DashboardPage: React.FC = () => {
             </div>
 
             {/* Manage Events & Metrics Area */}
-            <div className="bg-lumen-cream p-6 rounded-cards border-2 border-vast-ink flex flex-col justify-center space-y-5 relative overflow-hidden group">
+            <div className="bg-lumen-cream p-6 rounded-cards flex flex-col justify-center space-y-5 relative overflow-hidden group border border-vast-ink/20">
               <h3 className="font-extrabold text-lg text-vast-ink flex items-center gap-2 z-10">
                 Manage Events
               </h3>
-              <p className="text-sm font-medium text-fog z-10 leading-snug">
-                View all your society events, filter by status, and track approvals.
-              </p>
               
               <div className="grid grid-cols-2 gap-3 z-10">
                 <Link
                   to="/society/events"
-                  className="relative flex flex-col items-center justify-center gap-2 p-4 bg-vast-ink hover:bg-vast-ink/90 text-pure-white rounded-inputs font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18]"
+                  className="relative flex flex-col items-center justify-center gap-2 p-4 bg-transparent hover:bg-lumen-stone text-vast-ink rounded-inputs font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18] border border-vast-ink/20"
                 >
-                  <Mic className="w-6 h-6" />
+                  <MicVocal className="w-6 h-6" />
                   <span>Events</span>
                   {changesRequestedEventsCount > 0 && (
                     <span className="absolute -top-2 -right-2 flex items-center justify-center w-6 h-6 bg-ember-glow text-pure-white text-xs rounded-full shadow-sm animate-pulse border-2 border-pure-white">
@@ -281,12 +278,12 @@ export const DashboardPage: React.FC = () => {
                 </Link>
                 <Link
                   to="/society/calendar"
-                  className="relative flex flex-col items-center justify-center gap-2 p-4 bg-pure-white hover:bg-lumen-stone text-vast-ink border-2 border-vast-ink rounded-inputs font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18]"
+                  className="relative flex flex-col items-center justify-center gap-2 p-4 bg-transparent hover:bg-lumen-stone text-vast-ink rounded-inputs font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18] border border-vast-ink/20"
                 >
                   <CalendarDays className="w-6 h-6" />
                   <span>Annual Calendar</span>
                   {changesRequestedPlanCount > 0 && (
-                    <span className="absolute -top-2 -right-2 flex items-center justify-center w-6 h-6 bg-ember-glow text-pure-white text-xs rounded-full shadow-sm animate-pulse border-2 border-vast-ink">
+                    <span className="absolute -top-2 -right-2 flex items-center justify-center w-6 h-6 bg-ember-glow text-pure-white text-xs rounded-full shadow-sm animate-pulse">
                       !
                     </span>
                   )}
@@ -303,7 +300,7 @@ export const DashboardPage: React.FC = () => {
             
             {/* Under Review & Revisions Column */}
             <div className="space-y-4">
-              <div className="flex items-center justify-between border-b-2 border-vast-ink pb-3">
+              <div className="flex items-center justify-between pb-3">
                 <div className="flex items-center gap-2 font-extrabold text-lg text-vast-ink">
                   {changesRequestedEventsCount > 0 ? (
                     <AlertCircle className="w-5 h-5 text-ember-glow animate-pulse" />
@@ -315,7 +312,7 @@ export const DashboardPage: React.FC = () => {
               </div>
 
               {pendingEvents.length === 0 ? (
-                <div className="bg-pure-white p-10 rounded-cards border-2 border-vast-ink text-center text-fog space-y-3 flex flex-col items-center">
+                <div className="bg-transparent p-10 rounded-cards text-center text-fog space-y-3 flex flex-col items-center border border-vast-ink/20">
                   <Shield className="w-12 h-12 text-fog opacity-30" />
                   <p className="font-bold text-sm">You're all caught up! No events pending approval or revisions.</p>
                 </div>
@@ -328,7 +325,7 @@ export const DashboardPage: React.FC = () => {
 
             {/* Next Upcoming Column */}
             <div className="space-y-4">
-              <div className="flex items-center justify-between border-b-2 border-vast-ink pb-3">
+              <div className="flex items-center justify-between pb-3">
                 <div className="flex items-center gap-2 font-extrabold text-lg text-vast-ink">
                   <CalendarIcon className="w-5 h-5 text-forest-ink" />
                   <h3>Next Upcoming ({upcomingEvents.length})</h3>
@@ -340,7 +337,7 @@ export const DashboardPage: React.FC = () => {
               </div>
 
               {upcomingEvents.length === 0 ? (
-                <div className="bg-pure-white p-10 rounded-cards border-2 border-vast-ink text-center text-fog space-y-3 flex flex-col items-center">
+                <div className="bg-transparent p-10 rounded-cards text-center text-fog space-y-3 flex flex-col items-center border border-vast-ink/20">
                   <CalendarIcon className="w-12 h-12 text-fog opacity-30" />
                   <p className="font-bold text-sm">No upcoming events scheduled right now.</p>
                 </div>
@@ -357,9 +354,9 @@ export const DashboardPage: React.FC = () => {
       {/* Non-society user dashboard fallback */}
       {user?.role !== 'SOCIETY' && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-pure-white p-6 rounded-cards border-2 border-vast-ink space-y-3">
+          <div className="bg-transparent p-6 rounded-cards space-y-3 border border-vast-ink/20">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-pure-white border border-forest-ink text-forest-ink rounded-inputs">
+              <div className="p-2 bg-transparent border border-forest-ink text-forest-ink rounded-inputs">
                 <UserCheck className="w-6 h-6" />
               </div>
               <div className="flex-1">
@@ -368,7 +365,7 @@ export const DashboardPage: React.FC = () => {
               </div>
               <button
                 onClick={logout}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-pure-white border border-vast-ink hover:bg-red-500/20 border border-red-500/20 rounded-inputs text-red-400 text-xs font-semibold transition-colors"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-transparent border border-vast-ink hover:bg-red-500/20 border border-red-500/20 rounded-inputs text-red-400 text-xs font-semibold transition-colors"
               >
                 <LogOut className="w-4 h-4" />
                 <span>Log out</span>

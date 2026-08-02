@@ -56,6 +56,7 @@ export const SocietySetupPage: React.FC = () => {
     resolver: zodResolver(societySetupSchema),
     defaultValues: {
       name: '',
+      type: 'SOCIETY',
       categoryId: '',
       shortDescription: '',
       longDescription: '',
@@ -74,11 +75,13 @@ export const SocietySetupPage: React.FC = () => {
 
   const logoUrl = watch('logoUrl');
   const bannerUrl = watch('bannerUrl');
+  const selectedType = watch('type');
 
   useEffect(() => {
     if (mySociety) {
       reset({
         name: mySociety.name || '',
+        type: (mySociety.type as any) || 'SOCIETY',
         categoryId: mySociety.category?.id || '',
         shortDescription: mySociety.shortDescription || '',
         longDescription: mySociety.longDescription || '',
@@ -172,6 +175,52 @@ export const SocietySetupPage: React.FC = () => {
             error={errors.name?.message}
             {...register('name')}
           />
+
+          <div className="space-y-1.5 text-left">
+            <label className="block text-xs font-semibold text-vast-ink uppercase tracking-wider">
+              Organization Type *
+            </label>
+            <div className="grid grid-cols-3 gap-3">
+              <button
+                type="button"
+                onClick={() => setValue('type', 'SOCIETY', { shouldValidate: true })}
+                className={`p-3 rounded-inputs border-2 font-bold text-xs flex flex-col items-center gap-1.5 transition-all ${
+                  selectedType === 'SOCIETY'
+                    ? 'bg-blue-50 border-blue-600 text-blue-700 shadow-sm'
+                    : 'bg-pure-white border-vast-ink text-vast-ink hover:bg-lumen-stone'
+                }`}
+              >
+                <span className="text-base">🏛️</span>
+                <span>Society</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setValue('type', 'CLUB', { shouldValidate: true })}
+                className={`p-3 rounded-inputs border-2 font-bold text-xs flex flex-col items-center gap-1.5 transition-all ${
+                  selectedType === 'CLUB'
+                    ? 'bg-purple-50 border-purple-600 text-purple-700 shadow-sm'
+                    : 'bg-pure-white border-vast-ink text-vast-ink hover:bg-lumen-stone'
+                }`}
+              >
+                <span className="text-base">🎨</span>
+                <span>Club</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setValue('type', 'TEAM', { shouldValidate: true })}
+                className={`p-3 rounded-inputs border-2 font-bold text-xs flex flex-col items-center gap-1.5 transition-all ${
+                  selectedType === 'TEAM'
+                    ? 'bg-emerald-50 border-emerald-600 text-emerald-700 shadow-sm'
+                    : 'bg-pure-white border-vast-ink text-vast-ink hover:bg-lumen-stone'
+                }`}
+              >
+                <span className="text-base">🚀</span>
+                <span>Team</span>
+              </button>
+            </div>
+          </div>
 
           <div className="space-y-1.5 text-left">
             <label className="block text-xs font-semibold text-vast-ink font-medium uppercase tracking-wider">

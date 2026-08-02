@@ -123,6 +123,21 @@ export const SocietyProfilePage: React.FC = () => {
                 <h1 className="text-3xl sm:text-4xl font-extrabold font-eb-garamond text-vast-ink leading-tight tracking-tight">
                   {society.name}
                 </h1>
+                {society.type === 'CLUB' && (
+                  <span className="inline-flex items-center gap-1 px-3 py-1 bg-purple-100 text-purple-700 border-2 border-purple-300 rounded-inputs text-xs font-bold uppercase tracking-wider shadow-sm">
+                    🎨 Club
+                  </span>
+                )}
+                {society.type === 'TEAM' && (
+                  <span className="inline-flex items-center gap-1 px-3 py-1 bg-emerald-100 text-emerald-700 border-2 border-emerald-300 rounded-inputs text-xs font-bold uppercase tracking-wider shadow-sm">
+                    🚀 Team
+                  </span>
+                )}
+                {(!society.type || society.type === 'SOCIETY') && (
+                  <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-700 border-2 border-blue-300 rounded-inputs text-xs font-bold uppercase tracking-wider shadow-sm">
+                    🏛️ Society
+                  </span>
+                )}
                 {society.category && (
                   <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-pure-white border-2 border-vast-ink text-vast-ink rounded-inputs text-xs font-bold shadow-sm">
                     <Tag className="w-3.5 h-3.5 text-forest-ink" />

@@ -15,7 +15,7 @@ import {
   Loader2,
   LogOut,
   MapPin,
-  Mic,
+  MicVocal,
   CalendarDays,
   Settings,
 } from 'lucide-react';
@@ -91,7 +91,7 @@ export const AdvisorQueuePage: React.FC = () => {
       case 'APPROVED':
       case 'PUBLISHED':
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-pure-white border border-forest-ink text-forest-ink rounded-inputs text-xs font-semibold">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-transparent border border-forest-ink text-forest-ink rounded-inputs text-xs font-semibold">
             <CheckCircle2 className="w-3.5 h-3.5" />
             <span>{status === 'PUBLISHED' ? 'PUBLISHED' : 'APPROVED'}</span>
           </span>
@@ -99,14 +99,14 @@ export const AdvisorQueuePage: React.FC = () => {
       case 'PENDING':
       case 'PENDING_ADVISOR':
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-pure-white border border-ember-glow text-ember-glow rounded-inputs text-xs font-semibold">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-transparent border border-ember-glow text-ember-glow rounded-inputs text-xs font-semibold">
             <Clock className="w-3.5 h-3.5" />
             <span>PENDING</span>
           </span>
         );
       case 'CHANGES_REQUESTED':
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-pure-white border border-red-400 text-red-400 rounded-inputs text-xs font-semibold">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-transparent border border-red-400 text-red-400 rounded-inputs text-xs font-semibold">
             <AlertCircle className="w-3.5 h-3.5" />
             <span>CHANGES REQ.</span>
           </span>
@@ -123,22 +123,22 @@ export const AdvisorQueuePage: React.FC = () => {
   return (
     <div className="max-w-6xl mx-auto space-y-6 text-left py-4">
       {/* 1. Welcome Banner — matches Society & Admin Dashboard */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-pure-white p-6 rounded-cards border-2 border-vast-ink shadow-sm">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-transparent p-6 rounded-cards border border-vast-ink/20 shadow-sm">
         <div className="flex items-center gap-4">
           {user?.avatarUrl ? (
             <img
               src={user.avatarUrl}
               alt={user.fullName}
-              className="w-16 h-16 rounded-full border-2 border-vast-ink object-cover shrink-0"
+              className="w-16 h-16 rounded-full border border-vast-ink/20 object-cover shrink-0"
             />
           ) : assignedSocietyLogo ? (
             <img
               src={assignedSocietyLogo}
               alt={assignedSocietyName}
-              className="w-16 h-16 rounded-full object-cover border-2 border-vast-ink bg-lumen-cream shrink-0"
+              className="w-16 h-16 rounded-full object-cover border border-vast-ink/20 bg-lumen-cream shrink-0"
             />
           ) : (
-            <div className="w-16 h-16 flex items-center justify-center bg-lumen-stone border-2 border-vast-ink rounded-full text-vast-ink shrink-0">
+            <div className="w-16 h-16 flex items-center justify-center bg-lumen-stone border border-vast-ink/20 rounded-full text-vast-ink shrink-0">
               <Building2 className="w-8 h-8" />
             </div>
           )}
@@ -158,14 +158,14 @@ export const AdvisorQueuePage: React.FC = () => {
         <div className="flex items-center gap-3 shrink-0 mt-4 md:mt-0">
           <Link
             to="/settings"
-            className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-pure-white border-2 border-vast-ink hover:bg-lumen-stone rounded-inputs text-vast-ink text-sm font-bold transition-colors"
+            className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-transparent border border-vast-ink/20 hover:bg-lumen-stone rounded-inputs text-vast-ink text-sm font-bold transition-colors"
           >
             <Settings className="w-4 h-4" />
             <span className="hidden sm:inline">Settings</span>
           </Link>
           <button
             onClick={logout}
-            className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-pure-white border-2 border-vast-ink hover:bg-red-500/10 rounded-inputs text-red-500 text-sm font-bold transition-colors"
+            className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-transparent border border-vast-ink/20 hover:bg-red-500/10 rounded-inputs text-red-500 text-sm font-bold transition-colors"
           >
             <LogOut className="w-4 h-4" />
             <span>Log out</span>
@@ -176,7 +176,7 @@ export const AdvisorQueuePage: React.FC = () => {
       {/* 2. Command Center — matching Society & Admin */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Quick Actions */}
-        <div className="bg-lumen-cream p-6 rounded-cards border-2 border-vast-ink flex flex-col justify-center space-y-5">
+        <div className="bg-lumen-cream p-6 rounded-cards border border-vast-ink/20 flex flex-col justify-center space-y-5">
           <h3 className="font-extrabold text-lg text-vast-ink flex items-center gap-2">
             Command Center
           </h3>
@@ -187,7 +187,7 @@ export const AdvisorQueuePage: React.FC = () => {
               className={`flex flex-col items-center justify-center gap-2 p-4 rounded-inputs font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18] relative ${
                 activeTab === 'events'
                   ? 'bg-vast-ink text-pure-white'
-                  : 'bg-pure-white text-vast-ink border-2 border-vast-ink hover:bg-lumen-stone'
+                  : 'bg-transparent text-vast-ink border border-vast-ink/20 hover:bg-lumen-stone'
               }`}
             >
               {pendingEventsCount > 0 && (
@@ -195,7 +195,7 @@ export const AdvisorQueuePage: React.FC = () => {
                   {pendingEventsCount > 9 ? '9+' : pendingEventsCount}
                 </span>
               )}
-              <Mic className="w-6 h-6" />
+              <MicVocal className="w-6 h-6" />
               <span>Events</span>
             </button>
             <button
@@ -203,7 +203,7 @@ export const AdvisorQueuePage: React.FC = () => {
               className={`flex flex-col items-center justify-center gap-2 p-4 rounded-inputs font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18] relative ${
                 activeTab === 'plans'
                   ? 'bg-vast-ink text-pure-white'
-                  : 'bg-pure-white text-vast-ink border-2 border-vast-ink hover:bg-lumen-stone'
+                  : 'bg-transparent text-vast-ink border border-vast-ink/20 hover:bg-lumen-stone'
               }`}
             >
               {pendingPlansCount > 0 && (
@@ -218,7 +218,7 @@ export const AdvisorQueuePage: React.FC = () => {
         </div>
 
         {/* At a Glance */}
-        <div className="bg-lumen-cream p-6 rounded-cards border-2 border-vast-ink flex flex-col justify-center space-y-5 relative overflow-hidden group">
+        <div className="bg-lumen-cream p-6 rounded-cards border border-vast-ink/20 flex flex-col justify-center space-y-5 relative overflow-hidden group">
           <h3 className="font-extrabold text-lg text-vast-ink flex items-center gap-2 z-10">
             Review Queue
           </h3>
@@ -234,7 +234,7 @@ export const AdvisorQueuePage: React.FC = () => {
             <select
               value={statusFilter}
               onChange={handleStatusChange}
-              className="w-full bg-pure-white text-vast-ink text-sm font-semibold rounded-inputs border-2 border-vast-ink px-3.5 py-2 pl-10 transition-all outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 cursor-pointer"
+              className="w-full bg-transparent text-vast-ink text-sm font-semibold rounded-inputs border border-vast-ink/20 px-3.5 py-2 pl-10 transition-all outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 cursor-pointer"
             >
               <option value="">All Statuses</option>
               <option value="PENDING">Pending Review</option>
@@ -273,7 +273,7 @@ export const AdvisorQueuePage: React.FC = () => {
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="bg-pure-white p-5 rounded-cards border-2 border-vast-ink space-y-3 animate-pulse"
+              className="bg-transparent p-5 rounded-cards border border-vast-ink/20 space-y-3 animate-pulse"
             >
               <div className="flex justify-between items-center">
                 <div className="h-5 bg-lumen-stone rounded w-1/3" />
@@ -284,7 +284,7 @@ export const AdvisorQueuePage: React.FC = () => {
           ))}
         </div>
       ) : activeTab === 'plans' && plans.length === 0 ? (
-        <div className="bg-pure-white p-12 rounded-cards border-2 border-vast-ink text-center space-y-3 flex flex-col items-center">
+        <div className="bg-transparent p-12 rounded-cards border border-vast-ink/20 text-center space-y-3 flex flex-col items-center">
           <FileText className="w-12 h-12 text-fog opacity-30" />
           <h3 className="font-bold text-vast-ink text-base">No Yearly Plans Found</h3>
           <p className="text-xs text-fog max-w-sm">
@@ -292,7 +292,7 @@ export const AdvisorQueuePage: React.FC = () => {
           </p>
         </div>
       ) : activeTab === 'events' && events.length === 0 ? (
-        <div className="bg-pure-white p-12 rounded-cards border-2 border-vast-ink text-center space-y-3 flex flex-col items-center">
+        <div className="bg-transparent p-12 rounded-cards border border-vast-ink/20 text-center space-y-3 flex flex-col items-center">
           <Calendar className="w-12 h-12 text-fog opacity-30" />
           <h3 className="font-bold text-vast-ink text-base">No Events Found</h3>
           <p className="text-xs text-fog max-w-sm">
@@ -306,17 +306,17 @@ export const AdvisorQueuePage: React.FC = () => {
               <Link
                 key={plan.id}
                 to={`/advisor/yearly-plans/${plan.id}`}
-                className="bg-pure-white p-5 rounded-cards border-2 border-vast-ink hover:bg-lavender-whisper transition-all flex flex-col md:flex-row items-start md:items-center justify-between gap-4 group cursor-pointer"
+                className="bg-transparent p-5 rounded-cards border border-vast-ink/20 hover:bg-lavender-whisper transition-all flex flex-col md:flex-row items-start md:items-center justify-between gap-4 group cursor-pointer"
               >
                 <div className="flex items-center gap-4">
                   {plan.society?.logoUrl ? (
                     <img
                       src={plan.society.logoUrl}
                       alt={plan.society.name}
-                      className="w-12 h-12 rounded-inputs object-cover border-2 border-vast-ink shrink-0"
+                      className="w-12 h-12 rounded-inputs object-cover border border-vast-ink/20 shrink-0"
                     />
                   ) : (
-                    <div className="p-3 bg-lumen-stone border-2 border-vast-ink text-vast-ink rounded-inputs shrink-0">
+                    <div className="p-3 bg-lumen-stone border border-vast-ink/20 text-vast-ink rounded-inputs shrink-0">
                       <Building2 className="w-6 h-6" />
                     </div>
                   )}
@@ -363,17 +363,17 @@ export const AdvisorQueuePage: React.FC = () => {
               <Link
                 key={event.id}
                 to={`/advisor/events/${event.id}`}
-                className="bg-pure-white p-5 rounded-cards border-2 border-vast-ink hover:bg-lavender-whisper transition-all flex flex-col md:flex-row items-start md:items-center justify-between gap-4 group cursor-pointer"
+                className="bg-transparent p-5 rounded-cards border border-vast-ink/20 hover:bg-lavender-whisper transition-all flex flex-col md:flex-row items-start md:items-center justify-between gap-4 group cursor-pointer"
               >
                 <div className="flex items-center gap-4">
                   {event.society?.logoUrl ? (
                     <img
                       src={event.society.logoUrl}
                       alt={event.society.name}
-                      className="w-12 h-12 rounded-inputs object-cover border-2 border-vast-ink shrink-0"
+                      className="w-12 h-12 rounded-inputs object-cover border border-vast-ink/20 shrink-0"
                     />
                   ) : (
-                    <div className="p-3 bg-lumen-stone border-2 border-vast-ink text-vast-ink rounded-inputs shrink-0">
+                    <div className="p-3 bg-lumen-stone border border-vast-ink/20 text-vast-ink rounded-inputs shrink-0">
                       <Building2 className="w-6 h-6" />
                     </div>
                   )}
@@ -427,7 +427,7 @@ export const AdvisorQueuePage: React.FC = () => {
             <button
               disabled={!meta.hasPreviousPage}
               onClick={() => setPage((p) => Math.max(1, p - 1))}
-              className="inline-flex items-center gap-1 px-3 py-1.5 bg-lumen-stone border-2 border-vast-ink rounded-inputs hover:bg-lavender-whisper disabled:opacity-40 transition-colors"
+              className="inline-flex items-center gap-1 px-3 py-1.5 bg-lumen-stone border border-vast-ink/20 rounded-inputs hover:bg-lavender-whisper disabled:opacity-40 transition-colors"
               aria-label="Previous page"
             >
               <ChevronLeft className="w-4 h-4" />
@@ -437,7 +437,7 @@ export const AdvisorQueuePage: React.FC = () => {
             <button
               disabled={!meta.hasNextPage}
               onClick={() => setPage((p) => p + 1)}
-              className="inline-flex items-center gap-1 px-3 py-1.5 bg-lumen-stone border-2 border-vast-ink rounded-inputs hover:bg-lavender-whisper disabled:opacity-40 transition-colors"
+              className="inline-flex items-center gap-1 px-3 py-1.5 bg-lumen-stone border border-vast-ink/20 rounded-inputs hover:bg-lavender-whisper disabled:opacity-40 transition-colors"
               aria-label="Next page"
             >
               <span>Next</span>

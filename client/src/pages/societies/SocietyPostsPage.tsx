@@ -119,14 +119,14 @@ export const SocietyPostsPage: React.FC = () => {
       <div className="flex items-center justify-between">
         <button
           onClick={() => navigate(-1)}
-          className="inline-flex items-center gap-2 px-3.5 py-2 bg-pure-white hover:bg-lumen-stone border-2 border-vast-ink text-vast-ink text-xs font-bold rounded-buttons transition-all cursor-pointer shadow-[2px_2px_0px_0px_#1B1B18]"
+          className="inline-flex items-center gap-2 px-3.5 py-2 bg-transparent hover:bg-lumen-stone border border-vast-ink/20 text-vast-ink text-xs font-bold rounded-buttons transition-all cursor-pointer shadow-[2px_2px_0px_0px_#1B1B18]"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back</span>
         </button>
       </div>
 
-      <div className="bg-pure-white p-6 rounded-cards border-2 border-vast-ink flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div className="bg-transparent p-6 rounded-cards border border-vast-ink/20 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <div className="flex items-center gap-2 text-vast-ink text-xs font-semibold uppercase tracking-wider mb-1">
             <MessageSquare className="w-4 h-4" />
@@ -154,22 +154,22 @@ export const SocietyPostsPage: React.FC = () => {
           <Loader2 className="w-8 h-8 animate-spin text-amber-500" />
         </div>
       ) : posts.length === 0 ? (
-        <div className="bg-lumen-cream p-12 rounded-cards border-2 border-vast-ink border-dashed flex flex-col items-center justify-center text-center space-y-3">
-          <div className="p-4 bg-pure-white rounded-full border border-vast-ink shadow-sm">
+        <div className="bg-lumen-cream p-12 rounded-cards border border-vast-ink/20 border-dashed flex flex-col items-center justify-center text-center space-y-3">
+          <div className="p-4 bg-transparent rounded-full border border-vast-ink shadow-sm">
             <MessageSquare className="w-8 h-8 text-fog" />
           </div>
           <h3 className="text-lg font-extrabold text-vast-ink">No posts yet</h3>
           <p className="text-sm text-fog max-w-sm">
             You haven't published any posts. Create one to keep students updated on your society's activities.
           </p>
-          <Button onClick={handleOpenCreate} variant="outline" className="mt-2 bg-pure-white">
+          <Button onClick={handleOpenCreate} variant="outline" className="mt-2 bg-transparent">
             Create First Post
           </Button>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {posts.map((post) => (
-            <div key={post.id} className="bg-pure-white p-5 rounded-cards border-2 border-vast-ink flex flex-col h-full shadow-sm hover:shadow-md transition-shadow">
+            <div key={post.id} className="bg-transparent p-5 rounded-cards border border-vast-ink/20 flex flex-col h-full shadow-sm hover:shadow-md transition-shadow">
               <div className="flex items-start justify-between mb-3 gap-2">
                 <div className="flex items-center gap-2 text-xs text-fog font-medium">
                   <Clock className="w-3.5 h-3.5" />
@@ -194,7 +194,7 @@ export const SocietyPostsPage: React.FC = () => {
               <p className="text-sm text-vast-ink whitespace-pre-wrap flex-1">{post.content}</p>
               
               {post.videoUrl && (
-                <div className="mt-4 rounded-inputs overflow-hidden border-2 border-vast-ink bg-black">
+                <div className="mt-4 rounded-inputs overflow-hidden border border-vast-ink/20 bg-black">
                   <video 
                     controls
                     src={post.videoUrl} 
@@ -204,7 +204,7 @@ export const SocietyPostsPage: React.FC = () => {
               )}
 
               {post.imageUrl && !post.videoUrl && (
-                <div className="mt-4 rounded-inputs overflow-hidden border-2 border-vast-ink">
+                <div className="mt-4 rounded-inputs overflow-hidden border border-vast-ink/20">
                   <img 
                     src={post.imageUrl} 
                     alt="Post attachment" 
@@ -229,7 +229,7 @@ export const SocietyPostsPage: React.FC = () => {
           <Button
             variant="outline"
             size="sm"
-            className="bg-pure-white"
+            className="bg-transparent"
             onClick={() => setPage(p => Math.max(1, p - 1))}
             disabled={page === 1}
           >
@@ -241,7 +241,7 @@ export const SocietyPostsPage: React.FC = () => {
           <Button
             variant="outline"
             size="sm"
-            className="bg-pure-white"
+            className="bg-transparent"
             onClick={() => setPage(p => Math.min(meta.totalPages, p + 1))}
             disabled={page === meta.totalPages}
           >
@@ -265,7 +265,7 @@ export const SocietyPostsPage: React.FC = () => {
       {/* Delete Confirmation Modal */}
       {postToDelete && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-950/40">
-          <div className="bg-pure-white w-full max-w-sm rounded-cards border-2 border-vast-ink p-6 shadow-2xl space-y-4">
+          <div className="bg-transparent w-full max-w-sm rounded-cards border border-vast-ink/20 p-6 shadow-2xl space-y-4">
             <div className="flex items-center gap-3 text-red-500">
               <AlertTriangle className="w-6 h-6 shrink-0" />
               <h2 className="text-lg font-extrabold text-vast-ink">Remove Post</h2>
@@ -274,7 +274,7 @@ export const SocietyPostsPage: React.FC = () => {
               Are you sure you want to remove this post? It will no longer be visible on the student feed.
             </p>
             <div className="flex justify-end gap-3 pt-2">
-              <Button onClick={() => setPostToDelete(null)} variant="outline" className="bg-pure-white hover:bg-lumen-stone">
+              <Button onClick={() => setPostToDelete(null)} variant="outline" className="bg-transparent hover:bg-lumen-stone">
                 Cancel
               </Button>
               <Button onClick={confirmDelete} variant="primary" className="bg-red-500 hover:bg-red-600 text-white">

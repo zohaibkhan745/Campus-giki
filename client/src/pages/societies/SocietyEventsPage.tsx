@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import {
-  Mic,
+  MicVocal,
   Search,
   Filter,
   Plus,
@@ -101,7 +101,7 @@ export const SocietyEventsPage: React.FC = () => {
       <div className="flex items-center justify-between">
         <button
           onClick={() => navigate(-1)}
-          className="inline-flex items-center gap-2 px-3.5 py-2 bg-pure-white hover:bg-lumen-stone border-2 border-vast-ink text-vast-ink text-xs font-bold rounded-buttons transition-all cursor-pointer shadow-[2px_2px_0px_0px_#1B1B18]"
+          className="inline-flex items-center gap-2 px-3.5 py-2 bg-transparent hover:bg-lumen-stone border border-vast-ink/20 text-vast-ink text-xs font-bold rounded-buttons transition-all cursor-pointer shadow-[2px_2px_0px_0px_#1B1B18]"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back</span>
@@ -109,10 +109,10 @@ export const SocietyEventsPage: React.FC = () => {
       </div>
 
       {/* Header Banner */}
-      <div className="bg-pure-white p-6 rounded-cards border-2 border-vast-ink flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shadow-sm">
+      <div className="bg-transparent p-6 rounded-cards border border-vast-ink/20 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shadow-sm">
         <div className="flex items-center gap-4">
-          <div className="p-3.5 bg-lumen-cream border-2 border-vast-ink rounded-full text-vast-ink hidden sm:block">
-            <Mic className="w-6 h-6" />
+          <div className="p-3.5 bg-lumen-cream border border-vast-ink/20 rounded-full text-vast-ink hidden sm:block">
+            <MicVocal className="w-6 h-6" />
           </div>
           <div>
             <h1 className="text-2xl font-extrabold text-vast-ink">
@@ -127,7 +127,7 @@ export const SocietyEventsPage: React.FC = () => {
         <div className="flex items-center shrink-0">
           <Link
             to="/events/create"
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-vast-ink hover:opacity-90 text-pure-white border-2 border-vast-ink rounded-inputs text-sm font-bold transition-all shadow-[4px_4px_0px_0px_#1B1B18]"
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-vast-ink hover:opacity-90 text-pure-white border border-vast-ink/20 rounded-inputs text-sm font-bold transition-all shadow-[4px_4px_0px_0px_#1B1B18]"
           >
             <Plus className="w-4 h-4" />
             <span>Create New Event</span>
@@ -136,7 +136,7 @@ export const SocietyEventsPage: React.FC = () => {
       </div>
 
       {/* Filter & Search Toolbar */}
-      <div className="bg-lumen-cream p-5 rounded-cards border-2 border-vast-ink space-y-4">
+      <div className="bg-lumen-cream p-5 rounded-cards border border-vast-ink/20 space-y-4">
         {/* Top Row: Search + Time Window Toggle */}
         <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
           
@@ -149,11 +149,11 @@ export const SocietyEventsPage: React.FC = () => {
               placeholder="Search title or venue..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-pure-white text-vast-ink text-sm rounded-inputs border-2 border-vast-ink px-3.5 py-2 pl-10 transition-all outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:border-indigo-500 font-medium"
+              className="w-full bg-transparent text-vast-ink text-sm rounded-inputs border border-vast-ink/20 px-3.5 py-2 pl-10 transition-all outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:border-indigo-500 font-medium"
             />
           </div>
 
-          <div className="flex flex-wrap items-center bg-lumen-stone p-1 rounded-inputs border-2 border-vast-ink w-full lg:w-auto gap-1">
+          <div className="flex flex-wrap items-center bg-lumen-stone p-1 rounded-inputs border border-vast-ink/20 w-full lg:w-auto gap-1">
             <button
               type="button"
               onClick={() => setTypeToggle('all')}
@@ -221,7 +221,7 @@ export const SocietyEventsPage: React.FC = () => {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-full bg-pure-white text-vast-ink font-bold text-xs rounded-inputs border-2 border-vast-ink px-3 py-2.5 pl-9 outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 cursor-pointer appearance-none"
+              className="w-full bg-transparent text-vast-ink font-bold text-xs rounded-inputs border border-vast-ink/20 px-3 py-2.5 pl-9 outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 cursor-pointer appearance-none"
             >
               <option value="">All Statuses</option>
               <option value="DRAFT">Draft</option>
@@ -235,7 +235,7 @@ export const SocietyEventsPage: React.FC = () => {
           {(searchQuery || statusFilter || typeToggle !== 'all') && (
             <button
               onClick={handleClearFilters}
-              className="flex items-center justify-center gap-1.5 px-4 py-2 text-red-500 hover:text-white bg-pure-white hover:bg-red-500 font-bold text-xs border-2 border-transparent hover:border-vast-ink rounded-inputs transition-all focus:outline-none"
+              className="flex items-center justify-center gap-1.5 px-4 py-2 text-red-500 hover:text-white bg-transparent hover:bg-red-500 font-bold text-xs border-2 border-transparent hover:border-vast-ink rounded-inputs transition-all focus:outline-none"
             >
               <FilterX className="w-3.5 h-3.5" />
               Clear Filters
@@ -252,7 +252,7 @@ export const SocietyEventsPage: React.FC = () => {
       {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="animate-pulse bg-pure-white rounded-cards border-2 border-vast-ink h-72 w-full"></div>
+            <div key={i} className="animate-pulse bg-transparent rounded-cards border border-vast-ink/20 h-72 w-full"></div>
           ))}
         </div>
       ) : (
@@ -262,7 +262,7 @@ export const SocietyEventsPage: React.FC = () => {
           </div>
           
           {filteredEvents.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-20 px-4 bg-pure-white border-2 border-vast-ink rounded-cards text-center space-y-4">
+            <div className="flex flex-col items-center justify-center py-20 px-4 bg-transparent border border-vast-ink/20 rounded-cards text-center space-y-4">
               <div className="p-4 bg-lumen-stone rounded-full">
                 <Calendar className="w-10 h-10 text-fog" />
               </div>
@@ -284,7 +284,7 @@ export const SocietyEventsPage: React.FC = () => {
               {filteredEvents.map((event: EventItem) => (
                 <div
                   key={event.id}
-                  className="bg-pure-white p-5 rounded-cards border-2 border-vast-ink hover:border-2 hover:bg-lumen-stone transition-all flex flex-col md:flex-row items-start md:items-center justify-between gap-4 group"
+                  className="bg-transparent p-5 rounded-cards border border-vast-ink/20 hover:border-2 hover:bg-lumen-stone transition-all flex flex-col md:flex-row items-start md:items-center justify-between gap-4 group"
                 >
                   <div className="flex items-start md:items-center gap-4">
                     <div className="space-y-1">
@@ -296,7 +296,7 @@ export const SocietyEventsPage: React.FC = () => {
                           {event.title}
                         </Link>
                         <span className={`text-[11px] font-semibold px-2.5 py-0.5 rounded-inputs ${
-                          event.approvalStatus === 'PUBLISHED' ? 'text-forest-ink bg-pure-white border border-forest-ink' : 
+                          event.approvalStatus === 'PUBLISHED' ? 'text-forest-ink bg-transparent border border-forest-ink' : 
                           event.approvalStatus === 'CHANGES_REQUESTED' ? 'text-ember-glow bg-red-50 border border-ember-glow' : 
                           'text-fog bg-lumen-stone border border-fog'
                         }`}>
@@ -323,7 +323,7 @@ export const SocietyEventsPage: React.FC = () => {
                   <div className="flex items-center gap-3 w-full md:w-auto justify-end pt-2 md:pt-0 border-t-2 md:border-t-0 border-vast-ink/10">
                     <Link
                       to={`/events/${event.id}/edit`}
-                      className="inline-flex items-center gap-2 px-4 py-2 bg-pure-white hover:bg-lavender-whisper border-2 border-vast-ink text-vast-ink text-xs font-bold transition-transform hover:-translate-y-0.5 shadow-[2px_2px_0px_0px_#1B1B18] rounded-inputs focus:outline-none"
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-transparent hover:bg-lavender-whisper border border-vast-ink/20 text-vast-ink text-xs font-bold transition-transform hover:-translate-y-0.5 shadow-[2px_2px_0px_0px_#1B1B18] rounded-inputs focus:outline-none"
                     >
                       <Search className="w-3.5 h-3.5" />
                       Manage Event
