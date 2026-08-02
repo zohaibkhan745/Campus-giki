@@ -7,6 +7,7 @@ import type {
   PublicSocietyItem,
   SetupSocietyPayload,
   UpdateSocietyPayload,
+  OrganizationType,
 } from '@/types/society.types';
 import type { EventItem } from '@/types/event.types';
 
@@ -24,6 +25,7 @@ export const societyService = {
     page?: number;
     limit?: number;
     category?: string;
+    type?: OrganizationType;
     search?: string;
   }): Promise<PaginatedSocietiesResponse> {
     return api.get('/societies', { params });

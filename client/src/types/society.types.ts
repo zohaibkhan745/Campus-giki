@@ -1,5 +1,7 @@
 import type { EventItem } from './event.types';
 
+export type OrganizationType = 'SOCIETY' | 'CLUB' | 'TEAM';
+
 export interface Category {
   id: string;
   name: string;
@@ -11,6 +13,7 @@ export interface Category {
 export interface PublicSocietyItem {
   id: string;
   name: string;
+  type?: OrganizationType;
   shortDescription?: string | null;
   logoUrl?: string | null;
   category?: {
@@ -37,6 +40,7 @@ export interface PaginatedSocietiesResponse {
 export interface Society {
   id: string;
   name: string;
+  type?: OrganizationType;
   shortDescription?: string | null;
   longDescription?: string | null;
   logoUrl?: string | null;
@@ -88,6 +92,7 @@ export interface SocietyDashboardResponse {
 
 export interface SetupSocietyPayload {
   name: string;
+  type?: OrganizationType;
   shortDescription: string;
   longDescription: string;
   categoryId: string;
