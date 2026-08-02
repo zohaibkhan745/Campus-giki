@@ -387,8 +387,8 @@ export const AdminEventReviewPage: React.FC = () => {
             />
 
             <Input
-              label="External Registration Link (Google Form / Ticket Link)"
-              placeholder="https://forms.gle/sampleRegistrationFormId"
+              label="Registration Form Link (Optional)"
+              placeholder="e.g. https://forms.gle/your-event-form"
               leftIcon={<ExternalLink className="w-4 h-4" />}
               disabled={true}
               error={errors.registrationLink?.message}

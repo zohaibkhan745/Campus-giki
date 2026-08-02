@@ -2,12 +2,13 @@ import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import {
-  Calendar,
+  Mic,
   Search,
   Filter,
   Plus,
   FilterX,
   ArrowLeft,
+  Calendar,
 } from 'lucide-react';
 import { eventService } from '@/services/event.service';
 import { Alert } from '@/components/ui/Alert';
@@ -111,7 +112,7 @@ export const SocietyEventsPage: React.FC = () => {
       <div className="bg-pure-white p-6 rounded-cards border-2 border-vast-ink flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shadow-sm">
         <div className="flex items-center gap-4">
           <div className="p-3.5 bg-lumen-cream border-2 border-vast-ink rounded-full text-vast-ink hidden sm:block">
-            <Calendar className="w-6 h-6" />
+            <Mic className="w-6 h-6" />
           </div>
           <div>
             <h1 className="text-2xl font-extrabold text-vast-ink">

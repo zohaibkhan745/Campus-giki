@@ -25,8 +25,7 @@ import {
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { Alert } from '@/components/ui/Alert';
-import { ImageUploader } from '@/components/common/ImageUploader';
-import { VideoUploader } from '@/components/common/VideoUploader';
+import { EventMediaUploader } from '@/components/common/EventMediaUploader';
 import type { AxiosError } from 'axios';
 
 export const CreateEventPage: React.FC = () => {
@@ -328,26 +327,21 @@ export const CreateEventPage: React.FC = () => {
 
         <div className="space-y-4">
           <h2 className="text-base font-bold text-vast-ink border-b-2 border-vast-ink pb-2">
-            Media & External Registration (Optional)
+            Media & Registration (Optional)
           </h2>
 
-          <ImageUploader
-            value={coverImageUrl || ''}
-            onChange={(url) => setValue('coverImageUrl', url, { shouldValidate: true })}
+          <EventMediaUploader
+            coverImageUrl={coverImageUrl}
+            videoUrl={videoUrl}
+            onImageChange={(url) => setValue('coverImageUrl', url, { shouldValidate: true })}
+            onVideoChange={(url) => setValue('videoUrl', url, { shouldValidate: true })}
             folder="events"
-            label="Event Cover Image (Banner)"
-          />
-
-          <VideoUploader
-            value={videoUrl || ''}
-            onChange={(url) => setValue('videoUrl', url, { shouldValidate: true })}
-            folder="events"
-            label="Event Promotional Video (Optional)"
+            disabled={createMutation.isPending}
           />
 
           <Input
-            label="External Registration Link (Google Form / Ticket Link)"
-            placeholder="https://forms.gle/sampleRegistrationFormId"
+            label="Registration Form Link (Optional)"
+            placeholder="e.g. https://forms.gle/your-event-form"
             leftIcon={<ExternalLink className="w-4 h-4" />}
             disabled={createMutation.isPending}
             error={errors.registrationLink?.message}
