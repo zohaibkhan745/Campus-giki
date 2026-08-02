@@ -22,7 +22,7 @@ export const MainNavigation: React.FC = () => {
   const navLinks = [
     { label: 'Home', path: '/', icon: Home },
     { label: 'Calendar', path: '/events', icon: CalendarDays },
-    { label: 'Clubs', path: '/societies', icon: Users },
+    { label: 'Communities', path: '/societies', icon: Users },
     ...(user ? [{ label: 'Dashboard', path: '/dashboard', icon: User }] : []),
   ];
 
@@ -58,7 +58,7 @@ export const MainNavigation: React.FC = () => {
   return (
     <>
       {/* Desktop Borderless Instagram-Inspired Left Sidebar Navigation */}
-      <aside className="hidden md:flex flex-col w-20 lg:w-60 shrink-0 sticky top-0 h-screen py-6 px-3 lg:px-5 font-figtree select-none z-40 border-r border-vast-ink/15 bg-lumen-cream transition-all">
+      <aside className="hidden md:flex flex-col w-20 lg:w-60 shrink-0 sticky top-0 h-screen py-6 px-3 lg:px-5 font-figtree select-none z-40 bg-lumen-cream transition-all">
         <div className="flex flex-col h-full justify-between overflow-y-auto">
           
           {/* Top Section: Brand & Vertical Icon Nav Stack */}
@@ -69,16 +69,15 @@ export const MainNavigation: React.FC = () => {
               className="flex items-center gap-3 px-2 py-1 rounded-full hover:bg-lumen-stone transition-all group"
               title="GIKI Campus Home"
             >
-              <div className="w-10 h-10 rounded-full bg-vast-ink text-pure-white border-2 border-vast-ink flex items-center justify-center font-extrabold text-xl shadow-sm group-hover:scale-105 transition-transform shrink-0">
-                G
-              </div>
+              <img
+                src="/giki-logo.png"
+                alt="GIKI Logo"
+                className="w-10 h-10 object-cover scale-[1.6] rounded-full group-hover:scale-[1.7] transition-transform shrink-0 mix-blend-multiply"
+              />
               <div className="text-left hidden lg:block">
                 <h1 className="font-eb-garamond font-bold text-xl text-vast-ink leading-none">
                   GIKI Campus
                 </h1>
-                <p className="text-[10px] font-extrabold text-fog uppercase tracking-widest mt-1">
-                  Student Portal
-                </p>
               </div>
             </Link>
 
@@ -118,45 +117,18 @@ export const MainNavigation: React.FC = () => {
           </div>
 
           {/* Bottom Section: Profile & Authentication */}
-          {user && (
-            <div className="pt-4 border-t border-vast-ink/15 text-left">
-              <div className="flex items-center justify-center lg:justify-between gap-2 p-2 rounded-full hover:bg-lumen-stone transition-all">
-                <div className="min-w-0 flex-1 hidden lg:block">
-                  <p className="text-xs font-extrabold text-vast-ink truncate">
-                    {user.fullName || user.email}
-                  </p>
-                  <div className="mt-1">
-                    {getRoleBadge(user.role)}
-                  </div>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Link
-                    to="/settings"
-                    className="p-2 text-vast-ink hover:bg-lumen-stone rounded-full transition-colors hidden lg:block"
-                    title="Settings"
-                  >
-                    <Settings className="w-4 h-4" />
-                  </Link>
-                  <button
-                    onClick={logout}
-                    className="p-2 text-vast-ink hover:bg-red-50 hover:text-red-500 rounded-full transition-colors shrink-0"
-                    title="Log Out"
-                  >
-                    <LogOut className="w-5 h-5" />
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
+
         </div>
       </aside>
 
       {/* Mobile Top Navigation Header */}
       <div className="md:hidden sticky top-0 z-40 bg-lumen-cream border-b-2 border-vast-ink px-4 py-3 font-figtree shadow-sm flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-inputs bg-vast-ink text-pure-white border border-vast-ink flex items-center justify-center font-extrabold text-base">
-            G
-          </div>
+          <img
+            src="/giki-logo.png"
+            alt="GIKI Logo"
+            className="w-8 h-8 object-cover scale-[1.6] rounded-full shrink-0 mix-blend-multiply"
+          />
           <span className="font-eb-garamond font-bold text-lg text-vast-ink">
             GIKI Campus
           </span>

@@ -4,9 +4,9 @@ import { MainNavigation } from '@/components/navigation/MainNavigation';
 
 export const RootLayout: React.FC = () => {
   return (
-    <div className="min-h-screen bg-lumen-cream text-vast-ink flex flex-col font-figtree">
+    <div className="min-h-screen bg-lumen-cream text-vast-ink flex flex-col md:flex-row font-figtree">
       <MainNavigation />
-      <main className="flex-1 pb-24 md:pb-0">
+      <main className="flex-1 min-w-0 pb-24 md:pb-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full pt-4 md:pt-6">
         <Outlet />
       </main>
     </div>

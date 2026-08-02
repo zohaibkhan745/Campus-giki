@@ -46,8 +46,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             className={cn(
               'w-full text-sm transition-all outline-none',
               variant === 'default' 
-                ? 'bg-pure-white text-vast-ink placeholder:text-fog rounded-inputs border px-3.5 py-2.5 border-2 border-vast-ink focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20'
-                : 'bg-pure-white text-vast-ink placeholder:text-fog rounded-inputs border-2 px-3.5 py-2.5 border-vast-ink focus:ring-0',
+                ? 'bg-transparent text-vast-ink placeholder:text-fog rounded-inputs border px-3.5 py-2.5 border border-vast-ink/20 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20'
+                : 'bg-transparent text-vast-ink placeholder:text-fog rounded-inputs border border-vast-ink/20 px-3.5 py-2.5 focus:ring-0',
               leftIcon && 'pl-10',
               rightIcon && 'pr-10',
               error && variant === 'default' && 'border-red-500/80 focus:border-red-500 focus:ring-red-500/20',
