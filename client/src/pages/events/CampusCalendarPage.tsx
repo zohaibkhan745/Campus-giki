@@ -3,8 +3,8 @@ import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
-import { useQuery } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
+import { useQuery, keepPreviousData } from '@tanstack/react-query';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Calendar as CalendarIcon, Tag, Loader2, Clock, MapPin, ExternalLink, Building2 } from 'lucide-react';
 import { eventService } from '@/services/event.service';
 import { societyService } from '@/services/society.service';
@@ -14,7 +14,23 @@ export const CampusCalendarPage: React.FC = () => {
   const navigate = useNavigate();
   const [dateRange, setDateRange] = useState<{ from?: string; to?: string }>({});
   const [selectedSociety, setSelectedSociety] = useState<string>('');
-  const [listFilter, setListFilter] = useState<'today' | 'week' | 'month' | 'upcoming'>('upcoming');
+  const [searchParams] = useSearchParams();
+  const viewParam = searchParams.get('view') as 'today' | 'week' | 'month' | 'upcoming' | null;
+  const [listFilter, setListFilter] = useState<'today' | 'week' | 'month' | 'upcoming'>(viewParam || 'upcoming');
+
+  // Auto-scroll to events list when navigated with ?view= param or hash
+  useEffect(() => {
+    if (viewParam) {
+      setTimeout(() => {
+        document.getElementById('events-list')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 300);
+    } else if (window.location.hash) {
+      const id = window.location.hash.replace('#', '');
+      setTimeout(() => {
+        document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 300);
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Query all active societies for the filter dropdown
   const { data: societiesData } = useQuery({
@@ -28,6 +44,7 @@ export const CampusCalendarPage: React.FC = () => {
     queryKey: ['publicCalendarEvents', dateRange.from, dateRange.to, selectedSociety],
     queryFn: () => eventService.getAllPublicEvents({ from: dateRange.from, to: dateRange.to, societyId: selectedSociety || undefined, limit: 150 }),
     enabled: !!dateRange.from && !!dateRange.to,
+    placeholderData: keepPreviousData,
   });
   
   const calendarEventsList = calendarEventsData?.items || [];
@@ -60,6 +77,7 @@ export const CampusCalendarPage: React.FC = () => {
   const { data: listEventsData, isLoading: isListLoading } = useQuery({
     queryKey: ['publicListEvents', listFilter, selectedSociety],
     queryFn: () => eventService.getAllPublicEvents({ from: filterDates.from, to: filterDates.to, societyId: selectedSociety || undefined, limit: 150 }),
+    placeholderData: keepPreviousData,
   });
   
   const eventsList = listEventsData?.items || [];
@@ -177,7 +195,7 @@ export const CampusCalendarPage: React.FC = () => {
         </div>
 
         {/* Calendar Container */}
-        <div className="bg-lumen-cream border-2 border-vast-ink rounded-cards sm:rounded-[32px] overflow-hidden p-3 sm:p-6 text-vast-ink shadow-none">
+        <div id="calendar-view" className="bg-lumen-cream border-2 border-vast-ink rounded-cards sm:rounded-[32px] overflow-hidden p-3 sm:p-6 text-vast-ink shadow-none">
             <style>{`
               .fc {
                 table-layout: fixed !important;
@@ -305,7 +323,7 @@ export const CampusCalendarPage: React.FC = () => {
         </div>
 
         {/* Detailed Events List Below Calendar */}
-        <div className="pt-8 pb-12">
+        <div id="events-list" className="pt-8 pb-12">
           
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
             <h2 className="font-eb-garamond text-2xl font-bold text-vast-ink flex items-center gap-2">

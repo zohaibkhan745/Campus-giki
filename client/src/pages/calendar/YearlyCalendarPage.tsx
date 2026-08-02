@@ -175,21 +175,21 @@ export const YearlyCalendarPage: React.FC = () => {
     switch (status) {
       case 'APPROVED':
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-pure-white border border-forest-ink border border-emerald-500/20 text-forest-ink rounded-inputs text-xs font-semibold">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-transparent border border-forest-ink border border-emerald-500/20 text-forest-ink rounded-inputs text-xs font-semibold">
             <CheckCircle2 className="w-3.5 h-3.5" />
             <span>APPROVED</span>
           </span>
         );
       case 'PENDING':
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-pure-white border border-ember-glow border border-amber-500/20 text-ember-glow rounded-inputs text-xs font-semibold">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-transparent border border-ember-glow border border-amber-500/20 text-ember-glow rounded-inputs text-xs font-semibold">
             <Clock className="w-3.5 h-3.5" />
             <span>UNDER REVIEW (PENDING)</span>
           </span>
         );
       case 'CHANGES_REQUESTED':
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-pure-white border border-vast-ink border border-red-500/20 text-red-400 rounded-inputs text-xs font-semibold">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-transparent border border-vast-ink border border-red-500/20 text-red-400 rounded-inputs text-xs font-semibold">
             <AlertCircle className="w-3.5 h-3.5" />
             <span>CHANGES REQUESTED</span>
           </span>
@@ -210,7 +210,7 @@ export const YearlyCalendarPage: React.FC = () => {
       <div className="flex items-center justify-between">
         <button
           onClick={() => navigate(-1)}
-          className="inline-flex items-center gap-2 px-3.5 py-2 bg-pure-white hover:bg-lumen-stone border-2 border-vast-ink text-vast-ink text-xs font-bold rounded-buttons transition-all cursor-pointer shadow-[2px_2px_0px_0px_#1B1B18]"
+          className="inline-flex items-center gap-2 px-3.5 py-2 bg-transparent hover:bg-lumen-stone border border-vast-ink/20 text-vast-ink text-xs font-bold rounded-buttons transition-all cursor-pointer shadow-[2px_2px_0px_0px_#1B1B18]"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back</span>
@@ -219,7 +219,7 @@ export const YearlyCalendarPage: React.FC = () => {
         {existingPlan && renderStatusBadge(existingPlan.status)}
       </div>
 
-      <div className="space-y-1 bg-pure-white p-6 rounded-cards border-2 border-vast-ink flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div className="space-y-1 bg-transparent p-6 rounded-cards border border-vast-ink/20 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <div className="flex items-center gap-2 text-vast-ink text-xs font-semibold uppercase tracking-wider mb-1">
             <CalendarDays className="w-4 h-4" />
@@ -234,7 +234,7 @@ export const YearlyCalendarPage: React.FC = () => {
         </div>
 
         {isReadOnly && (
-          <div className="flex items-center gap-2 px-3 py-1.5 bg-lumen-stone/80 rounded-inputs border-2 border-vast-ink text-vast-ink font-medium text-xs font-semibold">
+          <div className="flex items-center gap-2 px-3 py-1.5 bg-lumen-stone/80 rounded-inputs border border-vast-ink/20 text-vast-ink font-medium text-xs font-semibold">
             <Lock className="w-3.5 h-3.5 text-ember-glow" />
             <span>Read-Only Mode</span>
           </div>
@@ -246,7 +246,7 @@ export const YearlyCalendarPage: React.FC = () => {
 
       {/* Advisor Feedback Callout Box if Changes Requested or Comments Available */}
       {existingPlan?.advisorComments && (
-        <div className="bg-lumen-cream p-5 rounded-cards border-2 border-vast-ink shadow-sm space-y-2">
+        <div className="bg-lumen-cream p-5 rounded-cards border border-vast-ink/20 shadow-sm space-y-2">
           <FeedbackHistory rawComments={existingPlan.advisorComments} />
           {isChangesRequested && (
             <div className="p-3 bg-ember-glow text-pure-white rounded-inputs border border-amber-600/30 text-xs font-semibold shadow-sm animate-pulse flex items-center gap-2 mt-4">
@@ -261,7 +261,7 @@ export const YearlyCalendarPage: React.FC = () => {
 
       <form className="space-y-6" noValidate>
         {/* Planned Events Dynamic Table Section */}
-        <div className="bg-lumen-cream p-6 rounded-cards border-2 border-vast-ink space-y-4">
+        <div className="bg-lumen-cream p-6 rounded-cards border border-vast-ink/20 space-y-4">
           <div className="flex items-center justify-between border-b-2 border-vast-ink pb-3">
             <h2 className="text-base font-bold text-vast-ink">
               Planned Calendar Events ({fields.length})
@@ -287,7 +287,7 @@ export const YearlyCalendarPage: React.FC = () => {
             {fields.map((field, index) => (
               <div
                 key={field.id}
-                className="bg-pure-white p-4 rounded-inputs border-2 border-vast-ink space-y-3 relative group"
+                className="bg-transparent p-4 rounded-inputs border border-vast-ink/20 space-y-3 relative group"
               >
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   <Input
@@ -339,7 +339,7 @@ export const YearlyCalendarPage: React.FC = () => {
                       <textarea
                         disabled={isReadOnly || isSaving}
                         rows={3}
-                        className="w-full px-4 py-2 bg-pure-white border-2 border-vast-ink rounded-inputs shadow-inputs focus:outline-none focus:ring-2 focus:ring-vast-ink focus:border-vast-ink transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full px-4 py-2 bg-transparent border border-vast-ink/20 rounded-inputs shadow-inputs focus:outline-none focus:ring-2 focus:ring-vast-ink focus:border-vast-ink transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                         placeholder="Event description..."
                         {...register(`events.${index}.description`)}
                       />
@@ -354,7 +354,7 @@ export const YearlyCalendarPage: React.FC = () => {
                       <textarea
                         disabled={isReadOnly || isSaving}
                         rows={2}
-                        className="w-full px-4 py-2 bg-pure-white border-2 border-vast-ink rounded-inputs shadow-inputs focus:outline-none focus:ring-2 focus-visible:ring-2 focus-visible:ring-indigo-500 font-medium text-xs text-vast-ink transition-all disabled:opacity-50"
+                        className="w-full px-4 py-2 bg-transparent border border-vast-ink/20 rounded-inputs shadow-inputs focus:outline-none focus:ring-2 focus-visible:ring-2 focus-visible:ring-indigo-500 font-medium text-xs text-vast-ink transition-all disabled:opacity-50"
                         placeholder="e.g. Laptops required, formal dress code, registration deadline..."
                         {...register(`events.${index}.societyRules`)}
                       />
