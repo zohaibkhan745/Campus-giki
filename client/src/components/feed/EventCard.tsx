@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Calendar, MapPin, ArrowRight, Building2 } from 'lucide-react';
+import { Calendar, MapPin, ArrowRight, Building2, X } from 'lucide-react';
 import type { EventFeedItem } from '@/types/feed.types';
 
 interface EventCardProps {
@@ -8,8 +8,27 @@ interface EventCardProps {
   allowExpand?: boolean;
 }
 
+const getRelativeTime = (dateInput: string | Date): string => {
+  const now = new Date();
+  const date = new Date(dateInput);
+  const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+  if (isNaN(date.getTime()) || diffInSeconds < 30) return 'Just now';
+  const diffInMinutes = Math.floor(diffInSeconds / 60);
+  if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
+  const diffInHours = Math.floor(diffInMinutes / 60);
+  if (diffInHours < 24) return `${diffInHours}h ago`;
+  const diffInDays = Math.floor(diffInHours / 24);
+  if (diffInDays < 7) return `${diffInDays}d ago`;
+  const diffInWeeks = Math.floor(diffInDays / 7);
+  if (diffInWeeks < 4) return `${diffInWeeks}w ago`;
+
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+};
+
 export const EventCard: React.FC<EventCardProps> = ({ item, allowExpand = false }) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const isLongContent = allowExpand && item.description && item.description.length > 400;
 
   const formattedDate = new Date(item.eventDate).toLocaleDateString('en-US', {
@@ -43,6 +62,9 @@ export const EventCard: React.FC<EventCardProps> = ({ item, allowExpand = false 
             {item.society.name}
           </span>
         </Link>
+        <div className="text-right text-[13px] font-medium text-fog">
+          {getRelativeTime(item.createdAt)}
+        </div>
       </div>
 
       {/* Event Content */}
@@ -83,15 +105,26 @@ export const EventCard: React.FC<EventCardProps> = ({ item, allowExpand = false 
 
       {/* Optional Event Image */}
       {item.coverImageUrl && (
-        <div className="w-full aspect-[16/9] overflow-hidden rounded-[24px]">
+        <div 
+          className="w-full aspect-[16/9] overflow-hidden rounded-[24px] cursor-pointer group relative"
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsImageModalOpen(true);
+          }}
+        >
           <img
             src={item.coverImageUrl}
             alt={item.title}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
             onError={(e) => {
               (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=1200&auto=format&fit=crop&q=80';
             }}
           />
+          <div className="absolute inset-0 bg-vast-ink/0 group-hover:bg-vast-ink/20 transition-colors flex items-center justify-center">
+            <span className="opacity-0 group-hover:opacity-100 bg-vast-ink text-pure-white text-xs font-bold px-3 py-1.5 rounded-full shadow-md transition-opacity">
+              View Full Image
+            </span>
+          </div>
         </div>
       )}
 
@@ -105,6 +138,36 @@ export const EventCard: React.FC<EventCardProps> = ({ item, allowExpand = false 
           <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
         </Link>
       </div>
+      {/* Image Modal */}
+      {isImageModalOpen && item.coverImageUrl && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center bg-charcoal/90 p-4 backdrop-blur-sm cursor-default" 
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsImageModalOpen(false);
+          }}
+        >
+          <div className="relative max-w-5xl w-full max-h-screen flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
+            <button 
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsImageModalOpen(false);
+              }}
+              className="absolute -top-12 right-0 p-2 text-pure-white hover:text-red-400 transition-colors"
+            >
+              <X className="w-8 h-8" />
+            </button>
+            <img 
+              src={item.coverImageUrl} 
+              alt={item.title} 
+              className="w-auto h-auto max-w-full max-h-[85vh] object-contain rounded-cards shadow-2xl border-2 border-pure-white/20"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=1200&auto=format&fit=crop&q=80';
+              }}
+            />
+          </div>
+        </div>
+      )}
     </article>
   );
 };

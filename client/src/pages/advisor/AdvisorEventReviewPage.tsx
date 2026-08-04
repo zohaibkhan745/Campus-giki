@@ -15,6 +15,8 @@ import {
   Loader2,
   CheckCircle2,
   AlertCircle,
+  X,
+  ShieldCheck,
 } from 'lucide-react';
 import { eventService } from '@/services/event.service';
 import { advisorService } from '@/services/advisor.service';
@@ -33,6 +35,7 @@ export const AdvisorEventReviewPage: React.FC = () => {
   const queryClient = useQueryClient();
   const [serverError, setServerError] = useState<string | null>(null);
   const [advisorComment, setAdvisorComment] = useState('');
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
 
   // Query existing event data
   const {
@@ -160,7 +163,7 @@ export const AdvisorEventReviewPage: React.FC = () => {
       <div className="space-y-1 bg-transparent p-6 rounded-cards border border-vast-ink/20">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-extrabold text-vast-ink">
-            Review Event: {eventData.title}
+            {eventData.approvalStatus === 'PENDING_ADVISOR' ? 'Review Event' : 'Event Details'}: {eventData.title}
           </h1>
           <span className="px-3 py-1 bg-lumen-stone text-vast-ink font-medium rounded-inputs text-xs font-semibold">
             {eventData.approvalStatus}
@@ -174,6 +177,18 @@ export const AdvisorEventReviewPage: React.FC = () => {
       {serverError && <Alert variant="error" message={serverError} />}
       {updateMutation.isSuccess && (
         <Alert variant="success" message="Event details updated successfully." />
+      )}
+
+      {eventData.rules && (
+        <div className="p-4 bg-amber-50 border-2 border-amber-500/40 rounded-cards space-y-1">
+          <div className="flex items-center gap-2 text-amber-900 font-extrabold text-xs uppercase tracking-wider">
+            <ShieldCheck className="w-4 h-4 text-amber-600 shrink-0" />
+            <span>Official DSA Directives &amp; Event Rules</span>
+          </div>
+          <p className="text-xs text-amber-950 font-semibold whitespace-pre-line leading-relaxed pl-6">
+            {eventData.rules}
+          </p>
+        </div>
       )}
 
       <div className="bg-lumen-cream p-6 md:p-8 rounded-cards border border-vast-ink/20 space-y-8">
@@ -372,12 +387,20 @@ export const AdvisorEventReviewPage: React.FC = () => {
             <div className="space-y-2">
               <label className="block text-sm font-bold text-vast-ink">Cover Image</label>
               {eventData?.coverImageUrl ? (
-                <div className="relative rounded-cards overflow-hidden border-2 border-vast-ink bg-lumen-stone shadow-sm w-full max-h-64 flex items-center justify-center">
+                <div 
+                  className="relative rounded-cards overflow-hidden border-2 border-vast-ink bg-lumen-stone shadow-sm w-full max-h-64 flex items-center justify-center cursor-pointer group"
+                  onClick={() => setIsImageModalOpen(true)}
+                >
                   <img
                     src={eventData.coverImageUrl}
                     alt="Event Cover"
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                   />
+                  <div className="absolute inset-0 bg-vast-ink/0 group-hover:bg-vast-ink/20 transition-colors flex items-center justify-center">
+                    <span className="opacity-0 group-hover:opacity-100 bg-vast-ink text-pure-white text-xs font-bold px-3 py-1.5 rounded-full shadow-md transition-opacity">
+                      View Full Image
+                    </span>
+                  </div>
                 </div>
               ) : (
                 <div className="text-sm text-fog p-4 bg-lumen-stone/50 border border-vast-ink/20 rounded-inputs text-center">
@@ -398,6 +421,25 @@ export const AdvisorEventReviewPage: React.FC = () => {
         </div>
       </form>
       </div>
+
+      {/* Image Modal */}
+      {isImageModalOpen && eventData?.coverImageUrl && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-charcoal/80 p-4 backdrop-blur-sm" onClick={() => setIsImageModalOpen(false)}>
+          <div className="relative max-w-5xl w-full max-h-screen flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
+            <button 
+              onClick={() => setIsImageModalOpen(false)}
+              className="absolute -top-12 right-0 p-2 text-pure-white hover:text-red-400 transition-colors"
+            >
+              <X className="w-8 h-8" />
+            </button>
+            <img 
+              src={eventData.coverImageUrl} 
+              alt="Event Cover Full" 
+              className="w-auto h-auto max-w-full max-h-[85vh] object-contain rounded-cards shadow-2xl border-2 border-pure-white/20"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

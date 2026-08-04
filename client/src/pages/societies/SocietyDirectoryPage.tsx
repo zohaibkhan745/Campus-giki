@@ -280,7 +280,7 @@ export const SocietyDirectoryPage: React.FC = () => {
 
               <div className="pt-6 mt-4 border-t border-vast-ink/20">
                 <span className="inline-flex items-center gap-2 text-xs font-bold text-vast-ink group-hover:text-ember-glow transition-colors">
-                  <span>View Organization Profile</span>
+                  <span>View Profile</span>
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </span>
               </div>

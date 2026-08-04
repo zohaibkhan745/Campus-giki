@@ -987,7 +987,7 @@ export class AdminService {
     });
   }
 
-  async updateEventStatus(eventId: string, dto: { status: string; comments?: string }) {
+  async updateEventStatus(eventId: string, dto: { status: string; comments?: string; rules?: string }) {
     const event = await this.prisma.event.findUnique({ where: { id: eventId } });
     if (!event) {
       throw new NotFoundException('Event not found');
@@ -996,6 +996,7 @@ export class AdminService {
     const data: any = {
       approvalStatus: dto.status as any,
       dsaComments: dto.comments || null,
+      rules: dto.rules !== undefined ? dto.rules : undefined,
       isPublished: dto.status === 'PUBLISHED' || dto.status === 'APPROVED',
       ...(dto.status === 'CHANGES_REQUESTED' ? { lastChangeRequestBy: 'DSA_ADMIN' } : {}),
       ...(dto.status === 'PUBLISHED' || dto.status === 'APPROVED' ? { lastChangeRequestBy: null } : {}),

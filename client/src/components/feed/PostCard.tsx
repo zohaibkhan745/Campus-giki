@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Building2 } from 'lucide-react';
+import { Building2, X } from 'lucide-react';
 import type { PostFeedItem } from '@/types/feed.types';
 
 interface PostCardProps {
@@ -27,6 +27,7 @@ const getRelativeTime = (dateInput: string | Date): string => {
 
 export const PostCard: React.FC<PostCardProps> = ({ item }) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const isLongContent = item.content && item.content.length > 400;
 
   return (
@@ -103,11 +104,17 @@ export const PostCard: React.FC<PostCardProps> = ({ item }) => {
 
       {/* Optional Post Image */}
       {item.imageUrl && !item.videoUrl && (
-        <div className="w-full aspect-[16/9] overflow-hidden rounded-[24px] mt-4">
+        <div 
+          className="w-full aspect-[16/9] overflow-hidden rounded-[24px] mt-4 cursor-pointer group relative"
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsImageModalOpen(true);
+          }}
+        >
           <img
             src={item.imageUrl}
             alt="Post Attachment"
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
             onError={(e) => {
               e.currentTarget.style.display = 'none';
               if (e.currentTarget.parentElement) {
@@ -115,6 +122,41 @@ export const PostCard: React.FC<PostCardProps> = ({ item }) => {
               }
             }}
           />
+          <div className="absolute inset-0 bg-vast-ink/0 group-hover:bg-vast-ink/20 transition-colors flex items-center justify-center">
+            <span className="opacity-0 group-hover:opacity-100 bg-vast-ink text-pure-white text-xs font-bold px-3 py-1.5 rounded-full shadow-md transition-opacity">
+              View Full Image
+            </span>
+          </div>
+        </div>
+      )}
+      {/* Image Modal */}
+      {isImageModalOpen && item.imageUrl && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center bg-charcoal/90 p-4 backdrop-blur-sm cursor-default" 
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsImageModalOpen(false);
+          }}
+        >
+          <div className="relative max-w-5xl w-full max-h-screen flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
+            <button 
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsImageModalOpen(false);
+              }}
+              className="absolute -top-12 right-0 p-2 text-pure-white hover:text-red-400 transition-colors"
+            >
+              <X className="w-8 h-8" />
+            </button>
+            <img 
+              src={item.imageUrl} 
+              alt="Post Attachment Full" 
+              className="w-auto h-auto max-w-full max-h-[85vh] object-contain rounded-cards shadow-2xl border-2 border-pure-white/20"
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+              }}
+            />
+          </div>
         </div>
       )}
     </article>

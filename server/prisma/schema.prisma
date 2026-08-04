@@ -148,6 +148,7 @@ model Event {
   inChargeName     String?
   inChargeRegNum   String?
   inChargeContact  String?
+  rules            String?             @db.Text
   
   isPublished      Boolean             @default(true)
   approvalStatus   EventApprovalStatus @default(PUBLISHED)

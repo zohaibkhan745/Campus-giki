@@ -53,6 +53,11 @@ export const EventDetailPage: React.FC = () => {
   }
 
   const isPast = new Date(eventItem.eventDate) < new Date(new Date().setHours(0, 0, 0, 0));
+  
+  const canViewRules =
+    user?.role === 'DSA_ADMIN' ||
+    user?.role === 'ADVISOR' ||
+    (user?.role === 'SOCIETY' && user.society?.id === eventItem.societyId);
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 text-left pt-10 sm:pt-14 pb-8 px-4">
@@ -171,6 +176,21 @@ export const EventDetailPage: React.FC = () => {
             {eventItem.description}
           </p>
         </div>
+
+        {/* 6. Official DSA Rules (Visible to Authorized Only) */}
+        {canViewRules && eventItem.rules && (
+          <div className="space-y-3 pt-2">
+            <div className="p-4 bg-amber-50 border-2 border-amber-500/40 rounded-cards space-y-1">
+              <div className="flex items-center gap-2 text-amber-900 font-extrabold text-xs uppercase tracking-wider">
+                <ShieldCheck className="w-4 h-4 text-amber-600 shrink-0" />
+                <span>Official DSA Directives &amp; Event Rules</span>
+              </div>
+              <p className="text-xs text-amber-950 font-semibold whitespace-pre-line leading-relaxed pl-6">
+                {eventItem.rules}
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* 7. Hosting Society Information Card */}
         {eventItem.society && (

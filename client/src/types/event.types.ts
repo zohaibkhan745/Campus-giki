@@ -13,6 +13,7 @@ export interface EventItem {
   inChargeName?: string | null;
   inChargeRegNum?: string | null;
   inChargeContact?: string | null;
+  rules?: string | null;
   isPublished: boolean;
   approvalStatus?: 'DRAFT' | 'PUBLISHED' | 'PENDING_ADVISOR' | 'PENDING_ADMIN' | 'CHANGES_REQUESTED' | 'APPROVED';
   advisorComments?: string | null;

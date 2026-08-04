@@ -15,6 +15,8 @@ import {
   Loader2,
   CheckCircle2,
   AlertCircle,
+  X,
+  ShieldCheck,
 } from 'lucide-react';
 import { eventService } from '@/services/event.service';
 import { adminService } from '@/services/admin.service';
@@ -33,6 +35,8 @@ export const AdminEventReviewPage: React.FC = () => {
   const queryClient = useQueryClient();
   const [serverError, setServerError] = useState<string | null>(null);
   const [dsaComment, setDsaComment] = useState('');
+  const [rules, setRules] = useState('');
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
 
   // Query existing event data
   const {
@@ -62,6 +66,7 @@ export const AdminEventReviewPage: React.FC = () => {
         : '';
 
       setDsaComment(eventData.dsaComments || '');
+      setRules(eventData.rules || '');
 
       reset({
         title: eventData.title,
@@ -98,8 +103,8 @@ export const AdminEventReviewPage: React.FC = () => {
   });
 
   const updateEventStatusMutation = useMutation({
-    mutationFn: ({ status }: { status: string }) =>
-      adminService.updateEventStatus(id!, { status, comments: dsaComment }),
+    mutationFn: (data: { status: 'PUBLISHED' | 'CHANGES_REQUESTED' }) =>
+      adminService.updateEventStatus(id!, { status: data.status, comments: dsaComment.trim() || undefined, rules: rules.trim() || undefined }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['event', id] });
       queryClient.invalidateQueries({ queryKey: ['adminDashboard'] });
@@ -160,7 +165,7 @@ export const AdminEventReviewPage: React.FC = () => {
       <div className="space-y-1 bg-transparent p-6 rounded-cards border border-vast-ink/20">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-extrabold text-vast-ink">
-            Review Event: {eventData.title}
+            {eventData.approvalStatus === 'PENDING_ADMIN' ? 'Review Event' : 'Event Details'}: {eventData.title}
           </h1>
           <span className="px-3 py-1 bg-lumen-stone text-vast-ink font-medium rounded-inputs text-xs font-semibold">
             {eventData.approvalStatus}
@@ -200,6 +205,21 @@ export const AdminEventReviewPage: React.FC = () => {
             value={dsaComment}
             onChange={(e) => setDsaComment(e.target.value)}
             placeholder="Provide feedback or reasons for requesting changes..."
+            disabled={updateEventStatusMutation.isPending}
+            className="w-full bg-transparent text-vast-ink placeholder:text-fog text-sm rounded-inputs border border-vast-ink/20 px-3.5 py-2.5 transition-all outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50 resize-y"
+          />
+        </div>
+
+        <div className="space-y-1.5 text-left pt-2">
+          <label className="block text-xs font-extrabold text-vast-ink uppercase tracking-wider flex items-center gap-1.5">
+            <ShieldCheck className="w-4 h-4 text-forest-ink" />
+            <span>Official DSA Directives &amp; Event Rules</span>
+          </label>
+          <textarea
+            rows={3}
+            value={rules}
+            onChange={(e) => setRules(e.target.value)}
+            placeholder="Add official DSA security guidelines, time curfews, speaker rules, or administrative directives..."
             disabled={updateEventStatusMutation.isPending}
             className="w-full bg-transparent text-vast-ink placeholder:text-fog text-sm rounded-inputs border border-vast-ink/20 px-3.5 py-2.5 transition-all outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50 resize-y"
           />
@@ -380,12 +400,20 @@ export const AdminEventReviewPage: React.FC = () => {
             <div className="space-y-2">
               <label className="block text-sm font-bold text-vast-ink">Cover Image</label>
               {eventData?.coverImageUrl ? (
-                <div className="relative rounded-cards overflow-hidden border border-vast-ink/20 bg-lumen-stone shadow-sm w-full max-h-64 flex items-center justify-center">
+                <div 
+                  className="relative rounded-cards overflow-hidden border border-vast-ink/20 bg-lumen-stone shadow-sm w-full max-h-64 flex items-center justify-center cursor-pointer group"
+                  onClick={() => setIsImageModalOpen(true)}
+                >
                   <img
                     src={eventData.coverImageUrl}
                     alt="Event Cover"
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                   />
+                  <div className="absolute inset-0 bg-vast-ink/0 group-hover:bg-vast-ink/20 transition-colors flex items-center justify-center">
+                    <span className="opacity-0 group-hover:opacity-100 bg-vast-ink text-pure-white text-xs font-bold px-3 py-1.5 rounded-full shadow-md transition-opacity">
+                      View Full Image
+                    </span>
+                  </div>
                 </div>
               ) : (
                 <div className="text-sm text-fog p-4 bg-lumen-stone/50 border border-vast-ink/20 rounded-inputs text-center">
@@ -406,6 +434,25 @@ export const AdminEventReviewPage: React.FC = () => {
         </div>
       </form>
       </div>
+
+      {/* Image Modal */}
+      {isImageModalOpen && eventData?.coverImageUrl && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-charcoal/80 p-4 backdrop-blur-sm" onClick={() => setIsImageModalOpen(false)}>
+          <div className="relative max-w-5xl w-full max-h-screen flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
+            <button 
+              onClick={() => setIsImageModalOpen(false)}
+              className="absolute -top-12 right-0 p-2 text-pure-white hover:text-red-400 transition-colors"
+            >
+              <X className="w-8 h-8" />
+            </button>
+            <img 
+              src={eventData.coverImageUrl} 
+              alt="Event Cover Full" 
+              className="w-auto h-auto max-w-full max-h-[85vh] object-contain rounded-cards shadow-2xl border-2 border-pure-white/20"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

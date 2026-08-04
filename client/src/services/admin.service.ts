@@ -330,7 +330,7 @@ export const adminService = {
     return api.patch(`/admin/yearly-plans/${id}`, payload);
   },
 
-  async updateEventStatus(id: string, payload: { status: string; comments?: string }) {
+  async updateEventStatus(id: string, payload: { status: string; comments?: string; rules?: string }) {
     return api.patch(`/admin/events/${id}/status`, payload);
   },
 };

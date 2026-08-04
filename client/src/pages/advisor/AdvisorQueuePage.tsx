@@ -352,7 +352,7 @@ export const AdvisorQueuePage: React.FC = () => {
                   {renderStatusBadge(plan.status as any)}
 
                   <span className="inline-flex items-center gap-1 text-xs font-semibold text-ember-glow group-hover:translate-x-1 transition-transform">
-                    <span>Review Plan</span>
+                    <span>{plan.status === 'PENDING' ? 'Review Plan' : 'View Details'}</span>
                     <ArrowRight className="w-4 h-4" />
                   </span>
                 </div>
@@ -406,7 +406,7 @@ export const AdvisorQueuePage: React.FC = () => {
                   {renderStatusBadge(event.approvalStatus)}
 
                   <span className="inline-flex items-center gap-1 text-xs font-semibold text-ember-glow group-hover:translate-x-1 transition-transform">
-                    <span>Review Event</span>
+                    <span>{event.approvalStatus === 'PENDING_ADVISOR' ? 'Review Event' : 'View Details'}</span>
                     <ArrowRight className="w-4 h-4" />
                   </span>
                 </div>
