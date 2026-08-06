@@ -34,6 +34,7 @@ export class FeedService {
         orderBy: { createdAt: 'desc' },
       }),
       this.prisma.post.findMany({
+        where: { isPublished: true },
         include: {
           author: {
             select: {

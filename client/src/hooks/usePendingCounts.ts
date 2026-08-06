@@ -42,20 +42,28 @@ export const usePendingCounts = () => {
     staleTime: 60000,
   });
 
+  const { data: advisorPosts } = useQuery({
+    queryKey: ['advisorPosts', 'PENDING_ADVISOR'],
+    queryFn: () => advisorService.getMySocietyPosts({ status: 'PENDING_ADVISOR', limit: 1 }),
+    enabled: isAdvisor,
+    staleTime: 60000,
+  });
+
   let totalPending = 0;
   let pendingEventsCount = 0;
   let pendingPlansCount = 0;
+  let pendingPostsCount = 0;
 
   if (isAdmin && adminDashboardData) {
     pendingEventsCount = adminDashboardData.pendingEventsPreview?.length || 0;
-    // Admins don't currently have a pending plans preview in getDashboardData
     totalPending = pendingEventsCount;
   }
 
   if (isAdvisor) {
     pendingEventsCount = advisorEvents?.meta?.total || 0;
     pendingPlansCount = advisorPlans?.meta?.total || 0;
-    totalPending = pendingEventsCount + pendingPlansCount;
+    pendingPostsCount = advisorPosts?.meta?.total || 0;
+    totalPending = pendingEventsCount + pendingPlansCount + pendingPostsCount;
   }
 
   if (isSociety && societyDashboardData) {
@@ -67,5 +75,5 @@ export const usePendingCounts = () => {
     totalPending = changesRequestedEvents + changesRequestedPlan;
   }
 
-  return { totalPending, pendingEventsCount, pendingPlansCount };
+  return { totalPending, pendingEventsCount, pendingPlansCount, pendingPostsCount };
 };

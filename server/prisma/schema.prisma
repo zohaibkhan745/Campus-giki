@@ -37,6 +37,12 @@ enum EventApprovalStatus {
   APPROVED
 }
 
+enum PostApprovalStatus {
+  PENDING_ADVISOR
+  APPROVED
+  REJECTED
+}
+
 enum OrganizationType {
   SOCIETY
   CLUB
@@ -98,8 +104,8 @@ model Advisor {
 model Society {
   id               String       @id @default(uuid())
   name             String       @unique
-  shortDescription String?      @db.Text
-  longDescription  String?      @db.Text
+  shortDescription String?
+  longDescription  String?
   logoUrl          String?
   bannerUrl        String?
   instagram        String?
@@ -134,7 +140,7 @@ model Society {
 model Event {
   id               String              @id @default(uuid())
   title            String
-  description      String              @db.Text
+  description      String
   eventDate        DateTime
   startTime        String
   endTime          String
@@ -148,12 +154,12 @@ model Event {
   inChargeName     String?
   inChargeRegNum   String?
   inChargeContact  String?
-  rules            String?             @db.Text
+  rules            String?
   
   isPublished      Boolean             @default(true)
   approvalStatus   EventApprovalStatus @default(PUBLISHED)
-  advisorComments  String?             @db.Text
-  dsaComments      String?             @db.Text
+  advisorComments  String?
+  dsaComments      String?
   advisorApprovedAt DateTime?
   dsaApprovedAt     DateTime?
   lastChangeRequestBy String?
@@ -174,7 +180,7 @@ model YearlyPlan {
   id              String         @id @default(uuid())
   year            Int
   status          PlanStatus     @default(DRAFT)
-  advisorComments String?        @db.Text
+  advisorComments String?
   societyId       String
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
@@ -192,10 +198,10 @@ model PlannedEvent {
   eventName              String
   startDate              DateTime
   endDate                DateTime
-  description            String     @db.Text
+  description            String
   venue                  String
-  rules                  String?    @db.Text
-  societyRules           String?    @db.Text
+  rules                  String?
+  societyRules           String?
   yearlyPlanId           String
   createdAt              DateTime   @default(now())
   updatedAt              DateTime   @updatedAt
@@ -207,19 +213,23 @@ model PlannedEvent {
 }
 
 model Post {
-  id          String   @id @default(uuid())
-  content     String   @db.Text
-  imageUrl    String?
-  videoUrl    String?
-  authorId    String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id                 String             @id @default(uuid())
+  content            String
+  imageUrl           String?
+  videoUrl           String?
+  isPublished        Boolean            @default(false)
+  approvalStatus     PostApprovalStatus @default(PENDING_ADVISOR)
+  advisorComments    String?
+  advisorApprovedAt  DateTime?
+  authorId           String
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
 
   // Relationships
   author  User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
 
   @@index([authorId])
   @@index([createdAt])
+  @@index([isPublished])
+  @@index([approvalStatus])
 }
-
-

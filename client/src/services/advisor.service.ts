@@ -1,5 +1,9 @@
 import { api } from '@/lib/api';
-import type { PaginatedAdvisorPlansResponse, PaginatedAdvisorEventsResponse } from '@/types/advisor.types';
+import type {
+  PaginatedAdvisorPlansResponse,
+  PaginatedAdvisorEventsResponse,
+  PaginatedAdvisorPostsResponse,
+} from '@/types/advisor.types';
 import type { PlanStatus } from '@/types/yearly-plan.types';
 
 export const advisorService = {
@@ -25,5 +29,17 @@ export const advisorService = {
 
   async updateEventStatus(eventId: string, payload: { status: string; comments?: string }) {
     return api.patch(`/advisors/me/events/${eventId}/status`, payload);
-  }
+  },
+
+  async getMySocietyPosts(params?: {
+    page?: number;
+    limit?: number;
+    status?: string;
+  }): Promise<PaginatedAdvisorPostsResponse> {
+    return api.get('/advisors/me/posts', { params });
+  },
+
+  async updatePostStatus(postId: string, payload: { status: 'APPROVED' | 'REJECTED'; comments?: string }) {
+    return api.patch(`/advisors/me/posts/${postId}/status`, payload);
+  },
 };

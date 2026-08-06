@@ -1,10 +1,12 @@
-import { Injectable, ForbiddenException } from '@nestjs/common';
+import { Injectable, ForbiddenException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../core/database/prisma.service';
 import { QueryAdvisorPlansDto } from './dto/query-advisor-plans.dto';
 import { PaginatedAdvisorPlansResponseDto } from './dto/advisor-plans-response.dto';
 import { QueryAdvisorEventsDto } from './dto/query-advisor-events.dto';
 import { UpdateAdvisorEventDto } from './dto/update-advisor-event.dto';
-import { Society, Prisma } from '@prisma/client';
+import { QueryAdvisorPostsDto } from './dto/query-advisor-posts.dto';
+import { UpdateAdvisorPostDto } from './dto/update-advisor-post.dto';
+import { Society, Prisma, PostApprovalStatus } from '@prisma/client';
 
 @Injectable()
 export class AdvisorsService {
@@ -178,6 +180,98 @@ export class AdvisorsService {
           select: { id: true, name: true, logoUrl: true }
         }
       }
+    });
+  }
+
+  /**
+   * Retrieves posts belonging ONLY to the advisor's assigned society.
+   */
+  async getMySocietyPosts(userId: string, query: QueryAdvisorPostsDto) {
+    const societies = await this.getAdvisorAssignedSocieties(userId);
+    const societyUserIds = societies.map(s => s.userId);
+
+    const page = Math.max(1, query.page || 1);
+    const limit = Math.min(50, Math.max(1, query.limit || 10));
+    const skip = (page - 1) * limit;
+
+    const whereClause: Prisma.PostWhereInput = {
+      authorId: { in: societyUserIds },
+    };
+
+    if (query.status) {
+      whereClause.approvalStatus = query.status;
+    }
+
+    const [total, posts] = await Promise.all([
+      this.prisma.post.count({ where: whereClause }),
+      this.prisma.post.findMany({
+        where: whereClause,
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          author: {
+            select: {
+              role: true,
+              society: {
+                select: { id: true, name: true, logoUrl: true },
+              },
+            },
+          },
+        },
+      }),
+    ]);
+
+    const totalPages = Math.ceil(total / limit) || 1;
+
+    return {
+      items: posts,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages,
+        hasNextPage: page < totalPages,
+        hasPreviousPage: page > 1,
+      },
+    };
+  }
+
+  /**
+   * Updates a post's approval status by the advisor.
+   */
+  async updatePostStatus(userId: string, postId: string, dto: UpdateAdvisorPostDto) {
+    const societies = await this.getAdvisorAssignedSocieties(userId);
+    const societyUserIds = societies.map(s => s.userId);
+
+    const post = await this.prisma.post.findUnique({
+      where: { id: postId },
+    });
+
+    if (!post || !societyUserIds.includes(post.authorId)) {
+      throw new ForbiddenException('Access denied: Post not found or does not belong to your assigned society');
+    }
+
+    const isApproved = dto.status === PostApprovalStatus.APPROVED;
+
+    return this.prisma.post.update({
+      where: { id: postId },
+      data: {
+        approvalStatus: dto.status,
+        isPublished: isApproved,
+        advisorComments: dto.comments || null,
+        advisorApprovedAt: isApproved ? new Date() : null,
+      },
+      include: {
+        author: {
+          select: {
+            role: true,
+            society: {
+              select: { id: true, name: true, logoUrl: true },
+            },
+          },
+        },
+      },
     });
   }
 }

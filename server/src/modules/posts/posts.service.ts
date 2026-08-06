@@ -3,7 +3,7 @@ import { PrismaService } from '../../core/database/prisma.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { UserProfileDto } from '../auth/dto/auth-response.dto';
-import { Role } from '@prisma/client';
+import { Role, PostApprovalStatus } from '@prisma/client';
 
 @Injectable()
 export class PostsService {
@@ -13,12 +13,17 @@ export class PostsService {
     if (user.role !== Role.DSA_ADMIN && user.role !== Role.SOCIETY) {
       throw new ForbiddenException('You do not have permission to create an announcement');
     }
+
+    const isAdmin = user.role === Role.DSA_ADMIN;
+
     return this.prisma.post.create({
       data: {
         content: dto.content,
         imageUrl: dto.imageUrl,
         videoUrl: dto.videoUrl,
         authorId: user.id,
+        isPublished: isAdmin,
+        approvalStatus: isAdmin ? PostApprovalStatus.APPROVED : PostApprovalStatus.PENDING_ADVISOR,
       },
     });
   }
@@ -27,7 +32,10 @@ export class PostsService {
     const { page, limit, type, societyId } = params;
     const skip = (page - 1) * limit;
 
-    const where: any = {};
+    const where: any = {
+      isPublished: true,
+    };
+
     if (type === 'global') {
       where.author = { role: Role.DSA_ADMIN };
     } else if (type === 'society') {

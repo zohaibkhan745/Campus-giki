@@ -54,6 +54,7 @@ temp
 theme-refactor.js
 
 # Uploaded Media
-uploads/
-server/uploads/
+/uploads/
+/server/uploads/
+
 

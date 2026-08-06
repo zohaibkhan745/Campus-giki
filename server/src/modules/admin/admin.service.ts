@@ -360,7 +360,7 @@ export class AdminService {
         OR: [
           { id: cat },
           { slug: cat.toLowerCase() },
-          { name: { contains: cat, mode: 'insensitive' } },
+          { name: { contains: cat } },
         ],
       };
       hasSocietyFilter = true;
@@ -370,7 +370,7 @@ export class AdminService {
       const soc = query.society.trim();
       societyWhere.OR = [
         { id: soc },
-        { name: { contains: soc, mode: 'insensitive' } },
+        { name: { contains: soc } },
       ];
       hasSocietyFilter = true;
     }
@@ -383,9 +383,9 @@ export class AdminService {
     if (query.search) {
       const term = query.search.trim();
       whereClause.OR = [
-        { title: { contains: term, mode: 'insensitive' } },
-        { description: { contains: term, mode: 'insensitive' } },
-        { venue: { contains: term, mode: 'insensitive' } },
+        { title: { contains: term } },
+        { description: { contains: term } },
+        { venue: { contains: term } },
       ];
     }
 
@@ -480,13 +480,13 @@ export class AdminService {
     if (query.category) {
       const cat = query.category.trim();
       whereClause.category = {
-        OR: [{ slug: cat.toLowerCase() }, { name: { contains: cat, mode: 'insensitive' } }],
+        OR: [{ slug: cat.toLowerCase() }, { name: { contains: cat } }],
       };
     }
 
     if (query.search) {
       const searchTerm = query.search.trim();
-      whereClause.name = { contains: searchTerm, mode: 'insensitive' };
+      whereClause.name = { contains: searchTerm };
     }
 
     const [total, items] = await Promise.all([
@@ -832,7 +832,7 @@ export class AdminService {
     if (searchTerm) {
       const term = searchTerm.trim();
       whereClause.society = {
-        name: { contains: term, mode: 'insensitive' },
+        name: { contains: term },
       };
     }
 

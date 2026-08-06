@@ -117,7 +117,48 @@ export const MainNavigation: React.FC = () => {
           </div>
 
           {/* Bottom Section: Profile & Authentication */}
+          <div className="pt-4 border-t border-vast-ink/10 space-y-2">
+            {user ? (
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center gap-3 px-2 py-1.5 rounded-full hover:bg-lumen-stone transition-all overflow-hidden">
+                  <div className="w-8 h-8 rounded-full bg-vast-ink text-pure-white flex items-center justify-center font-bold text-xs shrink-0">
+                    {user.fullName?.[0] || 'U'}
+                  </div>
+                  <div className="hidden lg:flex flex-col min-w-0 text-left">
+                    <span className="text-xs font-extrabold text-vast-ink truncate">
+                      {user.fullName}
+                    </span>
+                    <div className="mt-0.5">{getRoleBadge(user.role)}</div>
+                  </div>
+                </div>
 
+                <div className="flex items-center justify-around lg:justify-start gap-1">
+                  <Link
+                    to="/settings"
+                    className="p-2 text-vast-ink hover:bg-lumen-stone rounded-full transition-colors"
+                    title="Settings"
+                  >
+                    <Settings className="w-5 h-5" />
+                  </Link>
+                  <button
+                    onClick={logout}
+                    className="p-2 text-red-500 hover:bg-red-50 rounded-full transition-colors"
+                    title="Log Out"
+                  >
+                    <LogOut className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <Link
+                to="/login"
+                className="flex items-center justify-center lg:justify-start gap-3 px-4 py-3 bg-vast-ink text-pure-white rounded-full font-bold text-sm hover:opacity-90 transition-all shadow-sm w-full"
+              >
+                <User className="w-5 h-5 shrink-0" />
+                <span className="hidden lg:inline">Log In</span>
+              </Link>
+            )}
+          </div>
         </div>
       </aside>
 
@@ -134,7 +175,7 @@ export const MainNavigation: React.FC = () => {
           </span>
         </Link>
 
-        {user && (
+        {user ? (
           <div className="flex items-center gap-2">
             {getRoleBadge(user.role)}
             <button
@@ -145,6 +186,14 @@ export const MainNavigation: React.FC = () => {
               <LogOut className="w-4 h-4 text-red-500" />
             </button>
           </div>
+        ) : (
+          <Link
+            to="/login"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-vast-ink text-pure-white text-xs font-bold rounded-full shadow-sm"
+          >
+            <User className="w-3.5 h-3.5" />
+            <span>Log in</span>
+          </Link>
         )}
       </div>
 

@@ -6,6 +6,8 @@ import { QueryAdvisorPlansDto } from './dto/query-advisor-plans.dto';
 import { PaginatedAdvisorPlansResponseDto } from './dto/advisor-plans-response.dto';
 import { QueryAdvisorEventsDto } from './dto/query-advisor-events.dto';
 import { UpdateAdvisorEventDto } from './dto/update-advisor-event.dto';
+import { QueryAdvisorPostsDto } from './dto/query-advisor-posts.dto';
+import { UpdateAdvisorPostDto } from './dto/update-advisor-post.dto';
 import { Auth } from '../../core/decorators/auth.decorator';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { UserProfileDto } from '../auth/dto/auth-response.dto';
@@ -76,5 +78,33 @@ export class AdvisorsController {
     @Body() dto: UpdateAdvisorEventDto,
   ) {
     return this.advisorsService.updateEventStatus(user.id, id, dto);
+  }
+
+  @Get('me/posts')
+  @Auth(Role.ADVISOR)
+  @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({
+    summary: 'Advisor Review Queue: Retrieve posts for advisor assigned society',
+  })
+  async getMySocietyPosts(
+    @CurrentUser() user: UserProfileDto,
+    @Query() query: QueryAdvisorPostsDto,
+  ) {
+    return this.advisorsService.getMySocietyPosts(user.id, query);
+  }
+
+  @Patch('me/posts/:id/status')
+  @Auth(Role.ADVISOR)
+  @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Advisor Post Approval: Approve or reject a society post' })
+  @ApiParam({ name: 'id', description: 'Post UUID' })
+  async updatePostStatus(
+    @Param('id', ParseUUIDPipe) id: string,
+    @CurrentUser() user: UserProfileDto,
+    @Body() dto: UpdateAdvisorPostDto,
+  ) {
+    return this.advisorsService.updatePostStatus(user.id, id, dto);
   }
 }

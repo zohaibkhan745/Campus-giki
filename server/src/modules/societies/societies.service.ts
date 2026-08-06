@@ -44,7 +44,7 @@ export class SocietiesService {
       whereClause.category = {
         OR: [
           { slug: catFilter.toLowerCase() },
-          { name: { contains: catFilter, mode: 'insensitive' } },
+          { name: { contains: catFilter } },
         ],
       };
     }
@@ -56,8 +56,8 @@ export class SocietiesService {
     if (query.search) {
       const searchFilter = query.search.trim();
       whereClause.OR = [
-        { name: { contains: searchFilter, mode: 'insensitive' } },
-        { shortDescription: { contains: searchFilter, mode: 'insensitive' } },
+        { name: { contains: searchFilter } },
+        { shortDescription: { contains: searchFilter } },
       ];
     }
 
@@ -200,6 +200,7 @@ export class SocietiesService {
   async getPublicSocietyPosts(societyId: string) {
     const posts = await this.prisma.post.findMany({
       where: {
+        isPublished: true,
         author: {
           society: {
             id: societyId,

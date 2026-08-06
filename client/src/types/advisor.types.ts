@@ -53,3 +53,31 @@ export interface PaginatedAdvisorEventsResponse {
     hasPreviousPage: boolean;
   };
 }
+
+export interface AdvisorPostItem {
+  id: string;
+  content: string;
+  imageUrl?: string | null;
+  videoUrl?: string | null;
+  isPublished: boolean;
+  approvalStatus: 'PENDING_ADVISOR' | 'APPROVED' | 'REJECTED';
+  advisorComments?: string | null;
+  createdAt: string;
+  updatedAt: string;
+  author: {
+    role: string;
+    society?: AdvisorSocietySummary | null;
+  };
+}
+
+export interface PaginatedAdvisorPostsResponse {
+  items: AdvisorPostItem[];
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+    hasNextPage: boolean;
+    hasPreviousPage: boolean;
+  };
+}
