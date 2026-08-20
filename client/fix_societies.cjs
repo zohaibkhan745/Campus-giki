@@ -1,26 +1,21 @@
 const fs = require('fs');
 let code = fs.readFileSync('src/pages/admin/AdminSocietiesPage.tsx', 'utf8');
 
-const mainReturnString = '  return (\n    <div className="max-w-6xl mx-auto space-y-6 text-left py-4">';
-let renderStart = code.indexOf(mainReturnString);
+const renderStart = code.indexOf('return (\n    <div className="max-w-6xl mx-auto space-y-6 text-left py-4">');
 if (renderStart === -1) {
-  const mainReturnString2 = '  return (\r\n    <div className="max-w-6xl mx-auto space-y-6 text-left py-4">';
-  renderStart = code.indexOf(mainReturnString2);
-}
-
-if (renderStart === -1) {
-  console.log('Not found');
+  console.log("Could not find renderStart");
   process.exit(1);
 }
 const codeBeforeRender = code.substring(0, renderStart);
-const renderEnd = code.lastIndexOf('{/* 1. Edit & Reassign Advisor Modal */}');
+
+const renderEnd = code.lastIndexOf('{/* Edit Society Modal */}');
 if (renderEnd === -1) {
-  console.log('Modal not found');
+  console.log("Could not find renderEnd");
   process.exit(1);
 }
 const modalsCode = code.substring(renderEnd);
 
-const newRender = `  return (
+const newRender = `return (
     <div className="w-full h-full flex flex-col items-center py-10 font-sans">
       <button
         onClick={() => navigate(-1)}
@@ -126,8 +121,7 @@ const newRender = `  return (
           </div>
         )}
       </div>
-      
+
       `;
 
 fs.writeFileSync('src/pages/admin/AdminSocietiesPage.tsx', codeBeforeRender + newRender + modalsCode);
-console.log('Fixed!');

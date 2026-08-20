@@ -75,10 +75,15 @@ export const SocietyProfilePage: React.FC = () => {
     <div className="w-full text-left font-sans bg-transparent">
       <style>{`
         .society-banner {
-          width: 100%;
+          width: 100vw;
           height: 320px;
           position: relative;
-          background-color: #1e3c72;
+          background-color: #f3f4f6;
+          border-radius: 0;
+          overflow: visible;
+          margin-left: -50vw;
+          left: 50%;
+          margin-top: -2rem;
         }
 
         .society-banner-img {
@@ -138,7 +143,7 @@ export const SocietyProfilePage: React.FC = () => {
         }
 
         .society-content-section {
-          padding-top: 110px;
+          padding-top: 0px;
           padding-left: 138px;
           padding-right: 48px;
           max-width: 1000px;
@@ -189,7 +194,7 @@ export const SocietyProfilePage: React.FC = () => {
           }
 
           .society-content-section {
-            padding-top: 24px;
+            padding-top: 45px;
             padding-left: 20px;
             padding-right: 20px;
           }
