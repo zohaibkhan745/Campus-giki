@@ -87,10 +87,7 @@ export const EventCard: React.FC<EventCardProps> = ({ item }) => {
     <>
       <style>{`
         .event-card-wrapper {
-          position: relative;
-          width: 100%;
-          height: 100%;
-          min-height: 400px;
+          position: relative; width: 100%; max-width: 340px; height: 490px;
           perspective: 1200px;
           z-index: 1;
         }

@@ -1,5 +1,4 @@
 import { useFeed } from '@/hooks/useFeed';
-import { BannerHeader } from '@/components/layout/BannerHeader';
 import { EventCard } from '@/components/feed/EventCard';
 import { PostCard } from '@/components/feed/PostCard';
 import { FeedCardSkeleton } from '@/components/feed/FeedCardSkeleton';
@@ -11,11 +10,19 @@ export const HomePage: React.FC = () => {
 
   return (
     <div className="bg-transparent text-gray-200 min-h-screen font-inter">
-      <BannerHeader title="Campus Feed" subtitle="Live announcements, events, and student society activities at GIKI." />
       <div className="max-w-7xl mx-auto px-4 flex justify-center gap-10 text-left pt-6">
 
         {/* Left Column: Main Feed */}
-        <div className="flex-1 min-w-0 max-w-[850px] space-y-6">
+        <div className="flex-1 min-w-0 max-w-[850px]">
+          {/* Page Header */}
+          <header className="space-y-2 pb-4 border-b border-white/10 mb-8">
+            <h1 className="font-extrabold text-5xl sm:text-6xl text-white tracking-tight leading-tight">
+              Campus Feed
+            </h1>
+            <p className="text-lg text-gray-400">
+              Live announcements, events, and student society activities at GIKI.
+            </p>
+          </header>
 
           {/* Error Callout State */}
           {error && (
@@ -53,7 +60,7 @@ export const HomePage: React.FC = () => {
             </div>
           ) : (
             /* Feed Items Stack */
-            <div className="space-y-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 justify-items-center">
               {items.map((item) =>
                 item.type === 'event' ? (
                   <EventCard key={`event-${item.id}`} item={item} allowExpand />
