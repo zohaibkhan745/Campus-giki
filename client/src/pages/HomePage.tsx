@@ -1,6 +1,6 @@
 import React from 'react';
 import { useFeed } from '@/hooks/useFeed';
-import { FeedEventCard } from '@/components/feed/FeedEventCard';
+import { EventCard } from '@/components/feed/EventCard';
 import { PostCard } from '@/components/feed/PostCard';
 import { FeedCardSkeleton } from '@/components/feed/FeedCardSkeleton';
 import { HomeSidebar } from '@/components/feed/HomeSidebar';
@@ -64,7 +64,7 @@ export const HomePage: React.FC = () => {
             <div className="space-y-2">
               {items.map((item) =>
                 item.type === 'event' ? (
-                  <FeedEventCard key={`event-${item.id}`} item={item} allowExpand />
+                  <EventCard key={`event-${item.id}`} item={item} allowExpand />
                 ) : (
                   <PostCard key={`post-${item.id}`} item={item} />
                 ),
