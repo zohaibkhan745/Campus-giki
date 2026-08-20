@@ -146,7 +146,7 @@ export const AdminAdvisorsPage: React.FC = () => {
 
       {isModalOpen && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="bg-[#0f172a] p-6 sm:p-8 rounded-2xl border border-white/10 max-w-md w-full space-y-5 shadow-2xl text-left">
+          <div className="relative z-1 w-full max-w-md p-8 rounded-[18px] bg-white/[0.08] backdrop-blur-[20px] border border-white/20 shadow-[0_12px_40px_rgba(0,0,0,0.4)] text-white space-y-5 text-left">
             <h3 className="font-extrabold text-white text-xl border-b border-white/10 pb-3 flex items-center gap-2">
               <UserPlus className="w-5 h-5 text-slate-400" />
               Onboard New Advisor

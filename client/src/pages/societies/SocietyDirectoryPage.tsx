@@ -79,58 +79,59 @@ export const SocietyDirectoryPage: React.FC = () => {
         </p>
       </div>
 
-      {/* Primary Type Filter Tabs */}
-      <div className="flex flex-wrap items-center gap-2 p-1.5 bg-[#17181c]/80 backdrop-blur-md border border-white/10 rounded-2xl w-fit">
-        <button
-          onClick={() => handleTypeChange('')}
-          className={`px-4 py-2 text-xs sm:text-sm font-extrabold rounded-xl transition-all ${
-            selectedType === ''
-              ? 'bg-white text-gray-900 shadow-sm'
-              : 'text-gray-300 hover:bg-white/10'
-          }`}
-        >
-          All Communities
-        </button>
+      {/* Controls Row */}
+      <div className="flex flex-col md:flex-row items-center gap-4 w-full">
+        
+        {/* Primary Type Filter Tabs */}
+        <div className="flex flex-wrap items-center gap-2 p-1.5 bg-white/[0.08] backdrop-blur-[20px] border border-white/20 rounded-[18px] w-full md:w-auto shadow-[0_12px_40px_rgba(0,0,0,0.4)]">
+          <button
+            onClick={() => handleTypeChange('')}
+            className={`px-4 py-2 text-xs sm:text-sm font-extrabold rounded-xl transition-all ${
+              selectedType === ''
+                ? 'bg-white text-gray-900 shadow-sm'
+                : 'text-gray-300 hover:bg-white/10'
+            }`}
+          >
+            All Communities
+          </button>
 
-        <button
-          onClick={() => handleTypeChange('SOCIETY')}
-          className={`px-4 py-2 text-xs sm:text-sm font-extrabold rounded-xl transition-all ${
-            selectedType === 'SOCIETY'
-              ? 'bg-white text-gray-900 shadow-sm'
-              : 'text-gray-300 hover:bg-white/10'
-          }`}
-        >
-          Societies
-        </button>
+          <button
+            onClick={() => handleTypeChange('SOCIETY')}
+            className={`px-4 py-2 text-xs sm:text-sm font-extrabold rounded-xl transition-all ${
+              selectedType === 'SOCIETY'
+                ? 'bg-white text-gray-900 shadow-sm'
+                : 'text-gray-300 hover:bg-white/10'
+            }`}
+          >
+            Societies
+          </button>
 
-        <button
-          onClick={() => handleTypeChange('CLUB')}
-          className={`px-4 py-2 text-xs sm:text-sm font-extrabold rounded-xl transition-all ${
-            selectedType === 'CLUB'
-              ? 'bg-white text-gray-900 shadow-sm'
-              : 'text-gray-300 hover:bg-white/10'
-          }`}
-        >
-          Clubs
-        </button>
+          <button
+            onClick={() => handleTypeChange('CLUB')}
+            className={`px-4 py-2 text-xs sm:text-sm font-extrabold rounded-xl transition-all ${
+              selectedType === 'CLUB'
+                ? 'bg-white text-gray-900 shadow-sm'
+                : 'text-gray-300 hover:bg-white/10'
+            }`}
+          >
+            Clubs
+          </button>
 
-        <button
-          onClick={() => handleTypeChange('TEAM')}
-          className={`px-4 py-2 text-xs sm:text-sm font-extrabold rounded-xl transition-all ${
-            selectedType === 'TEAM'
-              ? 'bg-white text-gray-900 shadow-sm'
-              : 'text-gray-300 hover:bg-white/10'
-          }`}
-        >
-          Teams
-        </button>
-      </div>
+          <button
+            onClick={() => handleTypeChange('TEAM')}
+            className={`px-4 py-2 text-xs sm:text-sm font-extrabold rounded-xl transition-all ${
+              selectedType === 'TEAM'
+                ? 'bg-white text-gray-900 shadow-sm'
+                : 'text-gray-300 hover:bg-white/10'
+            }`}
+          >
+            Teams
+          </button>
+        </div>
 
-      {/* Filter & Search */}
-      <div className="flex flex-col space-y-4">
         {/* Search Input */}
-        <div className="relative w-full md:w-96 flex items-center">
-          <div className="absolute left-4 text-gray-400 pointer-events-none flex items-center justify-center">
+        <div className="relative w-full md:flex-1 flex items-center">
+          <div className="absolute left-4 text-gray-400 pointer-events-none flex items-center justify-center z-10">
             <Search className="w-5 h-5 text-white" />
           </div>
           <input
@@ -138,31 +139,36 @@ export const SocietyDirectoryPage: React.FC = () => {
             placeholder="Search by organization name..."
             value={searchQuery}
             onChange={handleSearchChange}
-            className="w-full bg-[#17181c]/80 text-white placeholder:text-gray-500 text-sm rounded-2xl border border-white/10 px-4 py-3 pl-12 transition-all outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-0 focus:border-green-500"
+            className="w-full bg-white/[0.08] backdrop-blur-[20px] text-white placeholder:text-gray-300 text-sm rounded-[18px] border border-white/20 px-4 py-[14px] pl-12 transition-all outline-none focus:ring-2 focus:ring-white/40 shadow-[0_12px_40px_rgba(0,0,0,0.4)]"
           />
         </div>
 
         {/* Category Dropdown Filter */}
-        <div className="flex flex-wrap items-center gap-2.5">
+        <div className="w-full md:w-auto shrink-0 flex items-center">
           <CustomDropdown 
             value={selectedCategory} 
             onChange={(val) => handleCategoryChange(val)} 
             placeholder="All Domains" 
-            options={[{value: '', label: 'All Domains'}, ...categories.map(cat => ({ value: cat.slug, label: cat.name }))]}
+            options={[
+              { value: '', label: 'All Domains' },
+              ...categories.map(c => ({ value: c.id, label: c.name }))
+            ]}
+            className="w-full md:w-[180px] bg-white/[0.08] backdrop-blur-[20px] border border-white/20 rounded-[18px] px-4 py-[14px] flex items-center justify-between text-white cursor-pointer text-sm outline-none transition-colors hover:bg-white/[0.12] shadow-[0_12px_40px_rgba(0,0,0,0.4)]"
           />
-
-          {(selectedCategory || selectedType || searchQuery) && (
-            <button
-              onClick={handleClearFilters}
-              className="ml-auto inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-extrabold text-gray-300 bg-transparent rounded-lg border border-white/20 hover:bg-red-500/20 hover:text-red-400 hover:border-red-500/50 transition-colors focus:outline-none"
-              title="Clear all filters"
-            >
-              <FilterX className="w-3.5 h-3.5" />
-              <span>Clear Filters</span>
-            </button>
-          )}
         </div>
       </div>
+      
+      {(selectedCategory || selectedType || searchQuery) && (
+        <div className="flex justify-end">
+          <button
+            onClick={handleClearFilters}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-extrabold text-gray-300 bg-transparent rounded-lg border border-white/20 hover:bg-red-500/20 hover:text-red-400 hover:border-red-500/50 transition-colors focus:outline-none shadow-sm"
+          >
+            <FilterX className="w-4 h-4" />
+            Clear Filters
+          </button>
+        </div>
+      )}
 
       {/* Error Callout */}
       {isError && (

@@ -11,7 +11,7 @@ export const DashboardLayout: React.FC = () => {
     >
       <div className="absolute inset-0 bg-[#050507]/80 backdrop-blur-sm z-0 pointer-events-none"></div>
       
-      <main className="relative z-10 flex-1 min-w-0 pb-28 md:pb-32 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full pt-8">
+      <main className="relative z-20 flex-1 min-w-0 pb-28 md:pb-32 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full pt-8">
         <Outlet />
       </main>
 

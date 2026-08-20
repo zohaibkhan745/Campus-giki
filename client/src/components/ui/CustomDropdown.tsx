@@ -11,9 +11,10 @@ interface CustomDropdownProps {
   value: string;
   onChange: (val: string) => void;
   placeholder?: string;
+  className?: string;
 }
 
-export const CustomDropdown: React.FC<CustomDropdownProps> = ({ options, value, onChange, placeholder = "Select option" }) => {
+export const CustomDropdown: React.FC<CustomDropdownProps> = ({ options, value, onChange, placeholder = "Select option", className }) => {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -34,7 +35,7 @@ export const CustomDropdown: React.FC<CustomDropdownProps> = ({ options, value, 
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full bg-[#141416] border border-[#2e2e33] rounded-lg px-4 py-2.5 flex items-center justify-between text-white cursor-pointer text-[15px] outline-none transition-colors hover:border-[#4a4a52]"
+        className={className || "w-full bg-[#141416] border border-[#2e2e33] rounded-lg px-4 py-2.5 flex items-center justify-between text-white cursor-pointer text-[15px] outline-none transition-colors hover:border-[#4a4a52]"}
       >
         <span className="font-medium text-white">{selectedOption.label}</span>
         <ChevronDown className={`w-4 h-4 text-white transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />

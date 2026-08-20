@@ -297,6 +297,11 @@ export const CampusCalendarPage: React.FC = () => {
 
       <div className="w-full max-w-[1100px] flex flex-col gap-6 mt-10">
         
+        {/* Page Header */}
+        <h1 className="font-extrabold text-5xl sm:text-6xl text-white tracking-tight leading-tight pb-4">
+          Events Calendar
+        </h1>
+        
         {/* Top Navigation */}
         <div className="flex justify-between items-center flex-wrap gap-3">
           <div className="flex items-center gap-2">

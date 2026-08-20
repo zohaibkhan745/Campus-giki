@@ -115,23 +115,23 @@ export const SettingsPage: React.FC = () => {
       </div>
 
       {/* Header Banner */}
-      <div className="flex items-center gap-4 bg-transparent p-6 rounded-cards border border-vast-ink/20">
+      <div className="flex items-center gap-4 relative z-1 w-full p-8 rounded-[18px] bg-white/[0.08] backdrop-blur-[20px] border border-white/20 shadow-[0_12px_40px_rgba(0,0,0,0.4)] text-white">
         {user.avatarUrl ? (
           <img src={user.avatarUrl} alt="Avatar" className="w-16 h-16 rounded-full border border-vast-ink/20 object-cover shrink-0" />
         ) : (
           <div className="w-16 h-16 rounded-full border border-vast-ink/20 bg-lumen-stone flex items-center justify-center shrink-0">
-            <User className="w-8 h-8 text-vast-ink" />
+            <User className="w-8 h-8 text-white" />
           </div>
         )}
         <div className="space-y-1">
-          <div className="flex items-center gap-2 text-vast-ink text-xs font-semibold uppercase tracking-wider mb-1">
+          <div className="flex items-center gap-2 text-white text-xs font-semibold uppercase tracking-wider mb-1">
             <Shield className="w-4 h-4" />
             <span>Account Settings</span>
           </div>
-          <h1 className="text-2xl font-extrabold text-vast-ink">
+          <h1 className="text-2xl font-extrabold text-white">
             Personal Profile
           </h1>
-          <p className="text-sm text-fog">
+          <p className="text-sm text-gray-300">
             Manage your general information and security credentials.
           </p>
         </div>
@@ -139,9 +139,9 @@ export const SettingsPage: React.FC = () => {
 
       <div className="grid grid-cols-1 gap-6">
         {/* Profile Information Panel */}
-        <div className="bg-lumen-cream p-6 rounded-cards border border-vast-ink/20 space-y-5">
-          <h3 className="font-extrabold text-lg text-vast-ink flex items-center gap-2 border-b-2 border-vast-ink/10 pb-3">
-            <User className="w-5 h-5 text-indigo-600" />
+        <div className="relative z-1 w-full p-8 rounded-[18px] bg-white/[0.08] backdrop-blur-[20px] border border-white/20 shadow-[0_12px_40px_rgba(0,0,0,0.4)] text-white space-y-5 text-left">
+          <h3 className="font-extrabold text-lg text-white flex items-center gap-2 border-b-2 border-vast-ink/10 pb-3">
+            <User className="w-5 h-5 text-indigo-300" />
             General Information
           </h3>
 
@@ -150,8 +150,8 @@ export const SettingsPage: React.FC = () => {
 
           <form onSubmit={handleProfileSubmit} className="space-y-4">
             <div className="space-y-1">
-              <label className="text-xs font-semibold text-fog">Account Email</label>
-              <div className="w-full bg-lavender-whisper text-fog text-sm rounded-inputs border border-vast-ink/20/20 px-3.5 py-2.5 font-mono cursor-not-allowed">
+              <label className="text-xs font-semibold text-gray-300">Account Email</label>
+              <div className="w-full bg-lavender-whisper text-gray-300 text-sm rounded-inputs border border-vast-ink/20/20 px-3.5 py-2.5 font-mono cursor-not-allowed">
                 {user.email}
               </div>
             </div>
@@ -205,8 +205,8 @@ export const SettingsPage: React.FC = () => {
         </div>
 
         {/* Security / Password Panel */}
-        <div className="bg-lumen-cream p-6 rounded-cards border border-vast-ink/20 space-y-5">
-          <h3 className="font-extrabold text-lg text-vast-ink flex items-center gap-2 border-b-2 border-vast-ink/10 pb-3">
+        <div className="relative z-1 w-full p-8 rounded-[18px] bg-white/[0.08] backdrop-blur-[20px] border border-white/20 shadow-[0_12px_40px_rgba(0,0,0,0.4)] text-white space-y-5 text-left">
+          <h3 className="font-extrabold text-lg text-white flex items-center gap-2 border-b-2 border-vast-ink/10 pb-3">
             <KeyRound className="w-5 h-5 text-amber-500" />
             Security & Password
           </h3>
