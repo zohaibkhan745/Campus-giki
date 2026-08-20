@@ -3,7 +3,7 @@ const fs = require('fs');
 let code = fs.readFileSync('src/pages/admin/AdminPostsPage.tsx', 'utf8');
 
 if (!code.includes('import { PostCard } from')) {
-  code = code.replace(/import \{ Button \} from '\@\/components\/ui\/Button';/, "import { Button } from '@/components/ui/Button';\nimport { PostCard } from '@/components/feed/PostCard';");
+  code = code.replace(/import \{ Button \} from '@\/components\/ui\/Button';/, "import { Button } from '@/components/ui/Button';\nimport { PostCard } from '@/components/feed/PostCard';");
 }
 
 const oldGrid = /<div className="grid grid-cols-1 md:grid-cols-2 gap-6">[\s\S]*?<\/div>\s*\)\}\s*\{\/\* Pagination \*\/\}/;

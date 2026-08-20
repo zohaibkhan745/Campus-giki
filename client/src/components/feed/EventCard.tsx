@@ -1,18 +1,22 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useLayoutEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Calendar, X, MapPin } from 'lucide-react';
+import { Calendar, MapPin, X, Edit2, Trash2 } from 'lucide-react';
 import type { EventFeedItem } from '@/types/feed.types';
 
 interface EventCardProps {
   item: EventFeedItem;
-  allowExpand?: boolean;
 }
 
 export const EventCard: React.FC<EventCardProps> = ({ item }) => {
   const [isFlipped, setIsFlipped] = useState(false);
+  const [showReadMore, setShowReadMore] = useState(true);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const backTextRef = useRef<HTMLParagraphElement>(null);
   const frontDescRef = useRef<HTMLParagraphElement>(null);
+  
+  const coverImage = item.coverImageUrl;
+  const isGlass = !coverImage;
+  const defaultHeight = 490;
 
   const formattedDate = new Date(item.createdAt).toLocaleDateString('en-US', {
     weekday: 'short',
@@ -21,27 +25,56 @@ export const EventCard: React.FC<EventCardProps> = ({ item }) => {
     year: 'numeric',
   });
   
-  const eventDate = new Date(item.eventDate).toLocaleDateString('en-US', {
+  const eventDateObj = new Date(item.startTime);
+  const eventDate = eventDateObj.toLocaleDateString('en-US', {
     weekday: 'short',
     month: 'short',
     day: 'numeric',
-    year: 'numeric',
+    year: 'numeric'
   });
-  
-  const eventTime = item.startTime;
+  const eventTime = eventDateObj.toLocaleTimeString('en-US', {
+    hour: '2-digit',
+    minute: '2-digit'
+  });
 
-  const coverImage = item.coverImageUrl;
-  const logoImage = item.society.logoUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80';
-  const authorName = item.society.name;
-  
-  useEffect(() => {
-    if (frontDescRef.current && backTextRef.current) {
+  const logoImage = item.society?.logoUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80';
+  const authorName = item.society?.name || 'Society';
+
+  // Sync text to back face and check overflow
+  useLayoutEffect(() => {
+    if (isGlass && frontDescRef.current && backTextRef.current) {
       backTextRef.current.textContent = frontDescRef.current.textContent?.trim() || '';
+      
+      // Check overflow for Read More button
+      if (frontDescRef.current.scrollHeight > frontDescRef.current.offsetHeight + 2) {
+        setShowReadMore(true);
+      } else {
+        setShowReadMore(false);
+      }
+    } else if (!isGlass) {
+      // For image cards, we always show View Details button
+      setShowReadMore(true);
     }
-  }, [item.description]);
+  }, [item.description, isGlass]);
+
+  // Handle document body class for blur effect
+  useEffect(() => {
+    if (isFlipped) {
+      document.body.classList.add('is-focused');
+    }
+    
+    return () => {
+      // Only remove if this was the last flipped card
+      // A simple approach: we could just remove it, but it might un-blur if rapidly clicking another.
+      // For this isolated component, we just remove it on unmount or unflip.
+      if (isFlipped) {
+        document.body.classList.remove('is-focused');
+      }
+    };
+  }, [isFlipped]);
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (isFlipped || !wrapperRef.current || !coverImage) return;
+    if (isFlipped || !wrapperRef.current || isGlass) return; 
 
     const rect = wrapperRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
@@ -53,11 +86,11 @@ export const EventCard: React.FC<EventCardProps> = ({ item }) => {
     const rotateX = ((y - centerY) / centerY) * -10;
     const rotateY = ((x - centerX) / centerX) * 10;
     
-    wrapperRef.current.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+    wrapperRef.current.style.transform = `rotateX(\${rotateX}deg) rotateY(\${rotateY}deg)`;
   };
 
   const handleMouseLeave = () => {
-    if (!isFlipped && wrapperRef.current && coverImage) {
+    if (!isFlipped && wrapperRef.current && !isGlass) {
       wrapperRef.current.style.transform = "rotateX(0deg) rotateY(0deg)";
     }
   };
@@ -65,25 +98,47 @@ export const EventCard: React.FC<EventCardProps> = ({ item }) => {
   const handleOpen = (e: React.MouseEvent) => {
     e.stopPropagation();
     setIsFlipped(true);
-    if (wrapperRef.current && coverImage) {
+    
+    if (wrapperRef.current) {
       wrapperRef.current.style.transform = "rotateX(0deg) rotateY(0deg)";
+      
+      // Calculate dynamic height
+      let calculatedHeight = defaultHeight;
+      if (isGlass) {
+        const header = wrapperRef.current.querySelector(".glass-back-header") as HTMLElement;
+        const scrollArea = wrapperRef.current.querySelector(".glass-back-scroll-area") as HTMLElement;
+        if (header && scrollArea) {
+          const neededHeight = header.offsetHeight + scrollArea.scrollHeight + 56;
+          calculatedHeight = Math.min(620, Math.max(defaultHeight, neededHeight));
+        }
+      } else {
+        const backContent = wrapperRef.current.querySelector(".back-content-section") as HTMLElement;
+        const imageSectionHeight = 150;
+        const contentHeight = backContent ? backContent.scrollHeight : 280;
+        calculatedHeight = Math.min(620, Math.max(defaultHeight, imageSectionHeight + contentHeight));
+      }
+      
+      wrapperRef.current.style.height = `\${calculatedHeight}px`;
     }
   };
 
   const handleClose = (e: React.MouseEvent) => {
     e.stopPropagation();
     setIsFlipped(false);
+    if (wrapperRef.current) {
+      wrapperRef.current.style.height = `\${defaultHeight}px`;
+    }
+    document.body.classList.remove('is-focused');
   };
 
-  if (!coverImage) {
-    // TEXT ONLY EVENT (GLASSMORPHISM)
+  if (isGlass) {
     return (
       <div 
         ref={wrapperRef}
-        className={`card-wrapper glass-card-wrapper glass-with-meta ${isFlipped ? 'in-focus' : ''}`}
-        style={{ height: isFlipped ? '620px' : '490px' }}
+        className={`card-wrapper glass-card-wrapper glass-with-meta \${isFlipped ? 'in-focus' : ''}`}
+        style={{ height: `${defaultHeight}px` }}
       >
-        <div className={`card-flipper ${isFlipped ? 'flipped' : ''}`}>
+        <div className={`card-flipper \${isFlipped ? 'flipped' : ''}`}>
           
           <div className="card-face glass-face-front">
             <span className="card-corner-tag">Event</span>
@@ -110,7 +165,9 @@ export const EventCard: React.FC<EventCardProps> = ({ item }) => {
                 {item.description}
               </p>
             </div>
-            <button type="button" onClick={handleOpen} className="details-btn open-details-btn">View Details</button>
+            {showReadMore && (
+              <button type="button" onClick={handleOpen} className="details-btn open-details-btn">View Details</button>
+            )}
           </div>
 
           <div className="card-face glass-face-back">
@@ -150,12 +207,12 @@ export const EventCard: React.FC<EventCardProps> = ({ item }) => {
   return (
     <div 
       ref={wrapperRef}
-      className={`card-wrapper event-card-wrapper ${isFlipped ? 'in-focus' : ''}`}
-      style={{ height: isFlipped ? '620px' : '490px' }}
+      className={`card-wrapper event-card-wrapper \${isFlipped ? 'in-focus' : ''}`}
+      style={{ height: `${defaultHeight}px` }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     >
-      <div className={`card-flipper ${isFlipped ? 'flipped' : ''}`}>
+      <div className={`card-flipper \${isFlipped ? 'flipped' : ''}`}>
         
         <div className="card-face card-front">
           <span className="card-corner-tag">Event</span>
@@ -226,8 +283,12 @@ export const EventCard: React.FC<EventCardProps> = ({ item }) => {
               </div>
             </div>
 
-            <Link to={`/events/${item.id}`} className="register-btn">
-              <span>View Full Details</span>
+            <Link to={`/events/\${item.id}`} className="register-btn">
+              <span>Register Now</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
             </Link>
           </div>
         </div>
