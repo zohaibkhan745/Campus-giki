@@ -143,7 +143,7 @@ export const SocietyProfilePage: React.FC = () => {
         }
 
         .society-content-section {
-          padding-top: 0px;
+          padding-top: 20px;
           padding-left: 138px;
           padding-right: 48px;
           max-width: 1000px;
@@ -194,7 +194,7 @@ export const SocietyProfilePage: React.FC = () => {
           }
 
           .society-content-section {
-            padding-top: 45px;
+            padding-top: 20px;
             padding-left: 20px;
             padding-right: 20px;
           }

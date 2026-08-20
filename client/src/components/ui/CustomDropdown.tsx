@@ -42,8 +42,8 @@ export const CustomDropdown: React.FC<CustomDropdownProps> = ({ options, value, 
       </button>
 
       {isOpen && (
-        <div className="absolute top-[calc(100%+6px)] left-0 w-full bg-[#141416] border border-[#2a2a2e] rounded-lg max-h-[320px] overflow-y-auto z-[1000] shadow-[0_10px_25px_rgba(0,0,0,0.5)] scrollbar-thin scrollbar-thumb-[#2e2e33] hover:scrollbar-thumb-[#3f3f46]">
-          <div className="py-1.5">
+        <div className="absolute top-[calc(100%+6px)] left-0 w-full bg-[#111113]/90 backdrop-blur-[24px] border border-white/10 rounded-[18px] max-h-[320px] overflow-y-auto z-[1000] shadow-[0_12px_40px_rgba(0,0,0,0.6)] scrollbar-thin scrollbar-thumb-white/20 hover:scrollbar-thumb-white/40">
+          <div className="py-2">
             {options.map((option) => (
               <div
                 key={option.value}
@@ -51,10 +51,10 @@ export const CustomDropdown: React.FC<CustomDropdownProps> = ({ options, value, 
                   onChange(option.value);
                   setIsOpen(false);
                 }}
-                className={`flex items-center justify-between px-4 py-2.5 cursor-pointer text-[15px] transition-colors hover:bg-[#1f1f23] ${value === option.value ? 'text-blue-500' : 'text-[#e1e1e6]'}`}
+                className={`flex items-center justify-between px-5 py-3 cursor-pointer text-[15px] transition-colors hover:bg-white/10 ${value === option.value ? 'bg-white/10 text-white font-semibold' : 'text-gray-300 font-medium'}`}
               >
-                <span className={`font-medium ${value === option.value ? 'text-blue-500' : ''}`}>{option.label}</span>
-                {value === option.value && <Check className="w-4 h-4 text-blue-500" strokeWidth={2.5} />}
+                <span>{option.label}</span>
+                {value === option.value && <Check className="w-4 h-4 text-white" strokeWidth={2.5} />}
               </div>
             ))}
           </div>

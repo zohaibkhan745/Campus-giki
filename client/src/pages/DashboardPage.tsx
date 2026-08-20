@@ -86,8 +86,8 @@ export const DashboardPage: React.FC = () => {
   const renderEventCard = (event: EventItem, isPast = false) => (
     <div
       key={event.id}
-      className={`bg-transparent rounded-cards border transition-all flex flex-col justify-between ${
-        isPast ? 'border-vast-ink opacity-80' : 'border-2 border-vast-ink hover:border-2 border-vast-ink'
+      className={`bg-transparent rounded-[18px] border transition-all flex flex-col justify-between ${
+        isPast ? 'border-white/10 opacity-80' : 'border-2 border-white/10 hover:border-2 border-white/10'
       }`}
     >
       <Link
@@ -95,7 +95,7 @@ export const DashboardPage: React.FC = () => {
         className="p-4 block space-y-3 cursor-pointer group focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded-t-cards"
       >
         {event.coverImageUrl && (
-          <div className="w-full h-32 rounded-inputs overflow-hidden bg-lumen-stone">
+          <div className="w-full h-32 rounded-xl overflow-hidden bg-white/10">
             <img
               src={event.coverImageUrl}
               alt={event.title}
@@ -109,7 +109,7 @@ export const DashboardPage: React.FC = () => {
 
         <div className="flex items-start justify-between gap-2">
           <div className="space-y-1">
-            <h4 className="font-bold text-sm text-vast-ink leading-snug line-clamp-1 group-hover:text-ember-glow transition-colors">
+            <h4 className="font-bold text-sm text-white leading-snug line-clamp-1 group-hover:text-ember-glow transition-colors">
               {event.title}
             </h4>
             {event.approvalStatus === 'CHANGES_REQUESTED' && (
@@ -127,16 +127,16 @@ export const DashboardPage: React.FC = () => {
           </div>
         </div>
 
-        <p className="text-xs text-fog line-clamp-2">{event.description}</p>
+        <p className="text-xs text-gray-400 line-clamp-2">{event.description}</p>
 
-        <div className="space-y-1 text-xs text-vast-ink font-medium pt-1">
+        <div className="space-y-1 text-xs text-white font-medium pt-1">
           <div className="flex items-center gap-2">
-            <CalendarIcon className="w-3.5 h-3.5 text-vast-ink shrink-0" />
+            <CalendarIcon className="w-3.5 h-3.5 text-white shrink-0" />
             <span>{new Date(event.eventDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</span>
           </div>
 
           <div className="flex items-center gap-2">
-            <Clock className="w-3.5 h-3.5 text-vast-ink shrink-0" />
+            <Clock className="w-3.5 h-3.5 text-white shrink-0" />
             <span>{event.startTime} - {event.endTime}</span>
           </div>
 
@@ -153,7 +153,7 @@ export const DashboardPage: React.FC = () => {
             href={event.registrationLink}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 px-2.5 py-1 bg-transparent border border-vast-ink text-vast-ink hover:bg-blue-500/20 rounded-inputs text-xs font-semibold transition-colors mr-auto"
+            className="inline-flex items-center gap-1 px-2.5 py-1 bg-transparent border border-white/10 text-white hover:bg-blue-500/20 rounded-xl text-xs font-semibold transition-colors mr-auto"
             title="Open External Registration"
           >
             <ExternalLink className="w-3 h-3" />
@@ -162,14 +162,14 @@ export const DashboardPage: React.FC = () => {
         )}
         <Link
           to={`/events/${event.id}/edit`}
-          className="inline-flex items-center gap-1 px-2.5 py-1 bg-lumen-stone hover:bg-lavender-whisper text-vast-ink text-xs font-semibold rounded-inputs transition-colors"
+          className="inline-flex items-center gap-1 px-2.5 py-1 bg-white/10 hover:bg-lavender-whisper text-white text-xs font-semibold rounded-xl transition-colors"
         >
           <Edit className="w-3 h-3" />
           <span>Edit</span>
         </Link>
         <button
           onClick={() => setDeleteTarget({ id: event.id, title: event.title })}
-          className="inline-flex items-center gap-1 px-2.5 py-1 bg-transparent border border-vast-ink hover:bg-red-500/20 text-red-400 text-xs font-semibold rounded-inputs transition-colors"
+          className="inline-flex items-center gap-1 px-2.5 py-1 bg-transparent border border-white/10 hover:bg-red-500/20 text-red-400 text-xs font-semibold rounded-xl transition-colors"
         >
           <Trash2 className="w-3 h-3" />
           <span>Delete</span>
@@ -208,22 +208,22 @@ export const DashboardPage: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             
             {/* Quick Actions Panel */}
-            <div className="bg-lumen-cream p-6 rounded-cards flex flex-col justify-center space-y-5 border border-vast-ink/20">
-              <h3 className="font-extrabold text-lg text-vast-ink flex items-center gap-2">
+            <div className="bg-lumen-cream p-6 rounded-[18px] flex flex-col justify-center space-y-5 border border-white/20">
+              <h3 className="font-extrabold text-lg text-white flex items-center gap-2">
                 Command Center
               </h3>
               
               <div className="grid grid-cols-2 gap-3">
                 <Link
                   to="/society/posts"
-                  className="flex flex-col items-center justify-center gap-2 p-4 bg-transparent hover:bg-lumen-stone text-vast-ink rounded-inputs font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18] border border-vast-ink/20"
+                  className="flex flex-col items-center justify-center gap-2 p-4 bg-transparent hover:bg-white/10 text-white rounded-xl font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18] border border-white/20"
                 >
                   <Megaphone className="w-6 h-6" />
                   <span>Posts</span>
                 </Link>
                 <Link
                   to="/events/create"
-                  className="flex flex-col items-center justify-center gap-2 p-4 bg-transparent hover:bg-lumen-stone text-vast-ink rounded-inputs font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18] border border-vast-ink/20"
+                  className="flex flex-col items-center justify-center gap-2 p-4 bg-transparent hover:bg-white/10 text-white rounded-xl font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18] border border-white/20"
                 >
                   <Plus className="w-6 h-6" />
                   <span>Create Event</span>
@@ -233,15 +233,15 @@ export const DashboardPage: React.FC = () => {
             </div>
 
             {/* Manage Events & Metrics Area */}
-            <div className="bg-lumen-cream p-6 rounded-cards flex flex-col justify-center space-y-5 relative overflow-hidden group border border-vast-ink/20">
-              <h3 className="font-extrabold text-lg text-vast-ink flex items-center gap-2 z-10">
+            <div className="bg-lumen-cream p-6 rounded-[18px] flex flex-col justify-center space-y-5 relative overflow-hidden group border border-white/20">
+              <h3 className="font-extrabold text-lg text-white flex items-center gap-2 z-10">
                 Manage Events
               </h3>
               
               <div className="grid grid-cols-2 gap-3 z-10">
                 <Link
                   to="/society/events"
-                  className="relative flex flex-col items-center justify-center gap-2 p-4 bg-transparent hover:bg-lumen-stone text-vast-ink rounded-inputs font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18] border border-vast-ink/20"
+                  className="relative flex flex-col items-center justify-center gap-2 p-4 bg-transparent hover:bg-white/10 text-white rounded-xl font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18] border border-white/20"
                 >
                   <MicVocal className="w-6 h-6" />
                   <span>Events</span>
@@ -253,7 +253,7 @@ export const DashboardPage: React.FC = () => {
                 </Link>
                 <Link
                   to="/society/calendar"
-                  className="relative flex flex-col items-center justify-center gap-2 p-4 bg-transparent hover:bg-lumen-stone text-vast-ink rounded-inputs font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18] border border-vast-ink/20"
+                  className="relative flex flex-col items-center justify-center gap-2 p-4 bg-transparent hover:bg-white/10 text-white rounded-xl font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18] border border-white/20"
                 >
                   <CalendarDays className="w-6 h-6" />
                   <span>Annual Calendar</span>
@@ -266,7 +266,7 @@ export const DashboardPage: React.FC = () => {
               </div>
 
               {/* Decorative background element */}
-              <CalendarIcon className="absolute -right-4 -bottom-4 w-40 h-40 text-vast-ink opacity-[0.03] z-0 pointer-events-none group-hover:scale-110 transition-transform duration-500" />
+              <CalendarIcon className="absolute -right-4 -bottom-4 w-40 h-40 text-white opacity-[0.03] z-0 pointer-events-none group-hover:scale-110 transition-transform duration-500" />
             </div>
           </div>
 
@@ -276,7 +276,7 @@ export const DashboardPage: React.FC = () => {
             {/* Under Review & Revisions Column */}
             <div className="space-y-4">
               <div className="flex items-center justify-between pb-3">
-                <div className="flex items-center gap-2 font-extrabold text-lg text-vast-ink">
+                <div className="flex items-center gap-2 font-extrabold text-lg text-white">
                   {changesRequestedEventsCount > 0 ? (
                     <AlertCircle className="w-5 h-5 text-ember-glow animate-pulse" />
                   ) : (
@@ -287,8 +287,8 @@ export const DashboardPage: React.FC = () => {
               </div>
 
               {pendingEvents.length === 0 ? (
-                <div className="bg-transparent p-10 rounded-cards text-center text-fog space-y-3 flex flex-col items-center border border-vast-ink/20">
-                  <Shield className="w-12 h-12 text-fog opacity-30" />
+                <div className="bg-transparent p-10 rounded-[18px] text-center text-gray-400 space-y-3 flex flex-col items-center border border-white/20">
+                  <Shield className="w-12 h-12 text-gray-400 opacity-30" />
                   <p className="font-bold text-sm">You're all caught up! No events pending approval or revisions.</p>
                 </div>
               ) : (
@@ -301,19 +301,19 @@ export const DashboardPage: React.FC = () => {
             {/* Next Upcoming Column */}
             <div className="space-y-4">
               <div className="flex items-center justify-between pb-3">
-                <div className="flex items-center gap-2 font-extrabold text-lg text-vast-ink">
+                <div className="flex items-center gap-2 font-extrabold text-lg text-white">
                   <CalendarIcon className="w-5 h-5 text-forest-ink" />
                   <h3>Next Upcoming ({upcomingEvents.length})</h3>
                 </div>
                 {/* Fallback to calendar if there's no general events page for societies */}
-                <Link to="/society/calendar" className="text-sm font-bold text-vast-ink hover:text-forest-ink transition-colors underline underline-offset-2">
+                <Link to="/society/calendar" className="text-sm font-bold text-white hover:text-forest-ink transition-colors underline underline-offset-2">
                   View Calendar
                 </Link>
               </div>
 
               {upcomingEvents.length === 0 ? (
-                <div className="bg-transparent p-10 rounded-cards text-center text-fog space-y-3 flex flex-col items-center border border-vast-ink/20">
-                  <CalendarIcon className="w-12 h-12 text-fog opacity-30" />
+                <div className="bg-transparent p-10 rounded-[18px] text-center text-gray-400 space-y-3 flex flex-col items-center border border-white/20">
+                  <CalendarIcon className="w-12 h-12 text-gray-400 opacity-30" />
                   <p className="font-bold text-sm">No upcoming events scheduled right now.</p>
                 </div>
               ) : (
@@ -329,24 +329,24 @@ export const DashboardPage: React.FC = () => {
       {/* Non-society user dashboard fallback */}
       {user?.role !== 'SOCIETY' && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-transparent p-6 rounded-cards space-y-3 border border-vast-ink/20">
+          <div className="bg-transparent p-6 rounded-[18px] space-y-3 border border-white/20">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-transparent border border-forest-ink text-forest-ink rounded-inputs">
+              <div className="p-2 bg-transparent border border-forest-ink text-forest-ink rounded-xl">
                 <UserCheck className="w-6 h-6" />
               </div>
               <div className="flex-1">
-                <h3 className="font-semibold text-vast-ink">Session Verified</h3>
-                <p className="text-xs text-fog">Authenticated via NestJS JWT Security</p>
+                <h3 className="font-semibold text-white">Session Verified</h3>
+                <p className="text-xs text-gray-400">Authenticated via NestJS JWT Security</p>
               </div>
               <button
                 onClick={logout}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-transparent border border-vast-ink hover:bg-red-500/20 border border-red-500/20 rounded-inputs text-red-400 text-xs font-semibold transition-colors"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-transparent border border-white/10 hover:bg-red-500/20 border border-red-500/20 rounded-xl text-red-400 text-xs font-semibold transition-colors"
               >
                 <LogOut className="w-4 h-4" />
                 <span>Log out</span>
               </button>
             </div>
-            <p className="text-sm text-vast-ink font-medium pt-2">
+            <p className="text-sm text-white font-medium pt-2">
               Your JWT bearer token is securely stored and verified against PostgreSQL.
             </p>
           </div>

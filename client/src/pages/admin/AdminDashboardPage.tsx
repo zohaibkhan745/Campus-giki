@@ -87,22 +87,22 @@ export const AdminDashboardPage: React.FC = () => {
       )}
 
       {/* 2. Command Center */}
-      <div className="bg-lumen-cream p-6 rounded-cards border border-vast-ink/20 space-y-5">
-        <h3 className="font-extrabold text-lg text-vast-ink flex items-center gap-2">
+      <div className="bg-lumen-cream p-6 rounded-[18px] border border-white/20 space-y-5">
+        <h3 className="font-extrabold text-lg text-white flex items-center gap-2">
           Command Center
         </h3>
 
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
           <Link
             to="/admin/societies"
-            className="flex flex-col items-center justify-center gap-2 p-4 bg-transparent hover:bg-lumen-stone text-vast-ink border border-vast-ink/20 rounded-inputs font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18]"
+            className="flex flex-col items-center justify-center gap-2 p-4 bg-transparent hover:bg-white/10 text-white border border-white/20 rounded-xl font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18]"
           >
             <Building2 className="w-6 h-6" />
             <span>Societies</span>
           </Link>
           <Link
             to="/admin/events"
-            className="flex flex-col items-center justify-center gap-2 p-4 bg-transparent hover:bg-lumen-stone text-vast-ink border border-vast-ink/20 rounded-inputs font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18] relative"
+            className="flex flex-col items-center justify-center gap-2 p-4 bg-transparent hover:bg-white/10 text-white border border-white/20 rounded-xl font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18] relative"
           >
             {totalPending > 0 && (
               <span className="absolute top-2 right-2 flex items-center justify-center w-5 h-5 bg-ember-glow text-pure-white text-[10px] font-bold rounded-full shadow-sm animate-pulse">
@@ -114,21 +114,21 @@ export const AdminDashboardPage: React.FC = () => {
           </Link>
           <Link
             to="/admin/posts"
-            className="flex flex-col items-center justify-center gap-2 p-4 bg-transparent hover:bg-lumen-stone text-vast-ink border border-vast-ink/20 rounded-inputs font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18]"
+            className="flex flex-col items-center justify-center gap-2 p-4 bg-transparent hover:bg-white/10 text-white border border-white/20 rounded-xl font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18]"
           >
             <MessageSquare className="w-6 h-6" />
             <span>Posts</span>
           </Link>
           <Link
             to="/admin/yearly-plans"
-            className="flex flex-col items-center justify-center gap-2 p-4 bg-transparent hover:bg-lumen-stone text-vast-ink border border-vast-ink/20 rounded-inputs font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18]"
+            className="flex flex-col items-center justify-center gap-2 p-4 bg-transparent hover:bg-white/10 text-white border border-white/20 rounded-xl font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18]"
           >
             <CalendarDays className="w-6 h-6" />
             <span>Yearly Plans</span>
           </Link>
           <Link
             to="/admin/advisors"
-            className="flex flex-col items-center justify-center gap-2 p-4 bg-transparent hover:bg-lumen-stone text-vast-ink border border-vast-ink/20 rounded-inputs font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18]"
+            className="flex flex-col items-center justify-center gap-2 p-4 bg-transparent hover:bg-white/10 text-white border border-white/20 rounded-xl font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18]"
           >
             <Users className="w-6 h-6" />
             <span>Advisors</span>
@@ -139,19 +139,19 @@ export const AdminDashboardPage: React.FC = () => {
       {/* 3. Add Society shortcut */}
       <Link
         to="/admin/societies/create"
-        className="block bg-transparent p-4 rounded-cards border border-vast-ink/20 hover:bg-lavender-whisper transition-all group"
+        className="block bg-transparent p-4 rounded-[18px] border border-white/20 hover:bg-lavender-whisper transition-all group"
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-vast-ink text-white rounded-inputs">
+            <div className="p-2.5 bg-vast-ink text-white rounded-xl">
               <UserPlus className="w-5 h-5" />
             </div>
             <div>
-              <h4 className="font-bold text-vast-ink text-sm">Onboard New Society</h4>
-              <p className="text-[11px] font-medium text-fog">Provision a new society account with advisor assignment</p>
+              <h4 className="font-bold text-white text-sm">Onboard New Society</h4>
+              <p className="text-[11px] font-medium text-gray-400">Provision a new society account with advisor assignment</p>
             </div>
           </div>
-          <ArrowRight className="w-4 h-4 text-vast-ink group-hover:translate-x-1 transition-transform" />
+          <ArrowRight className="w-4 h-4 text-white group-hover:translate-x-1 transition-transform" />
         </div>
       </Link>
 
@@ -159,12 +159,12 @@ export const AdminDashboardPage: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Pending Events */}
         <div className="space-y-4">
-          <div className="flex items-center justify-between border-b-2 border-vast-ink pb-3">
-            <div className="flex items-center gap-2 font-extrabold text-lg text-vast-ink">
+          <div className="flex items-center justify-between border-b-2 border-white/10 pb-3">
+            <div className="flex items-center gap-2 font-extrabold text-lg text-white">
               <Clock className="w-5 h-5 text-ember-glow" />
               <h3>Pending Review ({pendingEvents.length})</h3>
             </div>
-            <Link to="/admin/events?type=pending" className="text-sm font-bold text-vast-ink hover:text-forest-ink transition-colors underline underline-offset-2">
+            <Link to="/admin/events?type=pending" className="text-sm font-bold text-white hover:text-forest-ink transition-colors underline underline-offset-2">
               View All
             </Link>
           </div>
@@ -172,15 +172,15 @@ export const AdminDashboardPage: React.FC = () => {
           {isLoading ? (
             <div className="space-y-3">
               {[1, 2].map((i) => (
-                <div key={i} className="bg-transparent p-5 rounded-cards border border-vast-ink/20 animate-pulse space-y-2">
-                  <div className="h-5 bg-lumen-stone rounded w-1/3" />
-                  <div className="h-4 bg-lumen-stone rounded w-1/2" />
+                <div key={i} className="bg-white/[0.05] hover:bg-white/[0.08] backdrop-blur-[12px] p-5 rounded-[18px] border border-white/10 hover:border-white/25 transition-all shadow-sm animate-pulse space-y-2">
+                  <div className="h-5 bg-white/10 rounded w-1/3" />
+                  <div className="h-4 bg-white/10 rounded w-1/2" />
                 </div>
               ))}
             </div>
           ) : pendingEvents.length === 0 ? (
-            <div className="bg-transparent p-10 rounded-cards border border-vast-ink/20 text-center text-fog space-y-3 flex flex-col items-center">
-              <Shield className="w-12 h-12 text-fog opacity-30" />
+            <div className="bg-transparent p-10 rounded-[18px] border border-white/20 text-center text-gray-400 space-y-3 flex flex-col items-center">
+              <Shield className="w-12 h-12 text-gray-400 opacity-30" />
               <p className="font-bold text-sm">You're all caught up! No events pending review.</p>
             </div>
           ) : (
@@ -189,19 +189,19 @@ export const AdminDashboardPage: React.FC = () => {
                 <Link
                   key={evt.id}
                   to={`/admin/events/${evt.id}/review`}
-                  className="bg-transparent p-4 rounded-cards border border-vast-ink/20 hover:bg-lavender-whisper transition-all flex items-center justify-between group"
+                  className="bg-transparent p-4 rounded-[18px] border border-white/20 hover:bg-lavender-whisper transition-all flex items-center justify-between group"
                 >
                   <div className="space-y-1">
-                    <h4 className="font-bold text-vast-ink text-sm">{evt.title}</h4>
-                    <div className="flex items-center gap-3 text-xs font-medium text-fog">
-                      <span>Host: <strong className="text-vast-ink">{evt.society?.name}</strong></span>
+                    <h4 className="font-bold text-white text-sm">{evt.title}</h4>
+                    <div className="flex items-center gap-3 text-xs font-medium text-gray-400">
+                      <span>Host: <strong className="text-white">{evt.society?.name}</strong></span>
                       <span className="flex items-center gap-1">
-                        <MapPin className="w-3 h-3 text-fog" />
+                        <MapPin className="w-3 h-3 text-gray-400" />
                         {evt.venue}
                       </span>
                     </div>
                   </div>
-                  <ArrowRight className="w-4 h-4 text-vast-ink group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight className="w-4 h-4 text-white group-hover:translate-x-1 transition-transform" />
                 </Link>
               ))}
             </div>
@@ -210,12 +210,12 @@ export const AdminDashboardPage: React.FC = () => {
 
         {/* Upcoming Events */}
         <div className="space-y-4">
-          <div className="flex items-center justify-between border-b-2 border-vast-ink pb-3">
-            <div className="flex items-center gap-2 font-extrabold text-lg text-vast-ink">
+          <div className="flex items-center justify-between border-b-2 border-white/10 pb-3">
+            <div className="flex items-center gap-2 font-extrabold text-lg text-white">
               <Calendar className="w-5 h-5 text-forest-ink" />
               <h3>Upcoming Events ({upcomingEvents.length})</h3>
             </div>
-            <Link to="/admin/events?type=upcoming" className="text-sm font-bold text-vast-ink hover:text-forest-ink transition-colors underline underline-offset-2">
+            <Link to="/admin/events?type=upcoming" className="text-sm font-bold text-white hover:text-forest-ink transition-colors underline underline-offset-2">
               View All
             </Link>
           </div>
@@ -223,15 +223,15 @@ export const AdminDashboardPage: React.FC = () => {
           {isLoading ? (
             <div className="space-y-3">
               {[1, 2].map((i) => (
-                <div key={i} className="bg-transparent p-5 rounded-cards border border-vast-ink/20 animate-pulse space-y-2">
-                  <div className="h-5 bg-lumen-stone rounded w-1/3" />
-                  <div className="h-4 bg-lumen-stone rounded w-1/2" />
+                <div key={i} className="bg-white/[0.05] hover:bg-white/[0.08] backdrop-blur-[12px] p-5 rounded-[18px] border border-white/10 hover:border-white/25 transition-all shadow-sm animate-pulse space-y-2">
+                  <div className="h-5 bg-white/10 rounded w-1/3" />
+                  <div className="h-4 bg-white/10 rounded w-1/2" />
                 </div>
               ))}
             </div>
           ) : upcomingEvents.length === 0 ? (
-            <div className="bg-transparent p-10 rounded-cards border border-vast-ink/20 text-center text-fog space-y-3 flex flex-col items-center">
-              <Calendar className="w-12 h-12 text-fog opacity-30" />
+            <div className="bg-transparent p-10 rounded-[18px] border border-white/20 text-center text-gray-400 space-y-3 flex flex-col items-center">
+              <Calendar className="w-12 h-12 text-gray-400 opacity-30" />
               <p className="font-bold text-sm">No upcoming events scheduled.</p>
             </div>
           ) : (
@@ -240,19 +240,19 @@ export const AdminDashboardPage: React.FC = () => {
                 <Link
                   key={evt.id}
                   to={`/events/${evt.id}`}
-                  className="bg-transparent p-4 rounded-cards border border-vast-ink/20 hover:bg-lavender-whisper transition-all flex items-center justify-between group"
+                  className="bg-transparent p-4 rounded-[18px] border border-white/20 hover:bg-lavender-whisper transition-all flex items-center justify-between group"
                 >
                   <div className="space-y-1">
-                    <h4 className="font-bold text-vast-ink text-sm">{evt.title}</h4>
-                    <div className="flex items-center gap-3 text-xs font-medium text-fog">
-                      <span>Host: <strong className="text-vast-ink">{evt.society?.name}</strong></span>
+                    <h4 className="font-bold text-white text-sm">{evt.title}</h4>
+                    <div className="flex items-center gap-3 text-xs font-medium text-gray-400">
+                      <span>Host: <strong className="text-white">{evt.society?.name}</strong></span>
                       <span className="flex items-center gap-1">
-                        <MapPin className="w-3 h-3 text-fog" />
+                        <MapPin className="w-3 h-3 text-gray-400" />
                         {evt.venue}
                       </span>
                     </div>
                   </div>
-                  <ArrowRight className="w-4 h-4 text-vast-ink group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight className="w-4 h-4 text-white group-hover:translate-x-1 transition-transform" />
                 </Link>
               ))}
             </div>

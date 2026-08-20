@@ -143,21 +143,11 @@ export const BannerHeader: React.FC<BannerHeaderProps> = ({
       `}</style>
 
       <div className="shared-banner">
-        {bannerUrl ? (
-          <img src={bannerUrl} alt="Banner Image" className="shared-banner-img" />
-        ) : (
-          <div className="shared-banner-img bg-[#1e3c72]" />
-        )}
+        <img src={bannerUrl || '/default-banner.png'} alt="Banner Image" className="shared-banner-img" />
 
         {/* Profile Circle */}
         <div className="shared-profile-container">
-          {logoUrl ? (
-            <img src={logoUrl} alt="Logo" className="shared-profile-img" />
-          ) : (
-            <div className="shared-profile-fallback text-gray-500">
-              {user?.role === 'STUDENT' ? <User className="w-16 h-16" /> : <Building2 className="w-16 h-16" />}
-            </div>
-          )}
+          <img src={logoUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(title)}&background=14161b&color=fff&size=200`} alt="Logo" className="shared-profile-img" />
         </div>
 
         {/* Name */}

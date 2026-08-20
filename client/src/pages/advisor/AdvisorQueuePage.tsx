@@ -92,7 +92,7 @@ export const AdvisorQueuePage: React.FC = () => {
       case 'APPROVED':
       case 'PUBLISHED':
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-transparent border border-forest-ink text-forest-ink rounded-inputs text-xs font-semibold">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-transparent border border-forest-ink text-forest-ink rounded-xl text-xs font-semibold">
             <CheckCircle2 className="w-3.5 h-3.5" />
             <span>{status === 'PUBLISHED' ? 'PUBLISHED' : 'APPROVED'}</span>
           </span>
@@ -100,21 +100,21 @@ export const AdvisorQueuePage: React.FC = () => {
       case 'PENDING':
       case 'PENDING_ADVISOR':
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-transparent border border-ember-glow text-ember-glow rounded-inputs text-xs font-semibold">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-transparent border border-ember-glow text-ember-glow rounded-xl text-xs font-semibold">
             <Clock className="w-3.5 h-3.5" />
             <span>PENDING</span>
           </span>
         );
       case 'CHANGES_REQUESTED':
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-transparent border border-red-400 text-red-400 rounded-inputs text-xs font-semibold">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-transparent border border-red-400 text-red-400 rounded-xl text-xs font-semibold">
             <AlertCircle className="w-3.5 h-3.5" />
             <span>CHANGES REQ.</span>
           </span>
         );
       default:
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-lumen-stone text-vast-ink rounded-inputs text-xs font-semibold">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/10 text-white rounded-xl text-xs font-semibold">
             <span>{status}</span>
           </span>
         );
@@ -130,14 +130,14 @@ export const AdvisorQueuePage: React.FC = () => {
           <div className="flex items-center gap-3 shrink-0 mt-4 md:mt-0">
           <Link
             to="/settings"
-            className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-transparent border border-vast-ink/20 hover:bg-lumen-stone rounded-inputs text-vast-ink text-sm font-bold transition-colors"
+            className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-transparent border border-white/20 hover:bg-white/10 rounded-xl text-white text-sm font-bold transition-colors"
           >
             <Settings className="w-4 h-4" />
             <span className="hidden sm:inline">Settings</span>
           </Link>
           <button
             onClick={logout}
-            className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-transparent border border-vast-ink/20 hover:bg-red-500/10 rounded-inputs text-red-500 text-sm font-bold transition-colors"
+            className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-transparent border border-white/20 hover:bg-red-500/10 rounded-xl text-red-500 text-sm font-bold transition-colors"
           >
             <LogOut className="w-4 h-4" />
             <span>Log out</span>
@@ -146,20 +146,20 @@ export const AdvisorQueuePage: React.FC = () => {
       </div>
 
       {/* 2. Command Center — matching Society & Admin */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="flex flex-col md:flex-row bg-white/[0.08] backdrop-blur-[20px] border border-white/20 rounded-[18px] shadow-[0_12px_40px_rgba(0,0,0,0.4)] overflow-hidden">
         {/* Quick Actions */}
-        <div className="bg-lumen-cream p-6 rounded-cards border border-vast-ink/20 flex flex-col justify-center space-y-5">
-          <h3 className="font-extrabold text-lg text-vast-ink flex items-center gap-2">
+        <div className="flex-1 p-6 flex flex-col justify-center space-y-5 border-b md:border-b-0 md:border-r border-white/10">
+          <h3 className="font-extrabold text-lg text-white flex items-center gap-2">
             Command Center
           </h3>
 
           <div className="grid grid-cols-2 gap-3">
             <button
               onClick={() => { setActiveTab('events'); setPage(1); setStatusFilter(''); }}
-              className={`flex flex-col items-center justify-center gap-2 p-4 rounded-inputs font-bold transition-all relative ${
+              className={`flex flex-col items-center justify-center gap-2 p-4 rounded-xl font-bold transition-all relative ${
                 activeTab === 'events'
-                  ? 'bg-vast-ink text-pure-white'
-                  : 'bg-transparent text-vast-ink border border-vast-ink/20 hover:bg-lumen-stone'
+                  ? 'bg-white text-gray-900 shadow-sm'
+                  : 'bg-transparent text-gray-300 border border-white/20 hover:bg-white/10'
               }`}
             >
               {pendingEventsCount > 0 && (
@@ -172,10 +172,10 @@ export const AdvisorQueuePage: React.FC = () => {
             </button>
             <button
               onClick={() => { setActiveTab('plans'); setPage(1); setStatusFilter(''); }}
-              className={`flex flex-col items-center justify-center gap-2 p-4 rounded-inputs font-bold transition-all relative ${
+              className={`flex flex-col items-center justify-center gap-2 p-4 rounded-xl font-bold transition-all relative ${
                 activeTab === 'plans'
-                  ? 'bg-vast-ink text-pure-white'
-                  : 'bg-transparent text-vast-ink border border-vast-ink/20 hover:bg-lumen-stone'
+                  ? 'bg-white text-gray-900 shadow-sm'
+                  : 'bg-transparent text-gray-300 border border-white/20 hover:bg-white/10'
               }`}
             >
               {pendingPlansCount > 0 && (
@@ -190,36 +190,36 @@ export const AdvisorQueuePage: React.FC = () => {
         </div>
 
         {/* At a Glance */}
-        <div className="bg-lumen-cream p-6 rounded-cards border border-vast-ink/20 flex flex-col justify-center space-y-5 relative overflow-hidden group">
-          <h3 className="font-extrabold text-lg text-vast-ink flex items-center gap-2 z-10">
+        <div className="flex-1 p-6 flex flex-col justify-center space-y-5 relative overflow-hidden group">
+          <h3 className="font-extrabold text-lg text-white flex items-center gap-2 z-10">
             Review Queue
           </h3>
-          <p className="text-sm font-medium text-fog z-10 leading-snug">
+          <p className="text-sm font-medium text-gray-400 z-10 leading-snug">
             Review, evaluate, and provide official feedback on {assignedSocietyName}'s event proposals and annual calendar plans.
           </p>
 
           {/* Status Filter */}
           <div className="relative z-10">
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-fog pointer-events-none">
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
               <Filter className="w-4 h-4" />
             </div>
             <select
               value={statusFilter}
               onChange={handleStatusChange}
-              className="w-full bg-transparent text-vast-ink text-sm font-semibold rounded-inputs border border-vast-ink/20 px-3.5 py-2 pl-10 transition-all outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 cursor-pointer"
+              className="w-full bg-transparent text-white text-sm font-semibold rounded-xl border border-white/20 px-3.5 py-2.5 pl-10 transition-all outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 cursor-pointer"
             >
-              <option value="">All Statuses</option>
-              {activeTab === 'plans' && <option value="PENDING">Pending Review</option>}
-              {activeTab === 'events' && <option value="PENDING_ADVISOR">Pending Review</option>}
-              <option value="CHANGES_REQUESTED">Changes Requested</option>
-              <option value="APPROVED">Approved</option>
-              {activeTab === 'plans' && <option value="DRAFT">Draft</option>}
-              {activeTab === 'events' && <option value="PUBLISHED">Published</option>}
+              <option value="" className="bg-gray-900">All Statuses</option>
+              {activeTab === 'plans' && <option value="PENDING" className="bg-gray-900">Pending Review</option>}
+              {activeTab === 'events' && <option value="PENDING_ADVISOR" className="bg-gray-900">Pending Review</option>}
+              <option value="CHANGES_REQUESTED" className="bg-gray-900">Changes Requested</option>
+              <option value="APPROVED" className="bg-gray-900">Approved</option>
+              {activeTab === 'plans' && <option value="DRAFT" className="bg-gray-900">Draft</option>}
+              {activeTab === 'events' && <option value="PUBLISHED" className="bg-gray-900">Published</option>}
             </select>
           </div>
 
           {/* Decorative background */}
-          <FileText className="absolute -right-4 -bottom-4 w-40 h-40 text-vast-ink opacity-[0.03] z-0 pointer-events-none group-hover:scale-110 transition-transform duration-500" />
+          <FileText className="absolute -right-4 -bottom-4 w-40 h-40 text-white opacity-[0.03] z-0 pointer-events-none group-hover:scale-110 transition-transform duration-500" />
         </div>
       </div>
 
@@ -245,29 +245,29 @@ export const AdvisorQueuePage: React.FC = () => {
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="bg-transparent p-5 rounded-cards border border-vast-ink/20 space-y-3 animate-pulse"
+              className="bg-white/[0.05] hover:bg-white/[0.08] backdrop-blur-[12px] p-5 rounded-[18px] border border-white/10 hover:border-white/25 transition-all shadow-sm space-y-3 animate-pulse"
             >
               <div className="flex justify-between items-center">
-                <div className="h-5 bg-lumen-stone rounded w-1/3" />
-                <div className="h-6 bg-lumen-stone rounded w-24" />
+                <div className="h-5 bg-white/10 rounded w-1/3" />
+                <div className="h-6 bg-white/10 rounded w-24" />
               </div>
-              <div className="h-4 bg-lumen-stone rounded w-1/2" />
+              <div className="h-4 bg-white/10 rounded w-1/2" />
             </div>
           ))}
         </div>
       ) : activeTab === 'plans' && plans.length === 0 ? (
-        <div className="bg-transparent p-12 rounded-cards border border-vast-ink/20 text-center space-y-3 flex flex-col items-center">
-          <FileText className="w-12 h-12 text-fog opacity-30" />
-          <h3 className="font-bold text-vast-ink text-base">No Yearly Plans Found</h3>
-          <p className="text-xs text-fog max-w-sm">
+        <div className="bg-white/[0.08] backdrop-blur-[20px] p-12 rounded-[18px] border border-white/20 shadow-[0_12px_40px_rgba(0,0,0,0.4)] text-center space-y-3 flex flex-col items-center">
+          <FileText className="w-12 h-12 text-gray-400 opacity-30" />
+          <h3 className="font-bold text-white text-base">No Yearly Plans Found</h3>
+          <p className="text-xs text-gray-400 max-w-sm">
             There are no yearly calendar submissions matching your current filter.
           </p>
         </div>
       ) : activeTab === 'events' && events.length === 0 ? (
-        <div className="bg-transparent p-12 rounded-cards border border-vast-ink/20 text-center space-y-3 flex flex-col items-center">
-          <Calendar className="w-12 h-12 text-fog opacity-30" />
-          <h3 className="font-bold text-vast-ink text-base">No Events Found</h3>
-          <p className="text-xs text-fog max-w-sm">
+        <div className="bg-white/[0.08] backdrop-blur-[20px] p-12 rounded-[18px] border border-white/20 shadow-[0_12px_40px_rgba(0,0,0,0.4)] text-center space-y-3 flex flex-col items-center">
+          <Calendar className="w-12 h-12 text-gray-400 opacity-30" />
+          <h3 className="font-bold text-white text-base">No Events Found</h3>
+          <p className="text-xs text-gray-400 max-w-sm">
             There are no events matching your current filter for {assignedSocietyName}.
           </p>
         </div>
@@ -278,39 +278,39 @@ export const AdvisorQueuePage: React.FC = () => {
               <Link
                 key={plan.id}
                 to={`/advisor/yearly-plans/${plan.id}`}
-                className="bg-transparent p-5 rounded-cards border border-vast-ink/20 hover:bg-lavender-whisper transition-all flex flex-col md:flex-row items-start md:items-center justify-between gap-4 group cursor-pointer"
+                className="bg-white/[0.05] hover:bg-white/[0.08] backdrop-blur-[12px] p-5 rounded-[18px] border border-white/10 hover:border-white/25 transition-all shadow-sm hover:bg-lavender-whisper transition-all flex flex-col md:flex-row items-start md:items-center justify-between gap-4 group cursor-pointer"
               >
                 <div className="flex items-center gap-4">
                   {plan.society?.logoUrl ? (
                     <img
                       src={plan.society.logoUrl}
                       alt={plan.society.name}
-                      className="w-12 h-12 rounded-inputs object-cover border border-vast-ink/20 shrink-0"
+                      className="w-12 h-12 rounded-xl object-cover border border-white/20 shrink-0"
                     />
                   ) : (
-                    <div className="p-3 bg-lumen-stone border border-vast-ink/20 text-vast-ink rounded-inputs shrink-0">
+                    <div className="p-3 bg-white/10 border border-white/20 text-white rounded-xl shrink-0">
                       <Building2 className="w-6 h-6" />
                     </div>
                   )}
 
                   <div className="space-y-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <h3 className="font-bold text-vast-ink text-base group-hover:text-ember-glow transition-colors">
+                      <h3 className="font-bold text-white text-base group-hover:text-ember-glow transition-colors">
                         {plan.society?.name || 'Assigned Society'}
                       </h3>
-                      <span className="text-xs font-semibold text-fog">
+                      <span className="text-xs font-semibold text-gray-400">
                         ({plan.year} Calendar)
                       </span>
                     </div>
 
-                    <div className="flex flex-wrap items-center gap-4 text-xs text-fog">
+                    <div className="flex flex-wrap items-center gap-4 text-xs text-gray-400">
                       <div className="flex items-center gap-1.5">
-                        <Calendar className="w-3.5 h-3.5 text-vast-ink" />
+                        <Calendar className="w-3.5 h-3.5 text-white" />
                         <span>{plan.totalPlannedEvents} Planned Events</span>
                       </div>
 
                       <div className="flex items-center gap-1.5">
-                        <Clock className="w-3.5 h-3.5 text-fog" />
+                        <Clock className="w-3.5 h-3.5 text-gray-400" />
                         <span>
                           Updated:{' '}
                           {new Date(plan.updatedAt).toLocaleDateString()}
@@ -320,7 +320,7 @@ export const AdvisorQueuePage: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between md:justify-end w-full md:w-auto gap-4 pt-3 md:pt-0 border-t md:border-t-0 border-vast-ink">
+                <div className="flex items-center justify-between md:justify-end w-full md:w-auto gap-4 pt-3 md:pt-0 border-t md:border-t-0 border-white/10">
                   {renderStatusBadge(plan.status as any)}
 
                   <span className="inline-flex items-center gap-1 text-xs font-semibold text-ember-glow group-hover:translate-x-1 transition-transform">
@@ -335,46 +335,46 @@ export const AdvisorQueuePage: React.FC = () => {
               <Link
                 key={event.id}
                 to={`/advisor/events/${event.id}`}
-                className="bg-transparent p-5 rounded-cards border border-vast-ink/20 hover:bg-lavender-whisper transition-all flex flex-col md:flex-row items-start md:items-center justify-between gap-4 group cursor-pointer"
+                className="bg-white/[0.05] hover:bg-white/[0.08] backdrop-blur-[12px] p-5 rounded-[18px] border border-white/10 hover:border-white/25 transition-all shadow-sm hover:bg-lavender-whisper transition-all flex flex-col md:flex-row items-start md:items-center justify-between gap-4 group cursor-pointer"
               >
                 <div className="flex items-center gap-4">
                   {event.society?.logoUrl ? (
                     <img
                       src={event.society.logoUrl}
                       alt={event.society.name}
-                      className="w-12 h-12 rounded-inputs object-cover border border-vast-ink/20 shrink-0"
+                      className="w-12 h-12 rounded-xl object-cover border border-white/20 shrink-0"
                     />
                   ) : (
-                    <div className="p-3 bg-lumen-stone border border-vast-ink/20 text-vast-ink rounded-inputs shrink-0">
+                    <div className="p-3 bg-white/10 border border-white/20 text-white rounded-xl shrink-0">
                       <Building2 className="w-6 h-6" />
                     </div>
                   )}
 
                   <div className="space-y-1">
-                    <h3 className="font-bold text-vast-ink text-base group-hover:text-ember-glow transition-colors">
+                    <h3 className="font-bold text-white text-base group-hover:text-ember-glow transition-colors">
                       {event.title}
                     </h3>
 
-                    <div className="flex flex-wrap items-center gap-4 text-xs text-fog">
+                    <div className="flex flex-wrap items-center gap-4 text-xs text-gray-400">
                       <div className="flex items-center gap-1.5">
-                        <Calendar className="w-3.5 h-3.5 text-vast-ink" />
+                        <Calendar className="w-3.5 h-3.5 text-white" />
                         <span>{new Date(event.eventDate).toLocaleDateString()}</span>
                       </div>
 
                       <div className="flex items-center gap-1.5">
-                        <Clock className="w-3.5 h-3.5 text-vast-ink" />
+                        <Clock className="w-3.5 h-3.5 text-white" />
                         <span>{event.startTime} - {event.endTime}</span>
                       </div>
 
                       <div className="flex items-center gap-1.5">
-                        <MapPin className="w-3.5 h-3.5 text-vast-ink" />
+                        <MapPin className="w-3.5 h-3.5 text-white" />
                         <span>{event.venue}</span>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between md:justify-end w-full md:w-auto gap-4 pt-3 md:pt-0 border-t md:border-t-0 border-vast-ink">
+                <div className="flex items-center justify-between md:justify-end w-full md:w-auto gap-4 pt-3 md:pt-0 border-t md:border-t-0 border-white/10">
                   {renderStatusBadge(event.approvalStatus)}
 
                   <span className="inline-flex items-center gap-1 text-xs font-semibold text-ember-glow group-hover:translate-x-1 transition-transform">
@@ -390,7 +390,7 @@ export const AdvisorQueuePage: React.FC = () => {
 
       {/* Pagination */}
       {meta && meta.totalPages > 1 && (
-        <nav aria-label="Pagination" className="flex items-center justify-between pt-4 border-t-2 border-vast-ink text-xs font-semibold text-fog">
+        <nav aria-label="Pagination" className="flex items-center justify-between pt-4 border-t-2 border-white/10 text-xs font-semibold text-gray-400">
           <span>
             Page {meta.page} of {meta.totalPages} ({meta.total} items)
           </span>
@@ -399,7 +399,7 @@ export const AdvisorQueuePage: React.FC = () => {
             <button
               disabled={!meta.hasPreviousPage}
               onClick={() => setPage((p) => Math.max(1, p - 1))}
-              className="inline-flex items-center gap-1 px-3 py-1.5 bg-lumen-stone border border-vast-ink/20 rounded-inputs hover:bg-lavender-whisper disabled:opacity-40 transition-colors"
+              className="inline-flex items-center gap-1 px-3 py-1.5 bg-white/10 border border-white/20 rounded-xl hover:bg-lavender-whisper disabled:opacity-40 transition-colors"
               aria-label="Previous page"
             >
               <ChevronLeft className="w-4 h-4" />
@@ -409,7 +409,7 @@ export const AdvisorQueuePage: React.FC = () => {
             <button
               disabled={!meta.hasNextPage}
               onClick={() => setPage((p) => p + 1)}
-              className="inline-flex items-center gap-1 px-3 py-1.5 bg-lumen-stone border border-vast-ink/20 rounded-inputs hover:bg-lavender-whisper disabled:opacity-40 transition-colors"
+              className="inline-flex items-center gap-1 px-3 py-1.5 bg-white/10 border border-white/20 rounded-xl hover:bg-lavender-whisper disabled:opacity-40 transition-colors"
               aria-label="Next page"
             >
               <span>Next</span>

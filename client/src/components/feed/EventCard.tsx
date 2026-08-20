@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import type { EventFeedItem } from '@/types/feed.types';
-import { Building2 } from 'lucide-react';
+import { Building2, Calendar, MapPin, ExternalLink, X } from 'lucide-react';
 
 interface EventCardProps {
   item: EventFeedItem;
@@ -12,6 +12,7 @@ export const EventCard: React.FC<EventCardProps> = ({ item }) => {
   const navigate = useNavigate();
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [isFlipped, setIsFlipped] = useState(false);
+  const [rotation, setRotation] = useState({ x: 0, y: 0 });
 
   const formattedDate = new Date(item.eventDate).toLocaleDateString('en-US', {
     weekday: 'short',
@@ -19,27 +20,23 @@ export const EventCard: React.FC<EventCardProps> = ({ item }) => {
     day: 'numeric',
     year: 'numeric',
   });
+  
+  const formattedTime = new Date(item.eventDate).toLocaleTimeString('en-US', {
+    hour: '2-digit',
+    minute: '2-digit'
+  });
 
   const fallbackImage = 'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?auto=format&fit=crop&w=800&q=80';
   const coverImage = item.coverImageUrl || fallbackImage;
+  const logoImage = item.society.logoUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80';
 
-  // Added logic for blurring other things and closing when clicked outside
   useEffect(() => {
     if (isFlipped) {
       document.body.classList.add('card-flipped-active');
-      const handleGlobalClick = (e: MouseEvent) => {
-        if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
-          setIsFlipped(false);
-        }
-      };
-      document.addEventListener('click', handleGlobalClick);
-      return () => {
-        document.removeEventListener('click', handleGlobalClick);
-        document.body.classList.remove('card-flipped-active');
-      };
     } else {
       document.body.classList.remove('card-flipped-active');
     }
+    return () => document.body.classList.remove('card-flipped-active');
   }, [isFlipped]);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -47,228 +44,147 @@ export const EventCard: React.FC<EventCardProps> = ({ item }) => {
     const rect = wrapperRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
-    
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
-    
     const rotateX = ((y - centerY) / centerY) * -10;
     const rotateY = ((x - centerX) / centerX) * 10;
-    
-    wrapperRef.current.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+    setRotation({ x: rotateX, y: rotateY });
   };
 
   const handleMouseLeave = () => {
-    if (!isFlipped && wrapperRef.current) {
-      wrapperRef.current.style.transform = "rotateX(0deg) rotateY(0deg)";
-    }
-  };
-
-  const handleOpenDetails = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setIsFlipped(true);
-    if (wrapperRef.current) {
-      wrapperRef.current.style.transform = "rotateX(0deg) rotateY(0deg)";
-    }
-  };
-
-  const handleCloseDetails = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setIsFlipped(false);
-  };
-
-  const handleRegister = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (item.registrationLink) {
-      window.open(item.registrationLink, '_blank');
-    }
+    if (!isFlipped) setRotation({ x: 0, y: 0 });
   };
 
   return (
     <>
-      <style>{`
-        .event-card-wrapper {
-          position: relative; width: 100%; max-width: 340px; height: 490px;
-          perspective: 1200px;
-          z-index: 1;
-        }
-
-        .event-card-wrapper.is-active {
-          position: fixed;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%) !important;
-          z-index: 50;
-          width: 360px;
-          height: 520px;
-        }
-
-        .event-card-flipper {
-          position: relative;
-          width: 100%;
-          height: 100%;
-          transform-style: preserve-3d;
-          transition: transform 0.7s cubic-bezier(0.4, 0.2, 0.2, 1);
-        }
-
-        .event-card-flipper.flipped {
-          transform: rotateY(180deg);
-        }
-
-        .event-card-face {
-          position: absolute;
-          width: 100%;
-          height: 100%;
-          backface-visibility: hidden;
-          border-radius: 20px;
-          overflow: hidden;
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-        }
-
-        .event-card-front {
-          background: rgba(255, 255, 255, 0.03);
-          backdrop-filter: blur(20px) saturate(180%);
-          -webkit-backdrop-filter: blur(20px) saturate(180%);
-          display: flex;
-          flex-direction: column;
-        }
-
-        .event-card-back {
-          background: rgba(10, 10, 15, 0.95);
-          backdrop-filter: blur(25px) saturate(200%);
-          -webkit-backdrop-filter: blur(25px) saturate(200%);
-          transform: rotateY(180deg);
-          display: flex;
-          flex-direction: column;
-          border: 1px solid rgba(255, 255, 255, 0.15);
-        }
-        `}</style>
-        
-        {isFlipped && (
-          <div 
-            className="fixed inset-0 bg-[#050507]/60 backdrop-blur-md z-40"
-            style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 40 }}
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsFlipped(false);
-            }}
-          />
-        )}
-  
+      {isFlipped && (
+        <div 
+          className="fixed inset-0 bg-[#050507]/60 backdrop-blur-md z-40" 
+          onClick={() => setIsFlipped(false)}
+        />
+      )}
       
       <div 
-        className={`event-card-wrapper ${isFlipped ? 'is-active' : ''}`} 
         ref={wrapperRef}
+        className={`relative w-[340px] h-[490px] mx-auto z-50 transition-transform duration-150 ease-out ${isFlipped ? 'scale-105' : ''}`}
+        style={{ perspective: '1200px', transform: isFlipped ? 'none' : `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)` }}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
       >
-        <div className={`event-card-flipper ${isFlipped ? 'flipped' : ''}`}>
-          
-          {/* FRONT SIDE */}
-          <div className="event-card-face event-card-front">
-            <img 
-              src={coverImage} 
-              alt={item.title} 
-              className="event-card-image"
-              onError={(e) => {
-                (e.target as HTMLImageElement).src = fallbackImage;
-              }}
-            />
+        <div 
+          className="relative w-full h-full duration-700"
+          style={{ transformStyle: 'preserve-3d', transitionTimingFunction: 'cubic-bezier(0.4, 0.2, 0.2, 1)', transform: isFlipped ? 'rotateY(180deg)' : 'none' }}
+        >
+          {/* FRONT FACE */}
+          <div 
+            className="absolute inset-0 w-full h-full rounded-[18px] overflow-hidden bg-[#14161b] z-10"
+            style={{ 
+              backfaceVisibility: 'hidden', 
+              WebkitBackfaceVisibility: 'hidden',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.12)',
+              transform: 'translateZ(0)'
+            }}
+          >
+            <img src={coverImage} alt={item.title} className="absolute inset-0 w-full h-full object-cover object-center" />
             
-            <div className="event-card-overlay">
-              <div className="event-user-profile">
-                <Link to={`/societies/${item.society.id}`} className="event-profile-header hover:opacity-90 transition-opacity" onClick={(e) => e.stopPropagation()}>
-                  {item.society.logoUrl ? (
-                    <img src={item.society.logoUrl} alt={item.society.name} className="event-avatar" />
-                  ) : (
-                    <div className="event-avatar">
-                      <Building2 className="w-5 h-5 text-gray-400" />
-                    </div>
-                  )}
-                  <span className="event-author-name">{item.title}</span>
+            <div 
+              className="absolute inset-0 flex flex-col justify-between p-6 z-10"
+              style={{
+                background: 'linear-gradient(180deg, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.1) 35%, rgba(0, 0, 0, 0.25) 65%, rgba(0, 0, 0, 0.7) 100%)'
+              }}
+            >
+              <div className="flex flex-col gap-3">
+                <Link to={`/societies/${item.society.id}`} className="flex items-center gap-3 hover:opacity-90 transition-opacity" onClick={(e) => e.stopPropagation()}>
+                  <img src={logoImage} alt={item.society.name} className="w-11 h-11 rounded-full border-2 border-white/85 object-cover shadow-[0_4px_12px_rgba(0,0,0,0.5)]" />
+                  <span className="text-white text-[1.15rem] font-bold tracking-[-0.2px] shadow-sm drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">{item.society.name}</span>
                 </Link>
                 
-                <div className="event-meta-info">
-                  <div className="event-meta-row">
-                    <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                    <span>{formattedDate} • {item.startTime}</span>
+                <div className="flex flex-col gap-1.5 mt-2">
+                  <div className="flex items-center gap-2 text-slate-200 text-[0.85rem] font-medium drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)]">
+                    <Calendar className="w-[15px] h-[15px] text-slate-300 shrink-0 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]" />
+                    <span>{formattedDate} • {formattedTime}</span>
                   </div>
-                  <div className="event-meta-row">
-                    <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                    <span>{item.venue}</span>
+                  <div className="flex items-center gap-2 text-slate-200 text-[0.85rem] font-medium drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)]">
+                    <MapPin className="w-[15px] h-[15px] text-slate-300 shrink-0 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]" />
+                    <span className="line-clamp-1">{item.venue}</span>
                   </div>
                 </div>
               </div>
 
-              <button type="button" className="event-details-btn" onClick={handleOpenDetails}>
+              <button 
+                type="button" 
+                onClick={(e) => { e.stopPropagation(); setIsFlipped(true); }}
+                className="w-full p-[15px] rounded-[14px] bg-white/15 backdrop-blur-[20px] border border-white/35 text-white text-base font-semibold tracking-[0.3px] shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] drop-shadow-[0_2px_6px_rgba(0,0,0,0.6)] outline-none hover:bg-white/25 hover:border-white/50 hover:-translate-y-0.5 transition-all duration-250 z-20"
+                style={{ transform: 'translateZ(1px)' }}
+              >
                 View Details
               </button>
             </div>
           </div>
 
-          {/* BACK SIDE */}
-          <div className="event-card-face event-card-back">
-            <div className="event-back-image-section">
-              <img 
-                src={coverImage} 
-                alt={item.title}
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src = fallbackImage;
-                }}
-              />
-              <button type="button" className="event-close-btn" onClick={handleCloseDetails} aria-label="Close details">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="18" y1="6" x2="6" y2="18"></line>
-                  <line x1="6" y1="6" x2="18" y2="18"></line>
-                </svg>
+          {/* BACK FACE */}
+          <div 
+            className="absolute inset-0 w-full h-full rounded-[18px] overflow-hidden bg-[#16181d] flex flex-col"
+            style={{ 
+              backfaceVisibility: 'hidden', 
+              WebkitBackfaceVisibility: 'hidden',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.12)',
+              transform: 'rotateY(180deg) translateZ(0)'
+            }}
+          >
+            <div className="relative h-[180px] w-full shrink-0">
+              <img src={coverImage} alt={item.title} className="w-full h-full object-cover" />
+              <button 
+                type="button" 
+                onClick={(e) => { e.stopPropagation(); setIsFlipped(false); }}
+                className="absolute top-3.5 right-3.5 w-[38px] h-[38px] rounded-full bg-white/15 backdrop-blur-[20px] border border-white/35 shadow-[0_8px_24px_0_rgba(0,0,0,0.4)] text-white flex items-center justify-center hover:bg-white/30 hover:border-white/55 hover:scale-105 transition-all z-20"
+                style={{ transform: 'translateZ(1px)' }}
+              >
+                <X className="w-5 h-5 drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]" />
               </button>
             </div>
 
-            <div className="event-back-content-section">
-              <div className="event-society-header">
-                <Link to={`/societies/${item.society.id}`} className="flex items-center gap-2 hover:opacity-90 transition-opacity" onClick={(e) => e.stopPropagation()}>
-                  {item.society.logoUrl ? (
-                    <img src={item.society.logoUrl} alt={item.society.name} className="event-society-avatar" />
-                  ) : (
-                    <div className="event-society-avatar">
-                      <Building2 className="w-5 h-5 text-gray-400" />
-                    </div>
-                  )}
-                  <div className="event-society-text">
-                    <h3>{item.society.name}</h3>
-                    <p>{item.society.category?.name || 'Society Event'}</p>
-                  </div>
-                </Link>
-              </div>
-
-              <div className="event-meta-info" style={{ flexShrink: 0 }}>
-                <div className="event-meta-row">
-                  <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                  <span>{formattedDate} • {item.startTime}</span>
-                </div>
-                <div className="event-meta-row">
-                  <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                  <span>{item.venue}</span>
+            <div className="p-[18px_20px] bg-[#16181d]/85 backdrop-blur-[16px] flex flex-col justify-between grow gap-3 border-t border-white/10 text-left">
+              <div className="flex items-center gap-2.5 pb-2.5 border-b border-white/10">
+                <img src={logoImage} alt={item.society.name} className="w-[38px] h-[38px] rounded-full object-cover" />
+                <div>
+                  <h3 className="text-white text-[0.95rem] font-semibold">{item.society.name}</h3>
+                  <p className="text-slate-400 text-[0.75rem]">Posted Event</p>
                 </div>
               </div>
 
-              <div className="event-about-event">
-                <h4>About Event</h4>
-                <p>{item.description}</p>
+              <div className="flex flex-col gap-1.5">
+                <div className="flex items-center gap-2 text-slate-200 text-[0.85rem]">
+                  <Calendar className="w-[15px] h-[15px] shrink-0 text-slate-400" />
+                  <span>{formattedDate} • {formattedTime}</span>
+                </div>
+                <div className="flex items-center gap-2 text-slate-200 text-[0.85rem]">
+                  <MapPin className="w-[15px] h-[15px] shrink-0 text-slate-400" />
+                  <span className="line-clamp-1">{item.venue}</span>
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <h4 className="text-slate-300 text-[0.8rem] uppercase tracking-[0.5px]">About Event</h4>
+                <p className="text-slate-400 text-[0.82rem] leading-relaxed line-clamp-3">
+                  {item.description}
+                </p>
               </div>
 
               {item.registrationLink && (
-                <button type="button" className="event-register-btn" onClick={handleRegister}>
+                <a 
+                  href={item.registrationLink} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 w-full p-3 bg-white text-slate-900 rounded-[14px] text-[0.9rem] font-semibold hover:bg-slate-100 hover:-translate-y-[1px] transition-all"
+                  onClick={(e) => e.stopPropagation()}
+                >
                   <span>Register Now</span>
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                    <polyline points="12 5 19 12 12 19"></polyline>
-                  </svg>
-                </button>
+                  <ExternalLink className="w-4 h-4" />
+                </a>
               )}
             </div>
           </div>
-
         </div>
       </div>
     </>
