@@ -93,9 +93,7 @@ export const OnboardSocietyModal: React.FC<OnboardSocietyModalProps> = ({ isOpen
         <div className="overflow-y-auto flex-1 pr-2 custom-scrollbar">
           {!provisionedData ? (
             <div className="space-y-6">
-              <p className="text-sm text-gray-400">
-                Provision a new society profile, assign a faculty advisor, and generate president credentials.
-              </p>
+              
 
               {serverError && <Alert variant="error" message={serverError} />}
 

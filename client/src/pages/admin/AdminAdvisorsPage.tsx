@@ -62,7 +62,7 @@ export const AdminAdvisorsPage: React.FC = () => {
   };
 
   return (
-    <div className="w-full h-full flex flex-col items-center py-10 font-sans">
+    <div className="w-full min-h-screen flex flex-col items-center py-10 font-sans">
       <button
         onClick={() => navigate(-1)}
         className="fixed top-4 left-4 sm:top-6 sm:left-6 z-[100] inline-flex items-center justify-center w-10 h-10 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white rounded-full transition-all cursor-pointer shadow-lg"

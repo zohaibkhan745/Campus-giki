@@ -43,9 +43,9 @@ export const AdminSocietiesPage: React.FC = () => {
   const [categoryFilter, setCategoryFilter] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [isAddSocietyModalOpen, setIsAddSocietyModalOpen] = useState(false);
-  const [notification, setNotification] = useState<{ type: 'warn' | 'ban' | 'reactivate' | 'error'; message: string } | null>(null);
+  const [notification, setNotification] = useState<{ type: 'ban' | 'reactivate' | 'error'; message: string } | null>(null);
 
-  const showNotification = (type: 'warn' | 'ban' | 'reactivate' | 'error', message: string) => {
+  const showNotification = (type: 'ban' | 'reactivate' | 'error', message: string) => {
     setNotification({ type, message });
     setTimeout(() => setNotification(null), 3500);
   };
@@ -297,15 +297,7 @@ export const AdminSocietiesPage: React.FC = () => {
                       </td>
                       <td className="py-[18px] px-[15px] text-[15px] border-b border-white/5 text-center group-last:border-b-0" onClick={e => e.stopPropagation()}>
                         <div className="flex items-center justify-center gap-1.5 flex-wrap">
-                          <button
-                            onClick={() => warningMutation.mutate({ id: society.id, hasWarning: !society.hasWarning })}
-                            className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all flex items-center gap-1 border ${society.hasWarning ? 'bg-amber-500/20 text-amber-400 border-amber-500/40 hover:bg-amber-500/30' : 'bg-transparent text-amber-400 border-amber-500/30 hover:bg-amber-500/20'}`}
-                            title={society.hasWarning ? "Remove Warning" : "Issue Warning"}
-                          >
-                            <AlertCircle className="w-3 h-3" />
-                            {society.hasWarning ? 'Un-warn' : 'Warn'}
-                          </button>
-                          {society.status === 'INACTIVE' ? (
+{society.status === 'INACTIVE' ? (
                             <button
                               onClick={() => reactivateMutation.mutate(society.id)}
                               className="px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all flex items-center gap-1 bg-transparent text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/20"

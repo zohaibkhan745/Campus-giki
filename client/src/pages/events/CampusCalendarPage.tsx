@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useAuth } from '@/context/AuthContext';
 import { Calendar as CalendarIcon, Loader2 } from 'lucide-react';
 import { CustomDropdown } from '@/components/ui/CustomDropdown';
 import { eventService } from '@/services/event.service';
@@ -9,6 +10,7 @@ import { EventCard } from '@/components/feed/EventCard';
 
 export const CampusCalendarPage: React.FC = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedSociety, setSelectedSociety] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -317,7 +319,9 @@ export const CampusCalendarPage: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-2">
-            <button className="btn-primary" onClick={() => navigate('/events/new')}>+ New Event</button>
+            {user?.role === 'SOCIETY' && (
+              <button className="btn-primary" onClick={() => navigate('/events/create')}>+ New Event</button>
+            )}
           </div>
         </div>
 

@@ -3,6 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 interface DropdownOption {
   value: string;
   label: string;
+  code?: string;
 }
 
 interface CustomDropdownProps {
@@ -13,6 +14,7 @@ interface CustomDropdownProps {
   className?: string;
   disabled?: boolean;
   icon?: React.ReactNode;
+  variant?: 'default' | 'ghost'; // Added variant
 }
 
 export const CustomDropdown: React.FC<CustomDropdownProps> = ({ 
@@ -22,12 +24,13 @@ export const CustomDropdown: React.FC<CustomDropdownProps> = ({
   placeholder = "Select...", 
   className = "w-full",
   disabled = false,
-  icon
+  icon,
+  variant = 'default'
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const selectedOption = options.find(o => o.value === value) || { value: '', label: placeholder };
+  const selectedOption = options.find(o => o.value === value) || { value: '', label: placeholder, code: '' };
 
   useEffect(() => {
     const handleOutsideClick = (e: MouseEvent) => {
@@ -39,20 +42,32 @@ export const CustomDropdown: React.FC<CustomDropdownProps> = ({
     return () => document.removeEventListener('click', handleOutsideClick);
   }, []);
 
+  const buttonClasses = variant === 'ghost'
+    ? `w-full bg-transparent border-none px-2 py-2 flex items-center justify-between text-white cursor-pointer text-[15px] outline-none transition-colors hover:text-gray-300 ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${icon ? 'pl-[34px]' : ''}`
+    : `w-full bg-[rgba(255,255,255,0.08)] backdrop-blur-[20px] border border-[rgba(255,255,255,0.2)] rounded-lg px-4 py-2.5 flex items-center justify-between text-white cursor-pointer text-[15px] outline-none transition-colors hover:border-[#4a4a52] hover:bg-white/[0.12] ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${icon ? 'pl-[38px]' : ''}`;
+
   return (
     <div className={`relative ${className}`} ref={containerRef} style={{ zIndex: isOpen ? 9999 : 'auto' }}>
       <button
         type="button"
         disabled={disabled}
-        onClick={() => !disabled && setIsOpen(!isOpen)}
-        className={`w-full bg-white/[0.08] backdrop-blur-[20px] border border-white/20 rounded-xl px-4 py-2.5 flex items-center justify-between text-white cursor-pointer text-sm outline-none transition-all hover:border-white/40 hover:bg-white/[0.12] ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${icon ? 'pl-[38px]' : ''}`}
+        onClick={(e) => {
+          if (!disabled) {
+            e.stopPropagation();
+            setIsOpen(!isOpen);
+          }
+        }}
+        className={buttonClasses}
       >
         {icon && (
-          <div className="absolute left-3 text-gray-400 pointer-events-none flex items-center justify-center z-10">
+          <div className="absolute left-2 text-gray-400 pointer-events-none flex items-center justify-center z-10">
             {icon}
           </div>
         )}
-        <div className="flex items-center gap-3 w-full">
+        <div className="flex items-center gap-2 w-full">
+          {selectedOption.code && (
+             <span className="text-[#9e9ea7] text-[13px] font-medium min-w-[22px]">{selectedOption.code}</span>
+          )}
           <span className="font-normal text-white truncate">{selectedOption.label}</span>
         </div>
         <svg 
@@ -64,7 +79,7 @@ export const CustomDropdown: React.FC<CustomDropdownProps> = ({
       </button>
 
       {isOpen && (
-        <div className="absolute top-[calc(100%+6px)] left-0 w-full bg-[#0d0e10]/90 backdrop-blur-[24px] border border-white/20 rounded-xl max-h-[320px] overflow-y-auto overflow-x-hidden z-[9999] shadow-[0_16px_40px_rgba(0,0,0,0.6)]">
+        <div className="absolute top-[calc(100%+6px)] right-0 min-w-full w-max bg-[rgba(20,20,22,0.85)] backdrop-blur-[20px] border border-[#2a2a2e] rounded-lg block max-h-[320px] overflow-y-auto overflow-x-hidden z-[9999] shadow-[0_10px_25px_rgba(0,0,0,0.5)] scrollbar-thin scrollbar-thumb-[#2e2e33] scrollbar-track-transparent">
           <div className="py-1.5">
             {options.map((option) => {
               const isActive = option.value === value;
@@ -75,10 +90,13 @@ export const CustomDropdown: React.FC<CustomDropdownProps> = ({
                     onChange(option.value);
                     setIsOpen(false);
                   }}
-                  className="flex items-center justify-between px-4 py-2.5 text-white/80 cursor-pointer text-sm transition-colors hover:bg-white/10"
+                  className={`flex items-center justify-between px-4 py-2.5 cursor-pointer text-[15px] transition-colors hover:bg-white/10 ${isActive ? 'active' : ''}`}
                 >
                   <div className="flex items-center gap-3.5">
-                    <span className={isActive ? "text-[#3b82f6] font-semibold" : "font-normal"}>{option.label}</span>
+                    {option.code && (
+                       <span className={`text-[13px] font-medium min-w-[22px] ${isActive ? 'text-[#3b82f6]' : 'text-[#9e9ea7]'}`}>{option.code}</span>
+                    )}
+                    <span className={`font-normal ${isActive ? 'text-[#3b82f6]' : 'text-[#e1e1e6]'}`}>{option.label}</span>
                   </div>
                   {isActive && (
                     <svg className="w-4 h-4 stroke-[#3b82f6] stroke-[2.5px] fill-none shrink-0" viewBox="0 0 24 24">

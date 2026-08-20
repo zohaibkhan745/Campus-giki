@@ -145,15 +145,14 @@ export const SocietyDirectoryPage: React.FC = () => {
 
         {/* Category Dropdown Filter */}
         <div className="w-full md:w-auto shrink-0 flex items-center">
-          <CustomDropdown 
-            value={selectedCategory} 
+          <CustomDropdown variant="ghost" value={selectedCategory} 
             onChange={(val) => handleCategoryChange(val)} 
             placeholder="All Domains" 
             options={[
               { value: '', label: 'All Domains' },
               ...categories.map(c => ({ value: c.id, label: c.name }))
             ]}
-            className="w-full md:w-[180px] bg-white/[0.08] backdrop-blur-[20px] border border-white/20 rounded-[18px] px-4 py-[14px] flex items-center justify-between text-white cursor-pointer text-sm outline-none transition-colors hover:bg-white/[0.12] shadow-[0_12px_40px_rgba(0,0,0,0.4)]"
+            className="w-full md:w-[180px]"
           />
         </div>
       </div>
