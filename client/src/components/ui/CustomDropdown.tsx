@@ -44,7 +44,7 @@ export const CustomDropdown: React.FC<CustomDropdownProps> = ({
 
   const buttonClasses = variant === 'ghost'
     ? `w-full bg-transparent border-none px-2 py-2 flex items-center justify-between text-white cursor-pointer text-[15px] outline-none transition-colors hover:text-gray-300 ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${icon ? 'pl-[34px]' : ''}`
-    : `w-full bg-[rgba(255,255,255,0.08)] backdrop-blur-[20px] border border-[rgba(255,255,255,0.2)] rounded-lg px-4 py-2.5 flex items-center justify-between text-white cursor-pointer text-[15px] outline-none transition-colors hover:border-[#4a4a52] hover:bg-white/[0.12] ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${icon ? 'pl-[38px]' : ''}`;
+    : `w-full bg-[rgba(255,255,255,0.08)] backdrop-blur-[20px] border border-[rgba(255,255,255,0.2)] rounded-[18px] px-4 py-2.5 flex items-center justify-between text-white cursor-pointer text-[15px] outline-none transition-colors hover:border-[#4a4a52] hover:bg-white/[0.12] ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${icon ? 'pl-[38px]' : ''}`;
 
   return (
     <div className={`relative ${className}`} ref={containerRef} style={{ zIndex: isOpen ? 9999 : 'auto' }}>
@@ -79,7 +79,7 @@ export const CustomDropdown: React.FC<CustomDropdownProps> = ({
       </button>
 
       {isOpen && (
-        <div className="absolute top-[calc(100%+6px)] right-0 min-w-full w-max bg-[rgba(20,20,22,0.85)] backdrop-blur-[20px] border border-[#2a2a2e] rounded-lg block max-h-[320px] overflow-y-auto overflow-x-hidden z-[9999] shadow-[0_10px_25px_rgba(0,0,0,0.5)] scrollbar-thin scrollbar-thumb-[#2e2e33] scrollbar-track-transparent">
+        <div className="absolute top-[calc(100%+6px)] right-0 min-w-full w-max bg-[rgba(20,20,22,0.85)] backdrop-blur-[20px] border border-[#2a2a2e] rounded-[18px] block max-h-[320px] overflow-y-auto overflow-x-hidden z-[9999] shadow-[0_10px_25px_rgba(0,0,0,0.5)] scrollbar-thin scrollbar-thumb-[#2e2e33] scrollbar-track-transparent">
           <div className="py-1.5">
             {options.map((option) => {
               const isActive = option.value === value;

@@ -1,18 +1,21 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import { Calendar, X } from 'lucide-react';
 import type { PostFeedItem } from '@/types/feed.types';
-import { Building2, Calendar, X } from 'lucide-react';
+
+import { Edit2, Trash2 } from 'lucide-react';
 
 interface PostCardProps {
   item: PostFeedItem;
-  allowExpand?: boolean;
+  onEdit?: () => void;
+  onDelete?: () => void;
 }
 
-export const PostCard: React.FC<PostCardProps> = ({ item }) => {
-  const navigate = useNavigate();
-  const wrapperRef = useRef<HTMLDivElement>(null);
+export const PostCard: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) => {
   const [isFlipped, setIsFlipped] = useState(false);
-  const [rotation, setRotation] = useState({ x: 0, y: 0 });
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const backTextRef = useRef<HTMLParagraphElement>(null);
+  const frontDescRef = useRef<HTMLParagraphElement>(null);
 
   const formattedDate = new Date(item.createdAt).toLocaleDateString('en-US', {
     weekday: 'short',
@@ -27,143 +30,184 @@ export const PostCard: React.FC<PostCardProps> = ({ item }) => {
   });
 
   const coverImage = item.imageUrl;
-  const logoImage = item.society.logoUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80';
+  
+  // Extract society info, defaulting to author info if not a society post (like DSA admin)
+  const isSociety = !!item.society;
+  const logoImage = item.society?.logoUrl || item.society?.logoUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80';
+  const authorName = item.society?.name || item.society?.name || 'Admin';
+  
+  const hasMeta = false; // Posts don't have meta rows like Events
 
   useEffect(() => {
-    if (isFlipped) {
-      document.body.classList.add('card-flipped-active');
-    } else {
-      document.body.classList.remove('card-flipped-active');
+    if (frontDescRef.current && backTextRef.current) {
+      backTextRef.current.textContent = frontDescRef.current.textContent?.trim() || '';
     }
-    return () => document.body.classList.remove('card-flipped-active');
-  }, [isFlipped]);
+  }, [item.content]);
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (isFlipped || !wrapperRef.current) return;
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (isFlipped || !wrapperRef.current || !coverImage) return; // Only parallax for image cards
+
     const rect = wrapperRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
+    
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
+    
     const rotateX = ((y - centerY) / centerY) * -10;
     const rotateY = ((x - centerX) / centerX) * 10;
-    setRotation({ x: rotateX, y: rotateY });
+    
+    wrapperRef.current.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
   };
 
   const handleMouseLeave = () => {
-    if (!isFlipped) setRotation({ x: 0, y: 0 });
+    if (!isFlipped && wrapperRef.current && coverImage) {
+      wrapperRef.current.style.transform = "rotateX(0deg) rotateY(0deg)";
+    }
   };
 
-  return (
-    <>
-      {isFlipped && (
-        <div 
-          className="fixed inset-0 bg-[#050507]/60 backdrop-blur-md z-40" 
-          onClick={() => setIsFlipped(false)}
-        />
-      )}
-      
+  const handleOpen = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsFlipped(true);
+    if (wrapperRef.current && coverImage) {
+      wrapperRef.current.style.transform = "rotateX(0deg) rotateY(0deg)";
+    }
+  };
+
+  const handleClose = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsFlipped(false);
+  };
+
+  if (!coverImage) {
+    // TEXT ONLY POST (GLASSMORPHISM)
+    return (
       <div 
         ref={wrapperRef}
-        className={`relative w-[340px] h-[490px] mx-auto transition-transform duration-150 ease-out ${isFlipped ? 'scale-105 z-50' : 'z-10'}`}
-        style={{ perspective: '1200px', transform: isFlipped ? 'none' : `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)` }}
-        onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}
+        className={`card-wrapper glass-card-wrapper glass-no-meta ${isFlipped ? 'in-focus' : ''}`}
+        style={{ height: isFlipped ? '620px' : '490px' }} // Simplify height calculation to max
       >
-        <div 
-          className="relative w-full h-full duration-700"
-          style={{ transformStyle: 'preserve-3d', transitionTimingFunction: 'cubic-bezier(0.4, 0.2, 0.2, 1)', transform: isFlipped ? 'rotateY(180deg)' : 'none' }}
-        >
-          {/* FRONT FACE */}
-          <div 
-            className="absolute inset-0 w-full h-full rounded-[18px] overflow-hidden bg-white/[0.08] backdrop-blur-[20px] border border-white/20 z-10"
-            style={{ 
-              backfaceVisibility: 'hidden', 
-              WebkitBackfaceVisibility: 'hidden',
-              boxShadow: '0 12px 40px rgba(0, 0, 0, 0.4)',
-              transform: 'translateZ(0)'
-            }}
-          >
-            {coverImage && <img src={coverImage} alt="Post Cover" className="absolute inset-0 w-full h-full object-cover object-center" />}
-            <div className="absolute top-4 right-4 px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-white text-[0.7rem] font-bold tracking-wider uppercase shadow-sm z-30">Post</div>
-            <div 
-              className="absolute inset-0 flex flex-col justify-between p-6 z-10"
-              style={{ background: coverImage ? 'linear-gradient(180deg, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.1) 35%, rgba(0, 0, 0, 0.25) 65%, rgba(0, 0, 0, 0.7) 100%)' : 'transparent' }}
-            >
-              <div className="flex flex-col gap-3">
-                <Link to={`/societies/${item.society.id}`} className="flex items-center gap-3 hover:opacity-90 transition-opacity" onClick={(e) => e.stopPropagation()}>
-                  <img src={logoImage} alt={item.society.name} className="w-11 h-11 rounded-full border-2 border-white/85 object-cover shadow-[0_4px_12px_rgba(0,0,0,0.5)]" />
-                  <span className="text-white text-[1.15rem] font-bold tracking-[-0.2px] shadow-sm drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">{item.society.name}</span>
-                </Link>
-                
-                <div className="flex flex-col gap-1.5 mt-2">
-                  <div className="flex items-center gap-2 text-slate-200 text-[0.85rem] font-medium drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)]">
-                    <Calendar className="w-[15px] h-[15px] text-slate-300 shrink-0 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]" />
-                    <span>{formattedDate} • {formattedTime}</span>
-                  </div>
+        <div className={`card-flipper ${isFlipped ? 'flipped' : ''}`}>
+          
+          {/* Front Side */}
+          <div className="card-face glass-face-front">
+            <span className="card-corner-tag">Post</span>
+            <div className="glass-front-content">
+              <div className="glass-header-area">
+                <span className="post-timestamp">Posted: {formattedDate} • {formattedTime}</span>
+                <div className="flex justify-between items-start w-full">
+                  <h3 className="glass-title">{authorName}</h3>
+                  {(onEdit || onDelete) && (
+                    <div className="flex items-center gap-1 z-30">
+                      {onEdit && <button onClick={(e) => { e.stopPropagation(); onEdit(); }} className="p-1 text-white/70 hover:text-white transition-colors" title="Edit"><Edit2 className="w-4 h-4" /></button>}
+                      {onDelete && <button onClick={(e) => { e.stopPropagation(); onDelete(); }} className="p-1 text-white/70 hover:text-red-400 transition-colors" title="Delete"><Trash2 className="w-4 h-4" /></button>}
+                    </div>
+                  )}
                 </div>
               </div>
+              
+              <p ref={frontDescRef} className="glass-description">
+                {item.content}
+              </p>
+            </div>
+            <button type="button" onClick={handleOpen} className="details-btn open-details-btn">Read More</button>
+          </div>
 
-              <button 
-                type="button" 
-                onClick={(e) => { e.stopPropagation(); setIsFlipped(true); }}
-                className="w-full p-[15px] rounded-[14px] bg-white/15 backdrop-blur-[20px] border border-white/35 text-white text-base font-semibold tracking-[0.3px] shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] drop-shadow-[0_2px_6px_rgba(0,0,0,0.6)] outline-none hover:bg-white/25 hover:border-white/55 hover:-translate-y-0.5 transition-all duration-250 z-20"
-                style={{ transform: 'translateZ(1px)' }}
-              >
-                View Details
+          {/* Back Side */}
+          <div className="card-face glass-face-back">
+            <div className="glass-back-header">
+              <div>
+                <span className="post-timestamp">Posted: {formattedDate} • {formattedTime}</span>
+                <h4 className="glass-back-heading">{authorName}</h4>
+              </div>
+              <button type="button" onClick={handleClose} className="glass-close-btn" aria-label="Close details">
+                <X className="w-5 h-5" />
               </button>
+            </div>
+            
+            <div className="glass-back-scroll-area">
+              <p ref={backTextRef} className="glass-back-text"></p>
             </div>
           </div>
 
-          {/* BACK FACE */}
-          <div 
-            className="absolute inset-0 w-full h-full rounded-[18px] overflow-hidden bg-white/[0.08] backdrop-blur-[20px] border border-white/20 flex flex-col"
-            style={{ 
-              backfaceVisibility: 'hidden', 
-              WebkitBackfaceVisibility: 'hidden',
-              boxShadow: '0 12px 40px rgba(0, 0, 0, 0.4)',
-              transform: 'rotateY(180deg) translateZ(0)'
-            }}
-          >
-            <div className={`relative w-full shrink-0 ${coverImage ? "h-[180px]" : "h-16"}`}>
-              {coverImage && <img src={coverImage} alt="Post Cover" className="w-full h-full object-cover" />}
-              <div className="absolute top-4 right-14 px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-white text-[0.7rem] font-bold tracking-wider uppercase shadow-sm z-30">Post</div>
-              <button 
-                type="button" 
-                onClick={(e) => { e.stopPropagation(); setIsFlipped(false); }}
-                className="absolute top-3.5 right-3.5 w-[38px] h-[38px] rounded-full bg-white/15 backdrop-blur-[20px] border border-white/35 shadow-[0_8px_24px_0_rgba(0,0,0,0.4)] text-white flex items-center justify-center hover:bg-white/30 hover:border-white/55 hover:scale-105 transition-all z-20"
-                style={{ transform: 'translateZ(1px)' }}
-              >
-                <X className="w-5 h-5 drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]" />
-              </button>
-            </div>
-
-            <div className="p-[18px_20px] bg-white/[0.05] backdrop-blur-[16px] flex flex-col justify-between grow gap-3 border-t border-white/10 text-left">
-              <div className="flex items-center gap-2.5 pb-2.5 border-b border-white/10">
-                <img src={logoImage} alt={item.society.name} className="w-[38px] h-[38px] rounded-full object-cover" />
-                <div>
-                  <h3 className="text-white text-[0.95rem] font-semibold">{item.society.name}</h3>
-                  <p className="text-slate-400 text-[0.75rem]">Posted Update</p>
-                </div>
-              </div>
-
-              <div className="flex flex-col gap-1.5">
-                <div className="flex items-center gap-2 text-slate-200 text-[0.85rem]">
-                  <Calendar className="w-[15px] h-[15px] shrink-0 text-slate-400" />
-                  <span>{formattedDate} • {formattedTime}</span>
-                </div>
-              </div>
-
-              <div className="flex flex-col gap-1">
-                <h4 className="text-slate-300 text-[0.8rem] uppercase tracking-[0.5px]">About Post</h4>
-                <p className="text-slate-400 text-[0.82rem] leading-relaxed line-clamp-4">
-                  {item.content}
-                </p>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
-    </>
+    );
+  }
+
+  // IMAGE POST
+  return (
+    <div 
+      ref={wrapperRef}
+      className={`card-wrapper event-card-wrapper ${isFlipped ? 'in-focus' : ''}`}
+      style={{ height: isFlipped ? '620px' : '490px' }}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+    >
+      <div className={`card-flipper ${isFlipped ? 'flipped' : ''}`}>
+        
+        {/* Front Side */}
+        <div className="card-face card-front">
+          <span className="card-corner-tag">Post</span>
+          <img src={coverImage} alt="Post Cover" className="card-image" />
+          
+          <div className="card-overlay">
+            <div className="user-profile">
+              <div className="profile-header flex justify-between w-full">
+                <div className="flex items-center gap-3">
+                  <img src={logoImage} alt={authorName} className="avatar" />
+                  <div className="author-name-group">
+                    <span className="author-name">{authorName}</span>
+                    <span className="post-timestamp">Posted: {formattedDate}</span>
+                  </div>
+                </div>
+                {(onEdit || onDelete) && (
+                  <div className="flex items-center gap-1 z-30 mr-2">
+                    {onEdit && <button onClick={(e) => { e.stopPropagation(); onEdit(); }} className="p-1 text-white/80 hover:text-white bg-black/20 rounded-full transition-colors" title="Edit"><Edit2 className="w-4 h-4" /></button>}
+                    {onDelete && <button onClick={(e) => { e.stopPropagation(); onDelete(); }} className="p-1 text-white/80 hover:text-red-400 bg-black/20 rounded-full transition-colors" title="Delete"><Trash2 className="w-4 h-4" /></button>}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <button type="button" onClick={handleOpen} className="details-btn open-details-btn">View Details</button>
+          </div>
+        </div>
+
+        {/* Back Side */}
+        <div className="card-face card-back">
+          <div className="back-image-section">
+            <img src={coverImage} alt="Post Cover" />
+            <button type="button" onClick={handleClose} className="close-btn" aria-label="Close details">
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+
+          <div className="back-content-section">
+            <div className="society-header">
+              <img src={logoImage} alt={authorName} className="society-avatar" />
+              <div className="society-text">
+                <h3>{authorName}</h3>
+                <p>Posted: {formattedDate} • {formattedTime}</p>
+              </div>
+            </div>
+
+            <div className="event-back-scroll-area">
+              <div className="about-event">
+                <h4>About Post</h4>
+                <p>{item.content}</p>
+              </div>
+            </div>
+
+            {isSociety && (
+              <Link to={`/societies/${item.society!.id}`} className="register-btn">
+                <span>View Society Profile</span>
+              </Link>
+            )}
+          </div>
+        </div>
+
+      </div>
+    </div>
   );
 };

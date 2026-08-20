@@ -13,7 +13,7 @@ import {
   UserCheck,
   Tag,
   KeyRound,
-  UserX,
+  Ban,
   Edit,
   Plus,
   Copy,
@@ -209,7 +209,7 @@ export const AdminSocietiesPage: React.FC = () => {
   };
 
   return (
-    <div className="w-full h-full flex flex-col items-center py-10 font-sans">
+    <div className="max-w-6xl mx-auto space-y-6 text-left py-4 relative px-4">
       <button
         onClick={() => navigate(-1)}
         className="fixed top-4 left-4 sm:top-6 sm:left-6 z-[100] inline-flex items-center justify-center w-10 h-10 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white rounded-full transition-all cursor-pointer shadow-lg"
@@ -218,7 +218,7 @@ export const AdminSocietiesPage: React.FC = () => {
         <ArrowLeft className="w-5 h-5" />
       </button>
 
-      <div className="w-[95%] max-w-[1200px] flex justify-between items-center mb-6">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 py-6">
         <h1 className="text-4xl font-extrabold text-white">Societies Management</h1>
         <button
           onClick={() => setIsAddSocietyModalOpen(true)}
@@ -228,7 +228,7 @@ export const AdminSocietiesPage: React.FC = () => {
         </button>
       </div>
 
-      <div className="w-[95%] max-w-[1200px] bg-white/[0.08] backdrop-blur-[20px] rounded-[24px] p-[30px] shadow-[0_12px_40px_rgba(0,0,0,0.4)] border border-white/20">
+      <div className="w-full bg-white/[0.08] backdrop-blur-[20px] rounded-[24px] p-6 shadow-[0_12px_40px_rgba(0,0,0,0.4)] border border-white/20 overflow-x-auto">
         <div className="mb-[25px]">
           <h2 className="text-lg font-bold text-white m-0 border-b border-white/10 pb-3">Societies</h2>
         </div>
@@ -257,7 +257,7 @@ export const AdminSocietiesPage: React.FC = () => {
                   <th className="p-[15px] text-slate-400 text-[13px] uppercase tracking-[1px] border-b border-white/10 w-[8%]">Sr.</th>
                   <th className="p-[15px] text-slate-400 text-[13px] uppercase tracking-[1px] border-b border-white/10 w-[20%]">Society</th>
                   <th className="p-[15px] text-slate-400 text-[13px] uppercase tracking-[1px] border-b border-white/10 w-[20%]">Advisor</th>
-                  <th className="p-[15px] text-slate-400 text-[13px] uppercase tracking-[1px] border-b border-white/10 w-[15%]">Department</th>
+                  
                   <th className="p-[15px] text-slate-400 text-[13px] uppercase tracking-[1px] border-b border-white/10 w-[15%] text-center">Status</th>
                   <th className="p-[15px] text-slate-400 text-[13px] uppercase tracking-[1px] border-b border-white/10 w-[22%] text-center">Actions</th>
                 </tr>
@@ -287,9 +287,7 @@ export const AdminSocietiesPage: React.FC = () => {
                         {society.advisor?.user.fullName || <span className="text-slate-500 italic">None</span>}
                       </td>
                       
-                      <td className="py-[18px] px-[15px] text-[15px] border-b border-white/5 text-slate-300 group-last:border-b-0">
-                        {society.advisor?.department || <span className="text-slate-500 italic">-</span>}
-                      </td>
+                      
                       <td className="py-[18px] px-[15px] text-[15px] border-b border-white/5 text-center group-last:border-b-0">
                         <span className={`inline-block px-[14px] py-[6px] rounded-[20px] text-[12px] font-bold border ${statusClass}`}>
                           {statusText}
@@ -308,13 +306,13 @@ export const AdminSocietiesPage: React.FC = () => {
                             </button>
                           ) : (
                             <button
-                              onClick={() => setDeactivatingSociety(society)}
-                              className="px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all flex items-center gap-1 bg-transparent text-red-400 border border-red-500/30 hover:bg-red-500/20"
-                              title="Ban Society"
-                            >
-                              <UserX className="w-3 h-3" />
-                              Ban
-                            </button>
+                                onClick={() => setDeactivatingSociety(society)}
+                                className="px-3 py-1.5 rounded-[12px] text-[11px] font-bold transition-all flex items-center gap-1.5 bg-red-600 text-white hover:bg-red-700 shadow-md"
+                                title="Ban Society"
+                              >
+                                <Ban className="w-3.5 h-3.5" />
+                                Ban
+                              </button>
                           )}
                         </div>
                       </td>
@@ -444,7 +442,7 @@ export const AdminSocietiesPage: React.FC = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-lumen-cream/80 backdrop-blur-sm p-4">
           <div className="bg-lumen-cream p-6 sm:p-8 rounded-cards border border-red-500/30 max-w-md w-full space-y-4 bg-lumen-stone text-left">
             <h3 className="font-extrabold text-vast-ink text-lg text-red-400 flex items-center gap-2">
-              <UserX className="w-5 h-5" />
+              <Ban className="w-5 h-5" />
               <span>Deactivate Society Account?</span>
             </h3>
 

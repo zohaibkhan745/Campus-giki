@@ -22,6 +22,7 @@ import {
 import { postService, type PostItem } from '@/services/post.service';
 import { societyService } from '@/services/society.service';
 import { Button } from '@/components/ui/Button';
+import { PostCard } from '@/components/feed/PostCard';
 import { CustomDropdown } from '@/components/ui/CustomDropdown';
 import { Alert } from '@/components/ui/Alert';
 import { PostCreateModal } from '@/components/feed/PostCreateModal';
@@ -151,31 +152,22 @@ export const AdminPostsPage: React.FC = () => {
         </button>
       </div>
 
-      <div className="bg-transparent p-6 rounded-[18px] border border-white/10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <div className="flex items-center gap-2 text-white text-xs font-semibold uppercase tracking-wider mb-1">
-            <Shield className="w-4 h-4" />
-            <span>DSA Administration</span>
-          </div>
-          <h1 className="text-2xl font-extrabold text-white">
-            Campus Posts
-          </h1>
-          <p className="text-sm text-gray-400">
-            Manage global administrative posts and moderate society posts.
-          </p>
-        </div>
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 py-6">
+        <h1 className="text-4xl font-extrabold text-white drop-shadow-md">
+          Campus Posts
+        </h1>
         <Button
           variant="primary"
           onClick={handleOpenCreate}
           className="shrink-0"
           leftIcon={<Plus className="w-4 h-4" />}
         >
-          New Global Post
+          New Post
         </Button>
       </div>
 
       {/* Filter Toolbar */}
-      <div className="bg-white/[0.08] backdrop-blur-[20px] p-5 rounded-[18px] border border-white/20 shadow-[0_12px_40px_rgba(0,0,0,0.4)] flex flex-wrap items-center gap-4">
+      <div className="relative z-[200] bg-white/[0.08] backdrop-blur-[20px] p-5 rounded-[18px] border border-white/20 shadow-[0_12px_40px_rgba(0,0,0,0.4)] flex flex-wrap items-center gap-4">
         {/* Type Filter */}
         <CustomDropdown 
           options={[
@@ -239,85 +231,32 @@ export const AdminPostsPage: React.FC = () => {
           )}
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="cards-container" style={{ padding: 0, minHeight: 'auto', gap: '24px', alignItems: 'flex-start' }}>
           {posts.map((post) => {
             const isAdmin = post.author.role === 'DSA_ADMIN';
             const isOwnPost = isAdmin; // Since we are viewing as Admin
             
+            // Format post for PostCard if needed. PostFeedItem requires society, if Admin, inject dummy society
+            const feedItem = {
+              ...post,
+              society: post.author.society || {
+                id: 'admin',
+                name: 'GIKI Administration',
+                description: 'Directorate of Student Affairs',
+                logoUrl: '',
+                coverUrl: '',
+                email: 'dsa@giki.edu.pk',
+                status: 'ACTIVE'
+              }
+            };
+            
             return (
-              <div key={post.id} className="bg-white/[0.08] backdrop-blur-[20px] p-6 rounded-[18px] border border-white/20 shadow-[0_12px_40px_rgba(0,0,0,0.4)] flex flex-col h-full">
-                <div className="flex items-start justify-between mb-3 gap-2">
-                  <div className="flex items-center gap-2">
-                    {isAdmin ? (
-                      <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center shrink-0">
-                        <Shield className="w-4 h-4 text-pure-white" />
-                      </div>
-                    ) : post.author.society?.logoUrl ? (
-                      <img src={post.author.society.logoUrl} className="w-8 h-8 rounded-full object-cover border border-white/10 shrink-0" alt="" />
-                    ) : (
-                      <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center border border-white/10 shrink-0">
-                        <Building2 className="w-4 h-4 text-white" />
-                      </div>
-                    )}
-                    <div>
-                      <h4 className="text-sm font-bold text-white">
-                        {isAdmin ? 'GIKI Administration' : post.author.society?.name}
-                      </h4>
-                      <div className="flex items-center gap-1.5 text-xs text-gray-400 font-medium">
-                        <Clock className="w-3 h-3" />
-                        <span>{new Date(post.createdAt).toLocaleDateString()}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-1">
-                    {isOwnPost && (
-                      <button 
-                        onClick={() => handleOpenEdit(post)}
-                        className="p-1.5 text-gray-400 hover:text-white hover:bg-white/10 rounded transition-colors"
-                        title="Edit Post"
-                      >
-                        <Edit2 className="w-4 h-4" />
-                      </button>
-                    )}
-                    <button 
-                      onClick={() => handleDelete(post.id)}
-                      className="p-1.5 text-gray-400 hover:text-red-400 hover:bg-red-500/20 rounded transition-colors"
-                      title={isOwnPost ? "Delete Post" : "Delete (Moderation)"}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-                
-                <p className="text-sm text-white whitespace-pre-wrap flex-1">{post.content}</p>
-                
-                {post.videoUrl && (
-                  <div className="mt-4 rounded-[14px] overflow-hidden border border-white/10 bg-black">
-                    <video 
-                      controls
-                      src={post.videoUrl} 
-                      className="w-full max-h-56 object-contain"
-                    />
-                  </div>
-                )}
-
-                {post.imageUrl && !post.videoUrl && (
-                  <div className="mt-4 rounded-[14px] overflow-hidden border border-white/10">
-                    <img 
-                      src={post.imageUrl} 
-                      alt="Post attachment" 
-                      className="w-full h-32 object-cover"
-                      onError={(e) => {
-                        e.currentTarget.style.display = 'none';
-                        if (e.currentTarget.parentElement) {
-                          e.currentTarget.parentElement.style.display = 'none';
-                        }
-                      }}
-                    />
-                  </div>
-                )}
-              </div>
+              <PostCard 
+                key={post.id} 
+                item={feedItem as any} 
+                onEdit={isOwnPost ? () => handleOpenEdit(post) : undefined}
+                onDelete={() => handleDelete(post.id)}
+              />
             );
           })}
         </div>

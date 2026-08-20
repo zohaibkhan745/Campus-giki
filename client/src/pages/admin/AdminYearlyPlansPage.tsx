@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link, useSearchParams, useNavigate } from 'react-router-dom';
+import { CustomDropdown } from '@/components/ui/CustomDropdown';
 import {
   Shield,
   Search,
@@ -104,21 +105,14 @@ export const AdminYearlyPlansPage: React.FC = () => {
       </div>
 
       {/* Header Banner */}
-      <div className="space-y-1 bg-transparent p-6 rounded-cards border border-white/10">
-        <div className="flex items-center gap-2 text-white text-xs font-semibold uppercase tracking-wider mb-1">
-          <Shield className="w-4 h-4" />
-          <span>DSA Records &amp; Monitoring Directorate</span>
-        </div>
-        <h1 className="text-2xl font-extrabold text-white">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 py-6">
+        <h1 className="text-4xl font-extrabold text-white drop-shadow-md">
           Campus Society Yearly Plan Records
         </h1>
-        <p className="text-sm text-gray-400">
-          Central audit log of annual society calendar plans, advisor reviews, and status tracking.
-        </p>
       </div>
 
       {/* Filter Toolbar */}
-      <div className="bg-[#17181c]/80 backdrop-blur-md p-4 rounded-cards border border-white/10 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div className="relative z-[200] bg-white/[0.08] backdrop-blur-[20px] p-5 rounded-[18px] border border-white/20 shadow-[0_12px_40px_rgba(0,0,0,0.4)] flex flex-col md:flex-row items-center justify-between gap-4">
         {/* Search Input */}
         <div className="relative w-full md:w-72 flex items-center">
           <div className="absolute left-3 text-gray-400 pointer-events-none flex items-center justify-center">
@@ -139,44 +133,36 @@ export const AdminYearlyPlansPage: React.FC = () => {
         {/* Dropdown Filters & Clear */}
         <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
           {/* Status Filter */}
-          <div className="relative flex items-center w-full sm:w-44">
-            <div className="absolute left-3 text-gray-400 pointer-events-none flex items-center justify-center">
-              <Filter className="w-4 h-4" />
-            </div>
-            <select
+          <div className="w-full sm:w-48 shrink-0">
+            <CustomDropdown
+              icon={<Filter className="w-4 h-4" />}
               value={statusFilter}
-              onChange={(e) => {
-                setStatusFilter(e.target.value);
-                setPage(1);
-              }}
-              className="w-full bg-transparent text-white text-sm rounded-inputs border border-white/10 px-3.5 py-2 pl-10 transition-all outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
-            >
-              <option value="">All Submitted Plans</option>
-              <option value="PENDING">Pending Review</option>
-              <option value="APPROVED">Approved</option>
-              <option value="CHANGES_REQUESTED">Changes Requested</option>
-            </select>
+              onChange={(val) => { setStatusFilter(val); setPage(1); }}
+              placeholder="All Submitted Plans"
+              options={[
+                { value: '', label: 'All Submitted Plans' },
+                { value: 'PENDING', label: 'Pending Review' },
+                { value: 'APPROVED', label: 'Approved' },
+                { value: 'CHANGES_REQUESTED', label: 'Changes Requested' }
+              ]}
+            />
           </div>
 
           {/* Year Select Filter */}
-          <div className="relative flex items-center w-full sm:w-36">
-            <div className="absolute left-3 text-gray-400 pointer-events-none flex items-center justify-center z-10">
-              <Calendar className="w-4 h-4" />
-            </div>
-            <select
+          <div className="w-full sm:w-40 shrink-0">
+            <CustomDropdown
+              icon={<Calendar className="w-4 h-4" />}
               value={yearFilter}
-              onChange={(e) => {
-                setYearFilter(e.target.value);
-                setPage(1);
-              }}
-              className="w-full bg-transparent text-white text-sm rounded-inputs border border-white/10 px-3.5 py-2 pl-10 transition-all outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 cursor-pointer"
-            >
-              <option value="">All Years</option>
-              <option value="2026">2026</option>
-              <option value="2025">2025</option>
-              <option value="2024">2024</option>
-              <option value="2027">2027</option>
-            </select>
+              onChange={(val) => { setYearFilter(val); setPage(1); }}
+              placeholder="All Years"
+              options={[
+                { value: '', label: 'All Years' },
+                { value: '2026', label: '2026' },
+                { value: '2025', label: '2025' },
+                { value: '2024', label: '2024' },
+                { value: '2027', label: '2027' }
+              ]}
+            />
           </div>
 
           {(statusFilter || yearFilter || searchQuery) && (
