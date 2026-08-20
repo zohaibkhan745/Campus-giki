@@ -333,7 +333,7 @@ export const SocietyProfilePage: React.FC = () => {
                   </p>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="flex flex-wrap justify-center gap-8">
                   {postsData.map((post) => (
                     <PostCard key={post.id} item={post} />
                   ))}
@@ -358,7 +358,7 @@ export const SocietyProfilePage: React.FC = () => {
                   </p>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="flex flex-wrap justify-center gap-8">
                   {upcomingEvents.map((event) => (
                     <EventCard
                       key={event.id}
@@ -383,7 +383,7 @@ export const SocietyProfilePage: React.FC = () => {
                   No past events recorded for this society.
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 opacity-80">
+                <div className="flex flex-wrap justify-center gap-8 opacity-80">
                   {pastEvents.map((event) => (
                     <EventCard
                       key={event.id}

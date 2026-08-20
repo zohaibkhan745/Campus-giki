@@ -89,23 +89,20 @@ export const EventCard: React.FC<EventCardProps> = ({ item }) => {
         .event-card-wrapper {
           position: relative;
           width: 100%;
-          max-width: 400px;
-          height: 500px;
-          margin: 0 auto;
-          transform-style: preserve-3d;
-          transition: transform 0.15s ease-out, filter 0.3s ease;
+          height: 100%;
+          min-height: 400px;
           perspective: 1200px;
           z-index: 1;
         }
 
-        .card-flipped-active .event-card-wrapper:not(.is-active) {
-          filter: blur(4px);
-          opacity: 0.6;
-          pointer-events: none;
-        }
-        
         .event-card-wrapper.is-active {
-          z-index: 100;
+          position: fixed;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%) !important;
+          z-index: 50;
+          width: 360px;
+          height: 520px;
         }
 
         .event-card-flipper {
@@ -122,315 +119,45 @@ export const EventCard: React.FC<EventCardProps> = ({ item }) => {
 
         .event-card-face {
           position: absolute;
-          inset: 0;
           width: 100%;
           height: 100%;
-          border-radius: 28px;
-          overflow: hidden;
           backface-visibility: hidden;
-          -webkit-backface-visibility: hidden;
-          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.12);
-          transform: translateZ(0);
-          will-change: transform;
-        }
-
-        /* FRONT FACE */
-        .event-card-front {
-          background: #14161b;
-          z-index: 2;
-        }
-
-        .event-card-image {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          object-position: center;
-        }
-
-        .event-card-overlay {
-          position: absolute;
-          inset: 0;
-          background: linear-gradient(
-            180deg,
-            rgba(0, 0, 0, 0.65) 0%,
-            rgba(0, 0, 0, 0.15) 35%,
-            rgba(0, 0, 0, 0.35) 65%,
-            rgba(0, 0, 0, 0.85) 100%
-          );
-          display: flex;
-          flex-direction: column;
-          justify-content: space-between;
-          padding: 24px;
-          z-index: 2;
-        }
-
-        .event-user-profile {
-          display: flex;
-          flex-direction: column;
-          gap: 12px;
-        }
-
-        .event-profile-header {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-        }
-
-        .event-avatar {
-          width: 44px;
-          height: 44px;
-          border-radius: 50%;
-          border: 2px solid rgba(255, 255, 255, 0.85);
-          object-fit: cover;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-          background-color: #1f2937;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-
-        .event-author-name {
-          color: #ffffff;
-          font-size: 1.15rem;
-          font-weight: 700;
-          letter-spacing: -0.2px;
-          text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8), 0 1px 3px rgba(0, 0, 0, 0.9);
-          display: -webkit-box;
-          -webkit-line-clamp: 2;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-        }
-
-        .event-meta-info {
-          display: flex;
-          flex-direction: column;
-          gap: 6px;
-        }
-
-        .event-meta-row {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          color: #e2e8f0;
-          font-size: 0.85rem;
-          font-weight: 500;
-          text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9), 0 1px 2px rgba(0, 0, 0, 0.8);
-        }
-
-        .event-meta-row svg {
-          width: 15px;
-          height: 15px;
-          fill: none;
-          stroke: #cbd5e1;
-          stroke-width: 2;
-          stroke-linecap: round;
-          stroke-linejoin: round;
-          filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.8));
-          flex-shrink: 0;
-        }
-
-        .event-details-btn {
-          width: 100%;
-          padding: 15px;
           border-radius: 20px;
-          background: rgba(255, 255, 255, 0.15);
+          overflow: hidden;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .event-card-front {
+          background: rgba(255, 255, 255, 0.03);
           backdrop-filter: blur(20px) saturate(180%);
           -webkit-backdrop-filter: blur(20px) saturate(180%);
-          border: 1px solid rgba(255, 255, 255, 0.35);
-          color: #ffffff;
-          font-size: 1rem;
-          font-weight: 600;
-          letter-spacing: 0.3px;
-          cursor: pointer;
-          box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-          text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
-          text-align: center;
-          outline: none;
-          transform: translateZ(1px);
-          -webkit-transform: translateZ(1px);
-          backface-visibility: hidden;
-          -webkit-backface-visibility: hidden;
-          will-change: transform, background;
-          transition: background 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
+          display: flex;
+          flex-direction: column;
         }
 
-        .event-details-btn:hover {
-          background: rgba(255, 255, 255, 0.25);
-          border-color: rgba(255, 255, 255, 0.5);
-          transform: translateZ(1px) translateY(-2px);
-        }
-
-        /* BACK FACE */
         .event-card-back {
-          background: #16181d;
-          transform: rotateY(180deg) translateZ(0);
+          background: rgba(10, 10, 15, 0.95);
+          backdrop-filter: blur(25px) saturate(200%);
+          -webkit-backdrop-filter: blur(25px) saturate(200%);
+          transform: rotateY(180deg);
           display: flex;
           flex-direction: column;
-          z-index: 1;
+          border: 1px solid rgba(255, 255, 255, 0.15);
         }
-
-        .event-back-image-section {
-          position: relative;
-          height: 180px;
-          width: 100%;
-          flex-shrink: 0;
-        }
-
-        .event-back-image-section img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-        }
-
-        .event-close-btn {
-          position: absolute;
-          top: 14px;
-          right: 14px;
-          width: 38px;
-          height: 38px;
-          border-radius: 50%;
-          background: rgba(255, 255, 255, 0.18);
-          backdrop-filter: blur(20px) saturate(180%);
-          -webkit-backdrop-filter: blur(20px) saturate(180%);
-          border: 1px solid rgba(255, 255, 255, 0.35);
-          box-shadow: 0 8px 24px 0 rgba(0, 0, 0, 0.4);
-          color: #ffffff;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          cursor: pointer;
-          outline: none;
-          transform: translateZ(1px);
-          -webkit-transform: translateZ(1px);
-          backface-visibility: hidden;
-          -webkit-backface-visibility: hidden;
-          will-change: transform, background;
-          transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
-          z-index: 20;
-        }
-
-        .event-close-btn svg {
-          filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.6));
-        }
-
-        .event-close-btn:hover {
-          background: rgba(255, 255, 255, 0.28);
-          border-color: rgba(255, 255, 255, 0.55);
-          transform: translateZ(1px) scale(1.06);
-        }
-
-        .event-back-content-section {
-          padding: 18px 20px;
-          background: rgba(22, 24, 29, 0.85);
-          backdrop-filter: blur(16px);
-          -webkit-backdrop-filter: blur(16px);
-          display: flex;
-          flex-direction: column;
-          flex-grow: 1;
-          gap: 12px;
-          border-top: 1px solid rgba(255, 255, 255, 0.08);
-          overflow-y: auto;
-        }
+        `}</style>
         
-        /* Custom scrollbar for back content */
-        .event-back-content-section::-webkit-scrollbar {
-          width: 4px;
-        }
-        .event-back-content-section::-webkit-scrollbar-track {
-          background: transparent;
-        }
-        .event-back-content-section::-webkit-scrollbar-thumb {
-          background: rgba(255,255,255,0.2);
-          border-radius: 4px;
-        }
-
-        .event-society-header {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-          padding-bottom: 10px;
-          flex-shrink: 0;
-        }
-
-        .event-society-avatar {
-          width: 38px;
-          height: 38px;
-          border-radius: 50%;
-          object-fit: cover;
-          background-color: #1f2937;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-
-        .event-society-text h3 {
-          color: #ffffff;
-          font-size: 0.95rem;
-          font-weight: 600;
-          display: -webkit-box;
-          -webkit-line-clamp: 1;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-        }
-
-        .event-society-text p {
-          color: #94a3b8;
-          font-size: 0.75rem;
-          display: -webkit-box;
-          -webkit-line-clamp: 1;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-        }
-
-        .event-about-event {
-          display: flex;
-          flex-direction: column;
-          gap: 4px;
-          margin-bottom: 12px;
-        }
-
-        .event-about-event h4 {
-          color: #cbd5e1;
-          font-size: 0.8rem;
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
-        }
-
-        .event-about-event p {
-          color: #94a3b8;
-          font-size: 0.82rem;
-          line-height: 1.5;
-        }
-
-        .event-register-btn {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 8px;
-          width: 100%;
-          padding: 12px;
-          background: #ffffff;
-          color: #0f172a;
-          border: none;
-          border-radius: 14px;
-          font-size: 0.9rem;
-          font-weight: 600;
-          text-decoration: none;
-          cursor: pointer;
-          transition: background 0.2s, transform 0.2s;
-          margin-top: auto;
-          flex-shrink: 0;
-        }
-
-        .event-register-btn:hover {
-          background: #f1f5f9;
-          transform: translateY(-1px);
-        }
-      `}</style>
+        {isFlipped && (
+          <div 
+            className="fixed inset-0 bg-[#050507]/60 backdrop-blur-md z-40"
+            style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 40 }}
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsFlipped(false);
+            }}
+          />
+        )}
+  
       
       <div 
         className={`event-card-wrapper ${isFlipped ? 'is-active' : ''}`} 

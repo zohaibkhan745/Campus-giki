@@ -24,6 +24,7 @@ import { advisorService } from '@/services/advisor.service';
 import type { PlanStatus } from '@/types/yearly-plan.types';
 import { Alert } from '@/components/ui/Alert';
 import { usePendingCounts } from '@/hooks/usePendingCounts';
+import { BannerHeader } from '@/components/layout/BannerHeader';
 
 export const AdvisorQueuePage: React.FC = () => {
   const { user, logout } = useAuth();
@@ -121,41 +122,12 @@ export const AdvisorQueuePage: React.FC = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6 text-left py-4">
-      {/* 1. Welcome Banner — matches Society & Admin Dashboard */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-transparent p-6 rounded-cards border border-vast-ink/20 shadow-sm">
-        <div className="flex items-center gap-4">
-          {user?.avatarUrl ? (
-            <img
-              src={user.avatarUrl}
-              alt={user.fullName}
-              className="w-16 h-16 rounded-full border border-vast-ink/20 object-cover shrink-0"
-            />
-          ) : assignedSocietyLogo ? (
-            <img
-              src={assignedSocietyLogo}
-              alt={assignedSocietyName}
-              className="w-16 h-16 rounded-full object-cover border border-vast-ink/20 bg-lumen-cream shrink-0"
-            />
-          ) : (
-            <div className="w-16 h-16 flex items-center justify-center bg-lumen-stone border border-vast-ink/20 rounded-full text-vast-ink shrink-0">
-              <Building2 className="w-8 h-8" />
-            </div>
-          )}
-          <div>
-            <h1 className="text-2xl font-extrabold text-vast-ink line-clamp-1">
-              Welcome back, {user?.fullName || 'Advisor'}
-            </h1>
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1 text-sm text-fog font-medium">
-              <span className="flex items-center gap-1.5">
-                <FileText className="w-4 h-4 text-ember-glow shrink-0" />
-                Faculty Advisor • <span className="text-vast-ink font-semibold">{assignedSocietyName}</span>
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-3 shrink-0 mt-4 md:mt-0">
+    <div className="w-full">
+      <BannerHeader title={`Welcome back, ${user?.fullName || 'Advisor'}`} subtitle={`Faculty Advisor - ${assignedSocietyName}`} logoUrl={assignedSocietyLogo || user?.avatarUrl} />
+      <div className="max-w-6xl mx-auto space-y-6 text-left py-4 px-4">
+        {/* Actions Row */}
+        <div className="flex justify-end mb-4">
+          <div className="flex items-center gap-3 shrink-0 mt-4 md:mt-0">
           <Link
             to="/settings"
             className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-transparent border border-vast-ink/20 hover:bg-lumen-stone rounded-inputs text-vast-ink text-sm font-bold transition-colors"
@@ -446,6 +418,7 @@ export const AdvisorQueuePage: React.FC = () => {
           </div>
         </nav>
       )}
+    </div>
     </div>
   );
 };

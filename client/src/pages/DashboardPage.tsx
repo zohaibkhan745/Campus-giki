@@ -8,6 +8,7 @@ import { DeleteEventDialog } from '@/components/events/DeleteEventDialog';
 import { MakeAnnouncementDialog } from '@/components/feed/MakeAnnouncementDialog';
 import { AdminDashboardPage } from '@/pages/admin/AdminDashboardPage';
 import { AdvisorQueuePage } from '@/pages/advisor/AdvisorQueuePage';
+import { BannerHeader } from '@/components/layout/BannerHeader';
 import type { EventItem } from '@/types/event.types';
 import {
   UserCheck,
@@ -178,37 +179,12 @@ export const DashboardPage: React.FC = () => {
   );
 
   return (
-    <div className="space-y-6 text-left">
-      {/* 1. Welcome & Identity Banner */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-[#17181c]/80 backdrop-blur-md p-6 rounded-2xl border border-white/10 shadow-xl">
-        <div className="flex items-center gap-4">
-          {profile?.logoUrl ? (
-            <img
-              src={profile.logoUrl}
-              alt={profile.name}
-              className="w-16 h-16 rounded-full object-cover bg-gray-800 border border-white/20 shrink-0"
-            />
-          ) : (
-            <div className="w-16 h-16 flex items-center justify-center bg-gray-800 rounded-full text-white shrink-0 border border-white/10">
-              <Building2 className="w-8 h-8 text-gray-400" />
-            </div>
-          )}
-          <div>
-            <h1 className="text-3xl font-extrabold text-white line-clamp-1">
-              Welcome back, {profile?.name || user?.fullName || 'User'}
-            </h1>
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-1 text-sm text-gray-400 font-medium">
-              {profile?.advisor && profile.advisor.user && (
-                <span className="flex items-center gap-1.5">
-                  <UserCheck className="w-4 h-4 text-gray-500 shrink-0" />
-                  Advisor: <span className="text-gray-300 font-semibold">{profile.advisor.user.fullName}</span>
-                </span>
-              )}
-            </div>
-          </div>
-        </div>
-        
-        <div className="flex items-center gap-3 shrink-0 mt-4 md:mt-0">
+    <div className="w-full">
+      <BannerHeader title={profile?.name || user?.fullName || 'User'} subtitle={profile?.advisor?.user ? `Advisor: ${profile.advisor.user.fullName}` : undefined} logoUrl={profile?.logoUrl} bannerUrl={profile?.bannerUrl} />
+      <div className="space-y-6 text-left py-4 px-4">
+        {/* Actions Row */}
+        <div className="flex justify-end mb-4">
+          <div className="flex items-center gap-3 shrink-0 mt-4 md:mt-0">
           <Link
             to="/society/setup"
             className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-transparent hover:bg-white/10 rounded-xl text-white text-sm font-bold transition-colors border border-white/20"
@@ -389,6 +365,7 @@ export const DashboardPage: React.FC = () => {
         isOpen={isAnnouncementDialogOpen}
         onClose={() => setIsAnnouncementDialogOpen(false)}
       />
+    </div>
     </div>
   );
 };

@@ -23,6 +23,7 @@ import { adminService } from '@/services/admin.service';
 import { Alert } from '@/components/ui/Alert';
 import { MakeAnnouncementDialog } from '@/components/feed/MakeAnnouncementDialog';
 import { usePendingCounts } from '@/hooks/usePendingCounts';
+import { BannerHeader } from '@/components/layout/BannerHeader';
 
 export const AdminDashboardPage: React.FC = () => {
   const { user, logout } = useAuth();
@@ -43,35 +44,12 @@ export const AdminDashboardPage: React.FC = () => {
   const upcomingEvents = data?.upcomingEventsPreview || [];
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6 text-left py-4">
-      {/* 1. Welcome Banner — matches Society Dashboard */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-[#17181c]/80 backdrop-blur-md p-6 rounded-2xl border border-white/10 shadow-xl">
-        <div className="flex items-center gap-4">
-          {user?.avatarUrl ? (
-            <img 
-              src={user.avatarUrl} 
-              alt="Admin Avatar" 
-              className="w-16 h-16 rounded-full border border-white/20 object-cover shrink-0" 
-            />
-          ) : (
-            <div className="w-16 h-16 flex items-center justify-center bg-gray-800 border border-white/10 rounded-full text-white shrink-0">
-              <Shield className="w-8 h-8 text-gray-400" />
-            </div>
-          )}
-          <div>
-            <h1 className="text-3xl font-extrabold text-white line-clamp-1">
-              Welcome back, {user?.fullName || 'Admin'}
-            </h1>
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1 text-sm text-gray-400 font-medium">
-              <span className="flex items-center gap-1.5">
-                <Shield className="w-4 h-4 text-gray-500 shrink-0" />
-                Directorate of Student Affairs
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-3 shrink-0 mt-4 md:mt-0">
+    <div className="w-full">
+      <BannerHeader title={`Welcome back, ${user?.fullName || 'Admin'}`} subtitle="Directorate of Student Affairs" />
+      <div className="max-w-6xl mx-auto space-y-6 text-left py-4 px-4">
+        {/* Actions Row */}
+        <div className="flex justify-end mb-4">
+          <div className="flex items-center gap-3 shrink-0 mt-4 md:mt-0">
           <button
             onClick={() => setIsAnnouncementDialogOpen(true)}
             className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-white hover:bg-gray-100 text-gray-900 rounded-xl text-sm font-bold transition-colors shadow-lg"
@@ -286,6 +264,7 @@ export const AdminDashboardPage: React.FC = () => {
         isOpen={isAnnouncementDialogOpen}
         onClose={() => setIsAnnouncementDialogOpen(false)}
       />
+    </div>
     </div>
   );
 };
