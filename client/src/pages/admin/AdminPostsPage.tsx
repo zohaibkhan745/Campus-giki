@@ -150,7 +150,7 @@ export const AdminPostsPage: React.FC = () => {
         </button>
       </div>
 
-      <div className="bg-transparent p-6 rounded-cards border border-white/10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div className="bg-transparent p-6 rounded-[18px] border border-white/10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <div className="flex items-center gap-2 text-white text-xs font-semibold uppercase tracking-wider mb-1">
             <Shield className="w-4 h-4" />
@@ -174,7 +174,7 @@ export const AdminPostsPage: React.FC = () => {
       </div>
 
       {/* Filter Toolbar */}
-      <div className="bg-[#17181c]/80 backdrop-blur-md p-4 rounded-cards border border-white/10 flex flex-wrap items-center gap-4">
+      <div className="bg-[#17181c]/80 backdrop-blur-md p-4 rounded-[18px] border border-white/10 flex flex-wrap items-center gap-4">
         {/* Type Filter */}
         <select
           value={typeFilter}
@@ -184,11 +184,11 @@ export const AdminPostsPage: React.FC = () => {
             if (val === 'global') setSocietyFilter('');
             setPage(1);
           }}
-          className="w-full md:w-48 bg-transparent text-white text-sm font-semibold rounded-inputs border border-white/10 px-3.5 py-2 transition-all outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 shrink-0 cursor-pointer"
+          className="w-full md:w-48 bg-transparent text-white text-sm font-semibold rounded-[14px] border border-white/10 px-3.5 py-2 transition-all outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 shrink-0 cursor-pointer"
         >
-          <option value="all">All Posts</option>
-          <option value="global">Admin</option>
-          <option value="society">Societies</option>
+          <option value="all" className="bg-gray-900">All Posts</option>
+          <option value="global" className="bg-gray-900">Admin</option>
+          <option value="society" className="bg-gray-900">Societies</option>
         </select>
 
         {/* Society Dropdown */}
@@ -200,18 +200,18 @@ export const AdminPostsPage: React.FC = () => {
             setPage(1);
           }}
           disabled={typeFilter === 'global'}
-          className="w-full md:w-64 bg-transparent text-white text-sm rounded-inputs border border-white/10 px-3.5 py-2 transition-all outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 disabled:opacity-50"
+          className="w-full md:w-64 bg-transparent text-white text-sm rounded-[14px] border border-white/10 px-3.5 py-2 transition-all outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 disabled:opacity-50"
         >
-          <option value="">All Societies</option>
+          <option value="" className="bg-gray-900">All Societies</option>
           {societies.map((soc) => (
-            <option key={soc.id} value={soc.id}>{soc.name}</option>
+            <option key={soc.id} value={soc.id} className="bg-gray-900">{soc.name}</option>
           ))}
         </select>
 
         {(typeFilter !== 'all' || societyFilter) && (
           <button
             onClick={handleClearFilters}
-            className="p-2 text-gray-400 hover:text-white bg-white/5 rounded-inputs transition-colors shrink-0"
+            className="p-2 text-gray-400 hover:text-white bg-white/5 rounded-[14px] transition-colors shrink-0"
             title="Clear filters"
           >
             <FilterX className="w-4 h-4" />
@@ -224,7 +224,7 @@ export const AdminPostsPage: React.FC = () => {
           <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
         </div>
       ) : posts.length === 0 ? (
-        <div className="bg-[#17181c]/80 backdrop-blur-md p-12 rounded-cards border border-white/10 border-dashed flex flex-col items-center justify-center text-center space-y-3">
+        <div className="bg-white/[0.08] backdrop-blur-[20px] p-12 rounded-[18px] border border-white/20 shadow-[0_12px_40px_rgba(0,0,0,0.4)] flex flex-col items-center justify-center text-center space-y-3">
           <div className="p-4 bg-transparent rounded-full border border-white/10 shadow-sm">
             <MessageSquare className="w-8 h-8 text-gray-400" />
           </div>
@@ -245,11 +245,11 @@ export const AdminPostsPage: React.FC = () => {
             const isOwnPost = isAdmin; // Since we are viewing as Admin
             
             return (
-              <div key={post.id} className="bg-transparent p-5 rounded-cards border border-white/10 flex flex-col h-full shadow-sm hover:shadow-md transition-shadow">
+              <div key={post.id} className="bg-white/[0.05] hover:bg-white/[0.1] backdrop-blur-md p-5 rounded-[18px] border border-white/10 transition-all flex flex-col h-full shadow-sm">
                 <div className="flex items-start justify-between mb-3 gap-2">
                   <div className="flex items-center gap-2">
                     {isAdmin ? (
-                      <div className="w-8 h-8 rounded-full bg-vast-ink flex items-center justify-center shrink-0">
+                      <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center shrink-0">
                         <Shield className="w-4 h-4 text-pure-white" />
                       </div>
                     ) : post.author.society?.logoUrl ? (
@@ -293,7 +293,7 @@ export const AdminPostsPage: React.FC = () => {
                 <p className="text-sm text-white whitespace-pre-wrap flex-1">{post.content}</p>
                 
                 {post.videoUrl && (
-                  <div className="mt-4 rounded-inputs overflow-hidden border border-white/10 bg-black">
+                  <div className="mt-4 rounded-[14px] overflow-hidden border border-white/10 bg-black">
                     <video 
                       controls
                       src={post.videoUrl} 
@@ -303,7 +303,7 @@ export const AdminPostsPage: React.FC = () => {
                 )}
 
                 {post.imageUrl && !post.videoUrl && (
-                  <div className="mt-4 rounded-inputs overflow-hidden border border-white/10">
+                  <div className="mt-4 rounded-[14px] overflow-hidden border border-white/10">
                     <img 
                       src={post.imageUrl} 
                       alt="Post attachment" 
@@ -365,7 +365,7 @@ export const AdminPostsPage: React.FC = () => {
       {/* Delete Confirmation Modal */}
       {postToDelete && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-950/40">
-          <div className="bg-transparent w-full max-w-sm rounded-cards border border-white/10 p-6 shadow-2xl space-y-4">
+          <div className="bg-transparent w-full max-w-sm rounded-[18px] border border-white/10 p-6 shadow-2xl space-y-4">
             <div className="flex items-center gap-3 text-red-500">
               <AlertTriangle className="w-6 h-6 shrink-0" />
               <h2 className="text-lg font-extrabold text-white">Remove Post</h2>

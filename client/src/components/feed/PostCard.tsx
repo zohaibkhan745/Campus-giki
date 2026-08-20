@@ -26,8 +26,7 @@ export const PostCard: React.FC<PostCardProps> = ({ item }) => {
     minute: '2-digit'
   });
 
-  const fallbackImage = 'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?auto=format&fit=crop&w=800&q=80';
-  const coverImage = item.imageUrl || fallbackImage;
+  const coverImage = item.imageUrl;
   const logoImage = item.society.logoUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80';
 
   useEffect(() => {
@@ -66,7 +65,7 @@ export const PostCard: React.FC<PostCardProps> = ({ item }) => {
       
       <div 
         ref={wrapperRef}
-        className={`relative w-[340px] h-[490px] mx-auto z-50 transition-transform duration-150 ease-out ${isFlipped ? 'scale-105' : ''}`}
+        className={`relative w-[340px] h-[490px] mx-auto transition-transform duration-150 ease-out ${isFlipped ? 'scale-105 z-50' : 'z-10'}`}
         style={{ perspective: '1200px', transform: isFlipped ? 'none' : `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)` }}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
@@ -77,7 +76,7 @@ export const PostCard: React.FC<PostCardProps> = ({ item }) => {
         >
           {/* FRONT FACE */}
           <div 
-            className="absolute inset-0 w-full h-full rounded-[18px] overflow-hidden bg-[#14161b] z-10"
+            className="absolute inset-0 w-full h-full rounded-[18px] overflow-hidden bg-white/[0.05] backdrop-blur-[12px] z-10"
             style={{ 
               backfaceVisibility: 'hidden', 
               WebkitBackfaceVisibility: 'hidden',
@@ -85,8 +84,8 @@ export const PostCard: React.FC<PostCardProps> = ({ item }) => {
               transform: 'translateZ(0)'
             }}
           >
-            <img src={coverImage} alt="Post Cover" className="absolute inset-0 w-full h-full object-cover object-center" />
-            
+            {coverImage && <img src={coverImage} alt="Post Cover" className="absolute inset-0 w-full h-full object-cover object-center" />}
+            <div className="absolute top-4 right-4 px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-white text-[0.7rem] font-bold tracking-wider uppercase shadow-sm z-30">Post</div>
             <div 
               className="absolute inset-0 flex flex-col justify-between p-6 z-10"
               style={{
@@ -120,7 +119,7 @@ export const PostCard: React.FC<PostCardProps> = ({ item }) => {
 
           {/* BACK FACE */}
           <div 
-            className="absolute inset-0 w-full h-full rounded-[18px] overflow-hidden bg-[#16181d] flex flex-col"
+            className="absolute inset-0 w-full h-full rounded-[18px] overflow-hidden bg-white/[0.05] backdrop-blur-[12px] flex flex-col"
             style={{ 
               backfaceVisibility: 'hidden', 
               WebkitBackfaceVisibility: 'hidden',
@@ -129,7 +128,8 @@ export const PostCard: React.FC<PostCardProps> = ({ item }) => {
             }}
           >
             <div className="relative h-[180px] w-full shrink-0">
-              <img src={coverImage} alt="Post Cover" className="w-full h-full object-cover" />
+              {coverImage ? <img src={coverImage} alt="Post Cover" className="w-full h-full object-cover" /> : <div className="w-full h-full bg-white/[0.05]" />}
+              <div className="absolute top-4 right-14 px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-white text-[0.7rem] font-bold tracking-wider uppercase shadow-sm z-30">Post</div>
               <button 
                 type="button" 
                 onClick={(e) => { e.stopPropagation(); setIsFlipped(false); }}
@@ -140,7 +140,7 @@ export const PostCard: React.FC<PostCardProps> = ({ item }) => {
               </button>
             </div>
 
-            <div className="p-[18px_20px] bg-[#16181d]/85 backdrop-blur-[16px] flex flex-col justify-between grow gap-3 border-t border-white/10 text-left">
+            <div className="p-[18px_20px] bg-white/[0.05] backdrop-blur-[16px] flex flex-col justify-between grow gap-3 border-t border-white/10 text-left">
               <div className="flex items-center gap-2.5 pb-2.5 border-b border-white/10">
                 <img src={logoImage} alt={item.society.name} className="w-[38px] h-[38px] rounded-full object-cover" />
                 <div>

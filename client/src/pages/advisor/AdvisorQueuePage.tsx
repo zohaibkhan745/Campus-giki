@@ -219,7 +219,7 @@ export const AdvisorQueuePage: React.FC = () => {
           </div>
 
           {/* Decorative background */}
-          <FileText className="absolute -right-4 -bottom-4 w-40 h-40 text-white opacity-[0.03] z-0 pointer-events-none group-hover:scale-110 transition-transform duration-500" />
+          
         </div>
       </div>
 

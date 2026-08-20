@@ -50,6 +50,13 @@ export const AdminDashboardPage: React.FC = () => {
         {/* Actions Row */}
         <div className="flex justify-end mb-4">
           <div className="flex items-center gap-3 shrink-0 mt-4 md:mt-0">
+                    <Link
+            to="/admin/societies/create"
+            className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-white hover:bg-gray-100 text-gray-900 rounded-xl text-sm font-bold transition-colors shadow-lg"
+          >
+            <UserPlus className="w-4 h-4" />
+            <span className="hidden sm:inline">Onboard Society</span>
+          </Link>
           <button
             onClick={() => setIsAnnouncementDialogOpen(true)}
             className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-white hover:bg-gray-100 text-gray-900 rounded-xl text-sm font-bold transition-colors shadow-lg"
@@ -87,7 +94,7 @@ export const AdminDashboardPage: React.FC = () => {
       )}
 
       {/* 2. Command Center */}
-      <div className="bg-lumen-cream p-6 rounded-[18px] border border-white/20 space-y-5">
+      <div className="bg-white/[0.08] backdrop-blur-[20px] p-6 rounded-[18px] border border-white/20 shadow-[0_12px_40px_rgba(0,0,0,0.4)] space-y-5">
         <h3 className="font-extrabold text-lg text-white flex items-center gap-2">
           Command Center
         </h3>
@@ -95,14 +102,14 @@ export const AdminDashboardPage: React.FC = () => {
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
           <Link
             to="/admin/societies"
-            className="flex flex-col items-center justify-center gap-2 p-4 bg-transparent hover:bg-white/10 text-white border border-white/20 rounded-xl font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18]"
+            className="flex flex-col items-center justify-center gap-2 p-4 bg-transparent hover:bg-white/10 text-white border border-white/20 rounded-xl font-bold transition-transform hover:-translate-y-1 shadow-[0_4px_12px_rgba(0,0,0,0.2)]"
           >
             <Building2 className="w-6 h-6" />
             <span>Societies</span>
           </Link>
           <Link
             to="/admin/events"
-            className="flex flex-col items-center justify-center gap-2 p-4 bg-transparent hover:bg-white/10 text-white border border-white/20 rounded-xl font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18] relative"
+            className="flex flex-col items-center justify-center gap-2 p-4 bg-transparent hover:bg-white/10 text-white border border-white/20 rounded-xl font-bold transition-transform hover:-translate-y-1 shadow-[0_4px_12px_rgba(0,0,0,0.2)] relative"
           >
             {totalPending > 0 && (
               <span className="absolute top-2 right-2 flex items-center justify-center w-5 h-5 bg-ember-glow text-pure-white text-[10px] font-bold rounded-full shadow-sm animate-pulse">
@@ -114,21 +121,21 @@ export const AdminDashboardPage: React.FC = () => {
           </Link>
           <Link
             to="/admin/posts"
-            className="flex flex-col items-center justify-center gap-2 p-4 bg-transparent hover:bg-white/10 text-white border border-white/20 rounded-xl font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18]"
+            className="flex flex-col items-center justify-center gap-2 p-4 bg-transparent hover:bg-white/10 text-white border border-white/20 rounded-xl font-bold transition-transform hover:-translate-y-1 shadow-[0_4px_12px_rgba(0,0,0,0.2)]"
           >
             <MessageSquare className="w-6 h-6" />
             <span>Posts</span>
           </Link>
           <Link
             to="/admin/yearly-plans"
-            className="flex flex-col items-center justify-center gap-2 p-4 bg-transparent hover:bg-white/10 text-white border border-white/20 rounded-xl font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18]"
+            className="flex flex-col items-center justify-center gap-2 p-4 bg-transparent hover:bg-white/10 text-white border border-white/20 rounded-xl font-bold transition-transform hover:-translate-y-1 shadow-[0_4px_12px_rgba(0,0,0,0.2)]"
           >
             <CalendarDays className="w-6 h-6" />
             <span>Yearly Plans</span>
           </Link>
           <Link
             to="/admin/advisors"
-            className="flex flex-col items-center justify-center gap-2 p-4 bg-transparent hover:bg-white/10 text-white border border-white/20 rounded-xl font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18]"
+            className="flex flex-col items-center justify-center gap-2 p-4 bg-transparent hover:bg-white/10 text-white border border-white/20 rounded-xl font-bold transition-transform hover:-translate-y-1 shadow-[0_4px_12px_rgba(0,0,0,0.2)]"
           >
             <Users className="w-6 h-6" />
             <span>Advisors</span>
@@ -158,7 +165,7 @@ export const AdminDashboardPage: React.FC = () => {
       {/* 4. Activity Section — 2-column */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Pending Events */}
-        <div className="space-y-4">
+        <div className="bg-white/[0.08] backdrop-blur-[20px] p-6 rounded-[18px] border border-white/20 shadow-[0_12px_40px_rgba(0,0,0,0.4)] space-y-4">
           <div className="flex items-center justify-between border-b-2 border-white/10 pb-3">
             <div className="flex items-center gap-2 font-extrabold text-lg text-white">
               <Clock className="w-5 h-5 text-ember-glow" />
@@ -209,7 +216,7 @@ export const AdminDashboardPage: React.FC = () => {
         </div>
 
         {/* Upcoming Events */}
-        <div className="space-y-4">
+        <div className="bg-white/[0.08] backdrop-blur-[20px] p-6 rounded-[18px] border border-white/20 shadow-[0_12px_40px_rgba(0,0,0,0.4)] space-y-4">
           <div className="flex items-center justify-between border-b-2 border-white/10 pb-3">
             <div className="flex items-center gap-2 font-extrabold text-lg text-white">
               <Calendar className="w-5 h-5 text-forest-ink" />
