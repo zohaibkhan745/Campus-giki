@@ -6,6 +6,7 @@ import { adminService, type AdvisorOption, type CreateAdvisorPayload } from '@/s
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Alert } from '@/components/ui/Alert';
+import { CustomDropdown } from '@/components/ui/CustomDropdown';
 import type { AxiosError } from 'axios';
 
 export const AdminAdvisorsPage: React.FC = () => {
@@ -108,7 +109,7 @@ export const AdminAdvisorsPage: React.FC = () => {
                   <th className="p-[15px] text-slate-400 text-[13px] uppercase tracking-[1px] border-b border-white/10 w-[10%]">Sr.</th>
                   <th className="p-[15px] text-slate-400 text-[13px] uppercase tracking-[1px] border-b border-white/10 w-[20%]">Advisor Name</th>
                   <th className="p-[15px] text-slate-400 text-[13px] uppercase tracking-[1px] border-b border-white/10 w-[25%]">Email</th>
-                  <th className="p-[15px] text-slate-400 text-[13px] uppercase tracking-[1px] border-b border-white/10 w-[15%]">Department</th>
+                  <th className="p-[15px] text-slate-400 text-[13px] uppercase tracking-[1px] border-b border-white/10 w-[15%]">Faculty</th>
                   <th className="p-[15px] text-slate-400 text-[13px] uppercase tracking-[1px] border-b border-white/10 w-[30%]">Assigned Societies</th>
                 </tr>
               </thead>
@@ -151,9 +152,9 @@ export const AdminAdvisorsPage: React.FC = () => {
       </div>
 
       {isModalOpen && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="relative z-1 w-full max-w-md p-8 rounded-[18px] bg-white/[0.08] backdrop-blur-[20px] border border-white/20 shadow-[0_12px_40px_rgba(0,0,0,0.4)] text-white space-y-5 text-left">
-            <h3 className="font-extrabold text-white text-xl border-b border-white/10 pb-3 flex items-center gap-2">
+        <div className="glass-popup-overlay">
+          <div className="glass-popup-card" style={{ maxWidth: "550px" }}>
+            <h3 className="glass-popup-title">
               <UserPlus className="w-5 h-5 text-slate-400" />
               Onboard New Advisor
             </h3>
@@ -193,22 +194,42 @@ export const AdminAdvisorsPage: React.FC = () => {
               />
 
               <div className="grid grid-cols-2 gap-4">
-                <Input
-                  label="Designation"
-                  name="designation"
-                  placeholder="e.g. Asst. Professor"
-                  value={formData.designation}
-                  onChange={handleInputChange}
-                  required
-                />
-                <Input
-                  label="Department"
-                  name="department"
-                  placeholder="e.g. FCSE"
-                  value={formData.department}
-                  onChange={handleInputChange}
-                  required
-                />
+                <div className="space-y-1.5 flex flex-col">
+                  <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
+                    Designation
+                  </label>
+                  <CustomDropdown
+                    options={[
+                      { value: 'Lecturer', label: 'Lecturer' },
+                      { value: 'Assistant Professor', label: 'Assistant Professor' },
+                      { value: 'Associate Professor', label: 'Associate Professor' },
+                      { value: 'Professor', label: 'Professor' }
+                    ]}
+                    value={formData.designation}
+                    onChange={(val) => setFormData(prev => ({ ...prev, designation: val }))}
+                    placeholder="Select..."
+                  />
+                </div>
+
+                <div className="space-y-1.5 flex flex-col">
+                  <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
+                    Faculty
+                  </label>
+                  <CustomDropdown
+                    options={[
+                      { value: 'FCSE', label: 'FCSE' },
+                      { value: 'FEE', label: 'FEE' },
+                      { value: 'FCVE', label: 'FCVE' },
+                      { value: 'FME', label: 'FME' },
+                      { value: 'FCME', label: 'FCME' },
+                      { value: 'FMTE', label: 'FMTE' },
+                      { value: 'MGS', label: 'MGS' }
+                    ]}
+                    value={formData.department}
+                    onChange={(val) => setFormData(prev => ({ ...prev, department: val }))}
+                    placeholder="Select..."
+                  />
+                </div>
               </div>
 
               <div className="flex justify-end gap-3 pt-4 border-t border-white/10">
@@ -219,7 +240,7 @@ export const AdminAdvisorsPage: React.FC = () => {
                     setIsModalOpen(false);
                     setFormError(null);
                   }}
-                  className="bg-transparent text-white border-white/20 hover:bg-white/10"
+                  className="glass-popup-button" style={{width:"auto"}}
                 >
                   Cancel
                 </Button>
@@ -227,7 +248,7 @@ export const AdminAdvisorsPage: React.FC = () => {
                   type="submit"
                   variant="primary"
                   isLoading={createMutation.isPending}
-                  className="bg-white text-black hover:bg-gray-100 border-none"
+                  className="glass-popup-button" style={{width:"auto", background:"#fff", color:"#000"}}
                 >
                   Create Advisor
                 </Button>

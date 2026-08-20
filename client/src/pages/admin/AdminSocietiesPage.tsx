@@ -57,6 +57,7 @@ export const AdminSocietiesPage: React.FC = () => {
   const [editAdvisorId, setEditAdvisorId] = useState('');
 
   const [deactivatingSociety, setDeactivatingSociety] = useState<AdminSocietyItem | null>(null);
+  const [reactivatingSociety, setReactivatingSociety] = useState<AdminSocietyItem | null>(null);
   const [deletingSociety, setDeletingSociety] = useState<AdminSocietyItem | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
 
@@ -439,34 +440,76 @@ export const AdminSocietiesPage: React.FC = () => {
 
       {/* 3. Deactivate Confirmation Dialog */}
       {deactivatingSociety && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-lumen-cream/80 backdrop-blur-sm p-4">
-          <div className="bg-lumen-cream p-6 sm:p-8 rounded-cards border border-red-500/30 max-w-md w-full space-y-4 bg-lumen-stone text-left">
-            <h3 className="font-extrabold text-vast-ink text-lg text-red-400 flex items-center gap-2">
+        <div className="glass-popup-overlay">
+          <div className="glass-popup-card">
+            <h3 className="glass-popup-title" style={{ color: '#fca5a5' }}>
               <Ban className="w-5 h-5" />
               <span>Deactivate Society Account?</span>
             </h3>
 
-            <p className="text-xs text-vast-ink font-medium leading-relaxed">
-              Are you sure you want to deactivate <strong className="text-vast-ink">{deactivatingSociety.name}</strong>?
+            <p className="glass-popup-description">
+              Are you sure you want to deactivate <strong style={{color: '#ffffff'}}>{deactivatingSociety.name}</strong>?
               This will suspend login access for the society president. Historical events and yearly plans will remain intact.
             </p>
 
-            <div className="flex justify-end gap-3 pt-3">
-              <Button
+            <div className="flex justify-end gap-3 pt-2">
+              <button
                 type="button"
-                variant="outline"
+                className="glass-popup-button"
                 onClick={() => setDeactivatingSociety(null)}
+                style={{width:"auto"}}
               >
                 Cancel
-              </Button>
-              <Button
+              </button>
+              <button
                 type="button"
-                variant="destructive"
-                isLoading={deactivateMutation.isPending}
+                className="glass-popup-button danger"
+                disabled={deactivateMutation.isPending}
                 onClick={() => deactivateMutation.mutate(deactivatingSociety.id)}
+                style={{width:"auto"}}
               >
-                Confirm Deactivation
-              </Button>
+                {deactivateMutation.isPending ? 'Processing...' : 'Confirm Deactivation'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 4. Reactivate Confirmation Dialog */}
+      {reactivatingSociety && (
+        <div className="glass-popup-overlay">
+          <div className="glass-popup-card">
+            <h3 className="glass-popup-title" style={{ color: '#6ee7b7' }}>
+              <CheckCircle2 className="w-5 h-5" />
+              <span>Reactivate Society Account?</span>
+            </h3>
+
+            <p className="glass-popup-description">
+              Are you sure you want to reactivate <strong style={{color: '#ffffff'}}>{reactivatingSociety.name}</strong>?
+              This will restore login access and all privileges for the society president.
+            </p>
+
+            <div className="flex justify-end gap-3 pt-2">
+              <button
+                type="button"
+                className="glass-popup-button"
+                onClick={() => setReactivatingSociety(null)}
+                style={{width:"auto"}}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="glass-popup-button success"
+                disabled={reactivateMutation.isPending}
+                onClick={() => {
+                  reactivateMutation.mutate(reactivatingSociety.id);
+                  setReactivatingSociety(null);
+                }}
+                style={{width:"auto"}}
+              >
+                {reactivateMutation.isPending ? 'Processing...' : 'Confirm Reactivation'}
+              </button>
             </div>
           </div>
         </div>

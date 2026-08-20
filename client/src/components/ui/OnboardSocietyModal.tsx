@@ -79,12 +79,11 @@ export const OnboardSocietyModal: React.FC<OnboardSocietyModalProps> = ({ isOpen
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-[#050507]/60 backdrop-blur-sm" onClick={handleClose}></div>
-      <div className="relative bg-white/[0.08] backdrop-blur-[20px] p-6 sm:p-8 rounded-[18px] border border-white/20 w-full max-w-2xl shadow-[0_12px_40px_rgba(0,0,0,0.4)] text-left flex flex-col max-h-[90vh] overflow-hidden">
+    <div className="glass-popup-overlay z-[200]">
+      <div className="glass-popup-card" style={{ maxWidth: "800px", maxHeight: "90vh", overflow: "hidden" }}>
         
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-extrabold text-white">Onboard New Society</h2>
+          <h2 className="glass-popup-title">Onboard New Society</h2>
           <button onClick={handleClose} className="p-2 text-gray-400 hover:text-white rounded-full transition-colors">
             <X className="w-5 h-5" />
           </button>
