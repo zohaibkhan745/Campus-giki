@@ -303,20 +303,20 @@ export const AdminPostsPage: React.FC = () => {
 
       {/* Delete Confirmation Modal */}
       {postToDelete && (
-        <div className="glass-popup-overlay z-[60]">
-          <div className="glass-popup-card">
-            <h3 className="glass-popup-title" style={{ color: '#fca5a5' }}>
+        <div className="modal-overlay active z-[60]">
+          <div className="modal-box">
+            <h3 className="modal-title" style={{ color: '#fca5a5' }}>
               <AlertTriangle className="w-6 h-6" />
               <span>Remove Post</span>
             </h3>
-            <p className="glass-popup-description">
+            <p className="modal-description">
               Are you sure you want to remove this post? It will no longer be visible on the student feed.
             </p>
             <div className="flex gap-3 pt-2">
-              <button onClick={() => setPostToDelete(null)} className="glass-popup-button">
+              <button onClick={() => setPostToDelete(null)} className="btn-cancel">
                 Cancel
               </button>
-              <button onClick={confirmDelete} className="glass-popup-button danger">
+              <button onClick={confirmDelete} className="btn-confirm danger">
                 Confirm Delete
               </button>
             </div>

@@ -152,9 +152,9 @@ export const AdminAdvisorsPage: React.FC = () => {
       </div>
 
       {isModalOpen && (
-        <div className="glass-popup-overlay">
-          <div className="glass-popup-card" style={{ maxWidth: "550px" }}>
-            <h3 className="glass-popup-title">
+        <div className="modal-overlay active">
+          <div className="modal-box" style={{ maxWidth: "550px" }}>
+            <h3 className="modal-title">
               <UserPlus className="w-5 h-5 text-slate-400" />
               Onboard New Advisor
             </h3>
@@ -240,7 +240,7 @@ export const AdminAdvisorsPage: React.FC = () => {
                     setIsModalOpen(false);
                     setFormError(null);
                   }}
-                  className="glass-popup-button" style={{width:"auto"}}
+                  className="btn-cancel" style={{width:"auto"}}
                 >
                   Cancel
                 </Button>
@@ -248,7 +248,7 @@ export const AdminAdvisorsPage: React.FC = () => {
                   type="submit"
                   variant="primary"
                   isLoading={createMutation.isPending}
-                  className="glass-popup-button" style={{width:"auto", background:"#fff", color:"#000"}}
+                  className="btn-cancel" style={{width:"auto", background:"#fff", color:"#000"}}
                 >
                   Create Advisor
                 </Button>

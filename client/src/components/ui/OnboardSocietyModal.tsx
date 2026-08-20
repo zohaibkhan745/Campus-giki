@@ -79,11 +79,11 @@ export const OnboardSocietyModal: React.FC<OnboardSocietyModalProps> = ({ isOpen
   if (!isOpen) return null;
 
   return (
-    <div className="glass-popup-overlay z-[200]">
-      <div className="glass-popup-card" style={{ maxWidth: "800px", maxHeight: "90vh", overflow: "hidden" }}>
+    <div className="modal-overlay active z-[200]">
+      <div className="modal-box" style={{ maxWidth: "800px", maxHeight: "90vh", overflow: "hidden" }}>
         
         <div className="flex justify-between items-center mb-6">
-          <h2 className="glass-popup-title">Onboard New Society</h2>
+          <h2 className="modal-title">Onboard New Society</h2>
           <button onClick={handleClose} className="p-2 text-gray-400 hover:text-white rounded-full transition-colors">
             <X className="w-5 h-5" />
           </button>

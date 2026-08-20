@@ -57,43 +57,43 @@ export const CustomDropdown: React.FC<CustomDropdownProps> = ({
 
   return (
     <div 
-      className={`glass-dropdown-container ${isOpen ? 'open' : ''} ${className}`} 
+      className={`dropdown-container ${isOpen ? 'open' : ''} ${className}`} 
       id="langDropdown" 
       ref={containerRef}
     >
       <button 
-        className="glass-dropdown-btn" 
+        className="dropdown-btn" 
         type="button" 
         onClick={toggleDropdown}
         disabled={disabled}
       >
-        <div className="glass-dropdown-btn-left">
+        <div className="btn-left-content">
           {icon && <span className="text-white/70">{icon}</span>}
-          {selectedOption.code && <span className="glass-dropdown-code">{selectedOption.code}</span>}
-          <span className="glass-dropdown-label">{selectedOption.label}</span>
+          {selectedOption.code && <span className="country-code">{selectedOption.code}</span>}
+          <span className="language-name">{selectedOption.label}</span>
         </div>
-        <svg className="glass-dropdown-arrow" viewBox="0 0 24 24">
+        <svg className="arrow-icon" viewBox="0 0 24 24">
           <polyline points="6 9 12 15 18 9"></polyline>
         </svg>
       </button>
 
-      <div className="glass-dropdown-menu">
-        <div className="glass-dropdown-list">
+      <div className="dropdown-menu">
+        <div className="dropdown-list">
           {options.map((opt) => {
             const isActive = opt.value === value;
             return (
               <div 
                 key={opt.value}
-                className={`glass-dropdown-item ${isActive ? 'active' : ''}`} 
+                className={`dropdown-item ${isActive ? 'active' : ''}`} 
                 data-code={opt.code || ''} 
                 data-label={opt.label}
                 onClick={(e) => handleSelect(e, opt.value)}
               >
-                <div className="glass-dropdown-item-left">
-                  {opt.code && <span className="glass-dropdown-code">{opt.code}</span>}
-                  <span className="glass-dropdown-label">{opt.label}</span>
+                <div className="item-left">
+                  {opt.code && <span className="country-code">{opt.code}</span>}
+                  <span className="language-name">{opt.label}</span>
                 </div>
-                <svg className="glass-dropdown-check" viewBox="0 0 24 24">
+                <svg className="check-icon" viewBox="0 0 24 24">
                   <polyline points="20 6 9 17 4 12"></polyline>
                 </svg>
               </div>

@@ -126,9 +126,9 @@ export const PostCreateModal: React.FC<PostCreateModalProps> = ({
   const initialLetter = displayName.charAt(0).toUpperCase();
 
   return (
-    <div className="glass-popup-overlay">
+    <div className="modal-overlay active">
       <div
-        className="glass-popup-card" style={{ maxWidth: "550px" }}
+        className="modal-box" style={{ maxWidth: "550px" }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Hidden File Inputs */}
@@ -255,7 +255,7 @@ export const PostCreateModal: React.FC<PostCreateModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="glass-popup-button" style={{width: "auto"}}
+              className="btn-cancel" style={{width: "auto"}}
             >
               Cancel
             </button>
@@ -263,7 +263,7 @@ export const PostCreateModal: React.FC<PostCreateModalProps> = ({
               type="submit"
               form="post-create-dialog-form"
               disabled={isSubmitting || isUploading || content.trim().length === 0}
-              className="glass-popup-button" style={{width: "auto", background: "rgba(255,255,255,0.9)", color: "#000"}}
+              className="btn-cancel" style={{width: "auto", background: "rgba(255,255,255,0.9)", color: "#000"}}
             >
               {isSubmitting ? 'Posting...' : 'Post'}
             </button>
