@@ -128,6 +128,30 @@ export const AdminSocietiesPage: React.FC = () => {
     },
   });
 
+    // Warning Mutation
+  const warningMutation = useMutation({
+    mutationFn: (data: { id: string; hasWarning: boolean }) => adminService.toggleWarning(data.id, data.hasWarning),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['adminSocietiesList'] });
+    },
+    onError: (error: any) => {
+      const msg = error.response?.data?.message;
+      setActionError(Array.isArray(msg) ? msg.join(', ') : msg || 'Failed to update warning status.');
+    },
+  });
+
+  // Reactivate Mutation
+  const reactivateMutation = useMutation({
+    mutationFn: (id: string) => adminService.reactivateSociety(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['adminSocietiesList'] });
+    },
+    onError: (error: any) => {
+      const msg = error.response?.data?.message;
+      setActionError(Array.isArray(msg) ? msg.join(', ') : msg || 'Failed to reactivate society.');
+    },
+  });
+
   const handleOpenEdit = (society: AdminSocietyItem) => {
     setEditingSociety(society);
     setEditName(society.name);
@@ -347,12 +371,18 @@ export const AdminSocietiesPage: React.FC = () => {
 
                 <div className="space-y-1">
                   <div className="flex flex-wrap items-center gap-2">
-                    <Link to={`/societies/${society.id}`} className="font-bold text-vast-ink text-base hover:underline hover:text-blue-600 transition-colors">
+                    <Link to={`/societies/${society.id}`} className="font-bold text-white text-base hover:underline hover:text-blue-600 transition-colors">
                       {society.name}
                     </Link>
                     {renderStatusBadge(society.status)}
+                    {society.hasWarning && (
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-500/10 border border-amber-500/20 text-amber-500 rounded-inputs text-xs font-bold shadow-[0_0_10px_rgba(245,158,11,0.2)]">
+                        <AlertCircle className="w-3.5 h-3.5" />
+                        <span>WARNING ISSUED</span>
+                      </span>
+                    )}
                     {society.category && (
-                      <span className="text-[11px] font-semibold text-vast-ink bg-lavender-whisper border border-vast-ink px-2.5 py-0.5 rounded-inputs border border-indigo-500/20">
+                      <span className="text-[11px] font-semibold text-white bg-white/10 border border-white/10 px-2.5 py-0.5 rounded-inputs border border-indigo-500/20">
                         {society.category.name}
                       </span>
                     )}
@@ -396,17 +426,43 @@ export const AdminSocietiesPage: React.FC = () => {
                   Delete
                 </Button>
 
-                {society.status !== 'INACTIVE' && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className={society.hasWarning ? "border-amber-500/50 text-amber-500 hover:bg-transparent border border-amber-500/50" : "border-white/10 text-gray-400 hover:text-amber-500 hover:border-amber-500/50"}
+                  onClick={() => warningMutation.mutate({ id: society.id, hasWarning: !society.hasWarning })}
+                  leftIcon={<AlertCircle className="w-3.5 h-3.5" />}
+                  title={society.hasWarning ? "Remove Warning" : "Issue Warning"}
+                  isLoading={warningMutation.isPending && warningMutation.variables?.id === society.id}
+                >
+                  {society.hasWarning ? "Warned" : "Warn"}
+                </Button>
+
+                {society.status !== 'INACTIVE' ? (
                   <Button
                     type="button"
                     variant="outline"
                     size="sm"
-                    className="border-red-500/30 text-red-400 hover:bg-transparent border border-vast-ink"
+                    className="border-red-500/30 text-red-400 hover:bg-transparent border border-white/10"
                     onClick={() => setDeactivatingSociety(society)}
                     leftIcon={<UserX className="w-3.5 h-3.5" />}
                     title="Soft Deactivate Account"
                   >
                     Deactivate
+                  </Button>
+                ) : (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="border-emerald-500/30 text-emerald-400 hover:bg-transparent border border-white/10"
+                    onClick={() => reactivateMutation.mutate(society.id)}
+                    leftIcon={<CheckCircle2 className="w-3.5 h-3.5" />}
+                    title="Reactivate Account"
+                    isLoading={reactivateMutation.isPending && reactivateMutation.variables === society.id}
+                  >
+                    Reactivate
                   </Button>
                 )}
               </div>

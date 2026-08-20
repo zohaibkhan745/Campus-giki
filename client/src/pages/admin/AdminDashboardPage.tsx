@@ -45,26 +45,26 @@ export const AdminDashboardPage: React.FC = () => {
   return (
     <div className="max-w-6xl mx-auto space-y-6 text-left py-4">
       {/* 1. Welcome Banner — matches Society Dashboard */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-transparent p-6 rounded-cards border border-vast-ink/20 shadow-sm">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-[#17181c]/80 backdrop-blur-md p-6 rounded-2xl border border-white/10 shadow-xl">
         <div className="flex items-center gap-4">
           {user?.avatarUrl ? (
             <img 
               src={user.avatarUrl} 
               alt="Admin Avatar" 
-              className="w-16 h-16 rounded-full border border-vast-ink/20 object-cover shrink-0" 
+              className="w-16 h-16 rounded-full border border-white/20 object-cover shrink-0" 
             />
           ) : (
-            <div className="w-16 h-16 flex items-center justify-center bg-vast-ink border border-vast-ink/20 rounded-full text-white shrink-0">
-              <Shield className="w-8 h-8" />
+            <div className="w-16 h-16 flex items-center justify-center bg-gray-800 border border-white/10 rounded-full text-white shrink-0">
+              <Shield className="w-8 h-8 text-gray-400" />
             </div>
           )}
           <div>
-            <h1 className="text-2xl font-extrabold text-vast-ink line-clamp-1">
+            <h1 className="text-3xl font-extrabold text-white line-clamp-1">
               Welcome back, {user?.fullName || 'Admin'}
             </h1>
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1 text-sm text-fog font-medium">
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1 text-sm text-gray-400 font-medium">
               <span className="flex items-center gap-1.5">
-                <Shield className="w-4 h-4 text-vast-ink shrink-0" />
+                <Shield className="w-4 h-4 text-gray-500 shrink-0" />
                 Directorate of Student Affairs
               </span>
             </div>
@@ -74,21 +74,21 @@ export const AdminDashboardPage: React.FC = () => {
         <div className="flex items-center gap-3 shrink-0 mt-4 md:mt-0">
           <button
             onClick={() => setIsAnnouncementDialogOpen(true)}
-            className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-vast-ink hover:opacity-90 text-white rounded-inputs text-sm font-bold transition-colors shadow-lg shadow-blue-600/20"
+            className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-white hover:bg-gray-100 text-gray-900 rounded-xl text-sm font-bold transition-colors shadow-lg"
           >
             <Megaphone className="w-4 h-4" />
             <span>Make Post</span>
           </button>
           <Link
             to="/settings"
-            className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-transparent border border-vast-ink/20 hover:bg-lumen-stone rounded-inputs text-vast-ink text-sm font-bold transition-colors"
+            className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-transparent border border-white/20 hover:bg-white/10 rounded-xl text-white text-sm font-bold transition-colors"
           >
             <Settings className="w-4 h-4" />
             <span className="hidden sm:inline">Settings</span>
           </Link>
           <button
             onClick={logout}
-            className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-transparent border border-vast-ink/20 hover:bg-red-500/10 rounded-inputs text-red-500 text-sm font-bold transition-colors"
+            className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-transparent border border-white/20 hover:bg-red-500/10 rounded-xl text-red-500 text-sm font-bold transition-colors"
           >
             <LogOut className="w-4 h-4" />
             <span>Log out</span>

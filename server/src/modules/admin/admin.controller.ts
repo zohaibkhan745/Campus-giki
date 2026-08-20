@@ -183,22 +183,36 @@ export class AdminController {
   @ApiOperation({
     summary:
       'DSA Management: Soft-deactivate a society account (preserves historical events & plans)',
-  })
+  @ApiOperation({ summary: 'Soft-deactivate a society account (bans login)' })
   @ApiParam({ name: 'id', description: 'Society UUID' })
-  @ApiResponse({
-    status: 200,
-    description: 'Society account deactivated successfully',
-  })
-  @ApiResponse({
-    status: 400,
-    description: 'Society is already inactive',
-  })
-  @ApiResponse({
-    status: 404,
-    description: 'Society not found',
-  })
+  @ApiResponse({ status: 200, description: 'Society deactivated' })
   async deactivateSociety(@Param('id', ParseUUIDPipe) id: string) {
     return this.adminService.deactivateSociety(id);
+  }
+
+  @Patch('societies/:id/reactivate')
+  @Auth(Role.DSA_ADMIN)
+  @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Reactivate a society account' })
+  @ApiParam({ name: 'id', description: 'Society UUID' })
+  @ApiResponse({ status: 200, description: 'Society reactivated' })
+  async reactivateSociety(@Param('id', ParseUUIDPipe) id: string) {
+    return this.adminService.reactivateSociety(id);
+  }
+
+  @Patch('societies/:id/warning')
+  @Auth(Role.DSA_ADMIN)
+  @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Toggle society warning status' })
+  @ApiParam({ name: 'id', description: 'Society UUID' })
+  @ApiResponse({ status: 200, description: 'Society warning status updated' })
+  async toggleWarning(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body('hasWarning') hasWarning: boolean,
+  ) {
+    return this.adminService.toggleWarning(id, hasWarning);
   }
 
   @Get('yearly-plans')

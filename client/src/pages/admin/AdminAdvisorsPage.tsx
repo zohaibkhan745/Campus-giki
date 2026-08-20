@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { UserPlus, UserCircle2, Briefcase, Mail, Building, ArrowLeft } from 'lucide-react';
+import { UserPlus, UserCircle2, ArrowLeft } from 'lucide-react';
 import { adminService, type AdvisorOption, type CreateAdvisorPayload } from '@/services/admin.service';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -62,96 +62,78 @@ export const AdminAdvisorsPage: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <button
-          onClick={() => navigate(-1)}
-          className="inline-flex items-center gap-2 px-3.5 py-2 bg-transparent hover:bg-lumen-stone border border-vast-ink/20 text-vast-ink text-xs font-bold rounded-buttons transition-all cursor-pointer shadow-[2px_2px_0px_0px_#1B1B18]"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          <span>Back</span>
-        </button>
-      </div>
+    <div className="w-full h-full flex flex-col items-center py-10 font-sans">
+      <button
+        onClick={() => navigate(-1)}
+        className="fixed top-4 left-4 sm:top-6 sm:left-6 z-[100] inline-flex items-center justify-center w-10 h-10 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white rounded-full transition-all cursor-pointer shadow-lg"
+        title="Go Back"
+      >
+        <ArrowLeft className="w-5 h-5" />
+      </button>
 
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-2xl font-black text-vast-ink tracking-tight">Faculty Advisors</h1>
-          <p className="text-sm font-semibold text-fog mt-1">
-            Manage society faculty advisors
-          </p>
+      <div className="w-[90%] max-w-[1000px] bg-slate-900/60 backdrop-blur-[16px] rounded-[24px] p-[30px] shadow-[0_10px_40px_rgba(0,0,0,0.4)] border border-white/5">
+        <div className="flex justify-between items-center mb-[25px]">
+          <h2 className="text-[24px] font-bold text-white m-0">GIKI Advisors</h2>
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="bg-blue-500 text-white border-none py-[10px] px-[18px] rounded-[12px] text-[14px] font-semibold cursor-pointer transition-all duration-300 shadow-[0_4px_15px_rgba(59,130,246,0.3)] hover:bg-blue-600 hover:-translate-y-[2px]"
+          >
+            + Add Advisor
+          </button>
         </div>
-        <Button
-          variant="primary"
-          leftIcon={<UserPlus className="w-4 h-4" />}
-          onClick={() => setIsModalOpen(true)}
-        >
-          New Advisor
-        </Button>
-      </div>
 
-      <div className="bg-lumen-cream border border-vast-ink/20 rounded-cards overflow-hidden shadow-[4px_4px_0px_0px_#1B1B18]">
         {isLoading ? (
-          <div className="p-8 text-center text-vast-ink font-semibold animate-pulse">Loading advisors...</div>
+          <div className="p-8 text-center text-slate-400 font-semibold animate-pulse">Loading advisors...</div>
         ) : advisors.length === 0 ? (
           <div className="p-12 flex flex-col items-center justify-center text-center">
-            <div className="w-16 h-16 bg-transparent rounded-full border border-vast-ink/20 flex items-center justify-center mb-4">
-              <UserCircle2 className="w-8 h-8 text-vast-ink opacity-50" />
+            <div className="w-16 h-16 bg-white/5 rounded-full border border-white/10 flex items-center justify-center mb-4">
+              <UserCircle2 className="w-8 h-8 text-slate-500" />
             </div>
-            <h3 className="text-lg font-bold text-vast-ink mb-1">No Advisors Found</h3>
-            <p className="text-sm text-fog font-medium max-w-md">
+            <h3 className="text-lg font-bold text-white mb-1">No Advisors Found</h3>
+            <p className="text-sm text-slate-400 font-medium max-w-md">
               There are no faculty advisors in the system. Create one to assign them to societies.
             </p>
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
+            <table className="w-full border-collapse text-left min-w-[800px]">
               <thead>
-                <tr className="bg-lumen-stone border-b-2 border-vast-ink text-vast-ink font-bold text-sm">
-                  <th className="py-3 px-4 border-r-2 border-vast-ink">Advisor Name</th>
-                  <th className="py-3 px-4 border-r-2 border-vast-ink">Email</th>
-                  <th className="py-3 px-4 border-r-2 border-vast-ink">Designation</th>
-                  <th className="py-3 px-4 border-r-2 border-vast-ink">Department</th>
-                  <th className="py-3 px-4">Assigned Societies</th>
+                <tr>
+                  <th className="p-[15px] text-slate-400 text-[13px] uppercase tracking-[1px] border-b border-white/10 w-[10%]">Sr.</th>
+                  <th className="p-[15px] text-slate-400 text-[13px] uppercase tracking-[1px] border-b border-white/10 w-[20%]">Advisor Name</th>
+                  <th className="p-[15px] text-slate-400 text-[13px] uppercase tracking-[1px] border-b border-white/10 w-[25%]">Email</th>
+                  <th className="p-[15px] text-slate-400 text-[13px] uppercase tracking-[1px] border-b border-white/10 w-[15%]">Department</th>
+                  <th className="p-[15px] text-slate-400 text-[13px] uppercase tracking-[1px] border-b border-white/10 w-[30%]">Assigned Societies</th>
                 </tr>
               </thead>
-              <tbody className="divide-y-2 divide-vast-ink">
-                {advisors.map((advisor: AdvisorOption) => (
-                  <tr key={advisor.id} className="hover:bg-transparent/50 transition-colors">
-                    <td className="py-3 px-4 border-r-2 border-vast-ink">
-                      <div className="flex items-center gap-2">
-                        <UserCircle2 className="w-4 h-4 text-fog" />
-                        <span className="font-semibold text-vast-ink">{advisor.user.fullName}</span>
-                      </div>
+              <tbody>
+                {advisors.map((advisor: AdvisorOption, index: number) => (
+                  <tr key={advisor.id} className="hover:bg-white/[0.03] transition-colors group">
+                    <td className="py-[18px] px-[15px] text-[15px] border-b border-white/5 text-slate-200 group-last:border-b-0">
+                      {String(index + 1).padStart(2, '0')}
                     </td>
-                    <td className="py-3 px-4 border-r-2 border-vast-ink">
-                      <div className="flex items-center gap-2">
-                        <Mail className="w-4 h-4 text-fog" />
-                        <span className="text-sm font-medium text-fog">{advisor.user.email}</span>
-                      </div>
+                    <td className="py-[18px] px-[15px] text-[15px] border-b border-white/5 text-white font-semibold group-last:border-b-0">
+                      {advisor.user.fullName}
                     </td>
-                    <td className="py-3 px-4 border-r-2 border-vast-ink">
-                      <div className="flex items-center gap-2">
-                        <Briefcase className="w-4 h-4 text-fog" />
-                        <span className="text-sm font-medium text-vast-ink">{advisor.designation}</span>
-                      </div>
+                    <td className="py-[18px] px-[15px] text-[15px] border-b border-white/5 text-slate-200 group-last:border-b-0">
+                      <a href={`mailto:${advisor.user.email}`} className="text-blue-400 hover:text-blue-300 hover:underline transition-colors">
+                        {advisor.user.email}
+                      </a>
                     </td>
-                    <td className="py-3 px-4 border-r-2 border-vast-ink">
-                      <div className="flex items-center gap-2">
-                        <Building className="w-4 h-4 text-fog" />
-                        <span className="text-sm font-medium text-vast-ink">{advisor.department}</span>
-                      </div>
+                    <td className="py-[18px] px-[15px] text-[15px] border-b border-white/5 text-slate-200 group-last:border-b-0">
+                      {advisor.department}
                     </td>
-                    <td className="py-3 px-4">
+                    <td className="py-[18px] px-[15px] text-[15px] border-b border-white/5 text-slate-200 group-last:border-b-0">
                       {advisor.societies && advisor.societies.length > 0 ? (
-                        <div className="flex flex-wrap gap-1">
+                        <div className="flex flex-wrap gap-2">
                           {advisor.societies.map((soc, idx) => (
-                            <span key={idx} className="px-2 py-0.5 bg-lavender-whisper border border-vast-ink/20 text-vast-ink rounded-full text-xs font-semibold">
+                            <span key={idx} className="px-[12px] py-[6px] rounded-[20px] text-[12px] font-bold uppercase bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
                               {soc.name}
                             </span>
                           ))}
                         </div>
                       ) : (
-                        <span className="text-xs font-medium text-fog italic">Unassigned</span>
+                        <span className="text-slate-500 italic text-sm">Unassigned</span>
                       )}
                     </td>
                   </tr>
@@ -163,10 +145,10 @@ export const AdminAdvisorsPage: React.FC = () => {
       </div>
 
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-lumen-cream/80 backdrop-blur-sm p-4">
-          <div className="bg-lumen-cream p-6 sm:p-8 rounded-cards border border-vast-ink/20 max-w-md w-full space-y-5 shadow-[4px_4px_0px_0px_#1B1B18] text-left">
-            <h3 className="font-extrabold text-vast-ink text-xl border-b-2 border-vast-ink pb-3 flex items-center gap-2">
-              <UserPlus className="w-5 h-5" />
+        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="bg-[#0f172a] p-6 sm:p-8 rounded-2xl border border-white/10 max-w-md w-full space-y-5 shadow-2xl text-left">
+            <h3 className="font-extrabold text-white text-xl border-b border-white/10 pb-3 flex items-center gap-2">
+              <UserPlus className="w-5 h-5 text-slate-400" />
               Onboard New Advisor
             </h3>
 
@@ -223,7 +205,7 @@ export const AdminAdvisorsPage: React.FC = () => {
                 />
               </div>
 
-              <div className="flex justify-end gap-3 pt-4">
+              <div className="flex justify-end gap-3 pt-4 border-t border-white/10">
                 <Button
                   type="button"
                   variant="outline"
@@ -231,6 +213,7 @@ export const AdminAdvisorsPage: React.FC = () => {
                     setIsModalOpen(false);
                     setFormError(null);
                   }}
+                  className="bg-transparent text-white border-white/20 hover:bg-white/10"
                 >
                   Cancel
                 </Button>
@@ -238,6 +221,7 @@ export const AdminAdvisorsPage: React.FC = () => {
                   type="submit"
                   variant="primary"
                   isLoading={createMutation.isPending}
+                  className="bg-blue-500 text-white hover:bg-blue-600 border-none"
                 >
                   Create Advisor
                 </Button>

@@ -1,22 +1,22 @@
 @import "tailwindcss";
 
 @theme {
-  --color-lavender-whisper: #f0d7ff;
-  --color-forest-ink: #034f46;
+  --color-lavender-whisper: #2a2235;
+  --color-forest-ink: #4ade80;
   --color-ember-glow: #ffa946;
-  --color-vast-ink: #19204C;
-  --color-lumen-cream: #ffffeb;
-  --color-lumen-stone: #e4e4d0;
-  --color-fog: #8a8a80;
-  --color-charcoal: #222222;
+  --color-vast-ink: #f3f4f6;
+  --color-lumen-cream: rgba(17, 19, 24, 0.65);
+  --color-lumen-stone: rgba(44, 47, 56, 0.7);
+  --color-fog: #9ca3af;
+  --color-charcoal: #e5e7eb;
   --color-pure-white: #ffffff;
 
-  /* Soft border utility — use this instead of border-vast-ink for cards/surfaces */
-  --color-border-soft: rgba(26, 26, 26, 0.12);
-  --color-border-mid:  rgba(26, 26, 26, 0.20);
+  --color-border-soft: rgba(255, 255, 255, 0.08);
+  --color-border-mid:  rgba(255, 255, 255, 0.15);
 
-  --font-eb-garamond: 'EB Garamond', ui-serif, serif;
-  --font-figtree: 'Figtree', ui-sans-serif, sans-serif;
+  --font-inter: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  --font-eb-garamond: var(--font-inter);
+  --font-figtree: var(--font-inter);
 
   --text-caption: 14px;
   --text-body-sm: 16px;
@@ -36,29 +36,19 @@
 body {
   margin: 0;
   min-height: 100vh;
-  background-color: var(--color-lumen-cream);
-  color: var(--color-vast-ink);
-  font-family: var(--font-figtree);
+  background-color: #0b0c0e;
+  color: #e5e7eb;
+  font-family: var(--font-inter);
   text-align: left;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Base resets to enforce design system rules */
 * {
-  box-shadow: none !important; /* No box shadows anywhere */
+  box-shadow: none !important;
 }
 
-/*
-  Global border softening — Tailwind v4 approach.
-  In v4, border colors are set directly via border-color property.
-  We globally reduce border intensity for card/surface elements by
-  overriding the border-color to a softer rgba value via @layer base.
-  This gives the subtle, near-invisible card borders seen on modern
-  design systems without touching every component individually.
-*/
 @layer base {
-  /* All surfaces: cards, sections, containers → ultra-soft border */
   article,
   section,
   aside,
@@ -67,28 +57,162 @@ body {
   div[class~="rounded-cards"],
   div[class~="border-vast-ink"],
   div[class~="border-2"] {
-    border-color: rgba(26, 26, 26, 0.12);
+    border-color: rgba(255, 255, 255, 0.08);
   }
 
-  /* Inputs, selects, textareas → slightly more visible */
   input,
   select,
   textarea {
-    border-color: rgba(26, 26, 26, 0.20);
+    border-color: rgba(255, 255, 255, 0.15);
     background-color: var(--color-lumen-cream);
     color: var(--color-vast-ink);
   }
 
   option {
-    background-color: var(--color-lumen-cream);
+    background-color: #17181c;
     color: var(--color-vast-ink);
     font-weight: 600;
   }
 
-  /* Focus states → full strength */
   input:focus,
   select:focus,
   textarea:focus {
-    border-color: rgba(26, 26, 26, 1);
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+}
+
+@property --angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.glowing-card-wrapper {
+  --active-color: #c084fc;
+  --active-glow: rgba(192, 132, 252, 0.55);
+  position: relative;
+  width: 100%;
+  border-radius: 28px;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  margin-bottom: 2rem;
+}
+
+.glowing-card-wrapper::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 28px;
+  background: radial-gradient(
+    circle at 50% 50%,
+    var(--active-glow) 0%,
+    transparent 70%
+  );
+  filter: blur(35px);
+  opacity: 0;
+  z-index: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.glowing-card-wrapper:hover::after {
+  opacity: 1;
+  animation: sunPulse 1.4s ease-in-out infinite alternate;
+}
+
+.glowing-card-wrapper::before {
+  content: "";
+  position: absolute;
+  inset: -1.5px;
+  border-radius: 29.5px;
+  background: conic-gradient(
+    from var(--angle),
+    transparent 65%,
+    rgba(255, 255, 255, 0.4) 85%,
+    #ffffff 96%,
+    transparent 100%
+  );
+  animation: rotateBorder 3.5s linear infinite;
+  z-index: 1;
+  opacity: 0.9;
+  transition: opacity 0.3s ease;
+}
+
+.glowing-border-layer {
+  position: absolute;
+  inset: -1.5px;
+  border-radius: 29.5px;
+  border: 1.5px solid var(--active-color);
+  box-shadow: 0 0 20px var(--active-glow), inset 0 0 10px var(--active-glow);
+  opacity: 0;
+  z-index: 2;
+  pointer-events: none;
+  transition: opacity 0.3s ease, border-color 0.3s ease;
+}
+
+.glowing-card-wrapper:hover::before {
+  animation-play-state: paused;
+  opacity: 0;
+}
+
+.glowing-card-wrapper:hover .glowing-border-layer {
+  opacity: 1;
+  animation: borderPulse 1.4s ease-in-out infinite alternate;
+}
+
+.glowing-card-content {
+  position: relative;
+  z-index: 3;
+  width: 100%;
+  height: 100%;
+  background: #09070f;
+  border-radius: 26.5px;
+  display: flex;
+  flex-direction: column;
+  padding: 2.5rem;
+}
+
+.glowing-card-title {
+  transition: color 0.3s ease;
+}
+
+.glowing-card-wrapper:hover .glowing-card-title {
+  color: var(--active-color);
+  animation: textPulse 1.4s ease-in-out infinite alternate;
+}
+
+@keyframes rotateBorder {
+  to {
+    --angle: 360deg;
+  }
+}
+
+@keyframes sunPulse {
+  0% {
+    opacity: 0.7;
+    transform: scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes borderPulse {
+  0% {
+    box-shadow: 0 0 14px var(--active-glow), inset 0 0 7px var(--active-glow);
+  }
+  100% {
+    box-shadow: 0 0 28px var(--active-glow), inset 0 0 14px var(--active-glow);
+  }
+}
+
+@keyframes textPulse {
+  0% {
+    text-shadow: 0 0 14px var(--active-glow);
+  }
+  100% {
+    text-shadow: 0 0 30px var(--active-glow);
   }
 }

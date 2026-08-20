@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -98,8 +98,8 @@ model Advisor {
 model Society {
   id               String       @id @default(uuid())
   name             String       @unique
-  shortDescription String?      @db.Text
-  longDescription  String?      @db.Text
+  shortDescription String?     
+  longDescription  String?     
   logoUrl          String?
   bannerUrl        String?
   instagram        String?
@@ -110,6 +110,10 @@ model Society {
   presidentName    String?
   presidentRegNum  String?
   presidentContact String?
+  presidentEmail   String?
+  
+  hasWarning       Boolean      @default(false)
+
   isSetupComplete  Boolean          @default(false)
   type             OrganizationType @default(SOCIETY)
   categoryId       String?
@@ -134,7 +138,7 @@ model Society {
 model Event {
   id               String              @id @default(uuid())
   title            String
-  description      String              @db.Text
+  description      String             
   eventDate        DateTime
   startTime        String
   endTime          String
@@ -148,12 +152,12 @@ model Event {
   inChargeName     String?
   inChargeRegNum   String?
   inChargeContact  String?
-  rules            String?             @db.Text
+  rules            String?            
   
   isPublished      Boolean             @default(true)
   approvalStatus   EventApprovalStatus @default(PUBLISHED)
-  advisorComments  String?             @db.Text
-  dsaComments      String?             @db.Text
+  advisorComments  String?            
+  dsaComments      String?            
   advisorApprovedAt DateTime?
   dsaApprovedAt     DateTime?
   lastChangeRequestBy String?
@@ -174,7 +178,7 @@ model YearlyPlan {
   id              String         @id @default(uuid())
   year            Int
   status          PlanStatus     @default(DRAFT)
-  advisorComments String?        @db.Text
+  advisorComments String?       
   societyId       String
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
@@ -192,10 +196,10 @@ model PlannedEvent {
   eventName              String
   startDate              DateTime
   endDate                DateTime
-  description            String     @db.Text
+  description            String    
   venue                  String
-  rules                  String?    @db.Text
-  societyRules           String?    @db.Text
+  rules                  String?   
+  societyRules           String?   
   yearlyPlanId           String
   createdAt              DateTime   @default(now())
   updatedAt              DateTime   @updatedAt
@@ -208,7 +212,7 @@ model PlannedEvent {
 
 model Post {
   id          String   @id @default(uuid())
-  content     String   @db.Text
+  content     String  
   imageUrl    String?
   videoUrl    String?
   authorId    String

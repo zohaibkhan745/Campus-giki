@@ -54,6 +54,7 @@ export interface Society {
   presidentRegNum?: string | null;
   presidentContact?: string | null;
   isSetupComplete: boolean;
+  hasWarning: boolean;
   userId: string;
   advisorId?: string | null;
   advisor?: {

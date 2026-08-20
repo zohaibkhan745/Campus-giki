@@ -1,14 +1,25 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
-import { MainNavigation } from '@/components/navigation/MainNavigation';
+import { DockNav } from '@/components/navigation/DockNav';
+import { Footer } from '@/components/navigation/Footer';
 
 export const DashboardLayout: React.FC = () => {
   return (
-    <div className="min-h-screen flex flex-col md:flex-row bg-lumen-cream text-vast-ink font-figtree">
-      <MainNavigation />
-      <main className="flex-1 min-w-0 pb-24 md:pb-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full pt-4 md:pt-6">
+    <div 
+      className="min-h-screen flex flex-col font-inter text-gray-200 bg-cover bg-center bg-fixed bg-no-repeat relative"
+      style={{ backgroundImage: "url('/bg-template.avif')", backgroundColor: "#0b0c0e" }}
+    >
+      <div className="absolute inset-0 bg-[#050507]/80 backdrop-blur-sm z-0 pointer-events-none"></div>
+      
+      <main className="relative z-10 flex-1 min-w-0 pb-28 md:pb-32 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full pt-8">
         <Outlet />
       </main>
+
+      <div className="relative z-10 w-full mt-auto">
+        <Footer />
+      </div>
+
+      <DockNav />
     </div>
   );
 };

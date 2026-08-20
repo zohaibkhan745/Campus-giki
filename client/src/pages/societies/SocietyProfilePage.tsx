@@ -4,22 +4,15 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import {
   Building2,
   Tag,
-  Globe,
-  Mail,
-  Share2,
-  Link2,
-  Calendar as CalendarIcon,
-  Clock,
-  MapPin,
-  ArrowLeft,
-  ExternalLink,
   History,
   Loader2,
   Megaphone,
+  Calendar as CalendarIcon,
+  AlertCircle,
+  ArrowLeft
 } from 'lucide-react';
 import { societyService } from '@/services/society.service';
-import type { EventItem } from '@/types/event.types';
-import type { EventFeedItem, PostFeedItem } from '@/types/feed.types';
+import type { EventFeedItem } from '@/types/feed.types';
 import { Alert } from '@/components/ui/Alert';
 import { EventCard } from '@/components/feed/EventCard';
 import { PostCard } from '@/components/feed/PostCard';
@@ -29,7 +22,6 @@ export const SocietyProfilePage: React.FC = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'posts' | 'upcoming' | 'past'>('posts');
 
-  // Query society profile details
   const {
     data: society,
     isLoading: isLoadingSociety,
@@ -40,21 +32,13 @@ export const SocietyProfilePage: React.FC = () => {
     enabled: !!id,
   });
 
-  // Query society public events (split into upcoming and past)
-  const {
-    data: eventsData,
-    isLoading: isLoadingEvents,
-  } = useQuery({
+  const { data: eventsData, isLoading: isLoadingEvents } = useQuery({
     queryKey: ['publicSocietyEvents', id],
     queryFn: () => societyService.getPublicSocietyEvents(id!),
     enabled: !!id,
   });
 
-  // Query society public announcements/posts
-  const {
-    data: postsData = [],
-    isLoading: isLoadingPosts,
-  } = useQuery({
+  const { data: postsData = [], isLoading: isLoadingPosts } = useQuery({
     queryKey: ['publicSocietyPosts', id],
     queryFn: () => societyService.getPublicSocietyPosts(id!),
     enabled: !!id,
@@ -65,7 +49,7 @@ export const SocietyProfilePage: React.FC = () => {
 
   if (isLoadingSociety) {
     return (
-      <div className="min-h-[50vh] flex flex-col justify-center items-center text-fog gap-3">
+      <div className="min-h-[50vh] flex flex-col justify-center items-center text-gray-400 gap-3">
         <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
         <p className="text-sm font-medium">Loading society profile...</p>
       </div>
@@ -76,292 +60,231 @@ export const SocietyProfilePage: React.FC = () => {
     return (
       <div className="max-w-md mx-auto py-12 space-y-4 text-center">
         <Alert variant="error" message="Society not found or profile is not published." />
-        <Link
-          to="/societies"
-          className="inline-flex items-center gap-2 text-sm text-vast-ink hover:underline"
+        <button
+          onClick={() => navigate(-1)}
+          className="fixed top-4 left-4 sm:top-6 sm:left-6 z-[100] inline-flex items-center justify-center w-10 h-10 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white rounded-full transition-all cursor-pointer shadow-lg"
+          title="Go Back"
         >
-          <ArrowLeft className="w-4 h-4" />
-          <span>Return to Society Directory</span>
-        </Link>
+          <ArrowLeft className="w-5 h-5" />
+        </button>
       </div>
     );
   }
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6 text-left pt-4 md:pt-14 pb-8 px-4 font-figtree">
-      {/* Top Back Navigation Link */}
-      <div className="flex items-center justify-between">
-        <button
-          onClick={() => navigate(-1)}
-          className="inline-flex items-center gap-2 px-3.5 py-2 bg-transparent hover:bg-lumen-stone border border-vast-ink/20 text-vast-ink text-xs font-bold rounded-buttons transition-all cursor-pointer shadow-[2px_2px_0px_0px_#1B1B18]"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          <span>Back</span>
-        </button>
-      </div>
+    <div className="w-full text-left font-sans">
+      
+      <button
+        onClick={() => navigate(-1)}
+        className="fixed top-4 left-4 sm:top-6 sm:left-6 z-[100] inline-flex items-center justify-center w-10 h-10 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white rounded-full transition-all cursor-pointer shadow-lg"
+        title="Go Back"
+      >
+        <ArrowLeft className="w-5 h-5" />
+      </button>
 
-      {/* 1. Hero Banner Image Cover */}
-      <div className="relative rounded-cards overflow-hidden border border-vast-ink/20 bg-vast-ink shadow-sm h-44 sm:h-60">
-        {society.bannerUrl ? (
-          <img
-            src={society.bannerUrl}
-            alt={society.name}
-            className="w-full h-full object-cover"
-          />
-        ) : (
-          <div className="w-full h-full bg-gradient-to-r from-slate-900 via-vast-ink to-slate-900" />
-        )}
-      </div>
+      {/* Breakout full width banner */}
+      <div className="-mt-8 -mx-4 sm:-mx-6 lg:-mx-8 w-screen relative left-[calc(-50vw+50%)]">
+        <div className="w-full h-[280px] sm:h-[320px] relative bg-[#1e3c72]">
+          {society.bannerUrl ? (
+            <img
+              src={society.bannerUrl}
+              alt={society.name}
+              className="w-full h-full object-cover object-center block"
+            />
+          ) : (
+            <div className="w-full h-full bg-[#1e3c72]" />
+          )}
 
-      {/* 2. High-Contrast Society Title & Info Header Card */}
-      <div className="bg-lumen-cream p-6 sm:p-8 rounded-cards border border-vast-ink/20 space-y-5 relative -mt-10 sm:-mt-14 mx-2 sm:mx-4 shadow-xl">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex flex-col sm:flex-row items-center gap-5">
+          {/* Warning Badge */}
+          {society.hasWarning && (
+            <div className="absolute top-4 left-20 z-10">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-red-600 border border-red-500 text-white rounded-full text-xs font-bold shadow-[0_0_15px_rgba(220,38,38,0.5)]">
+                <AlertCircle className="w-3.5 h-3.5" />
+                <span>WARNING ISSUED</span>
+              </span>
+            </div>
+          )}
+
+          {/* Tags (Top Right) */}
+          <div className="absolute top-4 right-4 sm:right-8 flex gap-2 z-10 flex-wrap justify-end max-w-[60%]">
+            {society.type === 'CLUB' && (
+              <span className="inline-flex items-center px-3 py-1 bg-purple-500/80 text-white border border-purple-400 rounded-full text-xs font-bold shadow-sm backdrop-blur-sm">
+                🎨 Club
+              </span>
+            )}
+            {society.type === 'TEAM' && (
+              <span className="inline-flex items-center px-3 py-1 bg-emerald-500/80 text-white border border-emerald-400 rounded-full text-xs font-bold shadow-sm backdrop-blur-sm">
+                🚀 Team
+              </span>
+            )}
+            {(!society.type || society.type === 'SOCIETY') && (
+              <span className="inline-flex items-center px-3 py-1 bg-[#1e3c72]/80 text-white border border-blue-400 rounded-full text-xs font-bold shadow-sm backdrop-blur-sm">
+                🏛️ Society
+              </span>
+            )}
+            {society.category && (
+              <span className="inline-flex items-center gap-1 px-3 py-1 bg-black/50 text-white border border-white/20 rounded-full text-xs font-bold shadow-sm backdrop-blur-sm">
+                <Tag className="w-3.5 h-3.5" />
+                {society.category.name}
+              </span>
+            )}
+          </div>
+
+          {/* Profile Picture */}
+          <div className="absolute -bottom-[65px] left-1/2 -translate-x-1/2 sm:-bottom-[90px] sm:left-12 sm:translate-x-0 z-20">
             {society.logoUrl ? (
               <img
                 src={society.logoUrl}
                 alt={society.name}
-                className="w-24 h-24 sm:w-28 sm:h-28 rounded-cards object-cover border border-vast-ink/20 shadow-md bg-lumen-cream shrink-0"
+                className="w-[110px] h-[110px] sm:w-[180px] sm:h-[180px] rounded-full border-[3px] sm:border-[5px] border-white object-cover bg-[#e0e0e0] block shadow-[0_4px_10px_rgba(0,0,0,0.15)]"
               />
             ) : (
-              <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-cards bg-lavender-whisper border border-vast-ink/20 shadow-md flex items-center justify-center text-vast-ink shrink-0">
-                <Building2 className="w-12 h-12" />
+              <div className="w-[110px] h-[110px] sm:w-[180px] sm:h-[180px] rounded-full border-[3px] sm:border-[5px] border-white bg-[#e0e0e0] flex items-center justify-center shadow-[0_4px_10px_rgba(0,0,0,0.15)]">
+                <Building2 className="w-12 h-12 text-gray-500" />
               </div>
             )}
-
-            <div className="space-y-2 text-center sm:text-left">
-              <div className="flex flex-wrap items-center gap-3">
-                <h1 className="text-3xl sm:text-4xl font-extrabold font-eb-garamond text-vast-ink leading-tight tracking-tight">
-                  {society.name}
-                </h1>
-                {society.type === 'CLUB' && (
-                  <span className="inline-flex items-center gap-1 px-3 py-1 bg-purple-100 text-purple-700 border border-purple-300 rounded-inputs text-xs font-bold uppercase tracking-wider shadow-sm">
-                    🎨 Club
-                  </span>
-                )}
-                {society.type === 'TEAM' && (
-                  <span className="inline-flex items-center gap-1 px-3 py-1 bg-emerald-100 text-emerald-700 border border-emerald-300 rounded-inputs text-xs font-bold uppercase tracking-wider shadow-sm">
-                    🚀 Team
-                  </span>
-                )}
-                {(!society.type || society.type === 'SOCIETY') && (
-                  <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-700 border border-blue-300 rounded-inputs text-xs font-bold uppercase tracking-wider shadow-sm">
-                    🏛️ Society
-                  </span>
-                )}
-                {society.category && (
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-lumen-cream border border-vast-ink/20 text-vast-ink rounded-inputs text-xs font-bold shadow-sm">
-                    <Tag className="w-3.5 h-3.5 text-forest-ink" />
-                    {society.category.name}
-                  </span>
-                )}
-              </div>
-              <p className="text-sm font-semibold text-fog max-w-2xl leading-relaxed">
-                {society.shortDescription}
-              </p>
-            </div>
           </div>
 
-          {/* Social Links Bar */}
-          <div className="flex items-center gap-2 pt-2 md:pt-0 shrink-0">
-            {society.website && (
-              <a
-                href={society.website}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-2.5 bg-transparent hover:bg-lumen-stone text-vast-ink rounded-inputs transition-all border border-vast-ink/20 shadow-sm"
-                title="Official Website"
-              >
-                <Globe className="w-4 h-4" />
-              </a>
-            )}
-
-            {society.email && (
-              <a
-                href={`mailto:${society.email}`}
-                className="p-2.5 bg-transparent hover:bg-lumen-stone text-vast-ink rounded-inputs transition-all border border-vast-ink/20 shadow-sm"
-                title="Official Email"
-              >
-                <Mail className="w-4 h-4" />
-              </a>
-            )}
-
-            {society.instagram && (
-              <a
-                href={society.instagram}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-2.5 bg-transparent hover:bg-lumen-stone text-pink-600 rounded-inputs transition-all border border-vast-ink/20 shadow-sm"
-                title="Instagram"
-              >
-                <Share2 className="w-4 h-4" />
-              </a>
-            )}
-
-            {society.facebook && (
-              <a
-                href={society.facebook}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-2.5 bg-transparent hover:bg-lumen-stone text-blue-600 rounded-inputs transition-all border border-vast-ink/20 shadow-sm"
-                title="Facebook"
-              >
-                <Share2 className="w-4 h-4" />
-              </a>
-            )}
-
-            {society.linkedin && (
-              <a
-                href={society.linkedin}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-2.5 bg-transparent hover:bg-lumen-stone text-indigo-600 rounded-inputs transition-all border border-vast-ink/20 shadow-sm"
-                title="LinkedIn"
-              >
-                <Link2 className="w-4 h-4" />
-              </a>
-            )}
+          {/* Society Name */}
+          <div className="absolute bottom-4 sm:bottom-5 left-1/2 -translate-x-1/2 w-max max-w-[90%] sm:max-w-[calc(100%-496px)] text-center text-white font-bold text-[20px] sm:text-[30px] leading-[1.2] drop-shadow-[0_2px_8px_rgba(0,0,0,0.7)] pointer-events-none z-10">
+            {society.name}
           </div>
         </div>
       </div>
 
-      {/* 2. About Society Section */}
-      <div className="bg-lumen-cream p-6 rounded-cards border border-vast-ink/20 space-y-3">
-        <h2 className="text-base font-bold text-vast-ink border-b border-vast-ink/20 pb-2">
-          About {society.name}
-        </h2>
-        <p className="text-sm text-vast-ink font-medium leading-relaxed whitespace-pre-line">
+      {/* Content Section */}
+      <div className="w-full max-w-[1000px] mx-auto pt-[80px] sm:pt-[110px] px-5 sm:pl-[138px] sm:pr-12 pb-12">
+        <div className="text-[18px] sm:text-[22px] font-bold text-gray-100 mb-3">About</div>
+        <p className="text-[14px] sm:text-[16px] leading-[1.6] text-gray-300">
           {society.longDescription || society.shortDescription || 'No detailed overview provided.'}
         </p>
+
+        {/* Navigation Tabs (Centered and Stretched) */}
+        <div className="mt-10 flex flex-col sm:flex-row justify-center items-stretch sm:items-center bg-white/5 border border-white/10 rounded-2xl p-1 gap-1">
+          <button
+            onClick={() => setActiveTab('posts')}
+            className={`flex-1 flex justify-center items-center gap-2 px-4 py-3 text-sm font-bold rounded-xl transition-all ${
+              activeTab === 'posts'
+                ? 'bg-white text-gray-900 shadow-md'
+                : 'text-gray-400 hover:text-white hover:bg-white/5'
+            }`}
+          >
+            <Megaphone className="w-4 h-4" />
+            <span>Posts & Announcements ({postsData.length})</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('upcoming')}
+            className={`flex-1 flex justify-center items-center gap-2 px-4 py-3 text-sm font-bold rounded-xl transition-all ${
+              activeTab === 'upcoming'
+                ? 'bg-white text-gray-900 shadow-md'
+                : 'text-gray-400 hover:text-white hover:bg-white/5'
+            }`}
+          >
+            <CalendarIcon className="w-4 h-4" />
+            <span>Upcoming Events ({upcomingEvents.length})</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('past')}
+            className={`flex-1 flex justify-center items-center gap-2 px-4 py-3 text-sm font-bold rounded-xl transition-all ${
+              activeTab === 'past'
+                ? 'bg-white text-gray-900 shadow-md'
+                : 'text-gray-400 hover:text-white hover:bg-white/5'
+            }`}
+          >
+            <History className="w-4 h-4" />
+            <span>Past Events ({pastEvents.length})</span>
+          </button>
+        </div>
+
+        {/* Tab Content */}
+        <div className="mt-8">
+          {activeTab === 'posts' && (
+            <div className="space-y-4">
+              {isLoadingPosts ? (
+                <div className="py-8 text-center text-gray-400 text-sm flex items-center justify-center gap-2">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>Loading posts...</span>
+                </div>
+              ) : postsData.length === 0 ? (
+                <div className="bg-white/5 p-8 rounded-2xl border border-white/10 text-center space-y-2">
+                  <Megaphone className="w-10 h-10 text-gray-500 mx-auto" />
+                  <h3 className="font-semibold text-white text-sm">No Posts Available</h3>
+                  <p className="text-xs text-gray-400">
+                    {society.name} has not posted any announcements or updates yet.
+                  </p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {postsData.map((post) => (
+                    <PostCard key={post.id} item={post} />
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {activeTab === 'upcoming' && (
+            <div className="space-y-4">
+              {isLoadingEvents ? (
+                <div className="py-8 text-center text-gray-400 text-sm flex items-center justify-center gap-2">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>Loading society events...</span>
+                </div>
+              ) : upcomingEvents.length === 0 ? (
+                <div className="bg-white/5 p-8 rounded-2xl border border-white/10 text-center space-y-2">
+                  <CalendarIcon className="w-10 h-10 text-gray-500 mx-auto" />
+                  <h3 className="font-semibold text-white text-sm">No Upcoming Events</h3>
+                  <p className="text-xs text-gray-400">
+                    {society.name} has no scheduled upcoming campus events right now.
+                  </p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {upcomingEvents.map((event) => (
+                    <EventCard
+                      key={event.id}
+                      item={
+                        {
+                          ...event,
+                          type: 'event',
+                          society: event.society || society,
+                        } as EventFeedItem
+                      }
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {activeTab === 'past' && (
+            <div className="space-y-4">
+              {pastEvents.length === 0 ? (
+                <div className="bg-white/5 p-6 rounded-2xl border border-white/10 text-center text-xs text-gray-400">
+                  No past events recorded for this society.
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 opacity-80">
+                  {pastEvents.map((event) => (
+                    <EventCard
+                      key={event.id}
+                      item={
+                        {
+                          ...event,
+                          type: 'event',
+                          society: event.society || society,
+                        } as EventFeedItem
+                      }
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
       </div>
-
-      {/* 3. Navigation Filter Tabs (Posts, Upcoming Events, Past Events) */}
-      <div className="flex flex-wrap items-center gap-2 p-1.5 bg-lumen-cream border border-vast-ink/20 rounded-cards w-fit">
-        <button
-          onClick={() => setActiveTab('posts')}
-          className={`flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-extrabold rounded-inputs transition-all ${
-            activeTab === 'posts'
-              ? 'bg-vast-ink text-pure-white shadow-sm'
-              : 'text-vast-ink hover:bg-lumen-stone'
-          }`}
-        >
-          <Megaphone className="w-4 h-4" />
-          <span>Posts & Announcements ({postsData.length})</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab('upcoming')}
-          className={`flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-extrabold rounded-inputs transition-all ${
-            activeTab === 'upcoming'
-              ? 'bg-vast-ink text-pure-white shadow-sm'
-              : 'text-vast-ink hover:bg-lumen-stone'
-          }`}
-        >
-          <CalendarIcon className="w-4 h-4" />
-          <span>Upcoming Events ({upcomingEvents.length})</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab('past')}
-          className={`flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-extrabold rounded-inputs transition-all ${
-            activeTab === 'past'
-              ? 'bg-vast-ink text-pure-white shadow-sm'
-              : 'text-vast-ink hover:bg-lumen-stone'
-          }`}
-        >
-          <History className="w-4 h-4" />
-          <span>Past Events ({pastEvents.length})</span>
-        </button>
-      </div>
-
-      {/* 4. Tab Content */}
-
-      {/* Tab: Posts & Announcements */}
-      {activeTab === 'posts' && (
-        <div className="space-y-4 pt-2">
-          {isLoadingPosts ? (
-            <div className="py-8 text-center text-fog text-sm flex items-center justify-center gap-2">
-              <Loader2 className="w-4 h-4 animate-spin text-vast-ink" />
-              <span>Loading posts...</span>
-            </div>
-          ) : postsData.length === 0 ? (
-            <div className="bg-lumen-cream p-8 rounded-cards border border-vast-ink/20 text-center space-y-2">
-              <Megaphone className="w-10 h-10 text-fog mx-auto" />
-              <h3 className="font-semibold text-vast-ink text-sm">No Posts Available</h3>
-              <p className="text-xs text-fog">
-                {society.name} has not posted any announcements or updates yet.
-              </p>
-            </div>
-          ) : (
-            <div className="space-y-6 max-w-3xl">
-              {postsData.map((post) => (
-                <PostCard key={post.id} item={post} />
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Tab: Upcoming Events */}
-      {activeTab === 'upcoming' && (
-        <div className="space-y-4 pt-2">
-          {isLoadingEvents ? (
-            <div className="py-8 text-center text-fog text-sm flex items-center justify-center gap-2">
-              <Loader2 className="w-4 h-4 animate-spin text-vast-ink" />
-              <span>Loading society events...</span>
-            </div>
-          ) : upcomingEvents.length === 0 ? (
-            <div className="bg-lumen-cream p-8 rounded-cards border border-vast-ink/20 text-center space-y-2">
-              <CalendarIcon className="w-10 h-10 text-fog mx-auto" />
-              <h3 className="font-semibold text-vast-ink text-sm">No Upcoming Events</h3>
-              <p className="text-xs text-fog">
-                {society.name} has no scheduled upcoming campus events right now.
-              </p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {upcomingEvents.map((event) => (
-                <EventCard
-                  key={event.id}
-                  item={
-                    {
-                      ...event,
-                      type: 'event',
-                      society: event.society || society,
-                    } as EventFeedItem
-                  }
-                />
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Tab: Past Events */}
-      {activeTab === 'past' && (
-        <div className="space-y-4 pt-2">
-          {pastEvents.length === 0 ? (
-            <div className="bg-lumen-cream p-6 rounded-cards border border-vast-ink/20 text-center text-xs text-fog">
-              No past events recorded for this society.
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 opacity-80">
-              {pastEvents.map((event) => (
-                <EventCard
-                  key={event.id}
-                  item={
-                    {
-                      ...event,
-                      type: 'event',
-                      society: event.society || society,
-                    } as EventFeedItem
-                  }
-                />
-              ))}
-            </div>
-          )}
-        </div>
-      )}
     </div>
   );
 };

@@ -75,7 +75,14 @@ export class AuthService {
       }
     });
 
-    if (!user || !user.isActive) {
+    if (!user) {
+      throw new UnauthorizedException('Invalid email or password');
+    }
+
+    if (!user.isActive) {
+      if (user.role === Role.SOCIETY) {
+        throw new UnauthorizedException('The society is banned, kindly visit DSA Office for further inquiry');
+      }
       throw new UnauthorizedException('Invalid email or password');
     }
 

@@ -13,7 +13,6 @@ import { AdvisorsModule } from './modules/advisors/advisors.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { FeedModule } from './modules/feed/feed.module';
 import { PostsModule } from './modules/posts/posts.module';
-import { UploadsModule } from './modules/uploads/uploads.module';
 import { EmailModule } from './modules/email/email.module';
 
 @Module({
@@ -38,7 +37,6 @@ import { EmailModule } from './modules/email/email.module';
     AdminModule,
     FeedModule,
     PostsModule,
-    UploadsModule,
   ],
 })
 export class AppModule {}

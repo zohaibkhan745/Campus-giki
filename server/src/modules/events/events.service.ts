@@ -61,7 +61,7 @@ export class EventsService {
       const cat = query.category.trim();
       whereClause.society = {
         category: {
-          OR: [{ slug: cat.toLowerCase() }, { name: { contains: cat, mode: 'insensitive' } }],
+          OR: [{ slug: cat.toLowerCase() }, { name: { contains: cat } }],
         },
       };
     }

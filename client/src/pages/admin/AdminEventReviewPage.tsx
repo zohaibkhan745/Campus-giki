@@ -139,10 +139,10 @@ export const AdminEventReviewPage: React.FC = () => {
         <Alert variant="error" message="Event not found or you do not have permission." />
         <Link
           to="/dashboard"
-          className="inline-flex items-center gap-2 text-sm text-vast-ink hover:underline"
+          className="fixed top-4 left-4 sm:top-6 sm:left-6 z-[100] inline-flex items-center justify-center w-10 h-10 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white rounded-full transition-all cursor-pointer shadow-lg"
+          title="Go Back"
         >
-          <ArrowLeft className="w-4 h-4" />
-          <span>Return to Queue</span>
+          <ArrowLeft className="w-5 h-5" />
         </Link>
       </div>
     );

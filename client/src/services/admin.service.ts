@@ -36,6 +36,7 @@ export interface OnboardSocietyResult {
   activationEmailSent: boolean;
   emailPreviewUrl?: string;
   isSetupComplete: boolean;
+  hasWarning: boolean;
   category: {
     id: string;
     name: string;
@@ -308,7 +309,18 @@ export const adminService = {
   },
 
   async deactivateSociety(id: string): Promise<{ message: string; id: string; name: string }> {
-    return api.patch(`/admin/societies/${id}/deactivate`);
+    const response = await api.patch(`/admin/societies/${id}/deactivate`);
+    return response.data;
+  },
+
+  async reactivateSociety(id: string): Promise<{ message: string; societyId: string }> {
+    const response = await api.patch(`/admin/societies/${id}/reactivate`);
+    return response.data;
+  },
+
+  async toggleWarning(id: string, hasWarning: boolean): Promise<{ message: string; societyId: string; hasWarning: boolean }> {
+    const response = await api.patch(`/admin/societies/${id}/warning`, { hasWarning });
+    return response.data;
   },
 
   async getAllYearlyPlans(params?: {

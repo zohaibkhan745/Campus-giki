@@ -152,40 +152,40 @@ export const CampusCalendarPage: React.FC = () => {
   ];
 
   return (
-    <div className="bg-lumen-cream text-vast-ink min-h-screen pt-4 md:pt-14 pb-12 font-figtree">
+    <div className="bg-transparent text-vast-ink min-h-screen pt-4 md:pt-14 pb-12 font-figtree">
       <div className="max-w-[1200px] mx-auto px-4 md:px-6 space-y-10 text-left">
         {/* Page Header */}
-        <header className="space-y-3 pb-8">
-          <h1 className="font-eb-garamond text-heading-lg text-vast-ink leading-tight">
+        <div className="space-y-4">
+          <h1 className="font-extrabold text-5xl sm:text-6xl text-white tracking-tight leading-tight">
             Campus Events Calendar
           </h1>
-          <p className="text-body text-vast-ink/80 max-w-2xl">
+          <p className="text-lg text-gray-400 max-w-2xl">
             Explore upcoming hackathons, sports tournaments, workshops, and society events across GIKI.
           </p>
-        </header>
+        </div>
 
         {/* Controls Bar */}
-        <div className="bg-lumen-cream border border-vast-ink/20 rounded-cards p-4 sm:p-6 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4">
+        <div className="bg-[#17181c]/80 backdrop-blur-md border border-white/10 rounded-cards p-4 sm:p-6 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4">
           <div className="flex items-center gap-3 w-full sm:w-auto">
             {(isCalendarLoading || isCalendarFetching || isListLoading) && (
-              <div className="flex items-center gap-1.5 text-xs text-vast-ink font-semibold bg-lavender-whisper px-3 py-1.5 rounded-badges border border-vast-ink/20 shrink-0">
+              <div className="flex items-center gap-1.5 text-xs text-white font-semibold bg-white/10 px-3 py-1.5 rounded-badges border border-white/10 shrink-0">
                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
                 <span>Loading...</span>
               </div>
             )}
 
             <div className="relative flex items-center w-full sm:w-64">
-              <div className="absolute left-3 text-vast-ink/60 pointer-events-none flex items-center justify-center">
+              <div className="absolute left-3 text-white/60 pointer-events-none flex items-center justify-center">
                 <Building2 className="w-4 h-4" />
               </div>
               <select
                 value={selectedSociety}
                 onChange={(e) => setSelectedSociety(e.target.value)}
-                className="w-full bg-lumen-cream text-vast-ink font-bold text-xs rounded-inputs border border-vast-ink/20 px-3.5 py-2.5 pl-10 transition-all outline-none focus:ring-2 focus:ring-vast-ink cursor-pointer"
+                className="w-full bg-[#17181c]/80 backdrop-blur-md text-white font-bold text-xs rounded-inputs border border-white/10 px-3.5 py-2.5 pl-10 transition-all outline-none focus:ring-2 focus:ring-white cursor-pointer"
               >
-                <option value="" className="bg-lumen-cream text-vast-ink font-semibold">All Societies</option>
+                <option value="" className="bg-[#17181c] text-white font-semibold">All Societies</option>
                 {societies.map((soc) => (
-                  <option key={soc.id} value={soc.id} className="bg-lumen-cream text-vast-ink font-semibold">
+                  <option key={soc.id} value={soc.id} className="bg-[#17181c] text-white font-semibold">
                     {soc.name}
                   </option>
                 ))}
@@ -195,7 +195,7 @@ export const CampusCalendarPage: React.FC = () => {
         </div>
 
         {/* Calendar Container */}
-        <div id="calendar-view" className="bg-lumen-cream border border-vast-ink/20 rounded-cards sm:rounded-[32px] overflow-hidden p-3 sm:p-6 text-vast-ink shadow-none">
+        <div id="calendar-view" className="bg-[#17181c]/80 backdrop-blur-md border border-white/10 rounded-cards sm:rounded-[32px] overflow-hidden p-3 sm:p-6 text-white shadow-none">
             <style>{`
               .fc {
                 table-layout: fixed !important;
@@ -228,7 +228,15 @@ export const CampusCalendarPage: React.FC = () => {
                 white-space: nowrap !important;
               }
               .fc-theme-standard td, .fc-theme-standard th {
-                border-color: rgba(30, 41, 59, 0.15) !important;
+                border-color: rgba(255, 255, 255, 0.1) !important;
+              }
+              .fc-col-header-cell {
+                background-color: rgba(255,255,255,0.05) !important;
+                color: #e2e8f0 !important;
+                padding: 10px 0 !important;
+              }
+              .fc-daygrid-day-number {
+                color: #e2e8f0 !important;
               }
 
               /* Mobile CSS Overrides */
@@ -309,7 +317,7 @@ export const CampusCalendarPage: React.FC = () => {
                     />
                     <span
                       className="text-[11px] font-bold truncate block w-full leading-tight text-left"
-                      style={{ color: '#0f172a' }}
+                      style={{ color: '#e2e8f0' }}
                     >
                       {title}
                     </span>
@@ -326,7 +334,7 @@ export const CampusCalendarPage: React.FC = () => {
         <div id="events-list" className="pt-8 pb-12">
           
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-            <h2 className="font-eb-garamond text-2xl font-bold text-vast-ink flex items-center gap-2">
+            <h2 className="font-eb-garamond text-2xl font-bold text-white flex items-center gap-2">
               <CalendarIcon className="w-6 h-6" />
               Events 
             </h2>
@@ -336,8 +344,8 @@ export const CampusCalendarPage: React.FC = () => {
                 onClick={() => setListFilter('today')}
                 className={`px-4 py-2 rounded-full font-bold text-sm border transition-all ${
                   listFilter === 'today'
-                    ? 'bg-vast-ink text-pure-white border-vast-ink'
-                    : 'bg-transparent text-vast-ink border-vast-ink/20 hover:border-vast-ink'
+                    ? 'bg-white text-gray-900 border-white'
+                    : 'bg-transparent text-gray-300 border-white/20 hover:border-white'
                 }`}
               >
                 Today
@@ -346,8 +354,8 @@ export const CampusCalendarPage: React.FC = () => {
                 onClick={() => setListFilter('week')}
                 className={`px-4 py-2 rounded-full font-bold text-sm border transition-all ${
                   listFilter === 'week'
-                    ? 'bg-vast-ink text-pure-white border-vast-ink'
-                    : 'bg-transparent text-vast-ink border-vast-ink/20 hover:border-vast-ink'
+                    ? 'bg-white text-gray-900 border-white'
+                    : 'bg-transparent text-gray-300 border-white/20 hover:border-white'
                 }`}
               >
                 This Week
@@ -356,8 +364,8 @@ export const CampusCalendarPage: React.FC = () => {
                 onClick={() => setListFilter('month')}
                 className={`px-4 py-2 rounded-full font-bold text-sm border transition-all ${
                   listFilter === 'month'
-                    ? 'bg-vast-ink text-pure-white border-vast-ink'
-                    : 'bg-transparent text-vast-ink border-vast-ink/20 hover:border-vast-ink'
+                    ? 'bg-white text-gray-900 border-white'
+                    : 'bg-transparent text-gray-300 border-white/20 hover:border-white'
                 }`}
               >
                 This Month
@@ -366,8 +374,8 @@ export const CampusCalendarPage: React.FC = () => {
                 onClick={() => setListFilter('upcoming')}
                 className={`px-4 py-2 rounded-full font-bold text-sm border transition-all ${
                   listFilter === 'upcoming'
-                    ? 'bg-vast-ink text-pure-white border-vast-ink'
-                    : 'bg-transparent text-vast-ink border-vast-ink/20 hover:border-vast-ink'
+                    ? 'bg-white text-gray-900 border-white'
+                    : 'bg-transparent text-gray-300 border-white/20 hover:border-white'
                 }`}
               >
                 All Upcoming
@@ -376,7 +384,7 @@ export const CampusCalendarPage: React.FC = () => {
           </div>
           
           {eventsList.length === 0 ? (
-            <div className="bg-transparent p-10 rounded-cards border border-vast-ink/20 text-center text-fog">
+            <div className="bg-transparent p-10 rounded-cards border border-white/10 text-center text-gray-400">
               No events scheduled for the current date range.
             </div>
           ) : (

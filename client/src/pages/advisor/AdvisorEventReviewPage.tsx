@@ -137,10 +137,10 @@ export const AdvisorEventReviewPage: React.FC = () => {
         <Alert variant="error" message="Event not found or you do not have permission." />
         <Link
           to="/advisor/yearly-plans"
-          className="inline-flex items-center gap-2 text-sm text-vast-ink hover:underline"
+          className="fixed top-4 left-4 sm:top-6 sm:left-6 z-[100] inline-flex items-center justify-center w-10 h-10 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white rounded-full transition-all cursor-pointer shadow-lg"
+          title="Go Back"
         >
-          <ArrowLeft className="w-4 h-4" />
-          <span>Return to Queue</span>
+          <ArrowLeft className="w-5 h-5" />
         </Link>
       </div>
     );
@@ -153,10 +153,10 @@ export const AdvisorEventReviewPage: React.FC = () => {
       <div className="flex items-center justify-between">
         <button
           onClick={() => navigate(-1)}
-          className="inline-flex items-center gap-2 px-3.5 py-2 bg-transparent hover:bg-lumen-stone border border-vast-ink/20 text-vast-ink text-xs font-bold rounded-buttons transition-all cursor-pointer shadow-[2px_2px_0px_0px_#1B1B18]"
+          className="fixed top-4 left-4 sm:top-6 sm:left-6 z-[100] inline-flex items-center justify-center w-10 h-10 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white rounded-full transition-all cursor-pointer shadow-lg"
+          title="Go Back"
         >
-          <ArrowLeft className="w-4 h-4" />
-          <span>Back</span>
+          <ArrowLeft className="w-5 h-5" />
         </button>
       </div>
 

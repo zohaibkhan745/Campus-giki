@@ -157,35 +157,35 @@ export const AdminEventsPage: React.FC = () => {
       <div className="flex items-center justify-between">
         <button
           onClick={() => navigate(-1)}
-          className="inline-flex items-center gap-2 px-3.5 py-2 bg-transparent hover:bg-lumen-stone border border-vast-ink/20 text-vast-ink text-xs font-bold rounded-buttons transition-all cursor-pointer shadow-[2px_2px_0px_0px_#1B1B18]"
+          className="fixed top-4 left-4 sm:top-6 sm:left-6 z-[100] inline-flex items-center justify-center w-10 h-10 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white rounded-full transition-all cursor-pointer shadow-lg"
+          title="Go Back"
         >
-          <ArrowLeft className="w-4 h-4" />
-          <span>Back</span>
+          <ArrowLeft className="w-5 h-5" />
         </button>
       </div>
 
       {/* Header Banner */}
-      <div className="space-y-1 bg-transparent p-6 rounded-cards border border-vast-ink/20 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div className="space-y-1 bg-transparent p-6 rounded-cards border border-white/10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <div className="flex items-center gap-2 text-vast-ink text-xs font-semibold uppercase tracking-wider mb-1">
+          <div className="flex items-center gap-2 text-white text-xs font-semibold uppercase tracking-wider mb-1">
             <Shield className="w-4 h-4" />
             <span>DSA Campus Directorate</span>
           </div>
-          <h1 className="text-2xl font-extrabold text-vast-ink">
+          <h1 className="text-2xl font-extrabold text-white">
             Campus Events Overview
           </h1>
-          <p className="text-sm text-fog">
+          <p className="text-sm text-gray-400">
             Read-only monitoring dashboard of all society events, venues, schedules, and registration links.
           </p>
         </div>
       </div>
 
       {/* Filter & Search Toolbar */}
-      <div className="bg-lumen-cream p-5 rounded-cards border border-vast-ink/20 space-y-4">
+      <div className="bg-[#17181c]/80 backdrop-blur-md p-5 rounded-cards border border-white/10 space-y-4">
         {/* Top Row: Search + Upcoming/Past Toggle */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="relative w-full md:w-80 flex items-center">
-            <div className="absolute left-3 text-fog pointer-events-none flex items-center justify-center">
+            <div className="absolute left-3 text-gray-400 pointer-events-none flex items-center justify-center">
               <Search className="w-4 h-4" />
             </div>
             <input
@@ -196,19 +196,19 @@ export const AdminEventsPage: React.FC = () => {
                 setSearchQuery(e.target.value);
                 setPage(1);
               }}
-              className="w-full bg-transparent text-vast-ink text-sm rounded-inputs border border-vast-ink/20 px-3.5 py-2 pl-10 transition-all outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:border-indigo-500"
+              className="w-full bg-transparent text-white text-sm rounded-inputs border border-white/10 px-3.5 py-2 pl-10 transition-all outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:border-indigo-500"
             />
           </div>
 
           {/* Time Window Pills Toggle */}
-          <div className="flex flex-wrap items-center bg-lumen-stone p-1 rounded-inputs border border-vast-ink/20 w-full md:w-auto gap-1">
+          <div className="flex flex-wrap items-center bg-white/5 p-1 rounded-inputs border border-white/10 w-full md:w-auto gap-1">
             <button
               type="button"
               onClick={setAllFilter}
               className={`px-3 py-1.5 rounded-inputs text-xs font-bold transition-all ${
                 typeToggle === 'all'
                   ? 'bg-vast-ink text-white shadow-sm'
-                  : 'text-fog hover:text-vast-ink'
+                  : 'text-gray-400 hover:text-white'
               }`}
             >
               All Events
@@ -219,7 +219,7 @@ export const AdminEventsPage: React.FC = () => {
               className={`px-3 py-1.5 rounded-inputs text-xs font-bold transition-all ${
                 typeToggle === 'this_week'
                   ? 'bg-vast-ink text-white shadow-sm'
-                  : 'text-fog hover:text-vast-ink'
+                  : 'text-gray-400 hover:text-white'
               }`}
             >
               This Week
@@ -230,7 +230,7 @@ export const AdminEventsPage: React.FC = () => {
               className={`px-3 py-1.5 rounded-inputs text-xs font-bold transition-all ${
                 typeToggle === 'this_month'
                   ? 'bg-vast-ink text-white shadow-sm'
-                  : 'text-fog hover:text-vast-ink'
+                  : 'text-gray-400 hover:text-white'
               }`}
             >
               This Month
@@ -241,7 +241,7 @@ export const AdminEventsPage: React.FC = () => {
               className={`px-3 py-1.5 rounded-inputs text-xs font-bold transition-all ${
                 typeToggle === 'upcoming'
                   ? 'bg-vast-ink text-white shadow-sm'
-                  : 'text-fog hover:text-vast-ink'
+                  : 'text-gray-400 hover:text-white'
               }`}
             >
               Upcoming
@@ -252,7 +252,7 @@ export const AdminEventsPage: React.FC = () => {
               className={`px-3 py-1.5 rounded-inputs text-xs font-bold transition-all ${
                 typeToggle === 'past'
                   ? 'bg-vast-ink text-white shadow-sm'
-                  : 'text-fog hover:text-vast-ink'
+                  : 'text-gray-400 hover:text-white'
               }`}
             >
               Past
@@ -261,11 +261,11 @@ export const AdminEventsPage: React.FC = () => {
         </div>
 
         {/* Bottom Row: Society, Date Range Filters */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 pt-2 border-t border-vast-ink">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 pt-2 border-t border-white/10">
           
           {/* Status Select Dropdown */}
           <div className="relative flex items-center">
-            <div className="absolute left-3 text-fog pointer-events-none flex items-center justify-center z-10">
+            <div className="absolute left-3 text-gray-400 pointer-events-none flex items-center justify-center z-10">
               <Filter className="w-4 h-4" />
             </div>
             <select
@@ -274,18 +274,18 @@ export const AdminEventsPage: React.FC = () => {
                 setStatusFilter(e.target.value);
                 setPage(1);
               }}
-              className="w-full bg-lumen-cream text-vast-ink text-xs rounded-inputs border border-vast-ink/20 px-3 py-2 pl-9 outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 cursor-pointer"
+              className="w-full bg-[#17181c]/80 backdrop-blur-md text-white text-xs rounded-inputs border border-white/10 px-3 py-2 pl-9 outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 cursor-pointer"
             >
-              <option value="" className="bg-lumen-cream text-vast-ink font-semibold">All Statuses</option>
-              <option value="PENDING_ADMIN" className="bg-lumen-cream text-vast-ink font-semibold">Pending Review</option>
-              <option value="PUBLISHED" className="bg-lumen-cream text-vast-ink font-semibold">Published / Approved</option>
-              <option value="CHANGES_REQUESTED" className="bg-lumen-cream text-vast-ink font-semibold">Changes Requested</option>
+              <option value="" className="bg-[#17181c]/80 backdrop-blur-md text-white font-semibold">All Statuses</option>
+              <option value="PENDING_ADMIN" className="bg-[#17181c]/80 backdrop-blur-md text-white font-semibold">Pending Review</option>
+              <option value="PUBLISHED" className="bg-[#17181c]/80 backdrop-blur-md text-white font-semibold">Published / Approved</option>
+              <option value="CHANGES_REQUESTED" className="bg-[#17181c]/80 backdrop-blur-md text-white font-semibold">Changes Requested</option>
             </select>
           </div>
 
           {/* Society Select Dropdown */}
           <div className="relative flex items-center">
-            <div className="absolute left-3 text-fog pointer-events-none flex items-center justify-center z-10">
+            <div className="absolute left-3 text-gray-400 pointer-events-none flex items-center justify-center z-10">
               <Building2 className="w-4 h-4" />
             </div>
             <select
@@ -294,11 +294,11 @@ export const AdminEventsPage: React.FC = () => {
                 setSocietyFilter(e.target.value);
                 setPage(1);
               }}
-              className="w-full bg-lumen-cream text-vast-ink text-xs rounded-inputs border border-vast-ink/20 px-3 py-2 pl-9 outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 cursor-pointer"
+              className="w-full bg-[#17181c]/80 backdrop-blur-md text-white text-xs rounded-inputs border border-white/10 px-3 py-2 pl-9 outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 cursor-pointer"
             >
-              <option value="" className="bg-lumen-cream text-vast-ink font-semibold">All Societies</option>
+              <option value="" className="bg-[#17181c]/80 backdrop-blur-md text-white font-semibold">All Societies</option>
               {societies.map((soc) => (
-                <option key={soc.id} value={soc.id} className="bg-lumen-cream text-vast-ink font-semibold">
+                <option key={soc.id} value={soc.id} className="bg-[#17181c]/80 backdrop-blur-md text-white font-semibold">
                   {soc.name}
                 </option>
               ))}
@@ -307,7 +307,7 @@ export const AdminEventsPage: React.FC = () => {
 
           {/* From Date */}
           <div className="relative flex items-center">
-            <div className="absolute left-3 text-fog pointer-events-none flex items-center justify-center">
+            <div className="absolute left-3 text-gray-400 pointer-events-none flex items-center justify-center">
               <Calendar className="w-4 h-4" />
             </div>
             <input
@@ -317,14 +317,14 @@ export const AdminEventsPage: React.FC = () => {
                 setFromDate(e.target.value);
                 setPage(1);
               }}
-              className="w-full bg-transparent text-vast-ink text-xs rounded-inputs border border-vast-ink/20 px-3 py-2 pl-9 outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+              className="w-full bg-transparent text-white text-xs rounded-inputs border border-white/10 px-3 py-2 pl-9 outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
             />
           </div>
 
           {/* To Date */}
           <div className="flex items-center gap-2">
             <div className="relative flex items-center w-full">
-              <div className="absolute left-3 text-fog pointer-events-none flex items-center justify-center">
+              <div className="absolute left-3 text-gray-400 pointer-events-none flex items-center justify-center">
                 <Calendar className="w-4 h-4" />
               </div>
               <input
@@ -334,14 +334,14 @@ export const AdminEventsPage: React.FC = () => {
                   setToDate(e.target.value);
                   setPage(1);
                 }}
-                className="w-full bg-transparent text-vast-ink text-xs rounded-inputs border border-vast-ink/20 px-3 py-2 pl-9 outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+                className="w-full bg-transparent text-white text-xs rounded-inputs border border-white/10 px-3 py-2 pl-9 outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
               />
             </div>
 
             {(searchQuery || societyFilter || statusFilter || categoryFilter || fromDate || toDate || typeToggle !== 'all') && (
               <button
                 onClick={handleClearFilters}
-                className="p-2 text-fog hover:text-vast-ink bg-lumen-stone rounded-inputs transition-colors shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+                className="p-2 text-gray-400 hover:text-white bg-white/5 rounded-inputs transition-colors shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
                 title="Clear all filters"
                 aria-label="Clear all filters"
               >
@@ -358,7 +358,7 @@ export const AdminEventsPage: React.FC = () => {
           <Alert variant="error" message="Failed to load campus events overview. DSA_ADMIN role required." />
           <button
             onClick={() => refetch()}
-            className="text-xs text-vast-ink hover:underline font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 rounded"
+            className="text-xs text-white hover:underline font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 rounded"
           >
             Retry Loading Events
           </button>
@@ -369,20 +369,20 @@ export const AdminEventsPage: React.FC = () => {
       {isLoading ? (
         <div className="space-y-4">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="bg-transparent p-5 rounded-cards border border-vast-ink/20 space-y-3 animate-pulse">
+            <div key={i} className="bg-transparent p-5 rounded-cards border border-white/10 space-y-3 animate-pulse">
               <div className="flex justify-between">
-                <div className="h-5 bg-lumen-stone rounded w-1/3" />
-                <div className="h-5 bg-lumen-stone rounded w-20" />
+                <div className="h-5 bg-white/5 rounded w-1/3" />
+                <div className="h-5 bg-white/5 rounded w-20" />
               </div>
-              <div className="h-4 bg-lumen-stone rounded w-1/2" />
+              <div className="h-4 bg-white/5 rounded w-1/2" />
             </div>
           ))}
         </div>
       ) : events.length === 0 ? (
-        <div className="bg-transparent p-12 rounded-cards border border-vast-ink/20 text-center space-y-3">
-          <Calendar className="w-12 h-12 text-fog mx-auto" />
-          <h3 className="font-bold text-vast-ink text-base">No Campus Events Found</h3>
-          <p className="text-xs text-fog max-w-sm mx-auto">
+        <div className="bg-transparent p-12 rounded-cards border border-white/10 text-center space-y-3">
+          <Calendar className="w-12 h-12 text-gray-400 mx-auto" />
+          <h3 className="font-bold text-white text-base">No Campus Events Found</h3>
+          <p className="text-xs text-gray-400 max-w-sm mx-auto">
             No society events match the selected search or date range filters.
           </p>
         </div>
@@ -391,17 +391,17 @@ export const AdminEventsPage: React.FC = () => {
           {events.map((evt) => (
             <div
               key={evt.id}
-              className="bg-transparent p-5 rounded-cards border border-vast-ink/20 hover:border border-vast-ink/20 transition-all flex flex-col md:flex-row items-start md:items-center justify-between gap-4 group"
+              className="bg-transparent p-5 rounded-cards border border-white/10 hover:border border-white/10 transition-all flex flex-col md:flex-row items-start md:items-center justify-between gap-4 group"
             >
               <div className="flex items-start md:items-center gap-4">
                 {evt.society?.logoUrl ? (
                   <img
                     src={evt.society.logoUrl}
                     alt={evt.society.name}
-                    className="w-12 h-12 rounded-inputs object-cover border border-vast-ink/20 shrink-0"
+                    className="w-12 h-12 rounded-inputs object-cover border border-white/10 shrink-0"
                   />
                 ) : (
-                  <div className="p-3 bg-lavender-whisper border border-vast-ink text-vast-ink rounded-inputs border border-indigo-500/20 shrink-0">
+                  <div className="p-3 bg-white/10 border border-white/10 text-white rounded-inputs border border-indigo-500/20 shrink-0">
                     <Building2 className="w-6 h-6" />
                   </div>
                 )}
@@ -410,7 +410,7 @@ export const AdminEventsPage: React.FC = () => {
                   <div className="flex flex-wrap items-center gap-2">
                     <Link
                       to={evt.approvalStatus === 'PENDING_ADMIN' ? `/admin/events/${evt.id}/review` : `/events/${evt.id}`}
-                      className="font-bold text-vast-ink text-base group-hover:text-vast-ink transition-colors hover:underline"
+                      className="font-bold text-white text-base group-hover:text-white transition-colors hover:underline"
                     >
                       {evt.title}
                     </Link>
@@ -420,23 +420,23 @@ export const AdminEventsPage: React.FC = () => {
                         Upcoming
                       </span>
                     ) : (
-                      <span className="text-[11px] font-semibold text-fog bg-lumen-stone px-2.5 py-0.5 rounded-inputs">
+                      <span className="text-[11px] font-semibold text-gray-400 bg-white/5 px-2.5 py-0.5 rounded-inputs">
                         Past Event
                       </span>
                     )}
 
                     {evt.society?.category && (
-                      <span className="text-[11px] font-semibold text-vast-ink bg-lavender-whisper border border-vast-ink px-2.5 py-0.5 rounded-inputs border border-indigo-500/20">
+                      <span className="text-[11px] font-semibold text-white bg-white/10 border border-white/10 px-2.5 py-0.5 rounded-inputs border border-indigo-500/20">
                         {evt.society.category.name}
                       </span>
                     )}
                   </div>
 
-                  <div className="flex flex-wrap items-center gap-4 text-xs text-fog">
-                    <span>Host: <strong className="text-vast-ink font-medium">{evt.society?.name}</strong></span>
+                  <div className="flex flex-wrap items-center gap-4 text-xs text-gray-400">
+                    <span>Host: <strong className="text-white font-medium">{evt.society?.name}</strong></span>
 
                     <div className="flex items-center gap-1.5">
-                      <Clock className="w-3.5 h-3.5 text-vast-ink" />
+                      <Clock className="w-3.5 h-3.5 text-white" />
                       <span>
                         {new Date(evt.eventDate).toLocaleDateString(undefined, {
                           month: 'short',
@@ -448,7 +448,7 @@ export const AdminEventsPage: React.FC = () => {
                     </div>
 
                     <div className="flex items-center gap-1.5">
-                      <MapPin className="w-3.5 h-3.5 text-fog" />
+                      <MapPin className="w-3.5 h-3.5 text-gray-400" />
                       <span>{evt.venue}</span>
                     </div>
                   </div>
@@ -456,7 +456,7 @@ export const AdminEventsPage: React.FC = () => {
               </div>
 
               {/* Read-Only Details Link */}
-              <div className="flex items-center gap-3 w-full md:w-auto justify-end pt-2 md:pt-0 border-t md:border-t-0 border-vast-ink">
+              <div className="flex items-center gap-3 w-full md:w-auto justify-end pt-2 md:pt-0 border-t md:border-t-0 border-white/10">
                 {evt.registrationLink && (
                   <a
                     href={evt.registrationLink}
@@ -472,7 +472,7 @@ export const AdminEventsPage: React.FC = () => {
                 <Link
                   to={evt.approvalStatus === 'PENDING_ADMIN' ? `/admin/events/${evt.id}/review` : `/events/${evt.id}`}
                   className={`inline-flex items-center gap-1 text-xs font-semibold group-hover:translate-x-1 transition-transform focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 rounded p-0.5 ${
-                    evt.approvalStatus === 'PENDING_ADMIN' ? 'text-amber-600 hover:text-amber-700' : 'text-vast-ink'
+                    evt.approvalStatus === 'PENDING_ADMIN' ? 'text-amber-600 hover:text-amber-700' : 'text-white'
                   }`}
                   aria-label={`View details for ${evt.title}`}
                 >
@@ -487,7 +487,7 @@ export const AdminEventsPage: React.FC = () => {
 
       {/* Pagination Bar */}
       {meta && meta.totalPages > 1 && (
-        <nav aria-label="Pagination" className="flex items-center justify-between pt-4 border-t border-vast-ink/20 text-xs font-semibold text-fog">
+        <nav aria-label="Pagination" className="flex items-center justify-between pt-4 border-t border-white/10 text-xs font-semibold text-gray-400">
           <span>
             Page {meta.page} of {meta.totalPages} ({meta.total} events)
           </span>
@@ -496,7 +496,7 @@ export const AdminEventsPage: React.FC = () => {
             <button
               disabled={!meta.hasPreviousPage}
               onClick={() => setPage((p) => Math.max(1, p - 1))}
-              className="inline-flex items-center gap-1 px-3 py-1.5 bg-lumen-stone border border-vast-ink/20 rounded-inputs hover:bg-lumen-stone disabled:opacity-40 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+              className="inline-flex items-center gap-1 px-3 py-1.5 bg-white/5 border border-white/10 rounded-inputs hover:bg-white/5 disabled:opacity-40 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
               aria-label="Previous page"
             >
               <ChevronLeft className="w-4 h-4" />
@@ -506,7 +506,7 @@ export const AdminEventsPage: React.FC = () => {
             <button
               disabled={!meta.hasNextPage}
               onClick={() => setPage((p) => p + 1)}
-              className="inline-flex items-center gap-1 px-3 py-1.5 bg-lumen-stone border border-vast-ink/20 rounded-inputs hover:bg-lumen-stone disabled:opacity-40 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+              className="inline-flex items-center gap-1 px-3 py-1.5 bg-white/5 border border-white/10 rounded-inputs hover:bg-white/5 disabled:opacity-40 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
               aria-label="Next page"
             >
               <span>Next</span>

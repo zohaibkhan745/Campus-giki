@@ -10,31 +10,31 @@ export const HomePage: React.FC = () => {
   const { items, meta, isLoading, isLoadingMore, error, loadMore, refetch } = useFeed(6);
 
   return (
-    <div className="bg-lumen-cream text-vast-ink min-h-screen py-4 md:py-6 font-figtree">
+    <div className="bg-transparent text-gray-200 min-h-screen py-4 md:py-6 font-inter">
       <div className="max-w-5xl mx-auto px-4 flex gap-8 text-left">
 
         {/* Left Column: Main Feed */}
         <div className="flex-1 min-w-0 max-w-[680px] space-y-6">
           {/* Page Header */}
-          <header className="space-y-2 pb-4 border-b border-vast-ink/10">
-            <h1 className="font-eb-garamond text-heading-md sm:text-heading-lg text-vast-ink leading-tight">
+          <header className="space-y-2 pb-4 border-b border-white/10">
+            <h1 className="font-extrabold text-5xl sm:text-6xl text-white tracking-tight leading-tight">
               Campus Feed
             </h1>
-            <p className="text-body-sm text-vast-ink/60">
+            <p className="text-lg text-gray-400">
               Live announcements, events, and student society activities at GIKI.
             </p>
           </header>
 
           {/* Error Callout State */}
           {error && (
-            <div className="bg-lumen-cream border-2 border-vast-ink rounded-cards p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="bg-[#17181c]/80 backdrop-blur-md border border-white/10 rounded-2xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl">
               <div className="flex items-center gap-3">
-                <AlertCircle className="w-6 h-6 text-ember-glow shrink-0" />
-                <p className="text-[16px] font-medium text-vast-ink">{error}</p>
+                <AlertCircle className="w-6 h-6 text-red-400 shrink-0" />
+                <p className="text-[16px] font-medium text-white">{error}</p>
               </div>
               <button
                 onClick={refetch}
-                className="inline-flex items-center gap-2 bg-lavender-whisper border-2 border-vast-ink rounded-buttons px-4 py-2 text-sm font-semibold text-vast-ink hover:bg-lumen-stone transition-colors shrink-0"
+                className="inline-flex items-center gap-2 bg-[#2c2f38] border border-white/10 rounded-xl px-4 py-2 text-sm font-semibold text-white hover:bg-white/10 transition-colors shrink-0"
               >
                 <RefreshCw className="w-4 h-4" />
                 <span>Retry Feed</span>
@@ -51,11 +51,11 @@ export const HomePage: React.FC = () => {
             </div>
           ) : items.length === 0 ? (
             /* Empty State */
-            <div className="bg-lumen-cream rounded-cards p-16 text-center space-y-3">
-              <h2 className="font-eb-garamond text-heading-sm text-vast-ink">
+            <div className="bg-[#17181c]/80 backdrop-blur-md border border-white/10 rounded-2xl p-16 text-center space-y-3 shadow-xl">
+              <h2 className="font-semibold text-2xl text-white">
                 Nothing here yet
               </h2>
-              <p className="text-fog text-[16px] max-w-md mx-auto">
+              <p className="text-gray-400 text-[16px] max-w-md mx-auto">
                 Check back soon for new campus events, workshops, and society announcements.
               </p>
             </div>
@@ -78,11 +78,11 @@ export const HomePage: React.FC = () => {
               <button
                 onClick={loadMore}
                 disabled={isLoadingMore}
-                className="inline-flex items-center gap-3 bg-lumen-cream border-2 border-vast-ink rounded-buttons px-8 py-3 text-[16px] font-semibold text-vast-ink hover:bg-lumen-stone disabled:opacity-50 transition-colors focus:outline-none"
+                className="inline-flex items-center gap-3 bg-[#17181c] border border-white/10 rounded-xl px-8 py-3 text-[16px] font-semibold text-white hover:bg-white/10 disabled:opacity-50 transition-colors focus:outline-none"
               >
                 {isLoadingMore ? (
                   <>
-                    <RefreshCw className="w-5 h-5 animate-spin text-vast-ink" />
+                    <RefreshCw className="w-5 h-5 animate-spin text-white" />
                     <span>Loading stories...</span>
                   </>
                 ) : (

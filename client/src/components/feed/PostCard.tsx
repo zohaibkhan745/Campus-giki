@@ -31,16 +31,16 @@ export const PostCard: React.FC<PostCardProps> = ({ item }) => {
   const isLongContent = item.content && item.content.length > 400;
 
   return (
-    <article className="bg-lumen-cream rounded-cards p-8 space-y-6 text-left border-b border-vast-ink/10 pb-10">
+    <article className="bg-[#17181c]/80 backdrop-blur-md rounded-2xl p-6 md:p-8 space-y-6 text-left border border-white/10 shadow-lg hover:shadow-xl hover:bg-[#1a1b20]/90 transition-all duration-300 hover:-translate-y-0.5 mb-6">
       {/* Card Header: Society Meta */}
       <div className="flex items-center justify-between gap-4">
         {item.isAdminPost ? (
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full border border-vast-ink/20 bg-vast-ink flex items-center justify-center shrink-0 text-white">
-              <Building2 className="w-4 h-4" />
+            <div className="w-10 h-10 rounded-full border border-white/10 bg-gray-800 flex items-center justify-center shrink-0 text-white shadow-inner">
+              <Building2 className="w-5 h-5" />
             </div>
             <div className="flex flex-col">
-              <span className="font-medium text-[14px] text-vast-ink truncate flex items-center gap-1.5">
+              <span className="font-semibold text-[15px] text-gray-100 truncate flex items-center gap-1.5">
                 {item.society.name}
               </span>
             </div>
@@ -55,27 +55,27 @@ export const PostCard: React.FC<PostCardProps> = ({ item }) => {
               <img
                 src={item.society.logoUrl}
                 alt={item.society.name}
-                className="w-8 h-8 rounded-full border border-vast-ink/20 object-cover bg-lumen-stone shrink-0 group-hover:opacity-80 transition-opacity"
+                className="w-10 h-10 rounded-full border border-white/10 object-cover bg-gray-800 shrink-0 group-hover:ring-2 group-hover:ring-green-400/50 transition-all shadow-inner"
               />
             ) : (
-              <div className="w-8 h-8 rounded-full border border-vast-ink/20 bg-lavender-whisper flex items-center justify-center shrink-0 text-vast-ink">
-                <Building2 className="w-4 h-4" />
+              <div className="w-10 h-10 rounded-full border border-white/10 bg-gray-800 flex items-center justify-center shrink-0 text-gray-300 shadow-inner group-hover:ring-2 group-hover:ring-green-400/50 transition-all">
+                <Building2 className="w-5 h-5" />
               </div>
             )}
-            <span className="font-medium text-[14px] text-vast-ink truncate group-hover:underline underline-offset-2">
+            <span className="font-semibold text-[15px] text-gray-100 truncate group-hover:text-green-400 transition-colors">
               {item.society.name}
             </span>
           </Link>
         )}
 
-        <span className="text-fog text-[14px] font-medium shrink-0">
+        <span className="text-gray-400 text-sm font-medium shrink-0">
           {getRelativeTime(item.createdAt)}
         </span>
       </div>
 
       {/* Post Content */}
-      <div className="space-y-1">
-        <p className="font-normal text-[16px] md:text-[20px] text-vast-ink leading-relaxed whitespace-pre-line">
+      <div className="space-y-2">
+        <p className="font-normal text-[16px] md:text-[18px] text-gray-300 leading-relaxed whitespace-pre-line">
           {!isExpanded && isLongContent ? `${item.content.slice(0, 300).trim()}...` : item.content}
         </p>
         {isLongContent && (
@@ -84,7 +84,7 @@ export const PostCard: React.FC<PostCardProps> = ({ item }) => {
               e.preventDefault();
               setIsExpanded(!isExpanded);
             }}
-            className="text-sm font-semibold text-vast-ink/70 hover:text-vast-ink underline underline-offset-2 focus:outline-none transition-colors mt-1"
+            className="text-sm font-semibold text-green-400 hover:text-green-300 underline underline-offset-4 focus:outline-none transition-colors mt-2"
           >
             {isExpanded ? 'Read less' : 'Read more'}
           </button>
@@ -93,7 +93,7 @@ export const PostCard: React.FC<PostCardProps> = ({ item }) => {
 
       {/* Optional Post Video */}
       {item.videoUrl && (
-        <div className="w-full aspect-[16/9] overflow-hidden rounded-[24px] mt-4">
+        <div className="w-full aspect-[16/9] overflow-hidden rounded-xl mt-4 border border-white/5 shadow-inner">
           <video
             controls
             src={item.videoUrl}
@@ -105,7 +105,7 @@ export const PostCard: React.FC<PostCardProps> = ({ item }) => {
       {/* Optional Post Image */}
       {item.imageUrl && !item.videoUrl && (
         <div 
-          className="w-full aspect-[16/9] overflow-hidden rounded-[24px] mt-4 cursor-pointer group relative"
+          className="w-full aspect-[16/9] overflow-hidden rounded-xl mt-4 cursor-pointer group relative border border-white/5 shadow-inner"
           onClick={(e) => {
             e.stopPropagation();
             setIsImageModalOpen(true);
@@ -114,7 +114,7 @@ export const PostCard: React.FC<PostCardProps> = ({ item }) => {
           <img
             src={item.imageUrl}
             alt="Post Attachment"
-            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
             onError={(e) => {
               e.currentTarget.style.display = 'none';
               if (e.currentTarget.parentElement) {
@@ -122,17 +122,18 @@ export const PostCard: React.FC<PostCardProps> = ({ item }) => {
               }
             }}
           />
-          <div className="absolute inset-0 bg-vast-ink/0 group-hover:bg-vast-ink/20 transition-colors flex items-center justify-center">
-            <span className="opacity-0 group-hover:opacity-100 bg-vast-ink text-pure-white text-xs font-bold px-3 py-1.5 rounded-full shadow-md transition-opacity">
+          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center backdrop-blur-[1px]">
+            <span className="opacity-0 group-hover:opacity-100 bg-gray-900/90 text-white text-xs font-semibold px-4 py-2 rounded-full shadow-lg transition-all transform scale-95 group-hover:scale-100 border border-white/10">
               View Full Image
             </span>
           </div>
         </div>
       )}
+      
       {/* Image Modal */}
       {isImageModalOpen && item.imageUrl && (
         <div 
-          className="fixed inset-0 z-50 flex items-center justify-center bg-charcoal/90 p-4 backdrop-blur-sm cursor-default" 
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-4 backdrop-blur-md cursor-default" 
           onClick={(e) => {
             e.stopPropagation();
             setIsImageModalOpen(false);
@@ -144,14 +145,14 @@ export const PostCard: React.FC<PostCardProps> = ({ item }) => {
                 e.stopPropagation();
                 setIsImageModalOpen(false);
               }}
-              className="absolute -top-12 right-0 p-2 text-pure-white hover:text-red-400 transition-colors"
+              className="absolute -top-12 right-0 p-2 text-gray-400 hover:text-white transition-colors bg-gray-800/50 rounded-full hover:bg-gray-700"
             >
-              <X className="w-8 h-8" />
+              <X className="w-6 h-6" />
             </button>
             <img 
               src={item.imageUrl} 
               alt="Post Attachment Full" 
-              className="w-auto h-auto max-w-full max-h-[85vh] object-contain rounded-cards shadow-2xl border-2 border-pure-white/20"
+              className="w-auto h-auto max-w-full max-h-[85vh] object-contain rounded-xl shadow-2xl border border-white/10"
               onError={(e) => {
                 e.currentTarget.style.display = 'none';
               }}

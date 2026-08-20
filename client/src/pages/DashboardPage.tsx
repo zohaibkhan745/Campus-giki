@@ -180,31 +180,30 @@ export const DashboardPage: React.FC = () => {
   return (
     <div className="space-y-6 text-left">
       {/* 1. Welcome & Identity Banner */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-transparent p-6 rounded-cards shadow-sm border border-vast-ink/20">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-[#17181c]/80 backdrop-blur-md p-6 rounded-2xl border border-white/10 shadow-xl">
         <div className="flex items-center gap-4">
           {profile?.logoUrl ? (
             <img
               src={profile.logoUrl}
               alt={profile.name}
-              className="w-16 h-16 rounded-full object-cover bg-lumen-cream border border-vast-ink/20"
+              className="w-16 h-16 rounded-full object-cover bg-gray-800 border border-white/20 shrink-0"
             />
           ) : (
-            <div className="w-16 h-16 flex items-center justify-center bg-lumen-stone rounded-full text-vast-ink shrink-0 border border-vast-ink/20">
-              <Building2 className="w-8 h-8" />
+            <div className="w-16 h-16 flex items-center justify-center bg-gray-800 rounded-full text-white shrink-0 border border-white/10">
+              <Building2 className="w-8 h-8 text-gray-400" />
             </div>
           )}
           <div>
-            <h1 className="text-2xl font-extrabold text-vast-ink line-clamp-1">
+            <h1 className="text-3xl font-extrabold text-white line-clamp-1">
               Welcome back, {profile?.name || user?.fullName || 'User'}
             </h1>
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-1 text-sm text-fog font-medium">
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-1 text-sm text-gray-400 font-medium">
               {profile?.advisor && profile.advisor.user && (
                 <span className="flex items-center gap-1.5">
-                  <UserCheck className="w-4 h-4 text-vast-ink shrink-0" />
-                  Advisor: <span className="text-vast-ink font-semibold">{profile.advisor.user.fullName}</span>
+                  <UserCheck className="w-4 h-4 text-gray-500 shrink-0" />
+                  Advisor: <span className="text-gray-300 font-semibold">{profile.advisor.user.fullName}</span>
                 </span>
               )}
-              {/* Removed Yearly Plan Status */}
             </div>
           </div>
         </div>
@@ -212,14 +211,14 @@ export const DashboardPage: React.FC = () => {
         <div className="flex items-center gap-3 shrink-0 mt-4 md:mt-0">
           <Link
             to="/society/setup"
-            className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-transparent hover:bg-lumen-stone rounded-inputs text-vast-ink text-sm font-bold transition-colors border border-vast-ink/20"
+            className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-transparent hover:bg-white/10 rounded-xl text-white text-sm font-bold transition-colors border border-white/20"
           >
             <Edit className="w-4 h-4" />
             <span>Edit Profile</span>
           </Link>
           <button
             onClick={logout}
-            className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-transparent hover:bg-red-500/10 rounded-inputs text-red-500 text-sm font-bold transition-colors border border-vast-ink/20"
+            className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-transparent hover:bg-red-500/10 rounded-xl text-red-500 text-sm font-bold transition-colors border border-white/20"
           >
             <LogOut className="w-4 h-4" />
             <span>Log out</span>
