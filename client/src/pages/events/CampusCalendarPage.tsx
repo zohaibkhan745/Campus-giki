@@ -1,59 +1,56 @@
 import React, { useState, useEffect } from 'react';
-import FullCalendar from '@fullcalendar/react';
-import dayGridPlugin from '@fullcalendar/daygrid';
-import timeGridPlugin from '@fullcalendar/timegrid';
-import interactionPlugin from '@fullcalendar/interaction';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Calendar as CalendarIcon, Tag, Loader2, Clock, MapPin, ExternalLink, Building2 } from 'lucide-react';
+import { Calendar as CalendarIcon, Loader2 } from 'lucide-react';
+import { CustomDropdown } from '@/components/ui/CustomDropdown';
 import { eventService } from '@/services/event.service';
 import { societyService } from '@/services/society.service';
 import { EventCard } from '@/components/feed/EventCard';
 
 export const CampusCalendarPage: React.FC = () => {
   const navigate = useNavigate();
-  const [dateRange, setDateRange] = useState<{ from?: string; to?: string }>({});
-  const [selectedSociety, setSelectedSociety] = useState<string>('');
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [selectedSociety, setSelectedSociety] = useState<string>('all');
+  const [searchQuery, setSearchQuery] = useState('');
   const [searchParams] = useSearchParams();
   const viewParam = searchParams.get('view') as 'today' | 'week' | 'month' | 'upcoming' | null;
   const [listFilter, setListFilter] = useState<'today' | 'week' | 'month' | 'upcoming'>(viewParam || 'upcoming');
+  const [visibleEventsCount, setVisibleEventsCount] = useState(6);
 
-  // Auto-scroll to events list when navigated with ?view= param or hash
   useEffect(() => {
     if (viewParam) {
-      setTimeout(() => {
-        document.getElementById('events-list')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 300);
+      setTimeout(() => document.getElementById('events-list')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 300);
     } else if (window.location.hash) {
       const id = window.location.hash.replace('#', '');
-      setTimeout(() => {
-        document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 300);
+      setTimeout(() => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 300);
     }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [viewParam]);
 
-  // Query all active societies for the filter dropdown
   const { data: societiesData } = useQuery({
     queryKey: ['societiesListForFilter'],
     queryFn: () => societyService.getPublicSocieties({ limit: 100 }),
   });
   const societies = societiesData?.items || [];
 
-  // Query 1: Visible events in calendar
-  const { data: calendarEventsData, isLoading: isCalendarLoading, isFetching: isCalendarFetching } = useQuery({
-    queryKey: ['publicCalendarEvents', dateRange.from, dateRange.to, selectedSociety],
-    queryFn: () => eventService.getAllPublicEvents({ from: dateRange.from, to: dateRange.to, societyId: selectedSociety || undefined, limit: 150 }),
-    enabled: !!dateRange.from && !!dateRange.to,
+  const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+  const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+
+  const { data: calendarEventsData, isLoading: isCalendarLoading } = useQuery({
+    queryKey: ['publicCalendarEvents', startOfMonth.toISOString(), endOfMonth.toISOString(), selectedSociety, searchQuery],
+    queryFn: () => eventService.getAllPublicEvents({ 
+      from: new Date(currentDate.getFullYear(), currentDate.getMonth(), -7).toISOString(), 
+      to: new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 7).toISOString(), 
+      societyId: selectedSociety !== 'all' ? selectedSociety : undefined,
+      limit: 150 
+    }),
     placeholderData: keepPreviousData,
   });
   
-  const calendarEventsList = calendarEventsData?.items || [];
+  const calendarEventsList = (calendarEventsData?.items || []).filter(ev => !searchQuery || ev.title.toLowerCase().includes(searchQuery.toLowerCase()) || ev.description?.toLowerCase().includes(searchQuery.toLowerCase()));
 
-  // Query 2: Events for the list filter
   const getFilterDates = () => {
     const today = new Date();
     today.setHours(0,0,0,0);
-    
     if (listFilter === 'today') {
       const toDate = new Date(today);
       toDate.setDate(today.getDate() + 1);
@@ -75,264 +72,308 @@ export const CampusCalendarPage: React.FC = () => {
   const filterDates = getFilterDates();
   
   const { data: listEventsData, isLoading: isListLoading } = useQuery({
-    queryKey: ['publicListEvents', listFilter, selectedSociety],
-    queryFn: () => eventService.getAllPublicEvents({ from: filterDates.from, to: filterDates.to, societyId: selectedSociety || undefined, limit: 150 }),
+    queryKey: ['publicListEvents', listFilter, selectedSociety !== 'all' ? selectedSociety : ''],
+    queryFn: () => eventService.getAllPublicEvents({ 
+      from: filterDates.from, 
+      to: filterDates.to, 
+      societyId: selectedSociety !== 'all' ? selectedSociety : undefined, 
+      limit: 150 
+    }),
     placeholderData: keepPreviousData,
   });
   
   const eventsList = listEventsData?.items || [];
+  const visibleEvents = eventsList.slice(0, visibleEventsCount);
 
-  // Helper to parse "06:00 PM" into FullCalendar compatible local ISO "YYYY-MM-DDTHH:mm:00"
-  const parseLocalIso = (dateStr: string, timeStr: string) => {
-    let hours = 0;
-    let minutes = 0;
-    let addDay = false;
-    
-    if (timeStr) {
-      const match = timeStr.match(/(\d{1,2}):(\d{2})\s*(AM|PM)?/i);
-      if (match) {
-        hours = parseInt(match[1], 10);
-        minutes = parseInt(match[2], 10);
-        const modifier = match[3]?.toUpperCase();
-        if (modifier === 'PM' && hours < 12) hours += 12;
-        if (modifier === 'AM' && hours === 12) hours = 0;
-      }
-      if (timeStr.toLowerCase().includes('next day')) {
-        addDay = true;
-      }
+  // Calendar logic
+  const year = currentDate.getFullYear();
+  const month = currentDate.getMonth();
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const daysInPrevMonth = new Date(year, month, 0).getDate();
+
+  const cells = [];
+  // Prev month cells
+  for (let i = 0; i < firstDay; i++) {
+    const d = daysInPrevMonth - firstDay + i + 1;
+    cells.push({ day: d, isOtherMonth: true, fullDate: new Date(year, month - 1, d) });
+  }
+  // Current month cells
+  for (let i = 1; i <= daysInMonth; i++) {
+    cells.push({ day: i, isOtherMonth: false, fullDate: new Date(year, month, i) });
+  }
+  // Next month cells
+  const remaining = cells.length % 7;
+  if (remaining !== 0) {
+    const needed = 7 - remaining;
+    for (let i = 1; i <= needed; i++) {
+      cells.push({ day: i, isOtherMonth: true, fullDate: new Date(year, month + 1, i) });
     }
-    
-    const dt = new Date(dateStr); // Parses YYYY-MM-DD as UTC midnight
-    if (addDay) {
-      dt.setUTCDate(dt.getUTCDate() + 1);
-    }
-    
-    const yyyy = dt.getUTCFullYear();
-    const mm = String(dt.getUTCMonth() + 1).padStart(2, '0');
-    const dd = String(dt.getUTCDate()).padStart(2, '0');
-    const hh = String(hours).padStart(2, '0');
-    const min = String(minutes).padStart(2, '0');
-    
-    return `${yyyy}-${mm}-${dd}T${hh}:${min}:00`;
+  }
+
+  const prevMonth = () => setCurrentDate(new Date(year, month - 1, 1));
+  const nextMonth = () => setCurrentDate(new Date(year, month + 1, 1));
+  const goToday = () => setCurrentDate(new Date());
+
+  const getEventsForDate = (date: Date) => {
+    return calendarEventsList.filter(ev => {
+      const evDate = new Date(ev.eventDate);
+      return evDate.getFullYear() === date.getFullYear() && 
+             evDate.getMonth() === date.getMonth() && 
+             evDate.getDate() === date.getDate();
+    });
   };
 
-  // Map backend EventItem items to FullCalendar format
-  const calendarEvents = calendarEventsList.map((item) => {
-    const eventDateStr = new Date(item.eventDate).toISOString().split('T')[0];
-    const startIso = parseLocalIso(eventDateStr, item.startTime);
-    const endIso = parseLocalIso(eventDateStr, item.endTime);
+  const getEventColorClass = (societyName: string) => {
+    const hash = societyName.split('').reduce((acc, char) => char.charCodeAt(0) + ((acc << 5) - acc), 0);
+    const classes = ['event-blue', 'event-magenta', 'event-green', 'event-orange', 'event-red'];
+    return classes[Math.abs(hash) % classes.length];
+  };
 
-    // Simple hash to generate a consistent color for a society
-    const hash = (item.society?.name || 'A').split('').reduce((acc, char) => char.charCodeAt(0) + ((acc << 5) - acc), 0);
-    const colors = ['#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#f43f5e', '#06b6d4', '#ec4899', '#6366f1'];
-    const color = colors[Math.abs(hash) % colors.length];
-
-    return {
-      id: item.id,
-      title: item.title,
-      start: startIso,
-      end: endIso,
-      backgroundColor: color,
-      borderColor: color,
-      textColor: '#ffffff',
-      extendedProps: {
-        societyName: item.society?.name || 'Campus Society',
-        venue: item.venue,
-        startTime: item.startTime,
-        endTime: item.endTime,
-      },
-    };
-  });
-
-  /* eslint-disable @typescript-eslint/no-explicit-any */
-  const calendarPlugins = [
-    dayGridPlugin as any,
-    timeGridPlugin as any,
-    interactionPlugin as any,
-  ];
+  const today = new Date();
+  const isToday = (d: Date) => d.getDate() === today.getDate() && d.getMonth() === today.getMonth() && d.getFullYear() === today.getFullYear();
 
   return (
-    <div className="bg-transparent text-vast-ink min-h-screen pt-4 md:pt-14 pb-12 font-figtree">
-      <div className="max-w-[1200px] mx-auto px-4 md:px-6 space-y-10 text-left">
-        {/* Page Header */}
-        <div className="space-y-4">
-          <h1 className="font-extrabold text-5xl sm:text-6xl text-white tracking-tight leading-tight">
-            Campus Events Calendar
-          </h1>
-          <p className="text-lg text-gray-400 max-w-2xl">
-            Explore upcoming hackathons, sports tournaments, workshops, and society events across GIKI.
-          </p>
-        </div>
+    <div className="min-h-screen text-white flex justify-center py-6 px-3 font-sans relative">
+      
+      <style>{`
+        .glass-btn {
+          background: rgba(255, 255, 255, 0.08);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          color: #fff;
+          border: 1px solid rgba(255, 255, 255, 0.15);
+          border-radius: 8px;
+          padding: 7px 12px;
+          cursor: pointer;
+          font-size: 0.85rem;
+          transition: all 0.2s ease;
+        }
+        .glass-btn:hover { background: rgba(255, 255, 255, 0.16); border-color: rgba(255, 255, 255, 0.25); }
+        
+        .btn-group {
+          display: flex;
+          background: rgba(255, 255, 255, 0.06);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          border: 1px solid rgba(255, 255, 255, 0.14);
+          border-radius: 8px;
+          overflow: hidden;
+        }
+        .btn-group .glass-btn { border: none; border-radius: 0; background: transparent; padding: 8px 12px; }
+        .btn-group .glass-btn.active { background: rgba(255, 255, 255, 0.2); }
+        
+        .btn-primary {
+          background: rgba(255, 255, 255, 0.9);
+          color: #000000;
+          font-weight: 600;
+          border: 1px solid rgba(255, 255, 255, 0.3);
+          border-radius: 8px;
+          padding: 8px 14px;
+          cursor: pointer;
+          white-space: nowrap;
+          transition: background 0.2s ease;
+        }
+        .btn-primary:hover { background: #ffffff; }
+        
+        .search-input {
+          width: 100%;
+          background: rgba(255, 255, 255, 0.05);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          border: 1px solid rgba(255, 255, 255, 0.12);
+          border-radius: 8px;
+          padding: 10px 14px;
+          color: #fff;
+          outline: none;
+          font-size: 0.9rem;
+        }
+        .search-input::placeholder { color: rgba(255, 255, 255, 0.4); }
+        .search-input:focus { border-color: rgba(255, 255, 255, 0.3); }
+        
+        .select-dropdown {
+          background: rgba(30, 30, 35, 0.6);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          color: #fff;
+          border: 1px solid rgba(255, 255, 255, 0.15);
+          border-radius: 8px;
+          padding: 7px 12px;
+          font-size: 0.85rem;
+          outline: none;
+          cursor: pointer;
+        }
+        .select-dropdown option { background: #18181c; color: #ffffff; }
+        
+        .calendar-card {
+          background: rgba(255, 255, 255, 0.03);
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+          border-radius: 12px;
+          overflow: hidden;
+          width: 100%;
+        }
+        
+        .weekdays {
+          display: grid;
+          grid-template-columns: repeat(7, 1fr);
+          text-align: center;
+          background: rgba(255, 255, 255, 0.02);
+          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+          padding: 10px 0;
+          font-size: 0.85rem;
+          font-weight: 600;
+          color: rgba(255, 255, 255, 0.85);
+        }
+        
+        .cal-grid {
+          display: grid;
+          grid-template-columns: repeat(7, 1fr);
+        }
+        
+        .day-cell {
+          min-height: 105px;
+          border-right: 1px solid rgba(255, 255, 255, 0.06);
+          border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+          padding: 6px;
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+          overflow: hidden;
+        }
+        .day-cell:nth-child(7n) { border-right: none; }
+        
+        .day-number {
+          font-size: 0.85rem;
+          font-weight: 500;
+          color: rgba(255, 255, 255, 0.9);
+          margin-bottom: 2px;
+        }
+        .day-cell.other-month .day-number { color: rgba(255, 255, 255, 0.25); }
+        .day-cell.today .day-number {
+          background: #ffffff;
+          color: #000000;
+          border-radius: 50%;
+          width: 22px;
+          height: 22px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: 700;
+        }
+        
+        .event-tag {
+          font-size: 0.75rem;
+          padding: 3px 6px;
+          border-radius: 4px;
+          color: #ffffff;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          font-weight: 500;
+          border: 1px solid rgba(255, 255, 255, 0.15);
+          cursor: pointer;
+        }
+        .event-blue { background: rgba(37, 99, 235, 0.55); }
+        .event-magenta { background: rgba(219, 39, 119, 0.55); }
+        .event-green { background: rgba(22, 163, 74, 0.55); }
+        .event-orange { background: rgba(234, 88, 12, 0.55); }
+        .event-red { background: rgba(220, 38, 38, 0.55); }
+        
+        @media (max-width: 768px) {
+          .day-cell { min-height: 70px; padding: 4px 2px; gap: 2px; }
+          .day-number { font-size: 0.75rem; }
+          .day-cell.today .day-number { width: 18px; height: 18px; font-size: 0.7rem; }
+          .event-tag { font-size: 0.65rem; padding: 2px 4px; border-radius: 2px; }
+        }
+        @media (max-width: 480px) {
+          .weekdays div { font-size: 0.75rem; }
+          .day-cell { min-height: 55px; }
+          .event-tag { font-size: 0.6rem; padding: 1px 3px; }
+        }
+      `}</style>
 
-        {/* Controls Bar */}
-        <div className="bg-[#17181c]/80 backdrop-blur-md border border-white/10 rounded-cards p-4 sm:p-6 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4">
-          <div className="flex items-center gap-3 w-full sm:w-auto">
-            {(isCalendarLoading || isCalendarFetching || isListLoading) && (
-              <div className="flex items-center gap-1.5 text-xs text-white font-semibold bg-white/10 px-3 py-1.5 rounded-badges border border-white/10 shrink-0">
-                <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                <span>Loading...</span>
-              </div>
-            )}
-
-            <div className="relative flex items-center w-full sm:w-64">
-              <div className="absolute left-3 text-white/60 pointer-events-none flex items-center justify-center">
-                <Building2 className="w-4 h-4" />
-              </div>
-              <select
-                value={selectedSociety}
-                onChange={(e) => setSelectedSociety(e.target.value)}
-                className="w-full bg-[#17181c]/80 backdrop-blur-md text-white font-bold text-xs rounded-inputs border border-white/10 px-3.5 py-2.5 pl-10 transition-all outline-none focus:ring-2 focus:ring-white cursor-pointer"
-              >
-                <option value="" className="bg-[#17181c] text-white font-semibold">All Societies</option>
-                {societies.map((soc) => (
-                  <option key={soc.id} value={soc.id} className="bg-[#17181c] text-white font-semibold">
-                    {soc.name}
-                  </option>
-                ))}
-              </select>
+      <div className="w-full max-w-[1100px] flex flex-col gap-6 mt-10">
+        
+        {/* Top Navigation */}
+        <div className="flex justify-between items-center flex-wrap gap-3">
+          <div className="flex items-center gap-2">
+            <h2 className="text-2xl font-bold drop-shadow-md mr-2">
+              {currentDate.toLocaleString('default', { month: 'long', year: 'numeric' })}
+            </h2>
+            <div className="flex gap-1">
+              <button className="glass-btn" onClick={prevMonth}>&lt;</button>
+              <button className="glass-btn" onClick={goToday}>Today</button>
+              <button className="glass-btn" onClick={nextMonth}>&gt;</button>
             </div>
+            {isCalendarLoading && <Loader2 className="w-4 h-4 animate-spin ml-2" />}
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button className="btn-primary" onClick={() => navigate('/events/new')}>+ New Event</button>
           </div>
         </div>
 
-        {/* Calendar Container */}
-        <div id="calendar-view" className="bg-[#17181c]/80 backdrop-blur-md border border-white/10 rounded-cards sm:rounded-[32px] overflow-hidden p-3 sm:p-6 text-white shadow-none">
-            <style>{`
-              .fc {
-                table-layout: fixed !important;
-                font-family: inherit !important;
-              }
-              .fc-daygrid-day-frame {
-                overflow: hidden !important;
-                max-width: 100% !important;
-                min-height: 52px !important;
-              }
-              .fc-daygrid-event-harness {
-                margin-bottom: 2px !important;
-                max-width: 100% !important;
-                overflow: hidden !important;
-              }
-              .fc-dayGridMonth-view .fc-daygrid-event {
-                background: transparent !important;
-                border: none !important;
-                box-shadow: none !important;
-                padding: 1px 0 !important;
-                margin: 1px 0 !important;
-                max-width: 100% !important;
-                overflow: hidden !important;
-              }
-              .fc-event-main {
-                overflow: hidden !important;
-                width: 100% !important;
-                max-width: 100% !important;
-                text-overflow: ellipsis !important;
-                white-space: nowrap !important;
-              }
-              .fc-theme-standard td, .fc-theme-standard th {
-                border-color: rgba(255, 255, 255, 0.1) !important;
-              }
-              .fc-col-header-cell {
-                background-color: rgba(255,255,255,0.05) !important;
-                color: #e2e8f0 !important;
-                padding: 10px 0 !important;
-              }
-              .fc-daygrid-day-number {
-                color: #e2e8f0 !important;
-              }
-
-              /* Mobile CSS Overrides */
-              @media (max-width: 640px) {
-                .fc .fc-toolbar {
-                  flex-direction: column !important;
-                  gap: 8px !important;
-                  align-items: center !important;
-                }
-                .fc .fc-toolbar-title {
-                  font-size: 1.1rem !important;
-                  font-weight: 800 !important;
-                }
-                .fc .fc-button {
-                  padding: 4px 10px !important;
-                  font-size: 0.75rem !important;
-                  font-weight: 700 !important;
-                  border-radius: 8px !important;
-                }
-                .fc-col-header-cell-cushion {
-                  font-size: 0.7rem !important;
-                  font-weight: 800 !important;
-                  text-transform: uppercase !important;
-                  padding: 4px 2px !important;
-                }
-                .fc-daygrid-day-number {
-                  font-size: 0.75rem !important;
-                  font-weight: 700 !important;
-                  padding: 2px 4px !important;
-                }
-              }
-            `}</style>
-          <FullCalendar
-            key="dayGridMonth" // Force re-render on initial view change to ensure it mounts correctly
-            plugins={calendarPlugins}
-            initialView="dayGridMonth"
-            headerToolbar={{
-              left: 'prev,next',
-              center: 'title',
-              right: '',
-            }}
-            editable={false}
-            selectable={false}
-            events={calendarEvents}
-            datesSet={(arg) => {
-              const fromStr = arg.startStr.split('T')[0];
-              const toStr = arg.endStr.split('T')[0];
-              setDateRange({ from: fromStr, to: toStr });
-            }}
-            eventClick={(arg) => {
-              navigate(`/events/${arg.event.id}`);
-            }}
-            height="auto"
-            eventTimeFormat={{
-              hour: '2-digit',
-              minute: '2-digit',
-              meridiem: false,
-              hour12: false,
-            }}
-            displayEventTime={false}
-            eventContent={(eventInfo) => {
-              const color = eventInfo.event.backgroundColor || '#3b82f6';
-              const title = eventInfo.event.title;
-
-              if (eventInfo.view.type === 'dayGridMonth') {
-                return (
-                  <div
-                    className="w-full max-w-full flex items-center gap-1 px-1.5 py-0.5 rounded transition-all duration-150 hover:opacity-90 cursor-pointer overflow-hidden box-border"
-                    style={{
-                      backgroundColor: `${color}20`,
-                      borderLeft: `3px solid ${color}`,
-                    }}
-                    title={title}
-                  >
-                    <span
-                      className="w-1.5 h-1.5 rounded-full shrink-0 hidden sm:inline-block"
-                      style={{ backgroundColor: color }}
-                    />
-                    <span
-                      className="text-[11px] font-bold truncate block w-full leading-tight text-left"
-                      style={{ color: '#e2e8f0' }}
-                    >
-                      {title}
-                    </span>
-                  </div>
-                );
-              }
-              // For week and day views, let FullCalendar render natively
-              return undefined;
-            }}
+        {/* Controls */}
+        <div className="flex flex-col sm:flex-row gap-2.5">
+          <input 
+            type="text" 
+            className="search-input" 
+            placeholder="Search events..." 
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
           />
+          
+          <div className="flex items-center gap-2 shrink-0">
+            <label htmlFor="society-select" className="text-sm text-white/70">Society:</label>
+            <CustomDropdown 
+              value={selectedSociety}
+              onChange={setSelectedSociety}
+              placeholder="All Societies"
+              options={[{value: 'all', label: 'All Societies'}, ...societies.map(s => ({ value: s.id, label: s.name }))]}
+            />
+          </div>
+        </div>
+
+        {/* Calendar Card Grid */}
+        <div className="calendar-card">
+          <div className="weekdays">
+            <div>Sun</div>
+            <div>Mon</div>
+            <div>Tue</div>
+            <div>Wed</div>
+            <div>Thu</div>
+            <div>Fri</div>
+            <div>Sat</div>
+          </div>
+
+          <div className="cal-grid">
+            {cells.map((cell, idx) => {
+              const dayEvents = getEventsForDate(cell.fullDate);
+              const cellClasses = `day-cell ${cell.isOtherMonth ? 'other-month' : ''} ${isToday(cell.fullDate) ? 'today' : ''}`;
+              return (
+                <div key={idx} className={cellClasses}>
+                  <span className="day-number">{cell.day}</span>
+                  {dayEvents.map(ev => (
+                    <div 
+                      key={ev.id} 
+                      onClick={() => navigate(`/events/${ev.id}`)}
+                      className={`event-tag ${getEventColorClass(ev.society?.name || 'A')}`}
+                      title={ev.title}
+                    >
+                      {ev.title}
+                    </div>
+                  ))}
+                </div>
+              );
+            })}
+          </div>
         </div>
 
         {/* Detailed Events List Below Calendar */}
         <div id="events-list" className="pt-8 pb-12">
-          
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
             <h2 className="font-eb-garamond text-2xl font-bold text-white flex items-center gap-2">
               <CalendarIcon className="w-6 h-6" />
@@ -340,59 +381,47 @@ export const CampusCalendarPage: React.FC = () => {
             </h2>
             
             <div className="flex items-center flex-wrap gap-2">
-              <button
-                onClick={() => setListFilter('today')}
-                className={`px-4 py-2 rounded-full font-bold text-sm border transition-all ${
-                  listFilter === 'today'
-                    ? 'bg-white text-gray-900 border-white'
-                    : 'bg-transparent text-gray-300 border-white/20 hover:border-white'
-                }`}
-              >
-                Today
-              </button>
-              <button
-                onClick={() => setListFilter('week')}
-                className={`px-4 py-2 rounded-full font-bold text-sm border transition-all ${
-                  listFilter === 'week'
-                    ? 'bg-white text-gray-900 border-white'
-                    : 'bg-transparent text-gray-300 border-white/20 hover:border-white'
-                }`}
-              >
-                This Week
-              </button>
-              <button
-                onClick={() => setListFilter('month')}
-                className={`px-4 py-2 rounded-full font-bold text-sm border transition-all ${
-                  listFilter === 'month'
-                    ? 'bg-white text-gray-900 border-white'
-                    : 'bg-transparent text-gray-300 border-white/20 hover:border-white'
-                }`}
-              >
-                This Month
-              </button>
-              <button
-                onClick={() => setListFilter('upcoming')}
-                className={`px-4 py-2 rounded-full font-bold text-sm border transition-all ${
-                  listFilter === 'upcoming'
-                    ? 'bg-white text-gray-900 border-white'
-                    : 'bg-transparent text-gray-300 border-white/20 hover:border-white'
-                }`}
-              >
-                All Upcoming
-              </button>
+              {['today', 'week', 'month', 'upcoming'].map((filter) => (
+                <button
+                  key={filter}
+                  onClick={() => { setListFilter(filter as any); setVisibleEventsCount(6); }}
+                  className={`px-4 py-2 rounded-full font-bold text-sm border transition-all ${
+                    listFilter === filter
+                      ? 'bg-white text-gray-900 border-white'
+                      : 'bg-transparent text-gray-300 border-white/20 hover:border-white'
+                  }`}
+                >
+                  {filter === 'today' ? 'Today' : filter === 'week' ? 'This Week' : filter === 'month' ? 'This Month' : 'All Upcoming'}
+                </button>
+              ))}
             </div>
           </div>
           
-          {eventsList.length === 0 ? (
-            <div className="bg-transparent p-10 rounded-cards border border-white/10 text-center text-gray-400">
-              No events scheduled for the current date range.
+          {isListLoading ? (
+            <div className="flex justify-center p-10"><Loader2 className="w-8 h-8 animate-spin text-white/50" /></div>
+          ) : visibleEvents.length === 0 ? (
+            <div className="bg-transparent p-10 rounded-xl border border-white/10 text-center text-gray-400">
+              No events scheduled for the current filter.
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {eventsList.map((event) => (
-                <EventCard key={event.id} item={{ ...event, type: 'event' } as any} />
-              ))}
-            </div>
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {visibleEvents.map((event) => (
+                  <EventCard key={event.id} item={{ ...event, type: 'event' } as any} />
+                ))}
+              </div>
+              
+              {eventsList.length > visibleEventsCount && (
+                <div className="mt-8 flex justify-center">
+                  <button 
+                    onClick={() => setVisibleEventsCount(prev => prev + 6)}
+                    className="glass-btn !px-8 !py-3 !font-bold"
+                  >
+                    Load More Events
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>

@@ -83,8 +83,8 @@ export const SocietyProfilePage: React.FC = () => {
       </button>
 
       {/* Breakout full width banner */}
-      <div className="-mt-8 -mx-4 sm:-mx-6 lg:-mx-8 w-screen relative left-[calc(-50vw+50%)]">
-        <div className="w-full h-[280px] sm:h-[320px] relative bg-[#1e3c72]">
+      <div className="w-full max-w-[1000px] mx-auto relative mt-4 rounded-3xl overflow-visible">
+        <div className="w-full h-[280px] sm:h-[320px] relative bg-[#1e3c72] rounded-3xl overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.5)] border border-white/10">
           {society.bannerUrl ? (
             <img
               src={society.bannerUrl}
@@ -146,14 +146,14 @@ export const SocietyProfilePage: React.FC = () => {
           </div>
 
           {/* Society Name */}
-          <div className="absolute bottom-4 sm:bottom-5 left-1/2 -translate-x-1/2 w-max max-w-[90%] sm:max-w-[calc(100%-496px)] text-center text-white font-bold text-[20px] sm:text-[30px] leading-[1.2] drop-shadow-[0_2px_8px_rgba(0,0,0,0.7)] pointer-events-none z-10">
+          <div className="absolute bottom-4 sm:bottom-5 left-1/2 -translate-x-1/2 w-max max-w-[90%] sm:max-w-[calc(100%-496px)] text-center text-white font-bold text-[20px] sm:text-[30px] leading-[1.2] drop-shadow-[0_4px_12px_rgba(0,0,0,1)] pointer-events-none z-10">
             {society.name}
           </div>
         </div>
       </div>
 
       {/* Content Section */}
-      <div className="w-full max-w-[1000px] mx-auto pt-[80px] sm:pt-[110px] px-5 sm:pl-[138px] sm:pr-12 pb-12">
+      <div className="w-full max-w-[1000px] mx-auto pt-[80px] sm:pt-[110px] px-5 sm:px-[138px] pb-12 text-center sm:text-left">
         <div className="text-[18px] sm:text-[22px] font-bold text-gray-100 mb-3">About</div>
         <p className="text-[14px] sm:text-[16px] leading-[1.6] text-gray-300">
           {society.longDescription || society.shortDescription || 'No detailed overview provided.'}

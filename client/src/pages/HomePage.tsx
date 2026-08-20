@@ -1,20 +1,20 @@
 import React from 'react';
 import { useFeed } from '@/hooks/useFeed';
-import { EventCard } from '@/components/feed/EventCard';
+import { FeedEventCard } from '@/components/feed/FeedEventCard';
 import { PostCard } from '@/components/feed/PostCard';
 import { FeedCardSkeleton } from '@/components/feed/FeedCardSkeleton';
 import { HomeSidebar } from '@/components/feed/HomeSidebar';
 import { RefreshCw, AlertCircle } from 'lucide-react';
 
 export const HomePage: React.FC = () => {
-  const { items, meta, isLoading, isLoadingMore, error, loadMore, refetch } = useFeed(6);
+  const { items, meta, isLoading, isLoadingMore, error, loadMore, refetch } = useFeed(4);
 
   return (
     <div className="bg-transparent text-gray-200 min-h-screen py-4 md:py-6 font-inter">
-      <div className="max-w-5xl mx-auto px-4 flex gap-8 text-left">
+      <div className="max-w-7xl mx-auto px-4 flex justify-center gap-10 text-left">
 
         {/* Left Column: Main Feed */}
-        <div className="flex-1 min-w-0 max-w-[680px] space-y-6">
+        <div className="flex-1 min-w-0 max-w-[850px] space-y-6">
           {/* Page Header */}
           <header className="space-y-2 pb-4 border-b border-white/10">
             <h1 className="font-extrabold text-5xl sm:text-6xl text-white tracking-tight leading-tight">
@@ -64,7 +64,7 @@ export const HomePage: React.FC = () => {
             <div className="space-y-2">
               {items.map((item) =>
                 item.type === 'event' ? (
-                  <EventCard key={`event-${item.id}`} item={item} allowExpand />
+                  <FeedEventCard key={`event-${item.id}`} item={item} allowExpand />
                 ) : (
                   <PostCard key={`post-${item.id}`} item={item} />
                 ),
@@ -94,7 +94,9 @@ export const HomePage: React.FC = () => {
         </div>
 
         {/* Right Column: Sidebar */}
-        <HomeSidebar />
+        <div className="hidden lg:block w-[350px] shrink-0">
+          <HomeSidebar />
+        </div>
       </div>
     </div>
   );

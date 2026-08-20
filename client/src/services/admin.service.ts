@@ -59,6 +59,7 @@ export interface AdminSocietyItem {
   shortDescription?: string | null;
   logoUrl?: string | null;
   isSetupComplete: boolean;
+  hasWarning: boolean;
   status: AdminSocietyStatusType;
   presidentEmail: string;
   category?: {

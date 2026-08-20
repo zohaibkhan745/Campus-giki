@@ -122,11 +122,6 @@ export const PostCard: React.FC<PostCardProps> = ({ item }) => {
               }
             }}
           />
-          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center backdrop-blur-[1px]">
-            <span className="opacity-0 group-hover:opacity-100 bg-gray-900/90 text-white text-xs font-semibold px-4 py-2 rounded-full shadow-lg transition-all transform scale-95 group-hover:scale-100 border border-white/10">
-              View Full Image
-            </span>
-          </div>
         </div>
       )}
       

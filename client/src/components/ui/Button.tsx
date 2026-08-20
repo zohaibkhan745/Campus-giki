@@ -38,7 +38,7 @@ export const Button: React.FC<ButtonProps> = ({
     destructive:
       'bg-red-600 hover:bg-red-500 text-white border border-red-500/30 shadow-lg shadow-red-600/20 focus:ring-red-500',
     wispr:
-      'bg-vast-ink hover:opacity-90 text-pure-white border-2 border-vast-ink rounded-buttons font-figtree transition-opacity',
+      'bg-vast-ink hover:opacity-90 text-black border-2 border-vast-ink rounded-buttons font-figtree transition-opacity font-bold',
   };
 
   const sizes = {

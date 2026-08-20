@@ -71,7 +71,7 @@ export const AdminAdvisorsPage: React.FC = () => {
         <ArrowLeft className="w-5 h-5" />
       </button>
 
-      <div className="w-[90%] max-w-[1000px] bg-slate-900/60 backdrop-blur-[16px] rounded-[24px] p-[30px] shadow-[0_10px_40px_rgba(0,0,0,0.4)] border border-white/5">
+      <div className="w-[95%] max-w-[1200px] bg-white/[0.08] backdrop-blur-[20px] rounded-[24px] p-[30px] shadow-[0_12px_40px_rgba(0,0,0,0.4)] border border-white/20">
         <div className="flex justify-between items-center mb-[25px]">
           <h2 className="text-[24px] font-bold text-white m-0">GIKI Advisors</h2>
           <button

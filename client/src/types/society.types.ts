@@ -16,6 +16,7 @@ export interface PublicSocietyItem {
   type?: OrganizationType;
   shortDescription?: string | null;
   logoUrl?: string | null;
+  _count?: { members?: number; followers?: number; };
   category?: {
     id: string;
     name: string;
@@ -44,6 +45,7 @@ export interface Society {
   shortDescription?: string | null;
   longDescription?: string | null;
   logoUrl?: string | null;
+  _count?: { members?: number; followers?: number; };
   bannerUrl?: string | null;
   instagram?: string | null;
   facebook?: string | null;

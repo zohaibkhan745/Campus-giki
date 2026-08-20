@@ -61,7 +61,7 @@ export const DockNav: React.FC = () => {
                 {link.label}
               </span>
               <div className={`w-full h-full flex items-center justify-center transition-transform duration-300 ease-out ${isActive ? 'text-white scale-110' : 'text-[#8a8a8a] group-hover/item:text-white group-hover/item:scale-125'}`}>
-                {React.cloneElement(link.icon as React.ReactElement, {
+                {React.cloneElement(link.icon as any, {
                   className: "w-5 h-5",
                   strokeWidth: isActive ? 2.5 : 2,
                 })}

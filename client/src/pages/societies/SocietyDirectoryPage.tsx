@@ -9,6 +9,7 @@ import {
 import { societyService } from '@/services/society.service';
 import { SocietyCardSkeleton } from '@/components/societies/SocietyCardSkeleton';
 import { Alert } from '@/components/ui/Alert';
+import { CustomDropdown } from '@/components/ui/CustomDropdown';
 import type { OrganizationType } from '@/types/society.types';
 
 export const SocietyDirectoryPage: React.FC = () => {
@@ -141,31 +142,14 @@ export const SocietyDirectoryPage: React.FC = () => {
           />
         </div>
 
-        {/* Category Pill Filters */}
+        {/* Category Dropdown Filter */}
         <div className="flex flex-wrap items-center gap-2.5">
-          <button
-            onClick={() => handleCategoryChange('')}
-            className={`px-4 py-2 text-xs font-bold rounded-full border transition-all focus:outline-none ${
-              selectedCategory === ''
-                ? 'bg-white text-gray-900 border-white shadow-sm'
-                : 'bg-transparent text-gray-300 border-white/20 hover:bg-white/10'
-            }`}
-          >
-            All Domains
-          </button>
-          {categories.map((cat) => (
-            <button
-              key={cat.id}
-              onClick={() => handleCategoryChange(cat.slug)}
-              className={`px-4 py-2 text-xs font-bold rounded-full border transition-all focus:outline-none ${
-                selectedCategory === cat.slug
-                  ? 'bg-white text-gray-900 border-white shadow-sm'
-                  : 'bg-transparent text-gray-300 border-white/20 hover:bg-white/10'
-              }`}
-            >
-              {cat.name}
-            </button>
-          ))}
+          <CustomDropdown 
+            value={selectedCategory} 
+            onChange={(val) => handleCategoryChange(val)} 
+            placeholder="All Domains" 
+            options={[{value: '', label: 'All Domains'}, ...categories.map(cat => ({ value: cat.slug, label: cat.name }))]}
+          />
 
           {(selectedCategory || selectedType || searchQuery) && (
             <button
@@ -201,7 +185,7 @@ export const SocietyDirectoryPage: React.FC = () => {
           ))}
         </div>
       ) : societies.length === 0 ? (
-        <div className="p-12 rounded-2xl border border-white/10 bg-[#17181c]/80 backdrop-blur-md text-center space-y-4">
+        <div className="p-12 rounded-[24px] border border-white/20 bg-white/[0.08] backdrop-blur-[20px] shadow-[0_12px_40px_rgba(0,0,0,0.4)] text-center space-y-4">
           <Building2 className="w-16 h-16 text-gray-500 mx-auto" />
           <h3 className="font-semibold text-2xl text-white">No Communities Found</h3>
           <p className="text-gray-400 max-w-sm mx-auto">
@@ -246,12 +230,12 @@ export const SocietyDirectoryPage: React.FC = () => {
                   <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/70 to-transparent pointer-events-none"></div>
                   
                   <div className="absolute top-6 left-6 pr-20 max-w-full">
-                    <h2 className="text-2xl font-medium text-gray-200 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] leading-tight line-clamp-3">{society.name}</h2>
+                    <h2 className="text-3xl font-extrabold text-white leading-tight line-clamp-3 drop-shadow-[0_4px_8px_rgba(0,0,0,1)]">{society.name}</h2>
                   </div>
 
                   <div className="absolute top-6 right-6 text-right text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
-                    <div className="text-3xl font-bold leading-none drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">{society._count?.members || Math.floor(Math.random()*150 + 20)}</div>
-                    <div className="text-xs uppercase tracking-wider font-medium opacity-90 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">members</div>
+                    <div className="text-xl font-bold leading-none drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">{society._count?.members || Math.floor(Math.random()*150 + 20)}</div>
+                    <div className="text-[10px] uppercase tracking-wider font-bold opacity-90 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">members</div>
                   </div>
                 </div>
                 
