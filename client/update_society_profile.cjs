@@ -1,79 +1,16 @@
-import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { useParams, Link, useNavigate } from 'react-router-dom';
-import {
-  Building2,
-  Tag,
-  History,
-  Loader2,
-  Megaphone,
-  Calendar as CalendarIcon,
-  AlertCircle,
-  ArrowLeft
-} from 'lucide-react';
-import { societyService } from '@/services/society.service';
-import type { EventFeedItem } from '@/types/feed.types';
-import { Alert } from '@/components/ui/Alert';
-import { EventCard } from '@/components/feed/EventCard';
-import { PostCard } from '@/components/feed/PostCard';
+const fs = require('fs');
+let code = fs.readFileSync('src/pages/societies/SocietyProfilePage.tsx', 'utf8');
 
-export const SocietyProfilePage: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<'posts' | 'upcoming' | 'past'>('posts');
+const renderStart = code.indexOf('  return (\n    <div className="w-full text-left font-sans">');
+if (renderStart === -1) {
+  console.log("Could not find render start");
+  process.exit(1);
+}
+const codeBeforeRender = code.substring(0, renderStart);
 
-  const {
-    data: society,
-    isLoading: isLoadingSociety,
-    isError: isErrorSociety,
-  } = useQuery({
-    queryKey: ['publicSociety', id],
-    queryFn: () => societyService.getPublicSocietyById(id!),
-    enabled: !!id,
-  });
-
-  const { data: eventsData, isLoading: isLoadingEvents } = useQuery({
-    queryKey: ['publicSocietyEvents', id],
-    queryFn: () => societyService.getPublicSocietyEvents(id!),
-    enabled: !!id,
-  });
-
-  const { data: postsData = [], isLoading: isLoadingPosts } = useQuery({
-    queryKey: ['publicSocietyPosts', id],
-    queryFn: () => societyService.getPublicSocietyPosts(id!),
-    enabled: !!id,
-  });
-
-  const upcomingEvents = eventsData?.upcoming || [];
-  const pastEvents = eventsData?.past || [];
-
-  if (isLoadingSociety) {
-    return (
-      <div className="min-h-[50vh] flex flex-col justify-center items-center text-gray-400 gap-3">
-        <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
-        <p className="text-sm font-medium">Loading society profile...</p>
-      </div>
-    );
-  }
-
-  if (isErrorSociety || !society) {
-    return (
-      <div className="max-w-md mx-auto py-12 space-y-4 text-center">
-        <Alert variant="error" message="Society not found or profile is not published." />
-        <button
-          onClick={() => navigate(-1)}
-          className="fixed top-4 left-4 sm:top-6 sm:left-6 z-[100] inline-flex items-center justify-center w-10 h-10 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white rounded-full transition-all cursor-pointer shadow-lg"
-          title="Go Back"
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </button>
-      </div>
-    );
-  }
-
-  return (
+const newRender = `  return (
     <div className="w-full text-left font-sans bg-transparent">
-      <style>{`
+      <style>{\`
         .society-banner {
           width: 100%;
           height: 320px;
@@ -202,7 +139,7 @@ export const SocietyProfilePage: React.FC = () => {
             font-size: 14px;
           }
         }
-      `}</style>
+      \`}</style>
 
       <button
         onClick={() => navigate(-1)}
@@ -275,11 +212,11 @@ export const SocietyProfilePage: React.FC = () => {
         <div className="mt-10 flex flex-col sm:flex-row justify-center items-stretch sm:items-center bg-white/5 border border-white/10 rounded-2xl p-1 gap-1">
           <button
             onClick={() => setActiveTab('posts')}
-            className={`flex-1 flex justify-center items-center gap-2 px-4 py-3 text-sm font-bold rounded-xl transition-all ${
+            className={\`flex-1 flex justify-center items-center gap-2 px-4 py-3 text-sm font-bold rounded-xl transition-all \${
               activeTab === 'posts'
                 ? 'bg-white text-gray-900 shadow-md'
                 : 'text-gray-400 hover:text-white hover:bg-white/5'
-            }`}
+            }\`}
           >
             <Megaphone className="w-4 h-4" />
             <span>Posts & Announcements ({postsData.length})</span>
@@ -287,11 +224,11 @@ export const SocietyProfilePage: React.FC = () => {
 
           <button
             onClick={() => setActiveTab('upcoming')}
-            className={`flex-1 flex justify-center items-center gap-2 px-4 py-3 text-sm font-bold rounded-xl transition-all ${
+            className={\`flex-1 flex justify-center items-center gap-2 px-4 py-3 text-sm font-bold rounded-xl transition-all \${
               activeTab === 'upcoming'
                 ? 'bg-white text-gray-900 shadow-md'
                 : 'text-gray-400 hover:text-white hover:bg-white/5'
-            }`}
+            }\`}
           >
             <CalendarIcon className="w-4 h-4" />
             <span>Upcoming Events ({upcomingEvents.length})</span>
@@ -299,11 +236,11 @@ export const SocietyProfilePage: React.FC = () => {
 
           <button
             onClick={() => setActiveTab('past')}
-            className={`flex-1 flex justify-center items-center gap-2 px-4 py-3 text-sm font-bold rounded-xl transition-all ${
+            className={\`flex-1 flex justify-center items-center gap-2 px-4 py-3 text-sm font-bold rounded-xl transition-all \${
               activeTab === 'past'
                 ? 'bg-white text-gray-900 shadow-md'
                 : 'text-gray-400 hover:text-white hover:bg-white/5'
-            }`}
+            }\`}
           >
             <History className="w-4 h-4" />
             <span>Past Events ({pastEvents.length})</span>
@@ -400,3 +337,6 @@ export const SocietyProfilePage: React.FC = () => {
     </div>
   );
 };
+`;
+
+fs.writeFileSync('src/pages/societies/SocietyProfilePage.tsx', codeBeforeRender + newRender);
