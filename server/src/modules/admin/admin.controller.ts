@@ -183,7 +183,7 @@ export class AdminController {
   @ApiOperation({
     summary:
       'DSA Management: Soft-deactivate a society account (preserves historical events & plans)',
-  @ApiOperation({ summary: 'Soft-deactivate a society account (bans login)' })
+  })
   @ApiParam({ name: 'id', description: 'Society UUID' })
   @ApiResponse({ status: 200, description: 'Society deactivated' })
   async deactivateSociety(@Param('id', ParseUUIDPipe) id: string) {
