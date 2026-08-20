@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { UserPlus, UserCircle2, ArrowLeft } from 'lucide-react';
@@ -151,7 +152,7 @@ export const AdminAdvisorsPage: React.FC = () => {
         )}
       </div>
 
-      {isModalOpen && (
+      {isModalOpen && createPortal(
         <div className="modal-overlay active">
           <div className="modal-box" style={{ maxWidth: "550px" }}>
             <h3 className="modal-title">
@@ -255,7 +256,7 @@ export const AdminAdvisorsPage: React.FC = () => {
               </div>
             </form>
           </div>
-        </div>
+        </div>, document.body
       )}
     </div>
   );

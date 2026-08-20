@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link, useNavigate } from 'react-router-dom';
 import {
@@ -335,8 +336,7 @@ export const AdminSocietiesPage: React.FC = () => {
       </div>
       
       {/* 1. Edit & Reassign Advisor Modal */}
-      {editingSociety && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-lumen-cream/80 backdrop-blur-sm p-4">
+      {editingSociety && createPortal(<div className="fixed inset-0 z-50 flex items-center justify-center bg-lumen-cream/80 backdrop-blur-sm p-4">
           <div className="bg-lumen-cream p-6 sm:p-8 rounded-cards border border-vast-ink/20 max-w-md w-full space-y-5 bg-lumen-stone text-left">
             <h3 className="font-extrabold text-vast-ink text-lg border-b-2 border-vast-ink pb-3">
               Edit Society &amp; Reassign Advisor
@@ -401,11 +401,10 @@ export const AdminSocietiesPage: React.FC = () => {
             </div>
           </div>
         </div>
-      )}
+      , document.body)}
 
       {/* 2. Delete Confirmation Dialog */}
-      {deletingSociety && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-lumen-cream/80 backdrop-blur-sm p-4">
+      {deletingSociety && createPortal(<div className="fixed inset-0 z-50 flex items-center justify-center bg-lumen-cream/80 backdrop-blur-sm p-4">
           <div className="bg-lumen-cream p-6 sm:p-8 rounded-cards border border-red-500/30 max-w-md w-full space-y-4 bg-lumen-stone text-left">
             <h3 className="font-extrabold text-vast-ink text-lg text-red-500 flex items-center gap-2">
               <Trash2 className="w-5 h-5" />
@@ -436,11 +435,10 @@ export const AdminSocietiesPage: React.FC = () => {
             </div>
           </div>
         </div>
-      )}
+      , document.body)}
 
       {/* 3. Deactivate Confirmation Dialog */}
-      {deactivatingSociety && (
-        <div className="modal-overlay active">
+      {deactivatingSociety && createPortal(<div className="modal-overlay active">
           <div className="modal-box">
             <h3 className="modal-title" style={{ color: '#fca5a5' }}>
               <Ban className="w-5 h-5" />
@@ -473,11 +471,10 @@ export const AdminSocietiesPage: React.FC = () => {
             </div>
           </div>
         </div>
-      )}
+      , document.body)}
 
       {/* 4. Reactivate Confirmation Dialog */}
-      {reactivatingSociety && (
-        <div className="modal-overlay active">
+      {reactivatingSociety && createPortal(<div className="modal-overlay active">
           <div className="modal-box">
             <h3 className="modal-title" style={{ color: '#6ee7b7' }}>
               <CheckCircle2 className="w-5 h-5" />
@@ -513,7 +510,7 @@ export const AdminSocietiesPage: React.FC = () => {
             </div>
           </div>
         </div>
-      )}
+      , document.body)}
       
       <OnboardSocietyModal
         isOpen={isAddSocietyModalOpen}
