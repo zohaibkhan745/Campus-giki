@@ -11,104 +11,296 @@ import {
   ChevronRight,
   Building2,
   ExternalLink,
-  Tag,
-  ArrowRight,
-  Shield,
   FilterX,
   ArrowLeft,
-  X
+  X,
+  ArrowRight,
 } from 'lucide-react';
 import { adminService } from '@/services/admin.service';
 import { Alert } from '@/components/ui/Alert';
 import { CustomDropdown } from '@/components/ui/CustomDropdown';
 
-// Internal flipping card component
+// --- 3D Flip Card Component (matches provided HTML/CSS exactly) ---
 const FlippableAdminEventCard = ({ evt }: { evt: any }) => {
   const [isFlipped, setIsFlipped] = useState(false);
+  const [rotation, setRotation] = useState({ x: 0, y: 0 });
+  const wrapperRef = React.useRef<HTMLDivElement>(null);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (isFlipped) return;
+    const rect = wrapperRef.current!.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const cx = rect.width / 2;
+    const cy = rect.height / 2;
+    setRotation({ x: ((y - cy) / cy) * -8, y: ((x - cx) / cx) * 8 });
+  };
+
+  const handleMouseLeave = () => {
+    if (!isFlipped) setRotation({ x: 0, y: 0 });
+  };
+
+  const coverImg = evt.coverImageUrl || evt.society?.logoUrl;
+  const societyLogo = evt.society?.logoUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80';
+  
+  const eventDate = new Date(evt.eventDate);
+  const dateStr = eventDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+  const timeStr = evt.startTime ? `${evt.startTime}${evt.endTime ? ' – ' + evt.endTime : ''}` : '';
 
   return (
-    <div className="relative w-full h-[320px] perspective-[1200px] group">
-      <div 
-        className={`relative w-full h-full transition-transform duration-700 transform-style-3d ${isFlipped ? 'rotate-y-180' : ''}`}
-      >
-        {/* Front Face */}
-        <div className="absolute inset-0 backface-hidden bg-white/[0.08] backdrop-blur-[20px] rounded-[18px] border border-white/20 p-5 shadow-[0_12px_40px_rgba(0,0,0,0.4)] flex flex-col gap-3">
-          <div className="flex items-start justify-between">
-            <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-xl ${evt.isUpcoming ? 'bg-forest-ink/20 text-forest-ink border border-forest-ink/30' : 'bg-white/10 text-gray-400 border border-white/20'}`}>
-              {evt.isUpcoming ? 'Upcoming' : 'Past Event'}
-            </span>
-            {evt.society?.category && (
-              <span className="text-[10px] font-bold uppercase tracking-wider bg-white/10 text-white border border-white/20 px-2.5 py-1 rounded-xl">
-                {evt.society.category.name}
+    <div
+      ref={wrapperRef}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      style={{
+        position: 'relative',
+        width: '100%',
+        height: '380px',
+        transformStyle: 'preserve-3d',
+        transition: 'transform 0.15s ease-out',
+        transform: isFlipped ? 'rotateX(0deg) rotateY(0deg)' : `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`,
+        perspective: '1200px',
+      }}
+    >
+      <div style={{
+        position: 'relative',
+        width: '100%',
+        height: '100%',
+        transformStyle: 'preserve-3d',
+        transition: 'transform 0.7s cubic-bezier(0.4, 0.2, 0.2, 1)',
+        transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
+      }}>
+
+        {/* FRONT FACE */}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          borderRadius: '22px',
+          overflow: 'hidden',
+          backfaceVisibility: 'hidden',
+          WebkitBackfaceVisibility: 'hidden',
+          boxShadow: '0 25px 50px -12px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.12)',
+          background: coverImg ? '#14161b' : 'rgba(255,255,255,0.08)',
+        }}>
+          {/* Cover Image */}
+          {coverImg && (
+            <img
+              src={coverImg}
+              alt={evt.title}
+              style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center' }}
+            />
+          )}
+
+          {/* Overlay */}
+          <div style={{
+            position: 'absolute',
+            inset: 0,
+            background: coverImg
+              ? 'linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.1) 35%, rgba(0,0,0,0.25) 65%, rgba(0,0,0,0.75) 100%)'
+              : 'linear-gradient(180deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.02) 100%)',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            padding: '22px',
+            backdropFilter: coverImg ? 'none' : 'blur(20px)',
+          }}>
+            {/* Top badges */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+              <span style={{
+                fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.6px',
+                padding: '3px 10px', borderRadius: '20px',
+                background: evt.isUpcoming ? 'rgba(74, 222, 128, 0.18)' : 'rgba(255,255,255,0.12)',
+                border: evt.isUpcoming ? '1px solid rgba(74,222,128,0.4)' : '1px solid rgba(255,255,255,0.2)',
+                color: evt.isUpcoming ? '#4ade80' : '#94a3b8',
+              }}>
+                {evt.isUpcoming ? 'Upcoming' : 'Past Event'}
               </span>
-            )}
+              {evt.society?.category && (
+                <span style={{
+                  fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.6px',
+                  padding: '3px 10px', borderRadius: '20px',
+                  background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.2)', color: '#e2e8f0',
+                }}>
+                  {evt.society.category.name}
+                </span>
+              )}
+            </div>
+
+            {/* Bottom content */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {/* Profile + Title */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <img
+                    src={societyLogo}
+                    alt={evt.society?.name}
+                    style={{ width: '38px', height: '38px', borderRadius: '50%', border: '2px solid rgba(255,255,255,0.85)', objectFit: 'cover', boxShadow: '0 4px 12px rgba(0,0,0,0.5)' }}
+                    onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                  />
+                  <span style={{ color: '#fff', fontSize: '1rem', fontWeight: 700, letterSpacing: '-0.2px', textShadow: '0 2px 8px rgba(0,0,0,0.8)' }}>
+                    {evt.society?.name}
+                  </span>
+                </div>
+                
+                <h3 style={{ color: '#fff', fontSize: '1.1rem', fontWeight: 800, lineHeight: 1.3, textShadow: '0 2px 8px rgba(0,0,0,0.7)', margin: 0 }}>
+                  {evt.title}
+                </h3>
+
+                {/* Meta rows */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '7px', color: '#e2e8f0', fontSize: '0.82rem', fontWeight: 500, textShadow: '0 2px 6px rgba(0,0,0,0.9)' }}>
+                    <svg viewBox="0 0 24 24" style={{ width: 14, height: 14, fill: 'none', stroke: '#cbd5e1', strokeWidth: 2, flexShrink: 0 }}><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                    <span>{dateStr}{timeStr ? ` • ${timeStr}` : ''}</span>
+                  </div>
+                  {evt.venue && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '7px', color: '#e2e8f0', fontSize: '0.82rem', fontWeight: 500, textShadow: '0 2px 6px rgba(0,0,0,0.9)' }}>
+                      <svg viewBox="0 0 24 24" style={{ width: 14, height: 14, fill: 'none', stroke: '#cbd5e1', strokeWidth: 2, flexShrink: 0 }}><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{evt.venue}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* View Details Button */}
+              <button
+                onClick={(e) => { e.stopPropagation(); setIsFlipped(true); }}
+                style={{
+                  width: '100%', padding: '13px', borderRadius: '18px',
+                  background: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(20px) saturate(180%)',
+                  WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+                  border: '1px solid rgba(255,255,255,0.35)', color: '#fff',
+                  fontSize: '0.95rem', fontWeight: 600, cursor: 'pointer',
+                  boxShadow: '0 8px 32px 0 rgba(0,0,0,0.37)',
+                  textShadow: '0 2px 6px rgba(0,0,0,0.6)',
+                  transition: 'background 0.25s ease, border-color 0.25s ease',
+                  backfaceVisibility: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                }}
+              >
+                View Details <ArrowRight size={15} />
+              </button>
+            </div>
           </div>
-          
-          <h3 className="text-lg font-bold text-white leading-tight line-clamp-2">
-            {evt.title}
-          </h3>
-
-          <div className="flex flex-col gap-2.5 mt-auto text-xs text-gray-300">
-            <div className="flex items-center gap-2">
-               {evt.society?.logoUrl ? (
-                  <img src={evt.society.logoUrl} className="w-5 h-5 rounded-full object-cover shrink-0" alt="logo" />
-               ) : <Building2 className="w-4 h-4 shrink-0" />}
-               <span className="font-semibold text-white truncate">{evt.society?.name}</span>
-            </div>
-            
-            <div className="flex items-center gap-2">
-              <Clock className="w-4 h-4 shrink-0 text-white" />
-              <span>{new Date(evt.eventDate).toLocaleDateString()} ({evt.startTime} - {evt.endTime})</span>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <MapPin className="w-4 h-4 shrink-0 text-white" />
-              <span className="truncate">{evt.venue}</span>
-            </div>
-          </div>
-
-          <button 
-            onClick={() => setIsFlipped(true)}
-            className="mt-3 w-full py-2.5 rounded-xl border border-white/30 bg-white/10 hover:bg-white/20 text-white text-sm font-bold transition-all flex items-center justify-center gap-2"
-          >
-            View Details <ArrowRight className="w-4 h-4" />
-          </button>
         </div>
 
-        {/* Back Face */}
-        <div className="absolute inset-0 backface-hidden rotate-y-180 bg-white/[0.08] backdrop-blur-[20px] rounded-[18px] border border-white/20 p-5 shadow-[0_12px_40px_rgba(0,0,0,0.4)] flex flex-col gap-4">
-          <div className="flex items-center justify-between">
-            <h4 className="font-bold text-white text-sm">Event Details</h4>
-            <button onClick={() => setIsFlipped(false)} className="p-1 hover:bg-white/10 rounded-lg text-gray-400 hover:text-white transition-colors">
-              <X className="w-4 h-4" />
+        {/* BACK FACE */}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          borderRadius: '22px',
+          overflow: 'hidden',
+          backfaceVisibility: 'hidden',
+          WebkitBackfaceVisibility: 'hidden',
+          boxShadow: '0 25px 50px -12px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.12)',
+          transform: 'rotateY(180deg)',
+          background: '#16181d',
+          display: 'flex',
+          flexDirection: 'column',
+        }}>
+          {/* Top image section */}
+          <div style={{ position: 'relative', height: '180px', flexShrink: 0 }}>
+            {coverImg ? (
+              <img src={coverImg} alt={evt.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            ) : (
+              <div style={{ width: '100%', height: '100%', background: 'rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Building2 size={40} style={{ color: 'rgba(255,255,255,0.2)' }} />
+              </div>
+            )}
+            <button
+              onClick={(e) => { e.stopPropagation(); setIsFlipped(false); }}
+              style={{
+                position: 'absolute', top: 12, right: 12, width: 36, height: 36, borderRadius: '50%',
+                background: 'rgba(255,255,255,0.18)', backdropFilter: 'blur(20px) saturate(180%)',
+                WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+                border: '1px solid rgba(255,255,255,0.35)',
+                boxShadow: '0 8px 24px 0 rgba(0,0,0,0.4)', color: '#fff',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+                backfaceVisibility: 'hidden', zIndex: 20,
+              }}
+            >
+              <X size={16} />
             </button>
           </div>
 
-          <p className="text-xs text-gray-300 line-clamp-5 leading-relaxed">
-            {evt.description || 'No description provided.'}
-          </p>
+          {/* Bottom content section */}
+          <div style={{
+            padding: '16px 18px', background: 'rgba(22,24,29,0.9)',
+            backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
+            display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+            flexGrow: 1, gap: '10px', borderTop: '1px solid rgba(255,255,255,0.08)',
+          }}>
+            {/* Society header */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '10px' }}>
+              <img src={societyLogo} alt={evt.society?.name} style={{ width: 34, height: 34, borderRadius: '50%', objectFit: 'cover' }} onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+              <div>
+                <h3 style={{ color: '#fff', fontSize: '0.9rem', fontWeight: 600, margin: 0 }}>{evt.society?.name}</h3>
+                <p style={{ color: '#94a3b8', fontSize: '0.72rem', margin: 0 }}>{dateStr}</p>
+              </div>
+            </div>
 
-          <div className="mt-auto space-y-2">
-            {evt.registrationLink && (
-              <a 
-                href={evt.registrationLink} 
-                target="_blank" 
-                rel="noreferrer"
-                className="w-full py-2.5 rounded-xl bg-forest-ink hover:bg-emerald-500 text-[#0b0c0e] text-xs font-bold transition-all flex items-center justify-center gap-1.5"
-              >
-                Registration Link <ExternalLink className="w-3 h-3" />
-              </a>
+            {/* Meta */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '7px', color: '#e2e8f0', fontSize: '0.8rem' }}>
+                <svg viewBox="0 0 24 24" style={{ width: 13, height: 13, fill: 'none', stroke: '#cbd5e1', strokeWidth: 2, flexShrink: 0 }}><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                <span>{timeStr || dateStr}</span>
+              </div>
+              {evt.venue && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '7px', color: '#e2e8f0', fontSize: '0.8rem' }}>
+                  <svg viewBox="0 0 24 24" style={{ width: 13, height: 13, fill: 'none', stroke: '#cbd5e1', strokeWidth: 2, flexShrink: 0 }}><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                  <span>{evt.venue}</span>
+                </div>
+              )}
+            </div>
+
+            {/* About */}
+            {evt.description && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                <h4 style={{ color: '#cbd5e1', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.5px', margin: 0 }}>About Event</h4>
+                <p style={{ color: '#94a3b8', fontSize: '0.78rem', lineHeight: 1.4, margin: 0, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as any }}>{evt.description}</p>
+              </div>
             )}
-            
-            <Link 
-              to={evt.approvalStatus === 'PENDING_ADMIN' ? `/admin/events/${evt.id}/review` : `/events/${evt.id}`}
-              className={`w-full py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${evt.approvalStatus === 'PENDING_ADMIN' ? 'bg-amber-500 hover:bg-amber-400 text-black' : 'bg-white/10 border border-white/20 hover:bg-white/20 text-white'}`}
-            >
-              {evt.approvalStatus === 'PENDING_ADMIN' ? 'Review Event' : 'Open Event Page'}
-            </Link>
+
+            {/* Action button */}
+            {evt.registrationLink ? (
+              <a
+                href={evt.registrationLink}
+                target="_blank"
+                rel="noreferrer"
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7, width: '100%', padding: '11px', background: '#ffffff', color: '#0f172a', borderRadius: '13px', fontSize: '0.88rem', fontWeight: 600, textDecoration: 'none', transition: 'background 0.2s' }}
+              >
+                Register Now <ExternalLink size={13} />
+              </a>
+            ) : (
+              <Link
+                to={evt.approvalStatus === 'PENDING_ADMIN' ? `/admin/events/${evt.id}/review` : `/events/${evt.id}`}
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7, width: '100%', padding: '11px', background: '#ffffff', color: '#0f172a', borderRadius: '13px', fontSize: '0.88rem', fontWeight: 600, textDecoration: 'none' }}
+              >
+                {evt.approvalStatus === 'PENDING_ADMIN' ? 'Review Event' : 'Open Event Page'} <ArrowRight size={13} />
+              </Link>
+            )}
           </div>
         </div>
       </div>
+    </div>
+  );
+};
+
+// Load-More grid section
+const EventGrid = ({ events }: { events: any[] }) => {
+  const [visible, setVisible] = useState(4);
+  const shown = events.slice(0, visible);
+  return (
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+        {shown.map((evt: any) => <FlippableAdminEventCard key={evt.id} evt={evt} />)}
+      </div>
+      {visible < events.length && (
+        <button
+          onClick={() => setVisible(v => v + 4)}
+          className="w-full py-3 rounded-xl bg-white/[0.08] backdrop-blur-[20px] border border-white/20 text-white text-sm font-semibold hover:bg-white/[0.14] transition-all flex items-center justify-center gap-2"
+        >
+          Load More ({events.length - visible} remaining)
+        </button>
+      )}
     </div>
   );
 };
@@ -174,20 +366,14 @@ export const AdminEventsPage: React.FC = () => {
   };
 
   const handleClearFilters = () => {
-    setSearchQuery('');
-    setStatusFilter('');
-    setSocietyFilter('');
-    setFromDate('');
-    setToDate('');
-    setTypeToggle('all');
-    setPage(1);
+    setSearchQuery(''); setStatusFilter(''); setSocietyFilter('');
+    setFromDate(''); setToDate(''); setTypeToggle('all'); setPage(1);
   };
 
-  const { data: eventsData, isLoading, isError, refetch } = useQuery({
+  const { data: eventsData, isLoading, isError } = useQuery({
     queryKey: ['adminEventsList', page, statusFilter, societyFilter, searchQuery, fromDate, toDate, typeToggle],
     queryFn: () => adminService.getAllEvents({
-      page,
-      limit: 20,
+      page, limit: 50,
       status: statusFilter || undefined,
       society: societyFilter || undefined,
       search: searchQuery || undefined,
@@ -211,29 +397,24 @@ export const AdminEventsPage: React.FC = () => {
 
   return (
     <div className="max-w-7xl mx-auto space-y-6 text-left py-4">
-      {/* Back Button */}
       <div className="flex items-center justify-between">
         <button
           onClick={() => navigate(-1)}
           className="fixed top-4 left-4 sm:top-6 sm:left-6 z-[100] inline-flex items-center justify-center w-10 h-10 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white rounded-full transition-all cursor-pointer shadow-lg"
-          title="Go Back"
         >
           <ArrowLeft className="w-5 h-5" />
         </button>
       </div>
 
-      {/* Header Banner - Moved OUT of the card */}
       <div className="space-y-1 py-6 text-left">
         <h1 className="text-4xl font-extrabold text-white">Campus Events Overview</h1>
       </div>
 
-      {/* Filter & Search Toolbar */}
-      <div className="bg-white/[0.08] backdrop-blur-[20px] p-5 rounded-[18px] border border-white/20 space-y-4 shadow-[0_12px_40px_rgba(0,0,0,0.4)]">
+      {/* Filter Toolbar */}
+      <div className="bg-white/[0.08] backdrop-blur-[20px] p-5 rounded-[18px] border border-white/20 space-y-4 shadow-[0_12px_40px_rgba(0,0,0,0.4)] relative" style={{ zIndex: 100 }}>
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="relative w-full md:w-80 flex items-center">
-            <div className="absolute left-3 text-gray-400 pointer-events-none flex items-center justify-center">
-              <Search className="w-4 h-4" />
-            </div>
+            <div className="absolute left-3 text-gray-400 pointer-events-none"><Search className="w-4 h-4" /></div>
             <input
               type="text"
               placeholder="Search event title or venue..."
@@ -242,18 +423,15 @@ export const AdminEventsPage: React.FC = () => {
               className="w-full bg-transparent text-white text-sm rounded-xl border border-white/20 px-3.5 py-2 pl-10 outline-none focus:border-white/40"
             />
           </div>
-
           <div className="flex flex-wrap items-center bg-white/5 p-1 rounded-xl border border-white/10 w-full md:w-auto gap-1">
             {['all', 'this_week', 'this_month', 'upcoming', 'past'].map(filterType => (
-              <button
-                key={filterType}
-                onClick={() => {
-                  if (filterType === 'all') setAllFilter();
-                  else if (filterType === 'this_week') setThisWeekFilter();
-                  else if (filterType === 'this_month') setThisMonthFilter();
-                  else if (filterType === 'upcoming') setUpcomingFilter();
-                  else if (filterType === 'past') setPastFilter();
-                }}
+              <button key={filterType} onClick={() => {
+                if (filterType === 'all') setAllFilter();
+                else if (filterType === 'this_week') setThisWeekFilter();
+                else if (filterType === 'this_month') setThisMonthFilter();
+                else if (filterType === 'upcoming') setUpcomingFilter();
+                else setPastFilter();
+              }}
                 className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${typeToggle === filterType ? 'bg-white text-black shadow-sm' : 'text-gray-400 hover:text-white'}`}
               >
                 {filterType === 'this_week' ? 'This Week' : filterType === 'this_month' ? 'This Month' : filterType.charAt(0).toUpperCase() + filterType.slice(1)}
@@ -263,7 +441,7 @@ export const AdminEventsPage: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 pt-2 border-t border-white/10">
-          <CustomDropdown 
+          <CustomDropdown
             icon={<Filter className="w-4 h-4" />}
             options={[
               { value: '', label: 'All Statuses' },
@@ -275,29 +453,22 @@ export const AdminEventsPage: React.FC = () => {
             onChange={(val) => { setStatusFilter(val); setPage(1); }}
             placeholder="All Statuses"
           />
-
-          <CustomDropdown 
+          <CustomDropdown
             icon={<Building2 className="w-4 h-4" />}
-            options={[
-              { value: '', label: 'All Societies' },
-              ...societies.map((soc: any) => ({ value: soc.id, label: soc.name }))
-            ]}
+            options={[{ value: '', label: 'All Societies' }, ...societies.map((soc: any) => ({ value: soc.id, label: soc.name }))]}
             value={societyFilter}
             onChange={(val) => { setSocietyFilter(val); setPage(1); }}
             placeholder="All Societies"
           />
-
           <div className="relative flex items-center">
             <div className="absolute left-3 text-gray-400 pointer-events-none"><Calendar className="w-4 h-4" /></div>
             <input type="date" value={fromDate} onChange={(e) => { setFromDate(e.target.value); setPage(1); }} className="w-full bg-transparent text-white text-xs rounded-xl border border-white/20 px-3 py-2 pl-9 outline-none focus:border-white/40 [color-scheme:dark]" />
           </div>
-
           <div className="flex items-center gap-2">
             <div className="relative flex items-center w-full">
               <div className="absolute left-3 text-gray-400 pointer-events-none"><Calendar className="w-4 h-4" /></div>
               <input type="date" value={toDate} onChange={(e) => { setToDate(e.target.value); setPage(1); }} className="w-full bg-transparent text-white text-xs rounded-xl border border-white/20 px-3 py-2 pl-9 outline-none focus:border-white/40 [color-scheme:dark]" />
             </div>
-
             {(searchQuery || societyFilter || statusFilter || fromDate || toDate || typeToggle !== 'all') && (
               <button onClick={handleClearFilters} className="p-2 text-gray-400 hover:text-white bg-white/5 rounded-xl">
                 <FilterX className="w-4 h-4" />
@@ -309,61 +480,40 @@ export const AdminEventsPage: React.FC = () => {
 
       {isError && <Alert variant="error" message="Failed to load campus events overview." />}
 
-      {/* Two-Column Grid Layout for Flippable Cards */}
       {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4">
-          <div className="space-y-4">
-             <div className="h-6 w-48 bg-white/10 rounded animate-pulse"></div>
-             <div className="h-[280px] bg-white/5 rounded-[18px] animate-pulse border border-white/10"></div>
-          </div>
-          <div className="space-y-4">
-             <div className="h-6 w-48 bg-white/10 rounded animate-pulse"></div>
-             <div className="h-[280px] bg-white/5 rounded-[18px] animate-pulse border border-white/10"></div>
-          </div>
+          <div className="space-y-4"><div className="h-6 w-48 bg-white/10 rounded animate-pulse"></div><div className="h-[380px] bg-white/5 rounded-[22px] animate-pulse border border-white/10"></div></div>
+          <div className="space-y-4"><div className="h-6 w-48 bg-white/10 rounded animate-pulse"></div><div className="h-[380px] bg-white/5 rounded-[22px] animate-pulse border border-white/10"></div></div>
         </div>
       ) : events.length === 0 ? (
-        <div className="bg-white/[0.08] backdrop-blur-[20px] p-12 rounded-[18px] border border-white/20 text-center shadow-[0_12px_40px_rgba(0,0,0,0.4)] space-y-3">
+        <div className="bg-white/[0.08] backdrop-blur-[20px] p-12 rounded-[18px] border border-white/20 text-center space-y-3">
           <Calendar className="w-12 h-12 text-gray-400 mx-auto" />
           <h3 className="font-bold text-white text-base">No Campus Events Found</h3>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4 items-start">
-          
-          {/* Upcoming Column */}
-          <div className="space-y-4">
-            <h2 className="text-2xl font-bold text-white border-b-2 border-white/10 pb-3">Upcoming Events</h2>
+          <div className="space-y-4" style={{ perspective: '1200px' }}>
+            <h2 className="text-2xl font-bold text-white border-b-2 border-white/10 pb-3">Upcoming Events ({upcomingEvents.length})</h2>
             {upcomingEvents.length === 0 ? (
               <p className="text-sm text-gray-400 italic">No upcoming events match the filters.</p>
             ) : (
-              <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-                {upcomingEvents.map((evt: any) => <FlippableAdminEventCard key={evt.id} evt={evt} />)}
-              </div>
+              <EventGrid events={upcomingEvents} />
             )}
           </div>
-
-          {/* Past Column */}
-          <div className="space-y-4">
-            <h2 className="text-2xl font-bold text-white border-b-2 border-white/10 pb-3">Past Events</h2>
+          <div className="space-y-4" style={{ perspective: '1200px' }}>
+            <h2 className="text-2xl font-bold text-white border-b-2 border-white/10 pb-3">Past Events ({pastEvents.length})</h2>
             {pastEvents.length === 0 ? (
               <p className="text-sm text-gray-400 italic">No past events match the filters.</p>
             ) : (
-              <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-                {pastEvents.map((evt: any) => <FlippableAdminEventCard key={evt.id} evt={evt} />)}
-              </div>
+              <EventGrid events={pastEvents} />
             )}
           </div>
-
         </div>
       )}
 
-      {/* Pagination Bar */}
       {meta && meta.totalPages > 1 && (
-        <div className="flex items-center justify-between p-4 bg-white/[0.08] backdrop-blur-md rounded-xl border border-white/20 shadow-sm mt-8">
-          <p className="text-sm text-gray-400">
-            Showing <span className="font-medium text-white">{((meta.page - 1) * meta.limit) + 1}</span> to{' '}
-            <span className="font-medium text-white">{Math.min(meta.page * meta.limit, meta.total)}</span> of{' '}
-            <span className="font-medium text-white">{meta.total}</span> events
-          </p>
+        <div className="flex items-center justify-between p-4 bg-white/[0.08] backdrop-blur-md rounded-xl border border-white/20 mt-8">
+          <p className="text-sm text-gray-400">Page {meta.page} of {meta.totalPages} · {meta.total} events</p>
           <div className="flex items-center gap-2">
             <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} className="p-2 border border-white/10 rounded-lg disabled:opacity-50 text-white hover:bg-white/10">
               <ChevronLeft className="w-4 h-4" />

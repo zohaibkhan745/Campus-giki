@@ -73,15 +73,11 @@ export const AdminAdvisorsPage: React.FC = () => {
 
       <div className="w-[95%] max-w-[1200px] flex justify-between items-end mb-6 text-left">
         <div>
-          <div className="flex items-center gap-2 text-gray-300 text-xs font-semibold uppercase tracking-wider mb-1">
-            <UserCircle2 className="w-4 h-4" />
-            <span>DSA Administration</span>
-          </div>
           <h1 className="text-4xl font-extrabold text-white">Society Advisors</h1>
         </div>
         <button
             onClick={() => setIsModalOpen(true)}
-            className="bg-blue-500 text-white border-none py-[10px] px-[18px] rounded-[12px] text-[14px] font-semibold cursor-pointer transition-all duration-300 shadow-[0_4px_15px_rgba(59,130,246,0.3)] hover:bg-blue-600 hover:-translate-y-[2px]"
+            className="bg-white text-black border-none py-[10px] px-[18px] rounded-[12px] text-[14px] font-semibold cursor-pointer transition-all duration-300 hover:bg-gray-100 hover:-translate-y-[2px] shadow-lg"
           >
             + Add Advisor
         </button>
@@ -231,7 +227,7 @@ export const AdminAdvisorsPage: React.FC = () => {
                   type="submit"
                   variant="primary"
                   isLoading={createMutation.isPending}
-                  className="bg-blue-500 text-white hover:bg-blue-600 border-none"
+                  className="bg-white text-black hover:bg-gray-100 border-none"
                 >
                   Create Advisor
                 </Button>

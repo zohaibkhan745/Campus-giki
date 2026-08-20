@@ -43,6 +43,12 @@ export const AdminSocietiesPage: React.FC = () => {
   const [categoryFilter, setCategoryFilter] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [isAddSocietyModalOpen, setIsAddSocietyModalOpen] = useState(false);
+  const [notification, setNotification] = useState<{ type: 'warn' | 'ban' | 'reactivate' | 'error'; message: string } | null>(null);
+
+  const showNotification = (type: 'warn' | 'ban' | 'reactivate' | 'error', message: string) => {
+    setNotification({ type, message });
+    setTimeout(() => setNotification(null), 3500);
+  };
 
   // Dialog & Modal States
   const [editingSociety, setEditingSociety] = useState<AdminSocietyItem | null>(null);
@@ -212,16 +218,19 @@ export const AdminSocietiesPage: React.FC = () => {
         <ArrowLeft className="w-5 h-5" />
       </button>
 
+      <div className="w-[95%] max-w-[1200px] flex justify-between items-center mb-6">
+        <h1 className="text-4xl font-extrabold text-white">Societies Management</h1>
+        <button
+          onClick={() => setIsAddSocietyModalOpen(true)}
+          className="bg-white text-black border-none py-[10px] px-[18px] rounded-[12px] text-[14px] font-semibold cursor-pointer transition-all duration-300 hover:bg-gray-100 hover:-translate-y-[2px] shadow-lg"
+        >
+          + Onboard Society
+        </button>
+      </div>
+
       <div className="w-[95%] max-w-[1200px] bg-white/[0.08] backdrop-blur-[20px] rounded-[24px] p-[30px] shadow-[0_12px_40px_rgba(0,0,0,0.4)] border border-white/20">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-[25px] gap-4">
-          <h2 className="text-[24px] font-bold text-white m-0">Societies Management</h2>
-          <div className="flex items-center gap-3">
-            <Link to="/admin/societies/create">
-              <button className="bg-blue-500 text-white border-none py-[10px] px-[18px] rounded-[12px] text-[14px] font-semibold cursor-pointer transition-all duration-300 shadow-[0_4px_15px_rgba(59,130,246,0.3)] hover:bg-blue-600 hover:-translate-y-[2px]">
-                + Add Society
-              </button>
-            </Link>
-          </div>
+        <div className="mb-[25px]">
+          <h2 className="text-lg font-bold text-white m-0 border-b border-white/10 pb-3">Societies</h2>
         </div>
 
         {actionError && (
@@ -287,17 +296,32 @@ export const AdminSocietiesPage: React.FC = () => {
                         </span>
                       </td>
                       <td className="py-[18px] px-[15px] text-[15px] border-b border-white/5 text-center group-last:border-b-0" onClick={e => e.stopPropagation()}>
-                        <div className="flex items-center justify-center gap-2">
-                          <button onClick={() => warningMutation.mutate({ id: society.id, hasWarning: !society.hasWarning })} className="p-1.5 hover:bg-amber-500/20 text-amber-400 rounded-lg transition-colors" title={society.hasWarning ? "Remove Warning" : "Issue Warning"}>
-                            <AlertCircle className="w-4 h-4" />
+                        <div className="flex items-center justify-center gap-1.5 flex-wrap">
+                          <button
+                            onClick={() => warningMutation.mutate({ id: society.id, hasWarning: !society.hasWarning })}
+                            className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all flex items-center gap-1 border ${society.hasWarning ? 'bg-amber-500/20 text-amber-400 border-amber-500/40 hover:bg-amber-500/30' : 'bg-transparent text-amber-400 border-amber-500/30 hover:bg-amber-500/20'}`}
+                            title={society.hasWarning ? "Remove Warning" : "Issue Warning"}
+                          >
+                            <AlertCircle className="w-3 h-3" />
+                            {society.hasWarning ? 'Un-warn' : 'Warn'}
                           </button>
                           {society.status === 'INACTIVE' ? (
-                            <button onClick={() => reactivateMutation.mutate(society.id)} className="p-1.5 hover:bg-emerald-500/20 text-emerald-400 rounded-lg transition-colors" title="Reactivate Society">
-                              <CheckCircle2 className="w-4 h-4" />
+                            <button
+                              onClick={() => reactivateMutation.mutate(society.id)}
+                              className="px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all flex items-center gap-1 bg-transparent text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/20"
+                              title="Reactivate Society"
+                            >
+                              <CheckCircle2 className="w-3 h-3" />
+                              Reactivate
                             </button>
                           ) : (
-                            <button onClick={() => setDeactivatingSociety(society)} className="p-1.5 hover:bg-red-500/20 text-red-400 rounded-lg transition-colors" title="Deactivate (Ban) Society">
-                              <UserX className="w-4 h-4" />
+                            <button
+                              onClick={() => setDeactivatingSociety(society)}
+                              className="px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all flex items-center gap-1 bg-transparent text-red-400 border border-red-500/30 hover:bg-red-500/20"
+                              title="Ban Society"
+                            >
+                              <UserX className="w-3 h-3" />
+                              Ban
                             </button>
                           )}
                         </div>

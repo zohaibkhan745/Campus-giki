@@ -222,7 +222,7 @@ export const EventDetailPage: React.FC = () => {
                 </div>
               </div>
 
-              <div className="px-3 py-1.5 bg-lumen-stone text-vast-ink font-medium text-xs font-semibold rounded-inputs group-hover:bg-blue-600 group-hover:text-white transition-colors">
+              <div className="px-3 py-1.5 bg-lumen-stone text-vast-ink font-medium text-xs font-semibold rounded-inputs group-hover:bg-white group-hover:text-black transition-colors">
                 Visit Profile
               </div>
             </Link>
