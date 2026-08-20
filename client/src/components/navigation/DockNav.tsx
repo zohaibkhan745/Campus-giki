@@ -40,7 +40,9 @@ export const DockNav: React.FC = () => {
           const isActive =
             link.path === '/'
               ? location.pathname === '/'
-              : location.pathname.startsWith(link.path);
+              : link.path === '/dashboard'
+                ? (location.pathname.startsWith('/dashboard') || location.pathname.startsWith('/admin') || location.pathname.startsWith('/advisor') || location.pathname.startsWith('/society') || location.pathname.startsWith('/settings'))
+                : location.pathname.startsWith(link.path);
 
           const isCollapsedState = isFooterVisible;
 

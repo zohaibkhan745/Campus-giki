@@ -71,15 +71,25 @@ export const AdminAdvisorsPage: React.FC = () => {
         <ArrowLeft className="w-5 h-5" />
       </button>
 
-      <div className="w-[95%] max-w-[1200px] bg-white/[0.08] backdrop-blur-[20px] rounded-[24px] p-[30px] shadow-[0_12px_40px_rgba(0,0,0,0.4)] border border-white/20">
-        <div className="flex justify-between items-center mb-[25px]">
-          <h2 className="text-[24px] font-bold text-white m-0">GIKI Advisors</h2>
-          <button
+      <div className="w-[95%] max-w-[1200px] flex justify-between items-end mb-6 text-left">
+        <div>
+          <div className="flex items-center gap-2 text-gray-300 text-xs font-semibold uppercase tracking-wider mb-1">
+            <UserCircle2 className="w-4 h-4" />
+            <span>DSA Administration</span>
+          </div>
+          <h1 className="text-4xl font-extrabold text-white">Society Advisors</h1>
+        </div>
+        <button
             onClick={() => setIsModalOpen(true)}
             className="bg-blue-500 text-white border-none py-[10px] px-[18px] rounded-[12px] text-[14px] font-semibold cursor-pointer transition-all duration-300 shadow-[0_4px_15px_rgba(59,130,246,0.3)] hover:bg-blue-600 hover:-translate-y-[2px]"
           >
             + Add Advisor
-          </button>
+        </button>
+      </div>
+
+      <div className="w-[95%] max-w-[1200px] bg-white/[0.08] backdrop-blur-[20px] rounded-[24px] p-[30px] shadow-[0_12px_40px_rgba(0,0,0,0.4)] border border-white/20">
+        <div className="mb-[25px]">
+          <h2 className="text-lg font-bold text-white m-0 border-b border-white/10 pb-3 text-left">Advisors List</h2>
         </div>
 
         {isLoading ? (

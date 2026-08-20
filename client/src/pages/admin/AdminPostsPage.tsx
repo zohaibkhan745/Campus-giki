@@ -22,6 +22,7 @@ import {
 import { postService, type PostItem } from '@/services/post.service';
 import { societyService } from '@/services/society.service';
 import { Button } from '@/components/ui/Button';
+import { CustomDropdown } from '@/components/ui/CustomDropdown';
 import { Alert } from '@/components/ui/Alert';
 import { PostCreateModal } from '@/components/feed/PostCreateModal';
 import type { AxiosError } from 'axios';
@@ -176,37 +177,36 @@ export const AdminPostsPage: React.FC = () => {
       {/* Filter Toolbar */}
       <div className="bg-[#17181c]/80 backdrop-blur-md p-4 rounded-[18px] border border-white/10 flex flex-wrap items-center gap-4">
         {/* Type Filter */}
-        <select
+        <CustomDropdown 
+          options={[
+            { value: 'all', label: 'All Posts' },
+            { value: 'global', label: 'Admin' },
+            { value: 'society', label: 'Societies' }
+          ]}
           value={typeFilter}
-          onChange={(e) => {
-            const val = e.target.value as 'all' | 'global' | 'society';
-            setTypeFilter(val);
+          onChange={(val) => {
+            setTypeFilter(val as any);
             if (val === 'global') setSocietyFilter('');
             setPage(1);
           }}
-          className="w-full md:w-48 bg-transparent text-white text-sm font-semibold rounded-[14px] border border-white/10 px-3.5 py-2 transition-all outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 shrink-0 cursor-pointer"
-        >
-          <option value="all" className="bg-gray-900">All Posts</option>
-          <option value="global" className="bg-gray-900">Admin</option>
-          <option value="society" className="bg-gray-900">Societies</option>
-        </select>
+          className="w-full md:w-48 shrink-0"
+        />
 
         {/* Society Dropdown */}
-        <select
+        <CustomDropdown 
+          options={[
+            { value: '', label: 'All Societies' },
+            ...societies.map(soc => ({ value: soc.id, label: soc.name }))
+          ]}
           value={societyFilter}
-          onChange={(e) => {
-            setSocietyFilter(e.target.value);
+          onChange={(val) => {
+            setSocietyFilter(val);
             setTypeFilter('society');
             setPage(1);
           }}
           disabled={typeFilter === 'global'}
-          className="w-full md:w-64 bg-transparent text-white text-sm rounded-[14px] border border-white/10 px-3.5 py-2 transition-all outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 disabled:opacity-50"
-        >
-          <option value="" className="bg-gray-900">All Societies</option>
-          {societies.map((soc) => (
-            <option key={soc.id} value={soc.id} className="bg-gray-900">{soc.name}</option>
-          ))}
-        </select>
+          className="w-full md:w-64"
+        />
 
         {(typeFilter !== 'all' || societyFilter) && (
           <button

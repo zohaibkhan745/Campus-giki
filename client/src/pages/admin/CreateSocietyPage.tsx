@@ -24,6 +24,7 @@ import {
   type OnboardSocietyFormData,
 } from '@/lib/validations/onboard-society.schema';
 import { Input } from '@/components/ui/Input';
+import { CustomDropdown } from '@/components/ui/CustomDropdown';
 import { Button } from '@/components/ui/Button';
 import { Alert } from '@/components/ui/Alert';
 import type { AxiosError } from 'axios';
@@ -45,10 +46,7 @@ export const CreateSocietyPage: React.FC = () => {
   });
 
   const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
+    register, handleSubmit, reset, setValue, watch, formState: { errors },
   } = useForm<OnboardSocietyFormData>({
     resolver: zodResolver(onboardSocietySchema),
     defaultValues: {
@@ -77,6 +75,13 @@ export const CreateSocietyPage: React.FC = () => {
     },
   });
 
+  
+  const categoryId = watch('categoryId');
+  const advisorId = watch('advisorId');
+  
+  const categoryOptions = categories.map(cat => ({ value: cat.id, label: cat.name }));
+  const advisorOptions = advisors.map(adv => ({ value: adv.id, label: `${adv.user.fullName} (${adv.designation})` }));
+
   const onSubmit: SubmitHandler<OnboardSocietyFormData> = (data) => {
     setServerError(null);
     onboardMutation.mutate(data);
@@ -104,15 +109,15 @@ export const CreateSocietyPage: React.FC = () => {
       </div>
 
       {/* Header Banner */}
-      <div className="space-y-1 bg-transparent p-6 rounded-cards border border-vast-ink/20">
-        <div className="flex items-center gap-2 text-vast-ink text-xs font-semibold uppercase tracking-wider mb-1">
+      <div className="space-y-1 py-6">
+        <div className="flex items-center gap-2 text-gray-300 text-xs font-semibold uppercase tracking-wider mb-1">
           <Shield className="w-4 h-4" />
           <span>DSA Administration</span>
         </div>
-        <h1 className="text-2xl font-extrabold text-vast-ink">
+        <h1 className="text-4xl font-extrabold text-white">
           Onboard New Campus Society
         </h1>
-        <p className="text-sm text-fog">
+        <p className="text-sm text-gray-400">
           Provision a new society profile, assign a faculty advisor, and generate president credentials.
         </p>
       </div>
@@ -120,7 +125,7 @@ export const CreateSocietyPage: React.FC = () => {
       {serverError && <Alert variant="error" message={serverError} />}
 
       {/* Onboarding Form */}
-      <form onSubmit={handleSubmit(onSubmit)} className="bg-lumen-cream p-6 sm:p-8 rounded-cards border border-vast-ink/20 space-y-6" noValidate>
+      <form onSubmit={handleSubmit(onSubmit)} className="bg-white/[0.08] backdrop-blur-[20px] p-6 sm:p-8 rounded-[18px] border border-white/20 space-y-6 shadow-[0_12px_40px_rgba(0,0,0,0.4)]" noValidate>
         <div className="space-y-4">
           <Input
             label="Society Name *"
@@ -131,42 +136,32 @@ export const CreateSocietyPage: React.FC = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-1">
-              <label className="text-xs font-semibold text-vast-ink flex items-center gap-1.5">
-                <Tag className="w-3.5 h-3.5 text-vast-ink" />
+              <label className="text-xs font-semibold text-white flex items-center gap-1.5">
+                <Tag className="w-3.5 h-3.5 text-white" />
                 <span>Society Category *</span>
               </label>
-              <select
-                {...register('categoryId')}
-                className="w-full bg-transparent text-vast-ink text-sm rounded-inputs border border-vast-ink/20 px-3.5 py-2.5 transition-all outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 cursor-pointer"
-              >
-                <option value="">Select Category...</option>
-                {categories.map((cat) => (
-                  <option key={cat.id} value={cat.id}>
-                    {cat.name}
-                  </option>
-                ))}
-              </select>
+              <CustomDropdown 
+                options={categoryOptions} 
+                value={categoryId} 
+                onChange={(val) => setValue('categoryId', val, { shouldValidate: true })} 
+                placeholder="Select Category..." 
+              />
               {errors.categoryId?.message && (
                 <p className="text-xs text-red-500 font-medium">{errors.categoryId.message}</p>
               )}
             </div>
 
             <div className="space-y-1">
-              <label className="text-xs font-semibold text-vast-ink flex items-center gap-1.5">
-                <UserCheck className="w-3.5 h-3.5 text-vast-ink" />
+              <label className="text-xs font-semibold text-white flex items-center gap-1.5">
+                <UserCheck className="w-3.5 h-3.5 text-white" />
                 <span>Assigned Faculty Advisor *</span>
               </label>
-              <select
-                {...register('advisorId')}
-                className="w-full bg-transparent text-vast-ink text-sm rounded-inputs border border-vast-ink/20 px-3.5 py-2.5 transition-all outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 cursor-pointer"
-              >
-                <option value="">Select Advisor...</option>
-                {advisors.map((adv) => (
-                  <option key={adv.id} value={adv.id}>
-                    {adv.user.fullName} ({adv.designation} - {adv.department})
-                  </option>
-                ))}
-              </select>
+              <CustomDropdown 
+                options={advisorOptions} 
+                value={advisorId} 
+                onChange={(val) => setValue('advisorId', val, { shouldValidate: true })} 
+                placeholder="Select Advisor..." 
+              />
               {errors.advisorId?.message && (
                 <p className="text-xs text-red-500 font-medium">{errors.advisorId.message}</p>
               )}
@@ -198,8 +193,8 @@ export const CreateSocietyPage: React.FC = () => {
 
       {/* Success Credentials Modal */}
       {provisionedData && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-vast-ink/40 backdrop-blur-sm p-4">
-          <div className="bg-transparent p-6 sm:p-8 rounded-cards border border-vast-ink/20 max-w-lg w-full space-y-6 shadow-2xl text-left">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="bg-[#141416] p-6 sm:p-8 rounded-[18px] border border-white/20 max-w-lg w-full space-y-6 shadow-2xl text-left">
             {/* Header */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -207,31 +202,31 @@ export const CreateSocietyPage: React.FC = () => {
                   <CheckCircle2 className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="font-extrabold text-vast-ink text-lg">
+                  <h3 className="font-extrabold text-white text-lg">
                     Society Created
                   </h3>
-                  <p className="text-xs text-fog font-medium">
+                  <p className="text-xs text-gray-400 font-medium">
                     {provisionedData.name} has been provisioned successfully.
                   </p>
                 </div>
               </div>
-              <button onClick={() => setProvisionedData(null)} className="p-1 text-fog hover:text-vast-ink rounded-full">
+              <button onClick={() => setProvisionedData(null)} className="p-1 text-gray-400 hover:text-white rounded-full">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {/* Credential Cards */}
             <div className="space-y-3">
-              <div className="bg-lumen-cream p-4 rounded-inputs border border-vast-ink/20 space-y-0.5">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-fog">Society Name</span>
-                <p className="text-sm font-bold text-vast-ink">{provisionedData.name}</p>
+              <div className="bg-lumen-cream p-4 rounded-inputs border border-white/20 space-y-0.5">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400">Society Name</span>
+                <p className="text-sm font-bold text-white">{provisionedData.name}</p>
               </div>
 
-              <div className="bg-lumen-cream p-4 rounded-inputs border border-vast-ink/20 space-y-0.5">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-fog flex items-center gap-1">
+              <div className="bg-lumen-cream p-4 rounded-inputs border border-white/20 space-y-0.5">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400 flex items-center gap-1">
                   <Mail className="w-3 h-3" /> Activation Email Dispatched To
                 </span>
-                <p className="text-sm font-bold text-vast-ink font-mono">{provisionedData.presidentEmail}</p>
+                <p className="text-sm font-bold text-white font-mono">{provisionedData.presidentEmail}</p>
               </div>
 
               {provisionedData.emailPreviewUrl && (
@@ -252,7 +247,7 @@ export const CreateSocietyPage: React.FC = () => {
             </div>
 
             {/* Delivery Instruction */}
-            <div className="flex items-start gap-2.5 text-xs text-fog bg-lumen-cream border border-vast-ink/20/20 p-3 rounded-inputs">
+            <div className="flex items-start gap-2.5 text-xs text-gray-400 bg-lumen-cream border border-white/20/20 p-3 rounded-inputs">
               <Info className="w-4 h-4 text-ember-glow shrink-0 mt-0.5" />
               <p className="leading-relaxed font-medium">
                 An activation link has been sent to the society email. The society president must click the link within 48 hours to set their password.

@@ -12,7 +12,7 @@ interface BannerHeaderProps {
 export const BannerHeader: React.FC<BannerHeaderProps> = ({
   title,
   subtitle,
-  bannerUrl = '/default-banner.png',
+  bannerUrl = '/default-banner.jpg',
   logoUrl,
 }) => {
   const { user } = useAuth();
@@ -143,7 +143,7 @@ export const BannerHeader: React.FC<BannerHeaderProps> = ({
       `}</style>
 
       <div className="shared-banner">
-        <img src={bannerUrl || '/default-banner.png'} alt="Banner Image" className="shared-banner-img" />
+        <img src={bannerUrl || '/default-banner.jpg'} alt="Banner Image" className="shared-banner-img" />
 
         {/* Profile Circle */}
         <div className="shared-profile-container">

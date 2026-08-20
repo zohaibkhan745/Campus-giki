@@ -76,11 +76,11 @@ export const EventCard: React.FC<EventCardProps> = ({ item }) => {
         >
           {/* FRONT FACE */}
           <div 
-            className="absolute inset-0 w-full h-full rounded-[18px] overflow-hidden bg-white/[0.05] backdrop-blur-[12px] z-10"
+            className="absolute inset-0 w-full h-full rounded-[18px] overflow-hidden bg-white/[0.08] backdrop-blur-[20px] border border-white/20 z-10"
             style={{ 
               backfaceVisibility: 'hidden', 
               WebkitBackfaceVisibility: 'hidden',
-              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.12)',
+              boxShadow: '0 12px 40px rgba(0, 0, 0, 0.4)',
               transform: 'translateZ(0)'
             }}
           >
@@ -89,9 +89,7 @@ export const EventCard: React.FC<EventCardProps> = ({ item }) => {
             
             <div 
               className="absolute inset-0 flex flex-col justify-between p-6 z-10"
-              style={{
-                background: 'linear-gradient(180deg, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.1) 35%, rgba(0, 0, 0, 0.25) 65%, rgba(0, 0, 0, 0.7) 100%)'
-              }}
+              style={{ background: coverImage ? 'linear-gradient(180deg, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.1) 35%, rgba(0, 0, 0, 0.25) 65%, rgba(0, 0, 0, 0.7) 100%)' : 'transparent' }}
             >
               <div className="flex flex-col gap-3">
                 <Link to={`/societies/${item.society.id}`} className="flex items-center gap-3 hover:opacity-90 transition-opacity" onClick={(e) => e.stopPropagation()}>
@@ -126,16 +124,16 @@ export const EventCard: React.FC<EventCardProps> = ({ item }) => {
 
           {/* BACK FACE */}
           <div 
-            className="absolute inset-0 w-full h-full rounded-[18px] overflow-hidden bg-white/[0.05] backdrop-blur-[12px] flex flex-col"
+            className="absolute inset-0 w-full h-full rounded-[18px] overflow-hidden bg-white/[0.08] backdrop-blur-[20px] border border-white/20 flex flex-col"
             style={{ 
               backfaceVisibility: 'hidden', 
               WebkitBackfaceVisibility: 'hidden',
-              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.12)',
+              boxShadow: '0 12px 40px rgba(0, 0, 0, 0.4)',
               transform: 'rotateY(180deg) translateZ(0)'
             }}
           >
-            <div className="relative h-[180px] w-full shrink-0">
-              {coverImage ? <img src={coverImage} alt="Cover" className="w-full h-full object-cover" /> : <div className="w-full h-full bg-white/[0.05]" />}
+            <div className={`relative w-full shrink-0 ${coverImage ? "h-[180px]" : "h-16"}`}>
+              {coverImage && <img src={coverImage} alt="Cover" className="w-full h-full object-cover" />}
               <div className="absolute top-4 right-14 px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-white text-[0.7rem] font-bold tracking-wider uppercase shadow-sm z-30">Event</div>
               <button 
                 type="button" 

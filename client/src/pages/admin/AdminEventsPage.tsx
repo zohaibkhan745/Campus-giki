@@ -20,6 +20,7 @@ import {
 import { adminService } from '@/services/admin.service';
 import { societyService } from '@/services/society.service';
 import { Alert } from '@/components/ui/Alert';
+import { CustomDropdown } from '@/components/ui/CustomDropdown';
 
 export const AdminEventsPage: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -264,46 +265,36 @@ export const AdminEventsPage: React.FC = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 pt-2 border-t border-white/10">
           
           {/* Status Select Dropdown */}
-          <div className="relative flex items-center">
-            <div className="absolute left-3 text-gray-400 pointer-events-none flex items-center justify-center z-10">
-              <Filter className="w-4 h-4" />
-            </div>
-            <select
-              value={statusFilter}
-              onChange={(e) => {
-                setStatusFilter(e.target.value);
-                setPage(1);
-              }}
-              className="w-full bg-[#17181c]/80 backdrop-blur-md text-white text-xs rounded-xl border border-white/10 px-3 py-2 pl-9 outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 cursor-pointer"
-            >
-              <option value="" className="bg-[#17181c]/80 backdrop-blur-md text-white font-semibold">All Statuses</option>
-              <option value="PENDING_ADMIN" className="bg-[#17181c]/80 backdrop-blur-md text-white font-semibold">Pending Review</option>
-              <option value="PUBLISHED" className="bg-[#17181c]/80 backdrop-blur-md text-white font-semibold">Published / Approved</option>
-              <option value="CHANGES_REQUESTED" className="bg-[#17181c]/80 backdrop-blur-md text-white font-semibold">Changes Requested</option>
-            </select>
-          </div>
+          <CustomDropdown 
+            icon={<Filter className="w-4 h-4" />}
+            options={[
+              { value: '', label: 'All Statuses' },
+              { value: 'PENDING_ADMIN', label: 'Pending Review' },
+              { value: 'PUBLISHED', label: 'Published / Approved' },
+              { value: 'CHANGES_REQUESTED', label: 'Changes Requested' }
+            ]}
+            value={statusFilter}
+            onChange={(val) => {
+              setStatusFilter(val);
+              setPage(1);
+            }}
+            placeholder="All Statuses"
+          />
 
           {/* Society Select Dropdown */}
-          <div className="relative flex items-center">
-            <div className="absolute left-3 text-gray-400 pointer-events-none flex items-center justify-center z-10">
-              <Building2 className="w-4 h-4" />
-            </div>
-            <select
-              value={societyFilter}
-              onChange={(e) => {
-                setSocietyFilter(e.target.value);
-                setPage(1);
-              }}
-              className="w-full bg-[#17181c]/80 backdrop-blur-md text-white text-xs rounded-xl border border-white/10 px-3 py-2 pl-9 outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 cursor-pointer"
-            >
-              <option value="" className="bg-[#17181c]/80 backdrop-blur-md text-white font-semibold">All Societies</option>
-              {societies.map((soc) => (
-                <option key={soc.id} value={soc.id} className="bg-[#17181c]/80 backdrop-blur-md text-white font-semibold">
-                  {soc.name}
-                </option>
-              ))}
-            </select>
-          </div>
+          <CustomDropdown 
+            icon={<Building2 className="w-4 h-4" />}
+            options={[
+              { value: '', label: 'All Societies' },
+              ...societies.map(soc => ({ value: soc.id, label: soc.name }))
+            ]}
+            value={societyFilter}
+            onChange={(val) => {
+              setSocietyFilter(val);
+              setPage(1);
+            }}
+            placeholder="All Societies"
+          />
 
           {/* From Date */}
           <div className="relative flex items-center">
