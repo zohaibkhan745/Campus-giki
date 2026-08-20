@@ -175,7 +175,7 @@ export const AdminPostsPage: React.FC = () => {
       </div>
 
       {/* Filter Toolbar */}
-      <div className="bg-[#17181c]/80 backdrop-blur-md p-4 rounded-[18px] border border-white/10 flex flex-wrap items-center gap-4">
+      <div className="bg-white/[0.08] backdrop-blur-[20px] p-5 rounded-[18px] border border-white/20 shadow-[0_12px_40px_rgba(0,0,0,0.4)] flex flex-wrap items-center gap-4">
         {/* Type Filter */}
         <CustomDropdown 
           options={[
@@ -233,7 +233,7 @@ export const AdminPostsPage: React.FC = () => {
             There are no posts matching your current filters.
           </p>
           {(typeFilter !== 'all' || societyFilter) && (
-            <Button onClick={handleClearFilters} variant="outline" className="mt-2 bg-transparent">
+            <Button onClick={handleClearFilters} variant="outline" className="mt-2 text-white border-white/20 hover:bg-white/10">
               Clear Filters
             </Button>
           )}
@@ -245,7 +245,7 @@ export const AdminPostsPage: React.FC = () => {
             const isOwnPost = isAdmin; // Since we are viewing as Admin
             
             return (
-              <div key={post.id} className="bg-white/[0.05] hover:bg-white/[0.1] backdrop-blur-md p-5 rounded-[18px] border border-white/10 transition-all flex flex-col h-full shadow-sm">
+              <div key={post.id} className="bg-white/[0.08] backdrop-blur-[20px] p-6 rounded-[18px] border border-white/20 shadow-[0_12px_40px_rgba(0,0,0,0.4)] flex flex-col h-full">
                 <div className="flex items-start justify-between mb-3 gap-2">
                   <div className="flex items-center gap-2">
                     {isAdmin ? (
@@ -274,7 +274,7 @@ export const AdminPostsPage: React.FC = () => {
                     {isOwnPost && (
                       <button 
                         onClick={() => handleOpenEdit(post)}
-                        className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded transition-colors"
+                        className="p-1.5 text-gray-400 hover:text-white hover:bg-white/10 rounded transition-colors"
                         title="Edit Post"
                       >
                         <Edit2 className="w-4 h-4" />
@@ -282,7 +282,7 @@ export const AdminPostsPage: React.FC = () => {
                     )}
                     <button 
                       onClick={() => handleDelete(post.id)}
-                      className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded transition-colors"
+                      className="p-1.5 text-gray-400 hover:text-red-400 hover:bg-red-500/20 rounded transition-colors"
                       title={isOwnPost ? "Delete Post" : "Delete (Moderation)"}
                     >
                       <Trash2 className="w-4 h-4" />

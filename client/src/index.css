@@ -38,6 +38,7 @@ body {
   min-height: 100vh;
   background-color: #0b0c0e;
   color: #e5e7eb;
+  overflow-x: hidden;
   font-family: var(--font-inter);
   text-align: left;
   -webkit-font-smoothing: antialiased;

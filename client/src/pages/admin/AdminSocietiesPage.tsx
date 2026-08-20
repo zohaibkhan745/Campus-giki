@@ -31,6 +31,7 @@ import {
 import { societyService } from '@/services/society.service';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
+import { OnboardSocietyModal } from '@/components/ui/OnboardSocietyModal';
 import { Alert } from '@/components/ui/Alert';
 import type { AxiosError } from 'axios';
 
@@ -41,6 +42,7 @@ export const AdminSocietiesPage: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState<string>('');
   const [categoryFilter, setCategoryFilter] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [isAddSocietyModalOpen, setIsAddSocietyModalOpen] = useState(false);
 
   // Dialog & Modal States
   const [editingSociety, setEditingSociety] = useState<AdminSocietyItem | null>(null);
@@ -246,9 +248,9 @@ export const AdminSocietiesPage: React.FC = () => {
                   <th className="p-[15px] text-slate-400 text-[13px] uppercase tracking-[1px] border-b border-white/10 w-[8%]">Sr.</th>
                   <th className="p-[15px] text-slate-400 text-[13px] uppercase tracking-[1px] border-b border-white/10 w-[20%]">Society</th>
                   <th className="p-[15px] text-slate-400 text-[13px] uppercase tracking-[1px] border-b border-white/10 w-[20%]">Advisor</th>
-                  <th className="p-[15px] text-slate-400 text-[13px] uppercase tracking-[1px] border-b border-white/10 w-[22%]">Email</th>
                   <th className="p-[15px] text-slate-400 text-[13px] uppercase tracking-[1px] border-b border-white/10 w-[15%]">Department</th>
                   <th className="p-[15px] text-slate-400 text-[13px] uppercase tracking-[1px] border-b border-white/10 w-[15%] text-center">Status</th>
+                  <th className="p-[15px] text-slate-400 text-[13px] uppercase tracking-[1px] border-b border-white/10 w-[22%] text-center">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -275,13 +277,7 @@ export const AdminSocietiesPage: React.FC = () => {
                       <td className="py-[18px] px-[15px] text-[15px] border-b border-white/5 text-slate-300 group-last:border-b-0">
                         {society.advisor?.user.fullName || <span className="text-slate-500 italic">None</span>}
                       </td>
-                      <td className="py-[18px] px-[15px] text-[15px] border-b border-white/5 text-slate-300 group-last:border-b-0">
-                        {society.advisor?.user.email ? (
-                          <a href={`mailto:${society.advisor.user.email}`} className="text-slate-300 hover:text-white transition-colors" onClick={e => e.stopPropagation()}>
-                            {society.advisor.user.email}
-                          </a>
-                        ) : <span className="text-slate-500 italic">-</span>}
-                      </td>
+                      
                       <td className="py-[18px] px-[15px] text-[15px] border-b border-white/5 text-slate-300 group-last:border-b-0">
                         {society.advisor?.department || <span className="text-slate-500 italic">-</span>}
                       </td>
@@ -289,6 +285,22 @@ export const AdminSocietiesPage: React.FC = () => {
                         <span className={`inline-block px-[14px] py-[6px] rounded-[20px] text-[12px] font-bold border ${statusClass}`}>
                           {statusText}
                         </span>
+                      </td>
+                      <td className="py-[18px] px-[15px] text-[15px] border-b border-white/5 text-center group-last:border-b-0" onClick={e => e.stopPropagation()}>
+                        <div className="flex items-center justify-center gap-2">
+                          <button onClick={() => warningMutation.mutate({ id: society.id, hasWarning: !society.hasWarning })} className="p-1.5 hover:bg-amber-500/20 text-amber-400 rounded-lg transition-colors" title={society.hasWarning ? "Remove Warning" : "Issue Warning"}>
+                            <AlertCircle className="w-4 h-4" />
+                          </button>
+                          {society.status === 'INACTIVE' ? (
+                            <button onClick={() => reactivateMutation.mutate(society.id)} className="p-1.5 hover:bg-emerald-500/20 text-emerald-400 rounded-lg transition-colors" title="Reactivate Society">
+                              <CheckCircle2 className="w-4 h-4" />
+                            </button>
+                          ) : (
+                            <button onClick={() => setDeactivatingSociety(society)} className="p-1.5 hover:bg-red-500/20 text-red-400 rounded-lg transition-colors" title="Deactivate (Ban) Society">
+                              <UserX className="w-4 h-4" />
+                            </button>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   );

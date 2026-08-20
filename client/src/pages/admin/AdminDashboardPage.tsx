@@ -17,6 +17,7 @@ import {
   CalendarDays,
   Settings,
   Users,
+  Ban
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { adminService } from '@/services/admin.service';
@@ -143,24 +144,7 @@ export const AdminDashboardPage: React.FC = () => {
         </div>
       </div>
 
-      {/* 3. Add Society shortcut */}
-      <Link
-        to="/admin/societies/create"
-        className="block bg-transparent p-4 rounded-[18px] border border-white/20 hover:bg-lavender-whisper transition-all group"
-      >
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-vast-ink text-white rounded-xl">
-              <UserPlus className="w-5 h-5" />
-            </div>
-            <div>
-              <h4 className="font-bold text-white text-sm">Onboard New Society</h4>
-              <p className="text-[11px] font-medium text-gray-400">Provision a new society account with advisor assignment</p>
-            </div>
-          </div>
-          <ArrowRight className="w-4 h-4 text-white group-hover:translate-x-1 transition-transform" />
-        </div>
-      </Link>
+      
 
       {/* 4. Activity Section — 2-column */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
