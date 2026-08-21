@@ -118,7 +118,7 @@ export const AdminPostsPage: React.FC = () => {
         : postService.createPost(formData),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['adminPosts'] });
-      await queryClient.invalidateQueries({ queryKey: ['feed'] });
+      await queryClient.invalidateQueries({ queryKey: ['campusFeed'] });
       closeModal();
     },
     onError: (error: AxiosError<{ message?: string | string[] }>) => {
@@ -132,7 +132,7 @@ export const AdminPostsPage: React.FC = () => {
     mutationFn: (id: string) => postService.deletePost(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['adminPosts'] });
-      queryClient.invalidateQueries({ queryKey: ['feed'] });
+      queryClient.invalidateQueries({ queryKey: ['campusFeed'] });
     },
   });
 

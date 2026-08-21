@@ -25,17 +25,24 @@ export const EventCard: React.FC<EventCardProps> = ({ item }) => {
     year: 'numeric',
   });
   
-  const eventDateObj = new Date(item.startTime);
+  
+  const eventDateObj = new Date(item.eventDate || item.createdAt);
   const eventDate = eventDateObj.toLocaleDateString('en-US', {
     weekday: 'short',
     month: 'short',
     day: 'numeric',
     year: 'numeric'
   });
-  const eventTime = eventDateObj.toLocaleTimeString('en-US', {
-    hour: '2-digit',
-    minute: '2-digit'
-  });
+  
+  // startTime might be an ISO string or just "HH:mm"
+  let eventTime = item.startTime;
+  if (item.startTime && item.startTime.includes('T')) {
+    eventTime = new Date(item.startTime).toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
+
 
   
   const isOfficial = item.isAdminPost || !item.society;

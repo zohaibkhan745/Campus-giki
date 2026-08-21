@@ -286,7 +286,7 @@ export const EventGrid = ({ events }: { events: any[] }) => {
           onClick={() => setVisible(v => v + 4)}
           className="w-full py-3 rounded-xl bg-white/[0.08] backdrop-blur-[20px] border border-white/20 text-white text-sm font-semibold hover:bg-white/[0.14] transition-all flex items-center justify-center gap-2"
         >
-          Load More ({events.length - visible} remaining)
+          Load More
         </button>
       )}
     </div>

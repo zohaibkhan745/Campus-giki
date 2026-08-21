@@ -53,7 +53,7 @@ export const AdminPendingEventsPage: React.FC = () => {
 
   const [page, setPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [statusFilter, setStatusFilter] = useState<string>(searchParams.get('status') || '');
+  
   const [societyFilter, setSocietyFilter] = useState<string>('');
   const [fromDate, setFromDate] = useState<string>(defaultFrom);
   const [toDate, setToDate] = useState<string>(defaultTo);
@@ -96,7 +96,7 @@ export const AdminPendingEventsPage: React.FC = () => {
     hasNextPage,
     isFetchingNextPage
   } = useInfiniteQuery({
-    queryKey: ['adminEventsList', statusFilter, societyFilter, searchQuery, fromDate, toDate, typeToggle],
+    queryKey: ['adminEventsList', 'PENDING_ADMIN', societyFilter, searchQuery, fromDate, toDate, typeToggle],
     initialPageParam: 1,
     queryFn: ({ pageParam = 1 }) => adminService.getAllEvents({
       page: pageParam,
@@ -174,15 +174,7 @@ export const AdminPendingEventsPage: React.FC = () => {
         </div>
 
         <div className="flex flex-col md:flex-row flex-wrap items-center gap-4 pt-4 border-t border-white/10 mt-2">
-          <CustomDropdown className="w-full md:flex-1 shrink-0" icon={<Filter className="w-4 h-4" />} options={[{ value: "", label: "All Statuses" },
-              { value: 'PENDING_ADMIN', label: 'Pending Review' },
-              { value: 'PUBLISHED', label: 'Published / Approved' },
-              { value: 'CHANGES_REQUESTED', label: 'Changes Requested' }
-            ]}
-            value={statusFilter}
-            onChange={(val) => { setStatusFilter(val); /* reset handled by queryKey */ }}
-            placeholder="All Statuses"
-          />
+          
           <CustomDropdown className="w-full md:flex-1 shrink-0" icon={<Building2 className="w-4 h-4" />} options={[{ value: '', label: 'All Societies' }, ...societies.map((soc: any) => ({ value: soc.id, label: soc.name }))]}
             value={societyFilter}
             onChange={(val) => { setSocietyFilter(val); /* reset handled by queryKey */ }}

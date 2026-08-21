@@ -21,7 +21,7 @@ export const MakeAnnouncementDialog: React.FC<MakeAnnouncementDialogProps> = ({
       return response.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['feed'] });
+      queryClient.invalidateQueries({ queryKey: ['campusFeed'] });
       onClose();
     },
   });

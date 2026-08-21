@@ -32,7 +32,7 @@ export const DeleteEventDialog: React.FC<DeleteEventDialogProps> = ({
       queryClient.invalidateQueries({ queryKey: ['adminEventsList'] });
       queryClient.invalidateQueries({ queryKey: ['advisorDashboard'] });
       queryClient.invalidateQueries({ queryKey: ['adminDashboard'] });
-      queryClient.invalidateQueries({ queryKey: ['feed'] });
+      queryClient.invalidateQueries({ queryKey: ['campusFeed'] });
       onClose();
     },
   });
