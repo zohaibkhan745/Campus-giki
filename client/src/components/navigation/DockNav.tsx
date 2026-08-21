@@ -167,6 +167,9 @@ export const DockNav: React.FC = () => {
 
     const handleMouseEnter = () => {
       isHovering.current = true;
+      if (isCollapsed.current) {
+        expandDock();
+      }
       requestAnimation();
     };
 
@@ -179,6 +182,15 @@ export const DockNav: React.FC = () => {
       isHovering.current = false;
       mouseX.current = null;
       requestAnimation();
+      
+      // If we are over the footer, collapse again when mouse leaves
+      const footer = document.getElementById('main-footer');
+      if (footer) {
+        const rect = footer.getBoundingClientRect();
+        if (rect.top <= window.innerHeight) {
+          collapseDock();
+        }
+      }
     };
 
     dock.addEventListener('mouseenter', handleMouseEnter);
@@ -282,7 +294,7 @@ export const DockNav: React.FC = () => {
 
           .fluid-nav-item.active {
               background-color: #ffffff;
-              box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3), 0 0 12px rgba(255, 255, 255, 0.6);
+              box-shadow: 0 0 22px rgba(255, 255, 255, 0.35);
           }
 
           .fluid-nav-item.active svg {

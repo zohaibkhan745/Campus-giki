@@ -210,7 +210,7 @@ export const AdminPendingEventsPage: React.FC = () => {
       ) : events.length === 0 ? (
         <div className="bg-white/[0.08] backdrop-blur-[20px] p-12 rounded-[18px] border border-white/20 text-center space-y-3">
           <Calendar className="w-12 h-12 text-gray-400 mx-auto" />
-          <h3 className="font-bold text-white text-base">No Campus Events Found</h3>
+          <h3 className="font-bold text-white text-base">No pending events found</h3>
         </div>
       ) : (
         <div className="space-y-4 pt-4">

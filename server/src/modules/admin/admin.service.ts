@@ -338,11 +338,13 @@ export class AdminService {
     }
 
     const now = new Date();
+    const today = new Date();
+    today.setHours(0,0,0,0);
     if (query.type === EventTimeType.UPCOMING && !query.from) {
-      dateConditions.gte = now;
+      dateConditions.gte = today;
       hasDateFilter = true;
     } else if (query.type === EventTimeType.PAST && !query.to) {
-      dateConditions.lt = now;
+      dateConditions.lt = today;
       hasDateFilter = true;
     }
 
@@ -439,7 +441,7 @@ export class AdminService {
       updatedAt: evt.updatedAt,
       society: evt.society,
       approvalStatus: evt.approvalStatus,
-      isUpcoming: new Date(evt.eventDate) >= now,
+      isUpcoming: new Date(evt.eventDate) >= today,
     }));
 
     return {
