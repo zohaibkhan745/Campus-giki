@@ -3,7 +3,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname, join } from 'path';
 import { ApiTags, ApiOperation, ApiConsumes, ApiBody } from '@nestjs/swagger';
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'crypto';
 import * as fs from 'fs';
 
 const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
@@ -39,7 +39,7 @@ export class UploadController {
           cb(null, uploadPath);
         },
         filename: (req, file, cb) => {
-          const uniqueName = `${uuidv4()}${extname(file.originalname)}`;
+          const uniqueName = `${randomUUID()}${extname(file.originalname)}`;
           cb(null, uniqueName);
         },
       }),

@@ -1,30 +1,20 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 
-type NotificationType = 'sync' | 'committed' | 'failed' | null;
+type NotificationType = 'success' | 'failed' | null;
 
 // Global event emitter for non-React files like queryClient
 export const globalNotification = {
-  triggerSync: () => document.dispatchEvent(new CustomEvent('global-notification', { detail: 'sync' })),
-  triggerCommitted: () => document.dispatchEvent(new CustomEvent('global-notification', { detail: 'committed' })),
+  triggerSuccess: () => document.dispatchEvent(new CustomEvent('global-notification', { detail: 'success' })),
   triggerFailed: () => document.dispatchEvent(new CustomEvent('global-notification', { detail: 'failed' })),
 };
 
 const NotificationContext = createContext(null);
 
 const assets = {
-  sync: {
-    className: 'state-sync',
-    text: 'Syncing',
-    svg: (
-      <svg className="status-icon spinner" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
-      </svg>
-    )
-  },
-  committed: {
+  success: {
     className: 'state-committed',
-    text: 'Committed',
+    text: 'Success',
     svg: (
       <svg className="status-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
         <polyline points="20 6 9 17 4 12"></polyline>
@@ -55,10 +45,10 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       
       if (timeout) clearTimeout(timeout);
       
-      if (type === 'committed' || type === 'failed') {
+      if (type === 'success' || type === 'failed') {
         timeout = setTimeout(() => {
           setNotification(null);
-        }, 4000);
+        }, 3000);
       }
     };
 
@@ -95,19 +85,14 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
           box-sizing: border-box;
         }
 
-        .notification-pill.state-sync {
-          background-color: #3b82f6;
-          animation: sync-sequence 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-        }
-
         .notification-pill.state-committed {
-          background-color: #10b981;
-          animation: complete-sequence 4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+          background-color: #10b981; /* Green */
+          animation: pop-sequence 3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
 
         .notification-pill.state-failed {
-          background-color: #ef4444;
-          animation: complete-sequence 4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+          background-color: #ef4444; /* Red */
+          animation: pop-sequence 3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
 
         .notification-container-fixed .icon-container {
@@ -125,14 +110,6 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
           display: block;
         }
 
-        .notification-container-fixed .spinner {
-          animation: spin-notification 1s linear infinite;
-        }
-
-        @keyframes spin-notification {
-          100% { transform: rotate(360deg); }
-        }
-
         .notification-container-fixed .notification-text {
           font-size: 16px;
           font-weight: 600;
@@ -141,41 +118,23 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
           opacity: 0;
         }
 
-        .state-sync .notification-text {
-          animation: text-fade-sync 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-        }
-
         .state-committed .notification-text,
         .state-failed .notification-text {
-          animation: text-fade-complete 4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+          animation: text-fade-complete 3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
 
-        @keyframes sync-sequence {
-          0% { opacity: 0; width: var(--pill-height); transform: scale(0.5); }
-          15% { opacity: 1; width: var(--pill-height); transform: scale(1); }
-          30%, 85% { width: 140px; opacity: 1; transform: scale(1); }
-          95% { width: var(--pill-height); opacity: 1; transform: scale(1); }
-          100% { opacity: 0; width: var(--pill-height); transform: scale(0.5); }
-        }
-
-        @keyframes text-fade-sync {
-          0%, 25% { opacity: 0; }
-          35%, 80% { opacity: 1; }
-          90%, 100% { opacity: 0; }
-        }
-
-        @keyframes complete-sequence {
-          0% { opacity: 0; width: var(--pill-height); transform: scale(0.5); }
-          8% { opacity: 1; width: var(--pill-height); transform: scale(1); }
-          15%, 85% { width: 160px; opacity: 1; transform: scale(1); }
-          92% { width: var(--pill-height); opacity: 1; transform: scale(1); }
-          100% { opacity: 0; width: var(--pill-height); transform: scale(0.5); }
+        @keyframes pop-sequence {
+          0% { opacity: 0; width: var(--pill-height); transform: scale(0.5) translateY(-20px); }
+          10% { opacity: 1; width: var(--pill-height); transform: scale(1) translateY(0); }
+          20%, 80% { width: 140px; opacity: 1; transform: scale(1) translateY(0); }
+          90% { width: var(--pill-height); opacity: 1; transform: scale(1) translateY(0); }
+          100% { opacity: 0; width: var(--pill-height); transform: scale(0.5) translateY(-20px); }
         }
 
         @keyframes text-fade-complete {
-          0%, 12% { opacity: 0; }
-          18%, 82% { opacity: 1; }
-          88%, 100% { opacity: 0; }
+          0%, 15% { opacity: 0; }
+          22%, 78% { opacity: 1; }
+          85%, 100% { opacity: 0; }
         }
       `}</style>
       

@@ -3,9 +3,9 @@ import { globalNotification } from '@/contexts/NotificationContext';
 
 export const queryClient = new QueryClient({
   mutationCache: new MutationCache({
-    onMutate: () => { globalNotification.triggerSync(); },
-    onSuccess: () => { globalNotification.triggerCommitted(); },
-    onError: (error) => { globalNotification.triggerFailed(); console.error(error); },
+    // sync removed
+    onSuccess: (_, __, ___, mutation) => { if (mutation?.meta?.notify !== false) globalNotification.triggerSuccess(); },
+    onError: (error, _, __, mutation) => { if (mutation?.meta?.notify !== false) globalNotification.triggerFailed(); console.error(error); },
   }),
   defaultOptions: {
     queries: {

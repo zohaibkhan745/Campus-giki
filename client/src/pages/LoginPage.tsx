@@ -35,6 +35,7 @@ export const LoginPage: React.FC = () => {
 
   const loginMutation = useMutation({
     mutationFn: (data: LoginFormData) => login(data),
+    meta: { notify: false },
     onSuccess: (data) => {
       setServerError('');
 

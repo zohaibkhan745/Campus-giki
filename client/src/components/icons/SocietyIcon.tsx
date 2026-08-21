@@ -13,14 +13,16 @@ export const SocietyIcon = (props: React.SVGProps<SVGSVGElement>) => (
     strokeLinejoin="round"
     {...props}
   >
-    {/* Center person */}
-    <path d="M16 21v-2a4 4 0 0 0-4-4H12a4 4 0 0 0-4 4v2" />
-    <circle cx="12" cy="7" r="4" />
-    {/* Left person */}
-    <path d="M4.5 20v-1a3 3 0 0 1 3-3" />
-    <path d="M5.5 10a3 3 0 0 1 0-5.5" />
-    {/* Right person */}
-    <path d="M19.5 20v-1a3 3 0 0 0-3-3" />
-    <path d="M18.5 4.5a3 3 0 0 1 0 5.5" />
+    {/* Left background person */}
+    <path d="M7 16v-1a2 2 0 0 1 2-2h1" />
+    <circle cx="8" cy="7" r="3" />
+    
+    {/* Right background person */}
+    <path d="M17 16v-1a2 2 0 0 0-2-2h-1" />
+    <circle cx="16" cy="7" r="3" />
+    
+    {/* Front center person */}
+    <path d="M18 21v-1a3 3 0 0 0-3-3H9a3 3 0 0 0-3 3v1" />
+    <circle cx="12" cy="12" r="3.5" />
   </svg>
 );
