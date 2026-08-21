@@ -61,6 +61,12 @@ export const EventCard: React.FC<EventCardProps> = ({ item }) => {
   useEffect(() => {
     if (isFlipped) {
       document.body.classList.add('is-focused');
+      const backdrop = document.getElementById('global-focus-backdrop');
+      if (backdrop) backdrop.classList.add('active');
+    } else {
+      document.body.classList.remove('is-focused');
+      const backdrop = document.getElementById('global-focus-backdrop');
+      if (backdrop) backdrop.classList.remove('active');
     }
     
     return () => {
@@ -69,6 +75,8 @@ export const EventCard: React.FC<EventCardProps> = ({ item }) => {
       // For this isolated component, we just remove it on unmount or unflip.
       if (isFlipped) {
         document.body.classList.remove('is-focused');
+        const backdrop = document.getElementById('global-focus-backdrop');
+        if (backdrop) backdrop.classList.remove('active');
       }
     };
   }, [isFlipped]);

@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { createPortal } from 'react-dom';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -79,7 +78,7 @@ export const OnboardSocietyModal: React.FC<OnboardSocietyModalProps> = ({ isOpen
 
   if (!isOpen) return null;
 
-  return createPortal(
+  return (
     <div className="modal-overlay active z-[200]">
       <div className="modal-box" style={{ maxWidth: "800px", maxHeight: "90vh", overflow: "hidden" }}>
         
@@ -201,6 +200,5 @@ export const OnboardSocietyModal: React.FC<OnboardSocietyModalProps> = ({ isOpen
         </div>
       </div>
     </div>
-  , document.body
   );
 };

@@ -1064,8 +1064,9 @@ body.is-focused nav {
 \n/* --- EXACT DROPDOWN TEMPLATE STYLES --- */
 .dropdown-container {
   position: relative;
-  width: 100%;
-  z-index: 50; /* ensure it pops over adjacent items */
+  width: max-content;
+  min-width: 240px;
+  z-index: 1;
 }
 
 .dropdown-btn {
@@ -1128,8 +1129,7 @@ body.is-focused nav {
   position: absolute;
   top: calc(100% + 8px);
   left: 0;
-  width: max-content;
-  min-width: 100%;
+  width: 100%;
   background: rgba(20, 20, 24, 0.65);
   backdrop-filter: blur(25px);
   -webkit-backdrop-filter: blur(25px);
@@ -1366,3 +1366,5 @@ body.is-focused nav {
   box-shadow: 0 6px 20px rgba(16, 185, 129, 0.45);
 }
 /* --- END EXACT MODAL THEME --- */
+
+/* --- POST FLIP CARD STYLES --- */

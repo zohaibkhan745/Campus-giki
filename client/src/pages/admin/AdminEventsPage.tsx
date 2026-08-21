@@ -206,7 +206,13 @@ const FlippableAdminEventCard = ({ evt }: { evt: any }) => {
               </div>
             )}
             <button
-              onClick={(e) => { e.stopPropagation(); setIsFlipped(false); }}
+              onClick={(e) => { 
+                  e.stopPropagation(); 
+                  setIsFlipped(false); 
+                  document.body.classList.remove('is-focused');
+                  const backdrop = document.getElementById('global-focus-backdrop');
+                  if (backdrop) backdrop.classList.remove('active');
+                }}
               style={{
                 position: 'absolute', top: 12, right: 12, width: 36, height: 36, borderRadius: '50%',
                 background: 'rgba(255,255,255,0.18)', backdropFilter: 'blur(20px) saturate(180%)',
