@@ -329,15 +329,15 @@ export const CampusCalendarPage: React.FC = () => {
         <div className="flex flex-col sm:flex-row gap-2.5">
           <input 
             type="text" 
-            className="search-input" 
+            className="search-input flex-1" 
             placeholder="Search events..." 
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
           />
           
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="w-full sm:w-[280px] shrink-0">
             <CustomDropdown 
-              className="w-[200px]"
+              className="w-full"
               value={selectedSociety}
               onChange={setSelectedSociety}
               placeholder="All Societies"

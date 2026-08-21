@@ -189,8 +189,7 @@ export const AdminEventsPage: React.FC = () => {
             placeholder="All Societies"
           />
           <div className="w-full md:w-48 shrink-0"><CustomDatePicker value={fromDate} onChange={(val) => { setFromDate(val); setTypeToggle("all"); /* reset handled by queryKey */ }} placeholder="From Date" /></div>
-          <div className="flex items-center gap-2">
-            <div className="w-full md:w-48 shrink-0"><CustomDatePicker value={toDate} onChange={(val) => { setToDate(val); setTypeToggle("all"); /* reset handled by queryKey */ }} placeholder="To Date" /></div>
+          <div className="w-full md:w-48 shrink-0"><CustomDatePicker value={toDate} onChange={(val) => { setToDate(val); setTypeToggle("all"); /* reset handled by queryKey */ }} placeholder="To Date" /></div>
             {(searchQuery || societyFilter || statusFilter || fromDate || toDate || typeToggle !== 'all') && (
               <button onClick={handleClearFilters} className="p-2 text-gray-400 hover:text-white bg-white/5 rounded-xl">
                 <FilterX className="w-4 h-4" />

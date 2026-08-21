@@ -133,9 +133,9 @@ export const AdminYearlyPlansPage: React.FC = () => {
         {/* Dropdown Filters & Clear */}
         <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
           {/* Status Filter */}
-          <div className="shrink-0">
+          <div className="w-full md:flex-1 shrink-0">
             <CustomDropdown
-              className="w-full sm:w-64"
+              className="w-full"
               icon={<Filter className="w-4 h-4" />}
               value={statusFilter}
               onChange={(val) => { setStatusFilter(val); setPage(1); }}
@@ -150,9 +150,9 @@ export const AdminYearlyPlansPage: React.FC = () => {
           </div>
 
           {/* Year Select Filter */}
-          <div className="shrink-0">
+          <div className="w-full md:flex-1 shrink-0">
             <CustomDropdown
-              className="w-full sm:w-40"
+              className="w-full"
               icon={<Calendar className="w-4 h-4" />}
               value={yearFilter}
               onChange={(val) => { setYearFilter(val); setPage(1); }}

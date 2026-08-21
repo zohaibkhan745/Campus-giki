@@ -1426,3 +1426,26 @@ body:has(.modal-overlay.active),
 body:has(.modal-overlay) {
   overflow: hidden !important;
 }
+
+/* --- HORIZONTAL SCROLLBAR FOR TABLES/LISTS --- */
+.overflow-x-auto::-webkit-scrollbar {
+  height: 8px;
+}
+.overflow-x-auto::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 4px;
+}
+.overflow-x-auto::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.25);
+  border-radius: 10px;
+}
+.overflow-x-auto::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.4);
+}
+
+@media (max-width: 768px) {
+  .dropdown-item .language-name,
+  .dropdown-btn .language-name {
+    max-width: 30ch;
+  }
+}
