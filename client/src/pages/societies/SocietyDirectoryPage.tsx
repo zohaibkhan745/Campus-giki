@@ -72,7 +72,7 @@ export const SocietyDirectoryPage: React.FC = () => {
       {/* Header Banner */}
       <div className="space-y-4">
         <h1 className="font-extrabold text-5xl sm:text-6xl text-white tracking-tight leading-tight">
-          Explore Campus GIKI Communities
+          Explore Campus GIKI Societies
         </h1>
         <p className="text-lg text-gray-400 max-w-2xl">
           Discover student societies, competition project teams, and special interest clubs active at GIKI.
@@ -92,7 +92,7 @@ export const SocietyDirectoryPage: React.FC = () => {
                 : 'text-gray-300 hover:bg-white/10'
             }`}
           >
-            All Communities
+            All Societies
           </button>
 
           <button
@@ -192,7 +192,7 @@ export const SocietyDirectoryPage: React.FC = () => {
       ) : societies.length === 0 ? (
         <div className="p-12 rounded-[24px] border border-white/20 bg-white/[0.08] backdrop-blur-[20px] shadow-[0_12px_40px_rgba(0,0,0,0.4)] text-center space-y-4">
           <Building2 className="w-16 h-16 text-gray-500 mx-auto" />
-          <h3 className="font-semibold text-2xl text-white">No Communities Found</h3>
+          <h3 className="font-semibold text-2xl text-white">No Societies Found</h3>
           <p className="text-gray-400 max-w-sm mx-auto">
             We couldn't find any active communities matching your selected filters.
           </p>

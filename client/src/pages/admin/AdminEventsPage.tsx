@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { FlippableAdminEventCard, EventGrid } from '@/components/admin/FlippableAdminEventCard';
 import { adminService } from '@/services/admin.service';
+import { societyService } from '@/services/society.service';
 import { Alert } from '@/components/ui/Alert';
 import { CustomDropdown } from '@/components/ui/CustomDropdown';
 import { CustomDatePicker } from '@/components/ui/date-picker';
@@ -116,8 +117,8 @@ export const AdminEventsPage: React.FC = () => {
   });
 
   const { data: societiesData } = useQuery({
-    queryKey: ['adminSocietiesList-unpaginated'],
-    queryFn: () => adminService.getAllSocieties({ limit: 100 }),
+    queryKey: ['publicSocietiesList'],
+    queryFn: () => societyService.getPublicSocieties({ limit: 100 }),
   });
   const societies = societiesData?.items || [];
 

@@ -1,12 +1,12 @@
 import React, { useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, CalendarDays, Users, LayoutDashboard } from 'lucide-react';
+import { Home, CalendarDays, UsersRound, Menu } from 'lucide-react';
 
 const navLinks = [
   { label: 'Home', path: '/', icon: <Home /> },
   { label: 'Calendar', path: '/events', icon: <CalendarDays /> },
-  { label: 'Communities', path: '/societies', icon: <Users /> },
-  { label: 'Dashboard', path: '/dashboard', icon: <LayoutDashboard /> },
+  { label: 'Societies', path: '/societies', icon: <UsersRound /> },
+  { label: 'Dashboard', path: '/dashboard', icon: <Menu /> },
 ];
 
 export const DockNav: React.FC = () => {
@@ -82,7 +82,7 @@ export const DockNav: React.FC = () => {
         }
 
         const state = itemStates.current[index];
-        const easeSpeed = isHovering.current ? 0.45 : 0.3;
+        const easeSpeed = isHovering.current ? 0.6 : 0.4;
 
         state.size = lerp(state.size, targetSize, easeSpeed);
         state.margin = lerp(state.margin, targetMargin, easeSpeed);
@@ -282,7 +282,7 @@ export const DockNav: React.FC = () => {
 
           .fluid-nav-item.active {
               background-color: #ffffff;
-              box-shadow: 0 0 22px rgba(255, 255, 255, 0.35);
+              box-shadow: 0 0 12px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.5), inset 0 0 10px rgba(255, 255, 255, 0.2);
           }
 
           .fluid-nav-item.active svg {
@@ -321,7 +321,7 @@ export const DockNav: React.FC = () => {
           }
 
           .fluid-nav-item:hover {
-              background-color: #2c2f38;
+              background-color: #3b3f4a; box-shadow: 0 8px 20px rgba(0,0,0,0.3);
           }
 
           .fluid-nav-item:hover svg {

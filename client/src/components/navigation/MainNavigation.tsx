@@ -22,7 +22,7 @@ export const MainNavigation: React.FC = () => {
   const navLinks = [
     { label: 'Home', path: '/', icon: Home },
     { label: 'Calendar', path: '/events', icon: CalendarDays },
-    { label: 'Communities', path: '/societies', icon: Users },
+    { label: 'Societies', path: '/societies', icon: Users },
     ...(user ? [{ label: 'Dashboard', path: '/dashboard', icon: User }] : []),
   ];
 
