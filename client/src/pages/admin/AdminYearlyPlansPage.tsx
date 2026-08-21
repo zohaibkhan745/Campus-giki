@@ -135,6 +135,7 @@ export const AdminYearlyPlansPage: React.FC = () => {
           {/* Status Filter */}
           <div className="shrink-0">
             <CustomDropdown
+              className="w-full sm:w-64"
               icon={<Filter className="w-4 h-4" />}
               value={statusFilter}
               onChange={(val) => { setStatusFilter(val); setPage(1); }}
@@ -151,6 +152,7 @@ export const AdminYearlyPlansPage: React.FC = () => {
           {/* Year Select Filter */}
           <div className="shrink-0">
             <CustomDropdown
+              className="w-full sm:w-40"
               icon={<Calendar className="w-4 h-4" />}
               value={yearFilter}
               onChange={(val) => { setYearFilter(val); setPage(1); }}

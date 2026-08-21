@@ -1061,11 +1061,11 @@ body.is-focused nav {
   pointer-events: none;
   transition: filter 0.6s cubic-bezier(0.25, 1, 0.5, 1);
 }
-\n/* --- EXACT DROPDOWN TEMPLATE STYLES --- */
+
+/* --- EXACT DROPDOWN TEMPLATE STYLES --- */
 .dropdown-container {
   position: relative;
-  width: max-content;
-  min-width: 240px;
+  width: 100%;
   z-index: 1;
 }
 
@@ -1223,7 +1223,8 @@ body.is-focused nav {
 .dropdown-list::-webkit-scrollbar-thumb:hover {
   background-color: rgba(255, 255, 255, 0.4);
 }
-/* --- END EXACT DROPDOWN STYLES --- */\n/* --- EXACT MODAL THEME --- */
+/* --- END EXACT DROPDOWN STYLES --- */
+/* --- EXACT MODAL THEME --- */
 .modal-overlay {
   position: fixed;
   top: 0;

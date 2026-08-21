@@ -49,9 +49,8 @@ export const CustomDropdown: React.FC<CustomDropdownProps> = ({
   };
 
   const toggleDropdown = (e: React.MouseEvent) => {
-    e.stopPropagation();
     if (!disabled) {
-      setIsOpen(!isOpen);
+      setIsOpen((prev) => !prev);
     }
   };
 
