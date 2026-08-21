@@ -42,7 +42,7 @@ export const postService = {
     return api.delete(`/posts/${id}`);
   },
 
-  getAllPosts: async (params?: { page?: number; limit?: number; type?: 'global' | 'society'; societyId?: string }): Promise<PaginatedPostsResponse> => {
+  getAllPosts: async (params?: { page?: number; limit?: number; type?: 'global' | 'society'; societyId?: string; from?: string; to?: string }): Promise<PaginatedPostsResponse> => {
     return api.get('/posts', { params }) as any;
   },
 

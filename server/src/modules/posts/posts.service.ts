@@ -23,11 +23,33 @@ export class PostsService {
     });
   }
 
-  async getAllPosts(params: { page: number; limit: number; type?: string; societyId?: string }) {
-    const { page, limit, type, societyId } = params;
+  async getAllPosts(params: { page: number; limit: number; type?: string; societyId?: string; from?: string; to?: string }) {
+    const { page, limit, type, societyId, from, to } = params;
     const skip = (page - 1) * limit;
 
-    const where: any = {};
+    const where: Prisma.PostWhereInput = {};
+    if (from || to) {
+      where.createdAt = {};
+      if (from) {
+        where.createdAt.gte = new Date(from);
+      }
+      if (to) {
+        const toDate = new Date(to);
+        toDate.setHours(23, 59, 59, 999);
+        where.createdAt.lte = toDate;
+      }
+    }
+    if (from || to) {
+      where.createdAt = {};
+      if (from) {
+        where.createdAt.gte = new Date(from);
+      }
+      if (to) {
+        const toDate = new Date(to);
+        toDate.setHours(23, 59, 59, 999);
+        where.createdAt.lte = toDate;
+      }
+    }
     if (type === 'global') {
       where.author = { role: Role.DSA_ADMIN };
     } else if (type === 'society') {

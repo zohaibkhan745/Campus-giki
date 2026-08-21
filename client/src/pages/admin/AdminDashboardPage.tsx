@@ -25,6 +25,7 @@ import { Alert } from '@/components/ui/Alert';
 import { MakeAnnouncementDialog } from '@/components/feed/MakeAnnouncementDialog';
 import { usePendingCounts } from '@/hooks/usePendingCounts';
 import { BannerHeader } from '@/components/layout/BannerHeader';
+import { EventGrid } from '@/components/admin/FlippableAdminEventCard';
 
 export const AdminDashboardPage: React.FC = () => {
   const { user, logout } = useAuth();
@@ -149,13 +150,13 @@ export const AdminDashboardPage: React.FC = () => {
       {/* 4. Activity Section — 2-column */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Pending Events */}
-        <div className="bg-white/[0.08] backdrop-blur-[20px] p-6 rounded-[18px] border border-white/20 shadow-[0_12px_40px_rgba(0,0,0,0.4)] space-y-4">
+        <div className="space-y-4">
           <div className="flex items-center justify-between border-b-2 border-white/10 pb-3">
             <div className="flex items-center gap-2 font-extrabold text-lg text-white">
               <Clock className="w-5 h-5 text-ember-glow" />
               <h3>Pending Review ({pendingEvents.length})</h3>
             </div>
-            <Link to="/admin/events?type=pending" className="text-sm font-bold text-white hover:text-forest-ink transition-colors underline underline-offset-2">
+            <Link to="/admin/events/pending" className="text-sm font-bold text-white hover:text-forest-ink transition-colors underline underline-offset-2">
               View All
             </Link>
           </div>
@@ -175,32 +176,12 @@ export const AdminDashboardPage: React.FC = () => {
               <p className="font-bold text-sm">You're all caught up! No events pending review.</p>
             </div>
           ) : (
-            <div className="space-y-3">
-              {pendingEvents.map((evt) => (
-                <Link
-                  key={evt.id}
-                  to={`/admin/events/${evt.id}/review`}
-                  className="bg-transparent p-4 rounded-[18px] border border-white/20 hover:bg-lavender-whisper transition-all flex items-center justify-between group"
-                >
-                  <div className="space-y-1">
-                    <h4 className="font-bold text-white text-sm">{evt.title}</h4>
-                    <div className="flex items-center gap-3 text-xs font-medium text-gray-400">
-                      <span>Host: <strong className="text-white">{evt.society?.name}</strong></span>
-                      <span className="flex items-center gap-1">
-                        <MapPin className="w-3 h-3 text-gray-400" />
-                        {evt.venue}
-                      </span>
-                    </div>
-                  </div>
-                  <ArrowRight className="w-4 h-4 text-white group-hover:translate-x-1 transition-transform" />
-                </Link>
-              ))}
-            </div>
+            <EventGrid events={pendingEvents} />
           )}
         </div>
 
         {/* Upcoming Events */}
-        <div className="bg-white/[0.08] backdrop-blur-[20px] p-6 rounded-[18px] border border-white/20 shadow-[0_12px_40px_rgba(0,0,0,0.4)] space-y-4">
+        <div className="space-y-4">
           <div className="flex items-center justify-between border-b-2 border-white/10 pb-3">
             <div className="flex items-center gap-2 font-extrabold text-lg text-white">
               <Calendar className="w-5 h-5 text-forest-ink" />
@@ -226,27 +207,7 @@ export const AdminDashboardPage: React.FC = () => {
               <p className="font-bold text-sm">No upcoming events scheduled.</p>
             </div>
           ) : (
-            <div className="space-y-3">
-              {upcomingEvents.map((evt) => (
-                <Link
-                  key={evt.id}
-                  to={`/events/${evt.id}`}
-                  className="bg-transparent p-4 rounded-[18px] border border-white/20 hover:bg-lavender-whisper transition-all flex items-center justify-between group"
-                >
-                  <div className="space-y-1">
-                    <h4 className="font-bold text-white text-sm">{evt.title}</h4>
-                    <div className="flex items-center gap-3 text-xs font-medium text-gray-400">
-                      <span>Host: <strong className="text-white">{evt.society?.name}</strong></span>
-                      <span className="flex items-center gap-1">
-                        <MapPin className="w-3 h-3 text-gray-400" />
-                        {evt.venue}
-                      </span>
-                    </div>
-                  </div>
-                  <ArrowRight className="w-4 h-4 text-white group-hover:translate-x-1 transition-transform" />
-                </Link>
-              ))}
-            </div>
+            <EventGrid events={upcomingEvents} />
           )}
         </div>
       </div>

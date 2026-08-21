@@ -336,7 +336,6 @@ export const CampusCalendarPage: React.FC = () => {
           />
           
           <div className="flex items-center gap-2 shrink-0">
-            <label htmlFor="society-select" className="text-sm text-white/70">Society:</label>
             <CustomDropdown 
               className="w-[200px]"
               value={selectedSociety}

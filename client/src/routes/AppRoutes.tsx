@@ -40,6 +40,7 @@ const AdminYearlyPlanDetailPage = React.lazy(() => import('@/pages/admin/AdminYe
 const AdminSocietiesPage = React.lazy(() => import('@/pages/admin/AdminSocietiesPage').then(m => ({ default: m.AdminSocietiesPage })));
 const CreateSocietyPage = React.lazy(() => import('@/pages/admin/CreateSocietyPage').then(m => ({ default: m.CreateSocietyPage })));
 const AdminEventsPage = React.lazy(() => import('@/pages/admin/AdminEventsPage').then(m => ({ default: m.AdminEventsPage })));
+const AdminPendingEventsPage = React.lazy(() => import('@/pages/admin/AdminPendingEventsPage').then(m => ({ default: m.AdminPendingEventsPage })));
 const AdminEventReviewPage = React.lazy(() => import('@/pages/admin/AdminEventReviewPage').then(m => ({ default: m.AdminEventReviewPage })));
 const AdminPostsPage = React.lazy(() => import('@/pages/admin/AdminPostsPage').then(m => ({ default: m.AdminPostsPage })));
 const AdminAdvisorsPage = React.lazy(() => import('@/pages/admin/AdminAdvisorsPage').then(m => ({ default: m.AdminAdvisorsPage })));
@@ -116,6 +117,7 @@ export const AppRoutes: React.FC = () => {
           <Route path="/admin/yearly-plans" element={<AdminYearlyPlansPage />} />
           <Route path="/admin/yearly-plans/:id" element={<AdminYearlyPlanDetailPage />} />
           <Route path="/admin/events" element={<AdminEventsPage />} />
+          <Route path="/admin/events/pending" element={<AdminPendingEventsPage />} />
           <Route path="/admin/events/:id/review" element={<AdminEventReviewPage />} />
           <Route path="/admin/posts" element={<AdminPostsPage />} />
           <Route path="/admin/advisors" element={<AdminAdvisorsPage />} />

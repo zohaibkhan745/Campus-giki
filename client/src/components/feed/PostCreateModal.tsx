@@ -1,4 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, {  useState, useRef, useEffect  } from 'react';
+import { createPortal } from 'react-dom';
 
 import { X, Image as ImageIcon, Video, Loader2 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
@@ -126,7 +127,7 @@ export const PostCreateModal: React.FC<PostCreateModalProps> = ({
   const displayAvatar = user?.society?.logoUrl || user?.avatarUrl;
   const initialLetter = displayName.charAt(0).toUpperCase();
 
-  return (
+  return typeof document !== "undefined" ? createPortal(
     <div className="modal-overlay active">
       <div
         className="modal-box" style={{ maxWidth: "550px" }}
@@ -235,7 +236,7 @@ export const PostCreateModal: React.FC<PostCreateModalProps> = ({
             <button
               type="button"
               onClick={() => imageInputRef.current?.click()}
-              className="p-2.5 text-slate-700 hover:text-white hover:bg-slate-100 rounded-full transition-colors flex items-center justify-center"
+              className="p-2.5 text-white/70 hover:bg-white/10 hover:text-white hover:bg-slate-100 rounded-full transition-colors flex items-center justify-center"
               title="Add Image"
             >
               <ImageIcon className="w-6 h-6 stroke-[1.75]" />
@@ -244,7 +245,7 @@ export const PostCreateModal: React.FC<PostCreateModalProps> = ({
             <button
               type="button"
               onClick={() => videoInputRef.current?.click()}
-              className="p-2.5 text-slate-700 hover:text-white hover:bg-slate-100 rounded-full transition-colors flex items-center justify-center"
+              className="p-2.5 text-white/70 hover:bg-white/10 hover:text-white hover:bg-slate-100 rounded-full transition-colors flex items-center justify-center"
               title="Add Video"
             >
               <Video className="w-6 h-6 stroke-[1.75]" />
@@ -271,6 +272,7 @@ export const PostCreateModal: React.FC<PostCreateModalProps> = ({
           </div>
         </div>
       </div>
-    </div>
-  );
+        </div>,
+    document.body
+  ) : null;
 };

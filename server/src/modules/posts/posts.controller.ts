@@ -39,12 +39,16 @@ export class PostsController {
     @Query('limit') limit?: string,
     @Query('type') type?: string,
     @Query('societyId') societyId?: string,
+    @Query('from') from?: string,
+    @Query('to') to?: string,
   ) {
     return this.postsService.getAllPosts({
       page: page ? parseInt(page, 10) : 1,
       limit: limit ? parseInt(limit, 10) : 10,
       type,
       societyId,
+      from,
+      to,
     });
   }
 

@@ -75,9 +75,9 @@ export const SocietyPostsPage: React.FC = () => {
       editingPost
         ? postService.updatePost(editingPost.id, formData)
         : postService.createPost(formData),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['societyPosts'] });
-      queryClient.invalidateQueries({ queryKey: ['feed'] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['societyPosts'] });
+      await queryClient.invalidateQueries({ queryKey: ['feed'] });
       closeModal();
     },
     onError: (error: AxiosError<{ message?: string | string[] }>) => {

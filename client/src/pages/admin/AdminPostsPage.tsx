@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -24,6 +24,7 @@ import { societyService } from '@/services/society.service';
 import { Button } from '@/components/ui/Button';
 import { PostCard } from '@/components/feed/PostCard';
 import { CustomDropdown } from '@/components/ui/CustomDropdown';
+import { CustomDatePicker } from '@/components/ui/date-picker';
 import { Alert } from '@/components/ui/Alert';
 import { PostCreateModal } from '@/components/feed/PostCreateModal';
 import type { AxiosError } from 'axios';
@@ -40,6 +41,8 @@ export const AdminPostsPage: React.FC = () => {
   const [page, setPage] = useState(1);
   const [typeFilter, setTypeFilter] = useState<'all' | 'global' | 'society'>('all');
   const [societyFilter, setSocietyFilter] = useState<string>('');
+  const [dateFrom, setDateFrom] = useState<string>('');
+  const [dateTo, setDateTo] = useState<string>('');
   const [serverError, setServerError] = useState<string | null>(null);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -53,18 +56,35 @@ export const AdminPostsPage: React.FC = () => {
   });
   const societies = societiesData?.items || [];
 
-  const { data, isLoading } = useQuery({
-    queryKey: ['adminPosts', page, typeFilter, societyFilter],
-    queryFn: () => postService.getAllPosts({ 
-      page, 
-      limit: 10,
+  const {
+    data,
+    isLoading,
+    isError,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage
+  } = useInfiniteQuery({
+    queryKey: ['adminPosts', typeFilter, societyFilter, dateFrom, dateTo],
+    initialPageParam: 1,
+    queryFn: ({ pageParam = 1 }) => postService.getAllPosts({
+      page: pageParam,
+      limit: 9,
       type: typeFilter !== 'all' ? typeFilter : undefined,
-      societyId: societyFilter || undefined
+      societyId: societyFilter || undefined,
+      from: dateFrom || undefined,
+      to: dateTo || undefined
     }),
+    getNextPageParam: (lastPage) => {
+      if (lastPage.meta.page < lastPage.meta.totalPages) {
+        return lastPage.meta.page + 1;
+      }
+      return undefined;
+    }
   });
 
-  const posts = data?.items || [];
-  const meta = data?.meta;
+  const posts = (data as any)?.pages?.flatMap((page: any) => page.items) || [];
+  const meta = (data as any)?.pages?.[(data as any).pages.length - 1]?.meta;
+  
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm<PostFormData>({
     resolver: zodResolver(postSchema),
@@ -95,9 +115,9 @@ export const AdminPostsPage: React.FC = () => {
       editingPost
         ? postService.updatePost(editingPost.id, formData)
         : postService.createPost(formData),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['adminPosts'] });
-      queryClient.invalidateQueries({ queryKey: ['feed'] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['adminPosts'] });
+      await queryClient.invalidateQueries({ queryKey: ['feed'] });
       closeModal();
     },
     onError: (error: AxiosError<{ message?: string | string[] }>) => {
@@ -137,7 +157,9 @@ export const AdminPostsPage: React.FC = () => {
   const handleClearFilters = () => {
     setTypeFilter('all');
     setSocietyFilter('');
-    setPage(1);
+    setDateFrom('');
+    setDateTo('');
+    /* reset handled by queryKey */
   };
 
   return (
@@ -167,48 +189,53 @@ export const AdminPostsPage: React.FC = () => {
       </div>
 
       {/* Filter Toolbar */}
-      <div className="relative z-[200] bg-white/[0.08] backdrop-blur-[20px] p-5 rounded-[18px] border border-white/20 shadow-[0_12px_40px_rgba(0,0,0,0.4)] flex flex-wrap items-center gap-4">
-        {/* Type Filter */}
-        <CustomDropdown 
-          options={[
-            { value: 'all', label: 'All Posts' },
-            { value: 'global', label: 'Admin' },
-            { value: 'society', label: 'Societies' }
-          ]}
-          value={typeFilter}
-          onChange={(val) => {
-            setTypeFilter(val as any);
-            if (val === 'global') setSocietyFilter('');
-            setPage(1);
-          }}
-          className="w-full md:w-48 shrink-0"
-        />
+      <div className="relative z-[200] bg-white/[0.08] backdrop-blur-[20px] p-5 rounded-[18px] border border-white/20 shadow-[0_12px_40px_rgba(0,0,0,0.4)] w-full">
+        <div className="flex flex-col md:flex-row items-center gap-4">
+          {/* Type Filter */}
+          <CustomDropdown 
+            options={[
+              { value: 'all', label: 'All Posts' },
+              { value: 'global', label: 'Admin' },
+              { value: 'society', label: 'Societies' }
+            ]}
+            value={typeFilter}
+            onChange={(val) => {
+              setTypeFilter(val as any);
+              if (val === 'global') setSocietyFilter('');
+              /* reset handled by queryKey */
+            }}
+            className="w-full md:w-48 shrink-0"
+          />
 
-        {/* Society Dropdown */}
-        <CustomDropdown 
-          options={[
-            { value: '', label: 'All Societies' },
-            ...societies.map(soc => ({ value: soc.id, label: soc.name }))
-          ]}
-          value={societyFilter}
-          onChange={(val) => {
-            setSocietyFilter(val);
-            setTypeFilter('society');
-            setPage(1);
-          }}
-          disabled={typeFilter === 'global'}
-          className="w-full md:w-64"
-        />
+          {/* Society Dropdown */}
+          <CustomDropdown 
+            options={[
+              { value: '', label: 'All Societies' },
+              ...societies.map((soc: any) => ({ value: soc.id, label: soc.name }))
+            ]}
+            value={societyFilter}
+            onChange={(val) => {
+              setSocietyFilter(val);
+              setTypeFilter('society');
+              /* reset handled by queryKey */
+            }}
+            disabled={typeFilter === 'global'}
+            className="w-full md:w-64"
+          />
 
-        {(typeFilter !== 'all' || societyFilter) && (
-          <button
-            onClick={handleClearFilters}
-            className="p-2 text-gray-400 hover:text-white bg-white/5 rounded-[14px] transition-colors shrink-0"
-            title="Clear filters"
-          >
-            <FilterX className="w-4 h-4" />
-          </button>
-        )}
+          <div className="w-full md:w-48 shrink-0"><CustomDatePicker value={dateFrom} max={dateTo} onChange={(val) => { setDateFrom(val); /* reset handled by queryKey */ }} placeholder="From Date" /></div>
+          <div className="w-full md:w-48 shrink-0"><CustomDatePicker value={dateTo} min={dateFrom} onChange={(val) => { setDateTo(val); /* reset handled by queryKey */ }} placeholder="To Date" /></div>
+
+          {(typeFilter !== 'all' || societyFilter || dateFrom || dateTo) && (
+            <button
+              onClick={handleClearFilters}
+              className="p-2 text-gray-400 hover:text-white bg-white/5 rounded-[14px] transition-colors shrink-0"
+              title="Clear filters"
+            >
+              <FilterX className="w-4 h-4" />
+            </button>
+          )}
+        </div>
       </div>
 
       {isLoading ? (
@@ -231,8 +258,8 @@ export const AdminPostsPage: React.FC = () => {
           )}
         </div>
       ) : (
-        <div className="cards-container" style={{ padding: 0, minHeight: 'auto', gap: '24px', alignItems: 'flex-start' }}>
-          {posts.map((post) => {
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
+          {posts.map((post: any) => {
             const isAdmin = post.author.role === 'DSA_ADMIN';
             const isOwnPost = isAdmin; // Since we are viewing as Admin
             
