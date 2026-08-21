@@ -71,7 +71,7 @@ export const CreateSocietyPage: React.FC = () => {
       let errText = 'Failed to provision society.';
       if (Array.isArray(respMessage)) errText = respMessage.join(', ');
       else if (typeof respMessage === 'string') errText = respMessage;
-      setServerError(errText);
+      setServerError('');
     },
   });
 
@@ -83,7 +83,7 @@ export const CreateSocietyPage: React.FC = () => {
   const advisorOptions = advisors.map(adv => ({ value: adv.id, label: `${adv.user.fullName} (${adv.designation})` }));
 
   const onSubmit: SubmitHandler<OnboardSocietyFormData> = (data) => {
-    setServerError(null);
+    setServerError('');
     onboardMutation.mutate(data);
   };
 
@@ -122,7 +122,7 @@ export const CreateSocietyPage: React.FC = () => {
         </p>
       </div>
 
-      {serverError && <Alert variant="error" message={serverError} />}
+      {null}
 
       {/* Onboarding Form */}
       <form onSubmit={handleSubmit(onSubmit)} className="bg-white/[0.08] backdrop-blur-[20px] p-6 sm:p-8 rounded-[18px] border border-white/20 space-y-6 shadow-[0_12px_40px_rgba(0,0,0,0.4)]" noValidate>

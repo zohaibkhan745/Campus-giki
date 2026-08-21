@@ -123,7 +123,7 @@ export const AdvisorQueuePage: React.FC = () => {
 
   return (
     <div className="w-full">
-      <BannerHeader title={`Welcome back, ${user?.fullName || 'Advisor'}`} subtitle={`Faculty Advisor - ${assignedSocietyName}`} logoUrl={assignedSocietyLogo || user?.avatarUrl} />
+      <BannerHeader title={user?.fullName || "Advisor"} subtitle={`Faculty Advisor - ${assignedSocietyName}`} logoUrl={assignedSocietyLogo || user?.avatarUrl} />
       <div className="max-w-6xl mx-auto space-y-6 text-left py-4 px-4">
         {/* Actions Row */}
         <div className="flex justify-end mb-4">
@@ -226,10 +226,7 @@ export const AdvisorQueuePage: React.FC = () => {
       {/* Error State */}
       {isError && (
         <div className="space-y-3">
-          <Alert
-            variant="error"
-            message="Failed to load review queue. Ensure you are an assigned faculty advisor."
-          />
+          null /* Removed error alert */
           <button
             onClick={() => refetch()}
             className="text-xs text-ember-glow hover:underline font-semibold"

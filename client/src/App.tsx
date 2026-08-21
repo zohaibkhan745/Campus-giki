@@ -5,6 +5,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { queryClient } from '@/lib/queryClient';
 import { ThemeProvider } from '@/context/ThemeContext';
 import { AuthProvider } from '@/context/AuthContext';
+import { NotificationProvider } from '@/contexts/NotificationContext';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { AppRoutes } from '@/routes/AppRoutes';
 import { ScrollToTop } from '@/components/ScrollToTop';
@@ -14,6 +15,7 @@ export const App: React.FC = () => {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <AuthProvider>
+          <NotificationProvider>
           <ErrorBoundary>
             <BrowserRouter>
               <ScrollToTop />
@@ -21,6 +23,7 @@ export const App: React.FC = () => {
               <div className="focus-backdrop" id="focusBackdrop"></div>
             </BrowserRouter>
           </ErrorBoundary>
+        </NotificationProvider>
         </AuthProvider>
       </ThemeProvider>
       <ReactQueryDevtools initialIsOpen={false} />

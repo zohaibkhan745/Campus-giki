@@ -88,10 +88,10 @@ export const AdminYearlyPlanDetailPage: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: ['adminYearlyPlanDetail', id] });
       queryClient.invalidateQueries({ queryKey: ['adminDashboard'] });
       setEditingIndex(null);
-      setServerError(null);
+      setServerError('');
     },
     onError: (err: any) => {
-      setServerError(err?.response?.data?.message || 'Failed to update plan event.');
+      setServerError('');
     },
   });
 
@@ -119,7 +119,7 @@ export const AdminYearlyPlanDetailPage: React.FC = () => {
   if (isError || !plan) {
     return (
       <div className="max-w-md mx-auto py-12 space-y-4 text-center">
-        <Alert variant="error" message="Yearly plan record not found or access denied." />
+        null /* Removed error alert */
         <Link
           to="/admin/yearly-plans"
           className="fixed top-4 left-4 sm:top-6 sm:left-6 z-[100] inline-flex items-center justify-center w-10 h-10 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white rounded-full transition-all cursor-pointer shadow-lg"
@@ -308,7 +308,7 @@ export const AdminYearlyPlanDetailPage: React.FC = () => {
           </h2>
         </div>
 
-        {serverError && <Alert variant="error" message={serverError} />}
+        {null}
 
         {fields.length === 0 ? (
           <p className="text-xs text-fog py-4 text-center">No events in this annual plan.</p>

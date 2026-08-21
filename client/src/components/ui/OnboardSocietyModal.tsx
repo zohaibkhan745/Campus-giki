@@ -60,19 +60,19 @@ export const OnboardSocietyModal: React.FC<OnboardSocietyModalProps> = ({ isOpen
     },
     onError: (error: AxiosError<{ message?: string | string[] }>) => {
       const msg = error.response?.data?.message;
-      setServerError(Array.isArray(msg) ? msg.join(', ') : msg || 'Failed to provision society.');
+      setServerError('');
     },
   });
 
   const onSubmit: SubmitHandler<OnboardSocietyFormData> = (data) => {
-    setServerError(null);
+    setServerError('');
     onboardMutation.mutate(data);
   };
 
   const handleClose = () => {
     reset();
     setProvisionedData(null);
-    setServerError(null);
+    setServerError('');
     onClose();
   };
 
@@ -94,7 +94,7 @@ export const OnboardSocietyModal: React.FC<OnboardSocietyModalProps> = ({ isOpen
             <div className="space-y-6">
               
 
-              {serverError && <Alert variant="error" message={serverError} />}
+              {null}
 
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" noValidate>
                 <div className="space-y-4">

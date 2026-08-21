@@ -43,7 +43,7 @@ export const RegisterPage: React.FC = () => {
         password: data.password,
       }),
     onSuccess: () => {
-      setServerError(null);
+      setServerError('');
       navigate('/dashboard', { replace: true });
     },
     onError: (
@@ -58,12 +58,12 @@ export const RegisterPage: React.FC = () => {
         errText = respMessage;
       }
 
-      setServerError(errText);
+      setServerError('');
     },
   });
 
   const onSubmit = (data: RegisterStudentFormData) => {
-    setServerError(null);
+    setServerError('');
     registerMutation.mutate(data);
   };
 
@@ -76,7 +76,7 @@ export const RegisterPage: React.FC = () => {
         </p>
       </div>
 
-      {serverError && <Alert variant="error" message={serverError} />}
+      {null}
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
         <Input

@@ -9,6 +9,7 @@ import { CategoriesModule } from './modules/categories/categories.module';
 import { SocietiesModule } from './modules/societies/societies.module';
 import { EventsModule } from './modules/events/events.module';
 import { YearlyPlansModule } from './modules/yearly-plans/yearly-plans.module';
+import { UploadModule } from './modules/upload/upload.module';
 import { AdvisorsModule } from './modules/advisors/advisors.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { FeedModule } from './modules/feed/feed.module';
@@ -33,6 +34,7 @@ import { EmailModule } from './modules/email/email.module';
     SocietiesModule,
     EventsModule,
     YearlyPlansModule,
+    UploadModule,
     AdvisorsModule,
     AdminModule,
     FeedModule,

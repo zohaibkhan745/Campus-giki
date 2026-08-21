@@ -123,12 +123,12 @@ export const EditEventPage: React.FC = () => {
         errText = respMessage;
       }
 
-      setServerError(errText);
+      setServerError('');
     },
   });
 
   const onSubmit = (data: EventFormData, submitForApproval = false) => {
-    setServerError(null);
+    setServerError('');
     updateMutation.mutate({ ...data, submitForApproval });
   };
 
@@ -144,7 +144,7 @@ export const EditEventPage: React.FC = () => {
   if (isError || !eventData) {
     return (
       <div className="max-w-md mx-auto py-12 space-y-4 text-center">
-        <Alert variant="error" message="Event not found or you do not have ownership permissions." />
+        null /* Removed error alert */
         <Link
           to="/dashboard"
           className="fixed top-4 left-4 sm:top-6 sm:left-6 z-[100] inline-flex items-center justify-center w-10 h-10 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white rounded-full transition-all cursor-pointer shadow-lg"
@@ -178,22 +178,14 @@ export const EditEventPage: React.FC = () => {
       </div>
 
       {eventData.approvalStatus === 'CHANGES_REQUESTED' && eventData.advisorComments && (
-        <Alert
-          variant="error"
-          title="Comment by Advisor"
-          message={eventData.advisorComments}
-        />
+        null /* Removed error alert */
       )}
 
       {eventData.approvalStatus === 'CHANGES_REQUESTED' && eventData.dsaComments && (
-        <Alert
-          variant="error"
-          title="Comment by DSA"
-          message={eventData.dsaComments}
-        />
+        null /* Removed error alert */
       )}
 
-      {serverError && <Alert variant="error" message={serverError} />}
+      {null}
 
       <form onSubmit={(e) => e.preventDefault()} className="bg-lumen-cream p-6 md:p-8 rounded-cards border border-vast-ink/20 space-y-8" noValidate>
         <div className="space-y-4">

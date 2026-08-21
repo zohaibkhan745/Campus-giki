@@ -246,7 +246,7 @@ export const SocietyEventsPage: React.FC = () => {
 
       {/* Main Content Area */}
       {isError && (
-        <Alert variant="error" message="Failed to load events. Please try again later." />
+        null /* Removed error alert */
       )}
 
       {isLoading ? (

@@ -93,7 +93,7 @@ export class EmailService implements OnModuleInit {
           </div>
           <div class="body-text">
             Hello President / Management of <strong>${societyName}</strong>,<br/><br/>
-            The Directorate of Student Affairs (DSA) has provisioned an official portal account for <strong>${societyName}</strong>.
+            The Dean Student Affair (DSA) has provisioned an official portal account for <strong>${societyName}</strong>.
             <br/><br/>
             To activate your account, set your secure password, and complete your society profile, please click the button below:
           </div>

@@ -161,7 +161,7 @@ export const AdminAdvisorsPage: React.FC = () => {
             </h3>
 
             {formError && (
-              <Alert variant="error" className="mb-4" message={formError} />
+              null /* Removed error alert */
             )}
 
             <form onSubmit={handleCreateSubmit} className="space-y-4">

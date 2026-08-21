@@ -125,12 +125,12 @@ export const CreateEventPage: React.FC = () => {
         errText = respMessage;
       }
 
-      setServerError(errText);
+      setServerError('');
     },
   });
 
   const handlePublish = (data: EventFormData, submitForApproval: boolean) => {
-    setServerError(null);
+    setServerError('');
     createMutation.mutate({ ...data, submitForApproval });
   };
 
@@ -186,7 +186,7 @@ export const CreateEventPage: React.FC = () => {
         </div>
       )}
 
-      {serverError && <Alert variant="error" message={serverError} />}
+      {null}
 
       <form onSubmit={(e) => e.preventDefault()} className="bg-lumen-cream p-6 md:p-8 rounded-cards border border-vast-ink/20 space-y-8" noValidate>
         <div className="space-y-4">

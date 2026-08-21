@@ -145,8 +145,8 @@ export const SettingsPage: React.FC = () => {
             General Information
           </h3>
 
-          {profileError && <Alert variant="error" message={profileError} />}
-          {profileSuccess && <Alert variant="success" message="Profile updated successfully" />}
+          {profileError && null /* Removed error alert */}
+          {profileSuccess && null /* Removed success alert */}
 
           <form onSubmit={handleProfileSubmit} className="space-y-4">
             <div className="space-y-1">
@@ -211,8 +211,8 @@ export const SettingsPage: React.FC = () => {
             Security & Password
           </h3>
 
-          {passwordError && <Alert variant="error" message={passwordError} />}
-          {passwordSuccess && <Alert variant="success" message="Password updated successfully" />}
+          {passwordError && null /* Removed error alert */}
+          {passwordSuccess && null /* Removed success alert */}
 
           <form onSubmit={handlePasswordSubmit} className="space-y-4">
             <Input

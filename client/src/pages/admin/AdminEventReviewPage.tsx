@@ -98,7 +98,7 @@ export const AdminEventReviewPage: React.FC = () => {
       let errText = 'Failed to update event. Please verify your inputs.';
       if (Array.isArray(respMessage)) errText = respMessage.join(', ');
       else if (typeof respMessage === 'string') errText = respMessage;
-      setServerError(errText);
+      setServerError('');
     },
   });
 
@@ -115,12 +115,12 @@ export const AdminEventReviewPage: React.FC = () => {
       error: AxiosError<{ message?: string | string[]; error?: string }>,
     ) => {
       const respMessage = error.response?.data?.message;
-      setServerError(typeof respMessage === 'string' ? respMessage : 'Failed to update status.');
+      setServerError('');
     },
   });
 
   const onSaveDetails = (data: EventFormData) => {
-    setServerError(null);
+    setServerError('');
     updateMutation.mutate(data);
   };
 
@@ -136,7 +136,7 @@ export const AdminEventReviewPage: React.FC = () => {
   if (isError || !eventData) {
     return (
       <div className="max-w-md mx-auto py-12 space-y-4 text-center">
-        <Alert variant="error" message="Event not found or you do not have permission." />
+        null /* Removed error alert */
         <Link
           to="/dashboard"
           className="fixed top-4 left-4 sm:top-6 sm:left-6 z-[100] inline-flex items-center justify-center w-10 h-10 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white rounded-full transition-all cursor-pointer shadow-lg"
@@ -184,9 +184,9 @@ export const AdminEventReviewPage: React.FC = () => {
         />
       )}
 
-      {serverError && <Alert variant="error" message={serverError} />}
+      {null}
       {updateMutation.isSuccess && (
-        <Alert variant="success" message="Event details updated successfully." />
+        null /* Removed success alert */
       )}
 
       <div className="bg-lumen-cream p-6 md:p-8 rounded-cards border border-vast-ink/20 space-y-8">

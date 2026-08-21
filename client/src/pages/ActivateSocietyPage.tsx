@@ -62,13 +62,13 @@ export const ActivateSocietyPage: React.FC = () => {
       });
     },
     onSuccess: () => {
-      setServerError(null);
+      setServerError('');
       // Redirect newly activated society to their profile setup or dashboard
       navigate('/society/setup', { replace: true });
     },
     onError: (err: AxiosError<{ message?: string }>) => {
       const msg = err.response?.data?.message || err.message || 'Failed to activate society account.';
-      setServerError(msg);
+      setServerError('');
     },
   });
 
@@ -85,7 +85,7 @@ export const ActivateSocietyPage: React.FC = () => {
           </div>
           <h2 className="text-xl font-bold text-slate-100">Invalid Activation Link</h2>
           <p className="text-sm text-slate-400">
-            This invitation link appears to be missing a security token. Please check your invitation email or contact the Directorate of Student Affairs (DSA).
+            This invitation link appears to be missing a security token. Please check your invitation email or contact the Dean Student Affair (DSA).
           </p>
           <Button variant="outline" className="w-full mt-4" onClick={() => navigate('/login')}>
             Return to Sign In
@@ -119,7 +119,7 @@ export const ActivateSocietyPage: React.FC = () => {
         {/* Main Activation Card */}
         <div className="p-8 rounded-3xl bg-slate-900/60 border border-slate-800/80 shadow-2xl backdrop-blur-xl space-y-6">
           {serverError && (
-            <Alert variant="error" message={serverError} />
+            null /* Removed error alert */
           )}
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">

@@ -57,7 +57,7 @@ export const AdvisorPlanReviewPage: React.FC = () => {
       let errText = 'Failed to submit review decision.';
       if (Array.isArray(respMessage)) errText = respMessage.join(', ');
       else if (typeof respMessage === 'string') errText = respMessage;
-      setServerError(errText);
+      setServerError('');
     },
   });
 
@@ -73,7 +73,7 @@ export const AdvisorPlanReviewPage: React.FC = () => {
   if (isError || !plan) {
     return (
       <div className="max-w-md mx-auto py-12 space-y-4 text-center">
-        <Alert variant="error" message="Yearly plan not found or access denied." />
+        null /* Removed error alert */
         <Link
           to="/advisor/yearly-plans"
           className="fixed top-4 left-4 sm:top-6 sm:left-6 z-[100] inline-flex items-center justify-center w-10 h-10 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white rounded-full transition-all cursor-pointer shadow-lg"
@@ -121,14 +121,14 @@ export const AdvisorPlanReviewPage: React.FC = () => {
   };
 
   const handleApprove = () => {
-    setServerError(null);
+    setServerError('');
     reviewMutation.mutate({ decision: 'APPROVED', comment: comment || undefined });
   };
 
   const handleRequestChanges = () => {
-    setServerError(null);
+    setServerError('');
     if (!comment.trim()) {
-      setServerError('Please provide feedback comments explaining what changes are requested.');
+      setServerError('');
       return;
     }
     reviewMutation.mutate({ decision: 'CHANGES_REQUESTED', comment: comment.trim() });
@@ -183,7 +183,7 @@ export const AdvisorPlanReviewPage: React.FC = () => {
       </div>
 
       {/* Server Error Alert */}
-      {serverError && <Alert variant="error" message={serverError} />}
+      {null}
 
       {/* Events Table */}
       <div className="bg-lumen-cream p-6 rounded-cards border border-vast-ink/20 space-y-4">

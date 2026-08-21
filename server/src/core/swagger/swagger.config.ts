@@ -28,7 +28,7 @@ Endpoints are secured with RBAC guards. User roles include:
 - \`STUDENT\` (Regular student access)
 - \`SOCIETY\` (Society executive team management)
 - \`ADVISOR\` (Faculty advisor oversight)
-- \`DSA_ADMIN\` (Directorate of Student Affairs Administrator)
+- \`DSA_ADMIN\` (Dean Student Affair Administrator)
       `,
     )
     .setVersion('1.0.0')

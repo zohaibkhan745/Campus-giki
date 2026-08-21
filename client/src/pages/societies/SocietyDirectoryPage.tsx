@@ -172,7 +172,7 @@ export const SocietyDirectoryPage: React.FC = () => {
       {/* Error Callout */}
       {isError && (
         <div className="space-y-3">
-          <Alert variant="error" message="Failed to load society directory. Please try again." />
+          null /* Removed error alert */
           <button
             onClick={() => refetch()}
             className="text-sm font-semibold text-white underline hover:no-underline focus:outline-none"

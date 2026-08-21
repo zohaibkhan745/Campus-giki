@@ -47,7 +47,7 @@ export const AdminDashboardPage: React.FC = () => {
 
   return (
     <div className="w-full">
-      <BannerHeader title={`Welcome back, ${user?.fullName || 'Admin'}`} subtitle="Directorate of Student Affairs" />
+      <BannerHeader title="Dean Student Affair" logoUrl="https://ui-avatars.com/api/?name=DSA&background=random&color=fff&size=200" />
       <div className="max-w-6xl mx-auto space-y-6 text-left py-4 px-4">
         {/* Actions Row */}
         <div className="flex justify-end mb-4">
@@ -85,7 +85,7 @@ export const AdminDashboardPage: React.FC = () => {
 
       {isError && (
         <div className="space-y-3">
-          <Alert variant="error" message="Failed to load dashboard data. DSA_ADMIN role required." />
+          null /* Removed error alert */
           <button
             onClick={() => refetch()}
             className="text-xs text-ember-glow hover:underline font-semibold"

@@ -12,7 +12,7 @@ export async function seedUsers(
     create: {
       email: 'admin.dsa@giki.edu.pk',
       password: defaultPasswordHash,
-      fullName: 'Directorate of Student Affairs Admin',
+      fullName: 'Dean Student Affair',
       role: Role.DSA_ADMIN,
     },
   });

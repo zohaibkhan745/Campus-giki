@@ -53,14 +53,14 @@ export const SocietyPostsPage: React.FC = () => {
   const handleOpenCreate = () => {
     setEditingPost(null);
     reset({ content: '', imageUrl: '' });
-    setServerError(null);
+    setServerError('');
     setIsModalOpen(true);
   };
 
   const handleOpenEdit = (post: PostItem) => {
     setEditingPost(post);
     reset({ content: post.content, imageUrl: post.imageUrl || '' });
-    setServerError(null);
+    setServerError('');
     setIsModalOpen(true);
   };
 
@@ -82,7 +82,7 @@ export const SocietyPostsPage: React.FC = () => {
     },
     onError: (error: AxiosError<{ message?: string | string[] }>) => {
       const msg = error.response?.data?.message;
-      setServerError(Array.isArray(msg) ? msg.join(', ') : msg || 'Failed to save post');
+      setServerError('');
     },
   });
 
@@ -95,7 +95,7 @@ export const SocietyPostsPage: React.FC = () => {
   });
 
   const onSubmit = (formData: PostFormData) => {
-    setServerError(null);
+    setServerError('');
     const dataToSend = {
       ...formData,
       imageUrl: formData.imageUrl?.trim() || undefined,

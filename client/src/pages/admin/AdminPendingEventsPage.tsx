@@ -198,7 +198,7 @@ export const AdminPendingEventsPage: React.FC = () => {
         </div>
       </div>
 
-      {isError && <Alert variant="error" message="Failed to load campus events overview." />}
+      {null}
 
       {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4">

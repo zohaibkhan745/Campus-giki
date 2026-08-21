@@ -19,7 +19,7 @@ const newGrid = `<div className="cards-container" style={{ padding: 0, minHeight
               society: post.author.society || {
                 id: 'admin',
                 name: 'GIKI Administration',
-                description: 'Directorate of Student Affairs',
+                description: 'Dean Student Affair',
                 logoUrl: '',
                 coverUrl: '',
                 email: 'dsa@giki.edu.pk',

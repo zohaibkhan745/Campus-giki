@@ -115,7 +115,7 @@ export const YearlyCalendarPage: React.FC = () => {
       let errText = 'Failed to save yearly calendar plan.';
       if (Array.isArray(respMessage)) errText = respMessage.join(', ');
       else if (typeof respMessage === 'string') errText = respMessage;
-      setServerError(errText);
+      setServerError('');
     },
   });
 
@@ -143,12 +143,12 @@ export const YearlyCalendarPage: React.FC = () => {
       let errText = 'Failed to update yearly calendar plan.';
       if (Array.isArray(respMessage)) errText = respMessage.join(', ');
       else if (typeof respMessage === 'string') errText = respMessage;
-      setServerError(errText);
+      setServerError('');
     },
   });
 
   const handleSaveDraft = (data: YearlyPlanFormData) => {
-    setServerError(null);
+    setServerError('');
     setSuccessMessage(null);
     if (existingPlan) {
       updateMutation.mutate({ payload: data, status: 'DRAFT' });
@@ -158,7 +158,7 @@ export const YearlyCalendarPage: React.FC = () => {
   };
 
   const handleSubmitForReview = (data: YearlyPlanFormData) => {
-    setServerError(null);
+    setServerError('');
     setSuccessMessage(null);
     if (existingPlan) {
       updateMutation.mutate({ payload: data, status: 'PENDING' });
@@ -168,7 +168,7 @@ export const YearlyCalendarPage: React.FC = () => {
   };
 
   const handleInvalid = (errors: any) => {
-    setServerError('Please fill in all required fields properly. Check the form for details.');
+    setServerError('');
   };
 
   const renderStatusBadge = (status?: PlanStatus) => {
@@ -242,7 +242,7 @@ export const YearlyCalendarPage: React.FC = () => {
       </div>
 
       {/* Success Notification Alert */}
-      {successMessage && <Alert variant="success" message={successMessage} />}
+      null /* Removed success alert */
 
       {/* Advisor Feedback Callout Box if Changes Requested or Comments Available */}
       {existingPlan?.advisorComments && (
@@ -257,7 +257,7 @@ export const YearlyCalendarPage: React.FC = () => {
         </div>
       )}
 
-      {serverError && <Alert variant="error" message={serverError} />}
+      {null}
 
       <form className="space-y-6" noValidate>
         {/* Planned Events Dynamic Table Section */}

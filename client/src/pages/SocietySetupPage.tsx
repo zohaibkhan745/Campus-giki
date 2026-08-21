@@ -119,12 +119,12 @@ export const SocietySetupPage: React.FC = () => {
         errText = respMessage;
       }
 
-      setServerError(errText);
+      setServerError('');
     },
   });
 
   const onSubmit = (data: SocietySetupFormData) => {
-    setServerError(null);
+    setServerError('');
     setupMutation.mutate(data);
   };
 
@@ -158,7 +158,7 @@ export const SocietySetupPage: React.FC = () => {
         </p>
       </div>
 
-      {serverError && <Alert variant="error" message={serverError} />}
+      {null}
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" noValidate>
         {/* Core Society Profile Section */}

@@ -36,7 +36,7 @@ export const LoginPage: React.FC = () => {
   const loginMutation = useMutation({
     mutationFn: (data: LoginFormData) => login(data),
     onSuccess: (data) => {
-      setServerError(null);
+      setServerError('');
 
       // Role-Based Redirection Strategy
       if (fromLocation) {
@@ -70,12 +70,12 @@ export const LoginPage: React.FC = () => {
         errText = respMessage;
       }
 
-      setServerError(errText);
+      setServerError('');
     },
   });
 
   const onSubmit = (data: LoginFormData) => {
-    setServerError(null);
+    setServerError('');
     loginMutation.mutate(data);
   };
 
@@ -90,7 +90,7 @@ export const LoginPage: React.FC = () => {
         </p>
       </div>
 
-      {serverError && <Alert variant="error" message={serverError} />}
+      {null}
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
         <Input

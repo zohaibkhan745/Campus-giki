@@ -40,7 +40,7 @@ export const EventDetailPage: React.FC = () => {
   if (isError || !eventItem) {
     return (
       <div className="max-w-md mx-auto py-12 space-y-4 text-center">
-        <Alert variant="error" message="Event not found or has been deleted." />
+        null /* Removed error alert */
         <Link
           to="/societies"
           className="fixed top-4 left-4 sm:top-6 sm:left-6 z-[100] inline-flex items-center justify-center w-10 h-10 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white rounded-full transition-all cursor-pointer shadow-lg"

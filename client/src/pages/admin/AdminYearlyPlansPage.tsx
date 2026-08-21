@@ -181,7 +181,7 @@ export const AdminYearlyPlansPage: React.FC = () => {
       {/* Error Callout */}
       {isError && (
         <div className="space-y-3">
-          <Alert variant="error" message="Failed to load DSA plan records. DSA_ADMIN role required." />
+          null /* Removed error alert */
           <button
             onClick={() => refetch()}
             className="text-xs text-white hover:underline font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 rounded"
