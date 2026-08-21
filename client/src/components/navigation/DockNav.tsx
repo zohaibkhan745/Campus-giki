@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Home, CalendarDays, Users, LayoutDashboard } from 'lucide-react';
 
@@ -6,64 +6,57 @@ const navLinks = [
   { label: 'Home', path: '/', icon: <Home /> },
   { label: 'Calendar', path: '/events', icon: <CalendarDays /> },
   { label: 'Communities', path: '/societies', icon: <Users /> },
-  { label: 'Dashboard', path: '/dashboard', icon: <LayoutDashboard /> }
+  { label: 'Dashboard', path: '/dashboard', icon: <LayoutDashboard /> },
 ];
 
 export const DockNav: React.FC = () => {
   const location = useLocation();
-  const [isFooterVisible, setIsFooterVisible] = useState(false);
   const dockRef = useRef<HTMLDivElement>(null);
+  
+  // Animation state refs
   const isHovering = useRef(false);
+  const isCollapsed = useRef(false);
+  const transitionTimer = useRef<NodeJS.Timeout | null>(null);
   const mouseX = useRef<number | null>(null);
   const animationFrameId = useRef<number | null>(null);
 
+  const baseSize = 42;
+  const maxSize = 68;
+  const baseMargin = 5;
+  const maxMargin = 12;
+  const distanceThreshold = 130;
+  const baseSidePadding = 14;
+  const containerBorder = 2;
+
+  const itemStates = useRef(
+    navLinks.map(() => ({ size: baseSize, margin: baseMargin, y: 0 }))
+  );
+
+  const fullExpandedWidth = (navLinks.length * baseSize) + (navLinks.length * (baseMargin * 2)) + (baseSidePadding * 2) + containerBorder;
+
+  const lerp = (start: number, end: number, factor: number) => {
+    return start + (end - start) * factor;
+  };
+
   useEffect(() => {
-    const footerElement = document.getElementById('global-footer');
-    if (!footerElement) return;
+    const dock = dockRef.current;
+    if (!dock) return;
+    
+    const items = dock.querySelectorAll('.fluid-nav-item') as NodeListOf<HTMLElement>;
+    const footer = document.getElementById('global-footer');
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const [entry] = entries;
-        setIsFooterVisible(entry.isIntersecting);
-      },
-      { root: null, threshold: 0.1 }
-    );
+    dock.style.width = `${fullExpandedWidth}px`;
 
-    observer.observe(footerElement);
-    return () => observer.disconnect();
-  }, []);
-
-  useEffect(() => {
-    if (!dockRef.current) return;
-    const items = dockRef.current.querySelectorAll('.nav-item') as NodeListOf<HTMLElement>;
-    if (!items.length) return;
-
-    const baseSize = window.innerWidth <= 480 ? 36 : window.innerWidth <= 768 ? 40 : 42;
-    const maxSize = window.innerWidth <= 480 ? 54 : window.innerWidth <= 768 ? 60 : 68;
-    const baseMargin = window.innerWidth <= 480 ? 3 : window.innerWidth <= 768 ? 4 : 5;
-    const maxMargin = window.innerWidth <= 480 ? 8 : window.innerWidth <= 768 ? 10 : 12;
-    const distanceThreshold = 130;
-
-    const itemStates = Array.from(items).map(() => ({
-      size: baseSize,
-      margin: baseMargin,
-      y: 0
-    }));
-
-    const lerp = (start: number, end: number, factor: number) => {
-      return start + (end - start) * factor;
+    const updateContainerWidth = () => {
+      let contentWidth = 0;
+      itemStates.current.forEach((state) => {
+        contentWidth += state.size + state.margin * 2;
+      });
+      dock.style.width = `${contentWidth + baseSidePadding * 2 + containerBorder}px`;
     };
 
     const animate = () => {
-      // If footer is visible, don't animate scale to avoid conflicting with the CSS hide/shrink transition
-      if (isFooterVisible) {
-        // Reset instantly via css
-        items.forEach((item) => {
-          item.style.width = '';
-          item.style.height = '';
-          item.style.margin = '';
-          item.style.transform = '';
-        });
+      if (isCollapsed.current) {
         animationFrameId.current = null;
         return;
       }
@@ -71,9 +64,6 @@ export const DockNav: React.FC = () => {
       let isSettled = true;
 
       items.forEach((item, index) => {
-        // If it's the active item but hidden by footer transition, skip
-        if (item.classList.contains('hidden-by-footer')) return;
-
         let targetSize = baseSize;
         let targetMargin = baseMargin;
         let targetY = 0;
@@ -91,16 +81,16 @@ export const DockNav: React.FC = () => {
           }
         }
 
-        const state = itemStates[index];
-        const easeSpeed = isHovering.current ? 0.16 : 0.12;
+        const state = itemStates.current[index];
+        const easeSpeed = isHovering.current ? 0.2 : 0.14;
 
         state.size = lerp(state.size, targetSize, easeSpeed);
         state.margin = lerp(state.margin, targetMargin, easeSpeed);
         state.y = lerp(state.y, targetY, easeSpeed);
 
-        if (Math.abs(state.size - targetSize) > 0.05 ||
-            Math.abs(state.margin - targetMargin) > 0.05 ||
-            Math.abs(state.y - targetY) > 0.05) {
+        if (Math.abs(state.size - targetSize) > 0.01 ||
+            Math.abs(state.margin - targetMargin) > 0.01 ||
+            Math.abs(state.y - targetY) > 0.01) {
           isSettled = false;
         }
 
@@ -110,58 +100,298 @@ export const DockNav: React.FC = () => {
         item.style.transform = `translateY(-${state.y}px)`;
       });
 
+      updateContainerWidth();
+
       if (!isSettled || isHovering.current) {
         animationFrameId.current = requestAnimationFrame(animate);
       } else {
         animationFrameId.current = null;
+        resetItemStyles();
       }
+    };
+
+    const requestAnimation = () => {
+      if (!animationFrameId.current && !isCollapsed.current && !dock.classList.contains('is-transitioning')) {
+        animationFrameId.current = requestAnimationFrame(animate);
+      }
+    };
+
+    const resetItemStyles = () => {
+      items.forEach((item, index) => {
+        itemStates.current[index].size = baseSize;
+        itemStates.current[index].margin = baseMargin;
+        itemStates.current[index].y = 0;
+
+        item.style.width = '';
+        item.style.height = '';
+        item.style.margin = '';
+        item.style.transform = '';
+      });
+      if (!isCollapsed.current) {
+        dock.style.width = `${fullExpandedWidth}px`;
+      }
+    };
+
+    const collapseDock = () => {
+      if (isCollapsed.current) return;
+      isCollapsed.current = true;
+
+      resetItemStyles();
+      dock.classList.add('is-transitioning');
+      void dock.offsetWidth; // force reflow
+      dock.classList.add('collapsed');
+
+      if (transitionTimer.current) clearTimeout(transitionTimer.current);
+      transitionTimer.current = setTimeout(() => {
+        dock.classList.remove('is-transitioning');
+      }, 650);
+    };
+
+    const expandDock = () => {
+      if (!isCollapsed.current) return;
+      isCollapsed.current = false;
+
+      resetItemStyles();
+      dock.classList.add('is-transitioning');
+      void dock.offsetWidth; // force reflow
+
+      dock.classList.remove('collapsed');
+      dock.style.width = `${fullExpandedWidth}px`;
+
+      if (transitionTimer.current) clearTimeout(transitionTimer.current);
+      transitionTimer.current = setTimeout(() => {
+        dock.classList.remove('is-transitioning');
+        if (isHovering.current) requestAnimation();
+      }, 650);
     };
 
     const handleMouseEnter = () => {
       isHovering.current = true;
-      if (!animationFrameId.current) {
-        animationFrameId.current = requestAnimationFrame(animate);
-      }
+      requestAnimation();
     };
 
     const handleMouseMove = (e: MouseEvent) => {
       mouseX.current = e.clientX;
-      if (!animationFrameId.current) {
-        animationFrameId.current = requestAnimationFrame(animate);
-      }
+      requestAnimation();
     };
 
     const handleMouseLeave = () => {
       isHovering.current = false;
       mouseX.current = null;
-      if (!animationFrameId.current) {
-        animationFrameId.current = requestAnimationFrame(animate);
-      }
+      requestAnimation();
     };
 
-    const dock = dockRef.current;
     dock.addEventListener('mouseenter', handleMouseEnter);
     dock.addEventListener('mousemove', handleMouseMove);
     dock.addEventListener('mouseleave', handleMouseLeave);
+
+    const observerOptions = {
+      root: null,
+      rootMargin: '0px',
+      threshold: 0.1
+    };
+
+    let footerObserver: IntersectionObserver | null = null;
+    if (footer) {
+      footerObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            collapseDock();
+          } else {
+            expandDock();
+          }
+        });
+      }, observerOptions);
+      footerObserver.observe(footer);
+    }
 
     return () => {
       dock.removeEventListener('mouseenter', handleMouseEnter);
       dock.removeEventListener('mousemove', handleMouseMove);
       dock.removeEventListener('mouseleave', handleMouseLeave);
+      if (footerObserver && footer) footerObserver.unobserve(footer);
       if (animationFrameId.current) cancelAnimationFrame(animationFrameId.current);
+      if (transitionTimer.current) clearTimeout(transitionTimer.current);
     };
-  }, [isFooterVisible]);
+  }, []);
 
   return (
-    <div
-      className={`dock-nav fixed bottom-4 md:bottom-[36px] left-1/2 -translate-x-1/2 z-[100] transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] group ${
-        isFooterVisible ? 'w-[52px] md:w-[64px] hover:w-[400px] hover:max-w-[400px]' : 'max-w-[400px]'
-      }`}
-    >
-      <div 
-        ref={dockRef}
-        className={`flex items-center justify-center rounded-full transition-all duration-500 bg-[rgba(255,255,255,0.08)] backdrop-blur-[20px] border border-white/20 shadow-[0_12px_40px_rgba(0,0,0,0.4)] ${isFooterVisible ? 'px-0 group-hover:px-[14px] h-[52px] md:h-[64px] w-[52px] md:w-[64px] group-hover:w-[auto]' : 'px-[14px] h-[52px] md:h-[64px]'}`}
-      >
+    <>
+      <style>
+        {`
+          .fluid-nav-container {
+              position: fixed;
+              bottom: 36px;
+              left: 50%;
+              transform: translateX(-50%);
+              background-color: #17181c;
+              height: 64px;
+              padding: 0 14px;
+              border-radius: 9999px;
+              display: inline-flex;
+              align-items: center;
+              border: 1px solid rgba(255, 255, 255, 0.08);
+              box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.6);
+              transition: background-color 0.3s ease;
+              z-index: 1000;
+              box-sizing: border-box;
+          }
+
+          .fluid-nav-container.is-transitioning {
+              transition: background-color 0.3s ease,
+                          width 0.65s cubic-bezier(0.16, 1, 0.3, 1),
+                          padding 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+          }
+
+          .fluid-nav-container.collapsed {
+              width: 64px !important;
+              padding: 0 11px !important;
+          }
+
+          .fluid-nav-item {
+              position: relative;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              width: 42px;
+              height: 42px;
+              margin: 0 5px;
+              flex-shrink: 0;
+              border-radius: 50%;
+              background-color: #22242a;
+              color: #ffffff;
+              text-decoration: none;
+              cursor: pointer;
+              transform-origin: center bottom;
+              will-change: width, height, margin, transform, opacity;
+              
+              transition: background-color 0.25s ease,
+                          box-shadow 0.3s ease,
+                          opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+          }
+
+          .fluid-nav-container.is-transitioning .fluid-nav-item {
+              transition: background-color 0.25s ease,
+                          box-shadow 0.3s ease,
+                          opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+                          margin 0.65s cubic-bezier(0.16, 1, 0.3, 1),
+                          width 0.65s cubic-bezier(0.16, 1, 0.3, 1),
+                          height 0.65s cubic-bezier(0.16, 1, 0.3, 1),
+                          transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+          }
+
+          .fluid-nav-item.active {
+              background-color: #ffffff;
+              box-shadow: 0 0 22px rgba(255, 255, 255, 0.35);
+          }
+
+          .fluid-nav-item.active svg {
+              stroke: #17181c;
+          }
+
+          .fluid-nav-item:not(.active) svg {
+              stroke: #d1d5db;
+          }
+
+          .fluid-nav-container.collapsed .fluid-nav-item:not(.active) {
+              opacity: 0;
+              pointer-events: none;
+              transform: scale(0.3) translateY(0);
+              margin: 0 !important;
+              width: 0 !important;
+              height: 0 !important;
+          }
+
+          .fluid-nav-container.collapsed .fluid-nav-item.active {
+              margin: 0 !important;
+              width: 42px !important;
+              height: 42px !important;
+              transform: translateY(0) !important;
+          }
+
+          .fluid-nav-item svg {
+              width: 42%;
+              height: 42%;
+              stroke-width: 1.8;
+              stroke-linecap: round;
+              stroke-linejoin: round;
+              fill: none;
+              pointer-events: none;
+              transition: stroke 0.2s ease;
+          }
+
+          .fluid-nav-item:hover {
+              background-color: #2c2f38;
+          }
+
+          .fluid-nav-item:hover svg {
+              stroke: #ffffff;
+          }
+
+          .fluid-nav-item.active:hover {
+              background-color: #ffffff;
+          }
+
+          .fluid-nav-item.active:hover svg {
+              stroke: #17181c;
+          }
+
+          .fluid-tooltip {
+              position: absolute;
+              bottom: calc(100% + 10px);
+              left: 50%;
+              transform: translateX(-50%) translateY(4px);
+              background-color: #17181c;
+              color: #f3f4f6;
+              padding: 4px 9px;
+              border-radius: 6px;
+              font-size: 11px;
+              font-weight: 500;
+              letter-spacing: 0.2px;
+              opacity: 0;
+              pointer-events: none;
+              white-space: nowrap;
+              border: 1px solid rgba(255, 255, 255, 0.08);
+              transition: opacity 0.25s ease, transform 0.25s ease;
+          }
+
+          .fluid-nav-item:hover .fluid-tooltip {
+              opacity: 1;
+              transform: translateX(-50%) translateY(0);
+          }
+
+          .fluid-nav-container.collapsed .fluid-tooltip {
+              display: none;
+          }
+
+          @media (max-width: 768px) {
+              .fluid-nav-container {
+                  height: 58px;
+                  padding: 0 10px;
+                  bottom: 24px;
+              }
+
+              .fluid-nav-container.collapsed {
+                  width: 58px !important;
+                  padding: 0 8px !important;
+              }
+          }
+
+          @media (max-width: 480px) {
+              .fluid-nav-container {
+                  height: 52px;
+                  padding: 0 8px;
+                  bottom: 16px;
+              }
+
+              .fluid-nav-container.collapsed {
+                  width: 52px !important;
+                  padding: 0 5px !important;
+              }
+          }
+        `}
+      </style>
+      <div className="fluid-nav-container" id="dock" ref={dockRef}>
         {navLinks.map((link) => {
           const isActive =
             link.path === '/'
@@ -170,36 +400,20 @@ export const DockNav: React.FC = () => {
                 ? (location.pathname.startsWith('/dashboard') || location.pathname.startsWith('/admin') || location.pathname.startsWith('/advisor') || location.pathname.startsWith('/society') || location.pathname.startsWith('/settings'))
                 : location.pathname.startsWith(link.path);
 
-          const isCollapsedState = isFooterVisible;
-          // Apply nav-item class for the JS animation logic to pick up
-          const visibilityClasses = isCollapsedState && !isActive 
-            ? 'w-0 h-0 shrink-0 opacity-0 mx-0 scale-50 border-0 group-hover:border group-hover:w-[42px] group-hover:h-[42px] group-hover:opacity-100 group-hover:mx-[5px] group-hover:scale-100 pointer-events-none group-hover:pointer-events-auto hidden-by-footer' 
-            : 'w-[36px] md:w-[42px] h-[36px] md:h-[42px] shrink-0 opacity-100 mx-[3px] md:mx-[5px] scale-100';
-
           return (
             <Link
               key={link.path}
               to={link.path}
-              className={`nav-item relative flex shrink-0 justify-center items-center rounded-full cursor-pointer transition-colors duration-200 ease-out group/item overflow-visible
-                ${isActive ? 'bg-[rgba(255,255,255,0.15)] border-white/30' : 'bg-[rgba(0,0,0,0.25)] border-white/10 hover:bg-[rgba(0,0,0,0.45)] hover:border-white/30'}
-                border group-hover:border shadow-[0_2px_8px_rgba(0,0,0,0.2)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.35)]
-                ${visibilityClasses}
-              `}
-              style={!isFooterVisible ? { height: window.innerWidth <= 480 ? '36px' : window.innerWidth <= 768 ? '40px' : '42px', width: window.innerWidth <= 480 ? '36px' : window.innerWidth <= 768 ? '40px' : '42px' } : undefined}
+              className={`fluid-nav-item ${isActive ? 'active' : ''}`}
             >
-              <span className={`pointer-events-none whitespace-nowrap absolute bottom-[calc(100%+14px)] left-1/2 -translate-x-1/2 translate-y-[4px] bg-[rgba(15,15,20,0.85)] backdrop-blur-[12px] text-[#f3f4f6] px-[9px] py-[4px] rounded-[6px] text-[11px] font-medium tracking-[0.2px] border border-white/15 shadow-[0_4px_12px_rgba(0,0,0,0.35)] transition-all duration-200 opacity-0 group-hover/item:opacity-100 group-hover/item:translate-y-0 ${isCollapsedState ? 'hidden group-hover:block' : ''}`}>
-                {link.label}
-              </span>
-              <div className={`w-full h-full flex items-center justify-center transition-transform duration-300 ease-out ${isActive ? 'text-white' : 'text-[#f3f4f6] group-hover/item:text-white'}`}>
-                {React.cloneElement(link.icon as any, {
-                  className: "w-[42%] h-[42%]",
-                  strokeWidth: isActive ? 2.2 : 1.8,
-                })}
-              </div>
+              <span className="fluid-tooltip">{link.label}</span>
+              {React.cloneElement(link.icon as any, {
+                strokeWidth: isActive ? 2.2 : 1.8,
+              })}
             </Link>
           );
         })}
       </div>
-    </div>
+    </>
   );
 };

@@ -43,7 +43,7 @@ export const AdminPendingEventsPage: React.FC = () => {
         </div>
 
         {isError && (
-          <Alert variant="error" className="mb-6">Failed to load pending events. Please try again.</Alert>
+          <Alert variant="error" className="mb-6" message="Failed to load pending events. Please try again." />
         )}
 
         {isLoading && pendingEvents.length === 0 ? (
