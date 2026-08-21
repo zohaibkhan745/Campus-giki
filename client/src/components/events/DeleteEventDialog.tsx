@@ -29,6 +29,8 @@ export const DeleteEventDialog: React.FC<DeleteEventDialogProps> = ({
       queryClient.invalidateQueries({ queryKey: ['societyEvents'] });
       queryClient.invalidateQueries({ queryKey: ['societyDashboard'] });
       queryClient.invalidateQueries({ queryKey: ['adminEvents'] });
+      queryClient.invalidateQueries({ queryKey: ['adminEventsList'] });
+      queryClient.invalidateQueries({ queryKey: ['advisorDashboard'] });
       queryClient.invalidateQueries({ queryKey: ['adminDashboard'] });
       queryClient.invalidateQueries({ queryKey: ['feed'] });
       onClose();

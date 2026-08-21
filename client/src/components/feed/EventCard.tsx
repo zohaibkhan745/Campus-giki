@@ -37,7 +37,9 @@ export const EventCard: React.FC<EventCardProps> = ({ item }) => {
     minute: '2-digit'
   });
 
-  const logoImage = item.society?.logoUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80';
+  
+  const isOfficial = item.isAdminPost || !item.society;
+  const logoImage = isOfficial ? '/giki-logo.png' : item.society?.logoUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80';
   const authorName = item.society?.name || 'Society';
 
   // Sync text to back face and check overflow

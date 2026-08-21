@@ -214,7 +214,7 @@ export const SocietyDirectoryPage: React.FC = () => {
               className="relative group cursor-pointer h-full"
             >
               {/* Ambient Dark Greenish Glow Layer */}
-              <div className="absolute -inset-0.5 bg-gradient-to-r from-emerald-800 via-teal-900 to-green-700 rounded-3xl blur-lg opacity-0 group-hover:opacity-90 transition-all duration-500 group-hover:duration-200"></div>
+              <div className="absolute -inset-0.5 bg-white rounded-3xl blur-lg opacity-0 group-hover:opacity-90 transition-all duration-500 group-hover:duration-200"></div>
               
               {/* Main Card Container */}
               <div className="relative h-full flex flex-col bg-zinc-900 rounded-3xl shadow-2xl shadow-black/80 overflow-hidden transition-all duration-500 ease-out hover:-translate-y-1 hover:scale-[1.015] border border-zinc-800/80 group-hover:border-emerald-950/40">

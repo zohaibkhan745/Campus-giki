@@ -1065,9 +1065,10 @@ body.is-focused nav {
 }
 
 /* --- EXACT DROPDOWN TEMPLATE STYLES --- */
+
 .dropdown-container {
   position: relative;
-  max-width: 100%;
+  width: 100%;
   z-index: 1;
 }
 
@@ -1088,7 +1089,6 @@ body.is-focused nav {
   outline: none;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   transition: all 0.25s ease;
-  white-space: nowrap;
 }
 
 .dropdown-btn:hover {
@@ -1107,25 +1107,12 @@ body.is-focused nav {
   font-size: 13px;
   font-weight: 600;
   min-width: 22px;
-  white-space: nowrap;
 }
 
 .language-name {
   color: #ffffff;
   font-weight: 500;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-}
-.dropdown-btn .btn-left-content {
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.dropdown-btn .language-name {
-  max-width: 250px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .arrow-icon {
@@ -1135,8 +1122,6 @@ body.is-focused nav {
   stroke-width: 2;
   fill: none;
   transition: transform 0.25s ease;
-  flex-shrink: 0;
-  margin-left: 8px;
 }
 
 .dropdown-container.open .arrow-icon {
@@ -1147,16 +1132,14 @@ body.is-focused nav {
   position: absolute;
   top: calc(100% + 8px);
   left: 0;
-  width: max-content;
-  min-width: 100%;
-  max-width: 90vw;
+  width: 100%;
   background: rgba(20, 20, 24, 0.65);
   backdrop-filter: blur(25px);
   -webkit-backdrop-filter: blur(25px);
   border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 14px;
   display: none;
-  z-index: 9999;
+  z-index: 1000;
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
   padding: 6px 4px 6px 6px;
 }
@@ -1166,7 +1149,7 @@ body.is-focused nav {
 }
 
 .dropdown-list {
-  max-height: 210px;
+  max-height: 300px;
   overflow-y: auto;
   overflow-x: hidden;
   padding-right: 4px;
@@ -1184,10 +1167,6 @@ body.is-focused nav {
   cursor: pointer;
   font-size: 14px;
   transition: background-color 0.15s ease, color 0.15s ease;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 100%;
 }
 
 .dropdown-item:hover {
@@ -1202,24 +1181,22 @@ body.is-focused nav {
 }
 
 .dropdown-item.active {
-  background-color: rgba(59, 130, 246, 0.15);
+  background-color: rgba(255, 255, 255, 0.15);
 }
 
 .dropdown-item.active .country-code,
 .dropdown-item.active .language-name {
-  color: #60a5fa;
+  color: #ffffff;
   font-weight: 600;
 }
 
 .check-icon {
   width: 16px;
   height: 16px;
-  stroke: #60a5fa;
+  stroke: #ffffff;
   stroke-width: 2.5;
   fill: none;
   display: none;
-  flex-shrink: 0;
-  margin-left: 12px;
 }
 
 .dropdown-item.active .check-icon {
@@ -1249,6 +1226,7 @@ body.is-focused nav {
 .dropdown-list::-webkit-scrollbar-thumb:hover {
   background-color: rgba(255, 255, 255, 0.4);
 }
+
 /* --- END EXACT DROPDOWN STYLES --- */
 /* --- EXACT MODAL THEME --- */
 .modal-overlay {

@@ -47,7 +47,7 @@ export const AdminDashboardPage: React.FC = () => {
 
   return (
     <div className="w-full">
-      <BannerHeader title="Dean Student Affair" logoUrl="https://ui-avatars.com/api/?name=DSA&background=random&color=fff&size=200" />
+      <BannerHeader title="Dean Student Affair" logoUrl="/giki-logo.png" />
       <div className="max-w-6xl mx-auto space-y-6 text-left py-4 px-4">
         {/* Actions Row */}
         <div className="flex justify-end mb-4">

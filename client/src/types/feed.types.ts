@@ -25,6 +25,7 @@ export interface EventFeedItem {
   coverImageUrl?: string | null;
   videoUrl?: string | null;
   registrationLink?: string | null;
+  isAdminPost?: boolean;
 }
 
 export interface PostFeedItem {

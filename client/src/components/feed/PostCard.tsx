@@ -33,7 +33,9 @@ export const PostCard: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) =>
   const isGlass = !coverImage;
   const defaultHeight = 490;
   
-  const logoImage = item.society?.logoUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80';
+  
+  const isOfficial = item.isAdminPost || !item.society;
+  const logoImage = isOfficial ? '/giki-logo.png' : item.society?.logoUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80';
   const authorName = item.society?.name || 'Admin';
 
   // Sync text to back face and check overflow
@@ -151,7 +153,7 @@ export const PostCard: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) =>
             <span className="card-corner-tag">Post</span>
             <div className="glass-front-content">
               <div className="glass-header-area">
-                <span className="post-timestamp">Posted: {formattedDate} • {formattedTime}</span>
+                <span className="post-timestamp drop-shadow-md font-medium text-white/90">Posted: {formattedDate} • {formattedTime}</span>
                 <div className="flex justify-between items-start w-full">
                   <h3 className="glass-title">{authorName}</h3>
                   {(onEdit || onDelete) && (
@@ -175,7 +177,7 @@ export const PostCard: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) =>
           <div className="card-face glass-face-back">
             <div className="glass-back-header">
               <div>
-                <span className="post-timestamp">Posted: {formattedDate} • {formattedTime}</span>
+                <span className="post-timestamp drop-shadow-md font-medium text-white/90">Posted: {formattedDate} • {formattedTime}</span>
                 <h4 className="glass-back-heading">{authorName}</h4>
               </div>
               <button type="button" onClick={handleClose} className="glass-close-btn" aria-label="Close details">
@@ -215,7 +217,7 @@ export const PostCard: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) =>
                   <img src={logoImage} alt={authorName} className="avatar" />
                   <div className="author-name-group">
                     <span className="author-name">{authorName}</span>
-                    <span className="post-timestamp">Posted: {formattedDate} • {formattedTime}</span>
+                    <span className="post-timestamp drop-shadow-md font-medium text-white/90">Posted: {formattedDate} • {formattedTime}</span>
                   </div>
                 </div>
                 
@@ -245,7 +247,7 @@ export const PostCard: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) =>
               <img src={logoImage} alt={authorName} className="society-avatar" />
               <div className="society-text">
                 <h3>{authorName}</h3>
-                <p>Posted: {formattedDate} • {formattedTime}</p>
+                <p className="drop-shadow-md font-medium text-white/90">Posted: {formattedDate} • {formattedTime}</p>
               </div>
             </div>
 

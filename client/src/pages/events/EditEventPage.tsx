@@ -108,6 +108,8 @@ export const EditEventPage: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: ['societyEvents'] });
       queryClient.invalidateQueries({ queryKey: ['societyDashboard'] });
       queryClient.invalidateQueries({ queryKey: ['adminEvents'] });
+      queryClient.invalidateQueries({ queryKey: ['adminEventsList'] });
+      queryClient.invalidateQueries({ queryKey: ['advisorDashboard'] });
       queryClient.invalidateQueries({ queryKey: ['adminDashboard'] });
       queryClient.invalidateQueries({ queryKey: ['feed'] });
       navigate('/dashboard', { replace: true });
