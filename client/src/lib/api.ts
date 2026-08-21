@@ -47,3 +47,10 @@ api.interceptors.response.use(
     return Promise.reject(error);
   },
 );
+
+export const getMediaUrl = (path: string | undefined | null) => {
+  if (!path) return '';
+  if (path.startsWith('http')) return path;
+  const base = API_BASE_URL.replace('/api/v1', '');
+  return `${base}${path.startsWith('/') ? path : '/' + path}`;
+};

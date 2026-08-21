@@ -280,7 +280,7 @@ export const DashboardPage: React.FC = () => {
                   {changesRequestedEventsCount > 0 ? (
                     <AlertCircle className="w-5 h-5 text-ember-glow animate-pulse" />
                   ) : (
-                    <Clock className="w-5 h-5 text-ember-glow" />
+                    <Clock className="w-5 h-5 text-white" />
                   )}
                   <h3>Under Review & Revisions ({pendingEvents.length})</h3>
                 </div>

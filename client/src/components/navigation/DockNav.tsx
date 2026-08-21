@@ -1,12 +1,11 @@
 import React, { useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, CalendarDays, Menu } from 'lucide-react';
-import { SocietyIcon } from '@/components/icons/SocietyIcon';
+import { Home, CalendarDays, UsersRound, Menu } from 'lucide-react';
 
 const navLinks = [
   { label: 'Home', path: '/', icon: <Home /> },
   { label: 'Calendar', path: '/events', icon: <CalendarDays /> },
-  { label: 'Societies', path: '/societies', icon: <SocietyIcon /> },
+  { label: 'Societies', path: '/societies', icon: <UsersRound /> },
   { label: 'Dashboard', path: '/dashboard', icon: <Menu /> },
 ];
 

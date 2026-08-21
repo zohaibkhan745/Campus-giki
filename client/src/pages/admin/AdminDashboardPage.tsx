@@ -153,7 +153,7 @@ export const AdminDashboardPage: React.FC = () => {
         <div className="space-y-4">
           <div className="flex items-center justify-between border-b-2 border-white/10 pb-3">
             <div className="flex items-center gap-2 font-extrabold text-lg text-white">
-              <Clock className="w-5 h-5 text-ember-glow" />
+              <Clock className="w-5 h-5 text-white" />
               <h3>Pending Review ({pendingEvents.length})</h3>
             </div>
             <Link to="/admin/events/pending" className="text-sm font-bold text-white hover:text-forest-ink transition-colors underline underline-offset-2">
@@ -184,7 +184,7 @@ export const AdminDashboardPage: React.FC = () => {
         <div className="space-y-4">
           <div className="flex items-center justify-between border-b-2 border-white/10 pb-3">
             <div className="flex items-center gap-2 font-extrabold text-lg text-white">
-              <Calendar className="w-5 h-5 text-forest-ink" />
+              <Calendar className="w-5 h-5 text-white" />
               <h3>Upcoming Events ({upcomingEvents.length})</h3>
             </div>
             <Link to="/admin/events" className="text-sm font-bold text-white hover:text-forest-ink transition-colors underline underline-offset-2">

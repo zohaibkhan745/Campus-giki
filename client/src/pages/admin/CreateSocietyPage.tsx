@@ -110,17 +110,12 @@ export const CreateSocietyPage: React.FC = () => {
       </div>
 
       {/* Header Banner */}
-      <div className="space-y-1 py-6">
-        <div className="flex items-center gap-2 text-gray-300 text-xs font-semibold uppercase tracking-wider mb-1">
-          <Shield className="w-4 h-4" />
-          <span>DSA Administration</span>
-        </div>
+      <div className="py-6">
+        
         <h1 className="text-4xl font-extrabold text-white">
           Onboard New Campus Society
         </h1>
-        <p className="text-sm text-gray-400">
-          Provision a new society profile, assign a faculty advisor, and generate president credentials.
-        </p>
+        
       </div>
 
       {null}

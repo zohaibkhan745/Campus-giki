@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect, useLayoutEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { getMediaUrl } from '@/lib/api';
 import { X, Edit2, Trash2 } from 'lucide-react';
 import type { PostFeedItem } from '@/types/feed.types';
 
@@ -28,7 +29,7 @@ export const PostCard: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) =>
     minute: '2-digit'
   });
 
-  const coverImage = item.imageUrl;
+  const coverImage = getMediaUrl(item.imageUrl);
   const isGlass = !coverImage;
   const defaultHeight = 490;
   

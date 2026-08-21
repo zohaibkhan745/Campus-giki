@@ -68,7 +68,7 @@ export const AdminPostsPage: React.FC = () => {
     initialPageParam: 1,
     queryFn: ({ pageParam = 1 }) => postService.getAllPosts({
       page: pageParam,
-      limit: 9,
+      limit: 6,
       type: typeFilter !== 'all' ? typeFilter : undefined,
       societyId: societyFilter || undefined,
       from: dateFrom || undefined,
@@ -291,29 +291,16 @@ export const AdminPostsPage: React.FC = () => {
         </div>
       )}
 
-      {/* Pagination */}
-      {meta && meta.totalPages > 1 && (
-        <div className="flex justify-center items-center gap-2 pt-4">
+      {/* Load More */}
+      {hasNextPage && (
+        <div className="flex justify-center items-center pt-8 pb-4">
           <Button
             variant="outline"
-            size="sm"
-            className="bg-transparent"
-            onClick={() => setPage(p => Math.max(1, p - 1))}
-            disabled={page === 1}
+            className="rounded-full px-8 py-2 bg-transparent text-white border-white/20 hover:bg-white/10"
+            onClick={() => fetchNextPage()}
+            disabled={isFetchingNextPage}
           >
-            Previous
-          </Button>
-          <span className="text-xs font-semibold text-gray-400">
-            Page {meta.page} of {meta.totalPages}
-          </span>
-          <Button
-            variant="outline"
-            size="sm"
-            className="bg-transparent"
-            onClick={() => setPage(p => Math.min(meta.totalPages, p + 1))}
-            disabled={page === meta.totalPages}
-          >
-            Next
+            {isFetchingNextPage ? 'Loading...' : 'Load More'}
           </Button>
         </div>
       )}

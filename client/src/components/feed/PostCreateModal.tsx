@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Image as ImageIcon, Loader2 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { getMediaUrl } from '@/lib/api';
 import { uploadService } from '@/services/upload.service';
 
 interface PostCreateModalProps {
@@ -155,7 +156,7 @@ export const PostCreateModal: React.FC<PostCreateModalProps> = ({
             {previewUrl && (
               <div className="relative rounded-2xl overflow-hidden border border-vast-ink/20 bg-black group max-h-64 flex items-center justify-center my-2">
                 <img
-                  src={previewUrl}
+                    src={getMediaUrl(previewUrl)}
                   alt="Attachment preview"
                   className="w-full h-auto max-h-64 object-cover"
                 />
