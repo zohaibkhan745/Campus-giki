@@ -82,7 +82,7 @@ export const DockNav: React.FC = () => {
         }
 
         const state = itemStates.current[index];
-        const easeSpeed = isHovering.current ? 0.2 : 0.14;
+        const easeSpeed = isHovering.current ? 0.45 : 0.3;
 
         state.size = lerp(state.size, targetSize, easeSpeed);
         state.margin = lerp(state.margin, targetMargin, easeSpeed);
@@ -144,7 +144,7 @@ export const DockNav: React.FC = () => {
       if (transitionTimer.current) clearTimeout(transitionTimer.current);
       transitionTimer.current = setTimeout(() => {
         dock.classList.remove('is-transitioning');
-      }, 650);
+      }, 400);
     };
 
     const expandDock = () => {
@@ -162,7 +162,7 @@ export const DockNav: React.FC = () => {
       transitionTimer.current = setTimeout(() => {
         dock.classList.remove('is-transitioning');
         if (isHovering.current) requestAnimation();
-      }, 650);
+      }, 400);
     };
 
     const handleMouseEnter = () => {
@@ -239,8 +239,8 @@ export const DockNav: React.FC = () => {
 
           .fluid-nav-container.is-transitioning {
               transition: background-color 0.3s ease,
-                          width 0.65s cubic-bezier(0.16, 1, 0.3, 1),
-                          padding 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+                          width 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                          padding 0.4s cubic-bezier(0.16, 1, 0.3, 1);
           }
 
           .fluid-nav-container.collapsed {
@@ -265,19 +265,19 @@ export const DockNav: React.FC = () => {
               transform-origin: center bottom;
               will-change: width, height, margin, transform, opacity;
               
-              transition: background-color 0.25s ease,
-                          box-shadow 0.3s ease,
-                          opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+              transition: background-color 0.15s ease,
+                          box-shadow 0.15s ease,
+                          opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1);
           }
 
           .fluid-nav-container.is-transitioning .fluid-nav-item {
-              transition: background-color 0.25s ease,
-                          box-shadow 0.3s ease,
-                          opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1),
-                          margin 0.65s cubic-bezier(0.16, 1, 0.3, 1),
-                          width 0.65s cubic-bezier(0.16, 1, 0.3, 1),
-                          height 0.65s cubic-bezier(0.16, 1, 0.3, 1),
-                          transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+              transition: background-color 0.15s ease,
+                          box-shadow 0.15s ease,
+                          opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+                          margin 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                          width 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                          height 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                          transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
           }
 
           .fluid-nav-item.active {

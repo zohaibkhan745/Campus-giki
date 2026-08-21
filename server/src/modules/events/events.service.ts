@@ -49,10 +49,27 @@ export class EventsService {
     if (query.from || query.to) {
       const dateFilter: Prisma.DateTimeFilter = {};
       if (query.from) {
-        dateFilter.gte = new Date(query.from);
+        let fromDate;
+        if (query.from.includes('-')) {
+          const [year, month, day] = query.from.split('-');
+          fromDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day), 0, 0, 0, 0);
+        } else {
+          fromDate = new Date(query.from);
+          fromDate.setHours(0, 0, 0, 0);
+        }
+        dateFilter.gte = fromDate;
       }
+      
       if (query.to) {
-        dateFilter.lte = new Date(query.to);
+        let toDate;
+        if (query.to.includes('-')) {
+          const [year, month, day] = query.to.split('-');
+          toDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day), 23, 59, 59, 999);
+        } else {
+          toDate = new Date(query.to);
+          toDate.setHours(23, 59, 59, 999);
+        }
+        dateFilter.lte = toDate;
       }
       whereClause.eventDate = dateFilter;
     }

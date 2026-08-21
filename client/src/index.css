@@ -1419,3 +1419,10 @@ html:has(body.modal-open), .modal-open {
   text-overflow: ellipsis;
   display: block;
 }
+
+
+/* Lock scroll when any modal is open */
+body:has(.modal-overlay.active), 
+body:has(.modal-overlay) {
+  overflow: hidden !important;
+}

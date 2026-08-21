@@ -3,7 +3,7 @@ import { PrismaService } from '../../core/database/prisma.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { UserProfileDto } from '../auth/dto/auth-response.dto';
-import { Role } from '@prisma/client';
+import { Role, Prisma } from '@prisma/client';
 
 @Injectable()
 export class PostsService {
@@ -27,29 +27,35 @@ export class PostsService {
     const { page, limit, type, societyId, from, to } = params;
     const skip = (page - 1) * limit;
 
-    const where: Prisma.PostWhereInput = {};
+    const where: any = {};
     if (from || to) {
       where.createdAt = {};
+      
       if (from) {
-        where.createdAt.gte = new Date(from);
+        let fromDate;
+        if (from.includes('-')) {
+          const [year, month, day] = from.split('-');
+          fromDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day), 0, 0, 0, 0);
+        } else {
+          fromDate = new Date(from);
+          fromDate.setHours(0, 0, 0, 0);
+        }
+        where.createdAt.gte = fromDate;
       }
+      
       if (to) {
-        const toDate = new Date(to);
-        toDate.setHours(23, 59, 59, 999);
+        let toDate;
+        if (to.includes('-')) {
+          const [year, month, day] = to.split('-');
+          toDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day), 23, 59, 59, 999);
+        } else {
+          toDate = new Date(to);
+          toDate.setHours(23, 59, 59, 999);
+        }
         where.createdAt.lte = toDate;
       }
     }
-    if (from || to) {
-      where.createdAt = {};
-      if (from) {
-        where.createdAt.gte = new Date(from);
-      }
-      if (to) {
-        const toDate = new Date(to);
-        toDate.setHours(23, 59, 59, 999);
-        where.createdAt.lte = toDate;
-      }
-    }
+    
     if (type === 'global') {
       where.author = { role: Role.DSA_ADMIN };
     } else if (type === 'society') {
