@@ -195,7 +195,6 @@ export const AdminEventsPage: React.FC = () => {
                 <FilterX className="w-4 h-4" />
               </button>
             )}
-          </div>
         </div>
       </div>
 
