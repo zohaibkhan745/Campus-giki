@@ -204,7 +204,7 @@ export const AdminPostsPage: React.FC = () => {
               if (val === 'global') setSocietyFilter('');
               /* reset handled by queryKey */
             }}
-            className="w-full md:w-48 shrink-0"
+            className="w-full md:flex-1 shrink-0"
           />
 
           {/* Society Dropdown */}
@@ -220,11 +220,11 @@ export const AdminPostsPage: React.FC = () => {
               /* reset handled by queryKey */
             }}
             disabled={typeFilter === 'global'}
-            className="w-full md:w-64"
+            className="w-full md:flex-1"
           />
 
-          <div className="w-full md:w-48 shrink-0"><CustomDatePicker value={dateFrom} max={dateTo} onChange={(val) => { setDateFrom(val); /* reset handled by queryKey */ }} placeholder="From Date" /></div>
-          <div className="w-full md:w-48 shrink-0"><CustomDatePicker value={dateTo} min={dateFrom} onChange={(val) => { setDateTo(val); /* reset handled by queryKey */ }} placeholder="To Date" /></div>
+          <div className="w-full md:flex-1 shrink-0"><CustomDatePicker value={dateFrom} max={dateTo} onChange={(val) => { setDateFrom(val); /* reset handled by queryKey */ }} placeholder="From Date" /></div>
+          <div className="w-full md:flex-1 shrink-0"><CustomDatePicker value={dateTo} min={dateFrom} onChange={(val) => { setDateTo(val); /* reset handled by queryKey */ }} placeholder="To Date" /></div>
 
           {(typeFilter !== 'all' || societyFilter || dateFrom || dateTo) && (
             <button

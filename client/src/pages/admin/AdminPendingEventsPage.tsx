@@ -174,7 +174,7 @@ export const AdminPendingEventsPage: React.FC = () => {
         </div>
 
         <div className="flex flex-col md:flex-row flex-wrap items-center gap-4 pt-4 border-t border-white/10 mt-2">
-          <CustomDropdown className="w-full md:w-48 shrink-0" icon={<Filter className="w-4 h-4" />} options={[{ value: "", label: "All Statuses" },
+          <CustomDropdown className="w-full md:flex-1 shrink-0" icon={<Filter className="w-4 h-4" />} options={[{ value: "", label: "All Statuses" },
               { value: 'PENDING_ADMIN', label: 'Pending Review' },
               { value: 'PUBLISHED', label: 'Published / Approved' },
               { value: 'CHANGES_REQUESTED', label: 'Changes Requested' }
@@ -183,20 +183,18 @@ export const AdminPendingEventsPage: React.FC = () => {
             onChange={(val) => { setStatusFilter(val); /* reset handled by queryKey */ }}
             placeholder="All Statuses"
           />
-          <CustomDropdown className="w-full md:w-64 shrink-0" icon={<Building2 className="w-4 h-4" />} options={[{ value: '', label: 'All Societies' }, ...societies.map((soc: any) => ({ value: soc.id, label: soc.name }))]}
+          <CustomDropdown className="w-full md:flex-1 shrink-0" icon={<Building2 className="w-4 h-4" />} options={[{ value: '', label: 'All Societies' }, ...societies.map((soc: any) => ({ value: soc.id, label: soc.name }))]}
             value={societyFilter}
             onChange={(val) => { setSocietyFilter(val); /* reset handled by queryKey */ }}
             placeholder="All Societies"
           />
-          <div className="w-full md:w-48 shrink-0"><CustomDatePicker value={fromDate} onChange={(val) => { setFromDate(val); setTypeToggle("all"); /* reset handled by queryKey */ }} placeholder="From Date" /></div>
-          <div className="flex items-center gap-2">
-            <div className="w-full md:w-48 shrink-0"><CustomDatePicker value={toDate} onChange={(val) => { setToDate(val); setTypeToggle("all"); /* reset handled by queryKey */ }} placeholder="To Date" /></div>
+          <div className="w-full md:flex-1 shrink-0"><CustomDatePicker value={fromDate} onChange={(val) => { setFromDate(val); setTypeToggle("all"); /* reset handled by queryKey */ }} placeholder="From Date" /></div>
+          <div className="w-full md:flex-1 shrink-0"><CustomDatePicker value={toDate} onChange={(val) => { setToDate(val); setTypeToggle("all"); /* reset handled by queryKey */ }} placeholder="To Date" /></div>
             {(searchQuery || societyFilter || fromDate || toDate || typeToggle !== 'all') && (
               <button onClick={handleClearFilters} className="p-2 text-gray-400 hover:text-white bg-white/5 rounded-xl">
                 <FilterX className="w-4 h-4" />
               </button>
             )}
-          </div>
         </div>
       </div>
 
