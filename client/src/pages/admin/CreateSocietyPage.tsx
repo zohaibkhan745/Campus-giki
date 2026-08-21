@@ -111,16 +111,7 @@ export const CreateSocietyPage: React.FC = () => {
 
       {/* Header Banner */}
       
-        <div className="flex flex-col md:flex-row md:items-center justify-start gap-4 mb-6 pt-4">
-          <div className="flex items-center gap-3">
-            <Link to="/admin/societies" className="p-2 bg-white/5 hover:bg-white/10 rounded-xl transition-colors">
-              <ArrowLeft className="w-5 h-5 text-gray-400" />
-            </Link>
-            <h1 className="text-4xl font-extrabold text-white">
-              Onboard New Campus Society
-            </h1>
-          </div>
-        </div>
+        <h1 className="text-4xl font-extrabold text-white mb-6">Onboard New Campus Society</h1>
 
 
       {null}

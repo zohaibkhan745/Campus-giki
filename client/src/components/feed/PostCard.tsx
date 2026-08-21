@@ -35,7 +35,7 @@ export const PostCard: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) =>
   
   
   const isOfficial = item.isAdminPost || !item.society;
-  const logoImage = isOfficial ? '/giki-logo.png' : item.society?.logoUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80';
+  const logoImage = isOfficial ? '/giki-logo.png' : item.society?.logoUrl || '/giki-logo.png';
   const authorName = item.society?.name || 'Admin';
 
   // Sync text to back face and check overflow

@@ -15,6 +15,8 @@ import {
   Link2,
   Mail,
   CheckCircle2,
+  AlertCircle,
+  Check,
 } from 'lucide-react';
 import { societyService } from '@/services/society.service';
 import {
@@ -134,273 +136,176 @@ export const SocietySetupPage: React.FC = () => {
   }
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6 text-left py-6">
-      <div className="space-y-1 bg-transparent p-6 rounded-cards border border-vast-ink/20 relative">
-        {isEditing && (
-          <button
-            onClick={() => navigate('/dashboard')}
-            className="absolute top-6 right-6 flex items-center gap-2 px-3 py-1.5 bg-lumen-stone hover:bg-lavender-whisper border border-vast-ink/20 text-vast-ink text-xs font-semibold rounded-inputs transition-colors"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Back to Dashboard</span>
-          </button>
-        )}
-        <div className="flex items-center gap-2 text-vast-ink text-xs font-semibold uppercase tracking-wider mb-1">
-          <Building2 className="w-4 h-4" />
-          <span>{isEditing ? 'Profile Settings' : 'One-Time Initial Setup'}</span>
-        </div>
-        <h1 className="text-2xl font-extrabold text-vast-ink pr-32">
-          {isEditing ? 'Edit Society Profile' : 'Complete Your Society Profile'}
-        </h1>
-        <p className="text-sm text-fog pr-32">
-          {isEditing 
-            ? 'Update your official society profile metadata and contact information below.' 
-            : 'Welcome to Campus GIKI! Please complete your official society profile metadata below.'}
-        </p>
+    <div className="max-w-3xl mx-auto space-y-6 text-left py-4">
+      {/* Top Back Navigation */}
+      <div className="flex items-center justify-between mb-2">
+        <button
+          onClick={() => navigate('/dashboard')}
+          className="fixed top-4 left-4 sm:top-6 sm:left-6 z-[100] inline-flex items-center justify-center w-10 h-10 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white rounded-full transition-all cursor-pointer shadow-lg"
+          title="Go Back"
+        >
+          <ArrowLeft className="w-5 h-5" />
+        </button>
       </div>
 
-      {null}
+      <h1 className="text-4xl font-extrabold text-white mb-6">
+        {isEditing ? 'Edit Society Profile' : 'Initialize Society Profile'}
+      </h1>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" noValidate>
-        {/* Core Society Profile Section */}
-        <div className="bg-lumen-cream p-6 rounded-cards border border-vast-ink/20 space-y-4">
-          <h2 className="text-base font-bold text-vast-ink border-b border-vast-ink/20 pb-2">
-            General Information
-          </h2>
+      <div className="grid grid-cols-1 gap-6">
+        <div className="relative z-1 w-full p-8 rounded-[18px] bg-white/[0.08] backdrop-blur-[20px] border border-white/20 shadow-[0_12px_40px_rgba(0,0,0,0.4)] text-white space-y-6 text-left">
+          
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" noValidate>
+            
+            {/* General Section */}
+            <div>
+              <h3 className="font-extrabold text-lg text-white flex items-center gap-2 mb-4">
+                <Building2 className="w-5 h-5 text-white" />
+                General Information
+              </h3>
+              
+              <div className="space-y-4">
+                <Input
+                  {...register('name')}
+                  error={errors.name?.message}
+                  label="Society Name *"
+                  placeholder="e.g. ACM GIKI Student Chapter"
+                  leftIcon={<Building2 className="w-4 h-4" />}
+                  disabled={setupMutation.isPending}
+                />
+                
+                <div className="w-full space-y-1.5 text-left">
+                  <label className="block text-xs uppercase tracking-wider text-gray-400 font-semibold mb-1">
+                    Short Description *
+                  </label>
+                  <div className="relative">
+                    <textarea
+                      {...register('shortDescription')}
+                      className="w-full min-h-[100px] text-sm transition-all outline-none bg-transparent text-white placeholder:text-gray-500 rounded-inputs px-3.5 py-2.5 border border-white/20 focus:border-white/40 focus:ring-2 focus:ring-white/10"
+                      placeholder="e.g. Premier computing and competitive programming society"
+                      disabled={setupMutation.isPending}
+                    />
+                    {errors.shortDescription?.message && (
+                      <p className="mt-1 text-xs text-red-500 font-medium flex items-center gap-1">
+                        <AlertCircle className="w-3.5 h-3.5" />
+                        {errors.shortDescription.message}
+                      </p>
+                    )}
+                  </div>
+                </div>
 
-          <Input
-            label="Society Name *"
-            placeholder="e.g. ACM GIKI Student Chapter"
-            leftIcon={<Building2 className="w-4 h-4" />}
-            disabled={setupMutation.isPending}
-            error={errors.name?.message}
-            {...register('name')}
-          />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Input
+                    {...register('presidentName')}
+                    error={errors.presidentName?.message}
+                    label="President Name"
+                    placeholder="e.g. John Doe"
+                    disabled={setupMutation.isPending}
+                  />
+                  <Input
+                    {...register('presidentRegNum')}
+                    error={errors.presidentRegNum?.message}
+                    label="President Reg. No"
+                    placeholder="e.g. 2022000"
+                    disabled={setupMutation.isPending}
+                  />
+                </div>
+                <Input
+                  {...register('presidentContact')}
+                  error={errors.presidentContact?.message}
+                  label="President Contact Number"
+                  placeholder="e.g. +923001234567"
+                  disabled={setupMutation.isPending}
+                />
 
-          <div className="space-y-1.5 text-left">
-            <label className="block text-xs font-semibold text-vast-ink uppercase tracking-wider">
-              Organization Type *
-            </label>
-            <div className="grid grid-cols-3 gap-3">
-              <button
-                type="button"
-                onClick={() => setValue('type', 'SOCIETY', { shouldValidate: true })}
-                className={`p-3 rounded-inputs border font-bold text-xs flex flex-col items-center gap-1.5 transition-all ${
-                  selectedType === 'SOCIETY'
-                    ? 'bg-blue-50 border-blue-600 text-blue-700 shadow-sm'
-                    : 'bg-lumen-stone/40 border-vast-ink/20 text-vast-ink hover:bg-lumen-stone'
-                }`}
-              >
-                <span className="text-base">🏛️</span>
-                <span>Society</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setValue('type', 'CLUB', { shouldValidate: true })}
-                className={`p-3 rounded-inputs border font-bold text-xs flex flex-col items-center gap-1.5 transition-all ${
-                  selectedType === 'CLUB'
-                    ? 'bg-purple-50 border-purple-600 text-purple-700 shadow-sm'
-                    : 'bg-lumen-stone/40 border-vast-ink/20 text-vast-ink hover:bg-lumen-stone'
-                }`}
-              >
-                <span className="text-base">🎨</span>
-                <span>Club</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setValue('type', 'TEAM', { shouldValidate: true })}
-                className={`p-3 rounded-inputs border font-bold text-xs flex flex-col items-center gap-1.5 transition-all ${
-                  selectedType === 'TEAM'
-                    ? 'bg-emerald-50 border-emerald-600 text-emerald-700 shadow-sm'
-                    : 'bg-lumen-stone/40 border-vast-ink/20 text-vast-ink hover:bg-lumen-stone'
-                }`}
-              >
-                <span className="text-base">🚀</span>
-                <span>Team</span>
-              </button>
-            </div>
-          </div>
-
-          <div className="space-y-1.5 text-left">
-            <label className="block text-xs font-semibold text-vast-ink font-medium uppercase tracking-wider">
-              Category *
-            </label>
-            <div className="relative flex items-center">
-              <div className="absolute left-3 text-fog pointer-events-none flex items-center justify-center">
-                <Tag className="w-4 h-4" />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="w-full space-y-1.5 text-left">
+                    <label className="block text-xs uppercase tracking-wider text-gray-400 font-semibold mb-1">
+                      Society Logo
+                    </label>
+                    <ImageUploader
+                      onChange={(url: string) => setValue('bannerUrl', url)}
+                      value={watch('bannerUrl') || undefined}
+                      label="Society Banner Image"
+                    />
+                  </div>
+                </div>
               </div>
-              <select
-                disabled={setupMutation.isPending || isLoadingCategories}
-                className="w-full bg-lumen-cream text-vast-ink placeholder:text-fog text-sm rounded-inputs border border-vast-ink/20 px-3.5 py-2.5 pl-10 transition-all outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50"
-                {...register('categoryId')}
-              >
-                <option value="" className="bg-lumen-cream text-vast-ink font-semibold">
-                  {isLoadingCategories
-                    ? 'Loading categories...'
-                    : '-- Select Category --'}
-                </option>
-                {categories.map((cat) => (
-                  <option key={cat.id} value={cat.id} className="bg-lumen-cream text-vast-ink font-semibold">
-                    {cat.name}
-                  </option>
-                ))}
-              </select>
             </div>
-            {errors.categoryId?.message && (
-              <p className="text-xs text-red-400 font-medium">
-                {errors.categoryId.message}
-              </p>
-            )}
-          </div>
 
-          <Input
-            label="Short Description *"
-            placeholder="e.g. Premier computing and competitive programming society"
-            leftIcon={<FileText className="w-4 h-4" />}
-            disabled={setupMutation.isPending}
-            error={errors.shortDescription?.message}
-            {...register('shortDescription')}
-          />
+            {/* Mid Line */}
+            <div className="w-full h-px bg-white/10 my-6"></div>
 
-          <div className="space-y-1.5 text-left">
-            <label className="block text-xs font-semibold text-vast-ink font-medium uppercase tracking-wider">
-              Long Description *
-            </label>
-            <div className="relative flex items-start">
-              <div className="absolute left-3 top-3 text-fog pointer-events-none flex items-center justify-center">
-                <AlignLeft className="w-4 h-4" />
+            {/* Contact & Socials */}
+            <div>
+              <h3 className="font-extrabold text-lg text-white flex items-center gap-2 mb-4">
+                <Globe className="w-5 h-5 text-white" />
+                Contact & Socials
+              </h3>
+
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Input
+                    {...register('instagram')}
+                    error={errors.instagram?.message}
+                    label="Instagram URL"
+                    placeholder="https://instagram.com/..."
+                    leftIcon={<Share2 className="w-4 h-4" />}
+                    disabled={setupMutation.isPending}
+                  />
+                  <Input
+                    {...register('facebook')}
+                    error={errors.facebook?.message}
+                    label="Facebook URL"
+                    placeholder="https://facebook.com/..."
+                    leftIcon={<Share2 className="w-4 h-4" />}
+                    disabled={setupMutation.isPending}
+                  />
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Input
+                    {...register('linkedin')}
+                    error={errors.linkedin?.message}
+                    label="LinkedIn URL"
+                    placeholder="https://linkedin.com/..."
+                    leftIcon={<Link2 className="w-4 h-4" />}
+                    disabled={setupMutation.isPending}
+                  />
+                  <Input
+                    {...register('website')}
+                    error={errors.website?.message}
+                    label="Official Website"
+                    placeholder="https://..."
+                    leftIcon={<Globe className="w-4 h-4" />}
+                    disabled={setupMutation.isPending}
+                  />
+                </div>
+                <Input
+                  {...register('email')}
+                  error={errors.email?.message}
+                  label="Official Contact Email"
+                  placeholder="society@giki.edu.pk"
+                  leftIcon={<Mail className="w-4 h-4" />}
+                  disabled={setupMutation.isPending}
+                />
               </div>
-              <textarea
-                rows={4}
-                placeholder="Provide a detailed overview of your society's mission, annual events, and student opportunities..."
-                disabled={setupMutation.isPending}
-                className="w-full bg-transparent text-vast-ink placeholder:text-fog text-sm rounded-inputs border border-vast-ink/20 px-3.5 py-2.5 pl-10 transition-all outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50 resize-y"
-                {...register('longDescription')}
-              />
             </div>
-            {errors.longDescription?.message && (
-              <p className="text-xs text-red-400 font-medium">
-                {errors.longDescription.message}
-              </p>
-            )}
-          </div>
+
+            {/* Save Button */}
+            <div className="pt-4 flex justify-end">
+              <Button
+                type="submit"
+                variant="primary"
+                className="w-full sm:w-auto px-8 bg-white text-black hover:bg-white/90"
+                isLoading={setupMutation.isPending}
+                leftIcon={<Check className="w-4 h-4" />}
+              >
+                {isEditing ? 'Save Changes' : 'Initialize Profile'}
+              </Button>
+            </div>
+          </form>
         </div>
-
-        {/* President Details Section */}
-        <div className="bg-lumen-cream p-6 rounded-cards border-2 border-vast-ink space-y-4">
-          <h2 className="text-base font-bold text-vast-ink border-b-2 border-vast-ink pb-2">
-            President Details
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Input
-              label="President Name"
-              placeholder="e.g. John Doe"
-              disabled={setupMutation.isPending}
-              error={errors.presidentName?.message}
-              {...register('presidentName')}
-            />
-            <Input
-              label="President Reg. No"
-              placeholder="e.g. 2022000"
-              disabled={setupMutation.isPending}
-              error={errors.presidentRegNum?.message}
-              {...register('presidentRegNum')}
-            />
-          </div>
-          <Input
-            label="President Contact Number"
-            placeholder="e.g. +923001234567"
-            disabled={setupMutation.isPending}
-            error={errors.presidentContact?.message}
-            {...register('presidentContact')}
-          />
-        </div>
-
-        {/* Media & Social Links Section */}
-        <div className="bg-lumen-cream p-6 rounded-cards border-2 border-vast-ink space-y-4">
-          <h2 className="text-base font-bold text-vast-ink border-b-2 border-vast-ink pb-2">
-            Media & External Links (Optional)
-          </h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <ImageUploader
-              value={logoUrl || ''}
-              onChange={(url) => setValue('logoUrl', url, { shouldValidate: true })}
-              folder="societies"
-              label="Society Logo"
-            />
-
-            <ImageUploader
-              value={bannerUrl || ''}
-              onChange={(url) => setValue('bannerUrl', url, { shouldValidate: true })}
-              folder="societies"
-              label="Society Banner Image"
-            />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Input
-              label="Instagram URL"
-              placeholder="https://instagram.com/acm_giki"
-              leftIcon={<Share2 className="w-4 h-4" />}
-              disabled={setupMutation.isPending}
-              error={errors.instagram?.message}
-              {...register('instagram')}
-            />
-
-            <Input
-              label="Facebook URL"
-              placeholder="https://facebook.com/acmgiki"
-              leftIcon={<Share2 className="w-4 h-4" />}
-              disabled={setupMutation.isPending}
-              error={errors.facebook?.message}
-              {...register('facebook')}
-            />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Input
-              label="LinkedIn URL"
-              placeholder="https://linkedin.com/company/acmgiki"
-              leftIcon={<Link2 className="w-4 h-4" />}
-              disabled={setupMutation.isPending}
-              error={errors.linkedin?.message}
-              {...register('linkedin')}
-            />
-
-            <Input
-              label="Official Website"
-              placeholder="https://acm.giki.edu.pk"
-              leftIcon={<Globe className="w-4 h-4" />}
-              disabled={setupMutation.isPending}
-              error={errors.website?.message}
-              {...register('website')}
-            />
-          </div>
-
-          <Input
-            label="Official Contact Email"
-            placeholder="acm@giki.edu.pk"
-            leftIcon={<Mail className="w-4 h-4" />}
-            disabled={setupMutation.isPending}
-            error={errors.email?.message}
-            {...register('email')}
-          />
-        </div>
-
-        <Button
-          type="submit"
-          variant="primary"
-          size="lg"
-          className="w-full"
-          isLoading={setupMutation.isPending}
-          leftIcon={<CheckCircle2 className="w-5 h-5" />}
-        >
-          {isEditing ? 'Save Profile Changes' : 'Complete Society Profile Setup'}
-        </Button>
-      </form>
+      </div>
     </div>
   );
 };

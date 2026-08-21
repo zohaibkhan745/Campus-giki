@@ -23,7 +23,7 @@ export const FlippableAdminEventCard = ({ evt }: { evt: any }) => {
   };
 
   const coverImg = evt.coverImageUrl || evt.society?.logoUrl;
-  const societyLogo = evt.society?.logoUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80';
+  const societyLogo = evt.society?.logoUrl || '/giki-logo.png';
   
   const eventDate = new Date(evt.eventDate);
   const dateStr = eventDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });

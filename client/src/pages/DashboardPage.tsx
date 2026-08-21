@@ -208,7 +208,7 @@ export const DashboardPage: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             
             {/* Quick Actions Panel */}
-            <div className="bg-lumen-cream p-6 rounded-[18px] flex flex-col justify-center space-y-5 border border-white/20">
+            <div className="bg-white/[0.08] backdrop-blur-[20px] shadow-[0_12px_40px_rgba(0,0,0,0.4)] p-6 rounded-[18px] flex flex-col justify-center space-y-5 border border-white/20">
               <h3 className="font-extrabold text-lg text-white flex items-center gap-2">
                 Command Center
               </h3>
@@ -216,14 +216,14 @@ export const DashboardPage: React.FC = () => {
               <div className="grid grid-cols-2 gap-3">
                 <Link
                   to="/society/posts"
-                  className="flex flex-col items-center justify-center gap-2 p-4 bg-transparent hover:bg-white/10 text-white rounded-xl font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18] border border-white/20"
+                  className="flex flex-col items-center justify-center gap-2 p-4 bg-transparent hover:bg-white/10 text-white rounded-xl font-bold transition-transform hover:-translate-y-1 shadow-[0_4px_12px_rgba(0,0,0,0.2)] border border-white/20"
                 >
                   <Megaphone className="w-6 h-6" />
                   <span>Posts</span>
                 </Link>
                 <Link
                   to="/events/create"
-                  className="flex flex-col items-center justify-center gap-2 p-4 bg-transparent hover:bg-white/10 text-white rounded-xl font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18] border border-white/20"
+                  className="flex flex-col items-center justify-center gap-2 p-4 bg-transparent hover:bg-white/10 text-white rounded-xl font-bold transition-transform hover:-translate-y-1 shadow-[0_4px_12px_rgba(0,0,0,0.2)] border border-white/20"
                 >
                   <Plus className="w-6 h-6" />
                   <span>Create Event</span>
@@ -233,7 +233,7 @@ export const DashboardPage: React.FC = () => {
             </div>
 
             {/* Manage Events & Metrics Area */}
-            <div className="bg-lumen-cream p-6 rounded-[18px] flex flex-col justify-center space-y-5 relative overflow-hidden group border border-white/20">
+            <div className="bg-white/[0.08] backdrop-blur-[20px] shadow-[0_12px_40px_rgba(0,0,0,0.4)] p-6 rounded-[18px] flex flex-col justify-center space-y-5 relative overflow-hidden group border border-white/20">
               <h3 className="font-extrabold text-lg text-white flex items-center gap-2 z-10">
                 Manage Events
               </h3>
@@ -241,7 +241,7 @@ export const DashboardPage: React.FC = () => {
               <div className="grid grid-cols-2 gap-3 z-10">
                 <Link
                   to="/society/events"
-                  className="relative flex flex-col items-center justify-center gap-2 p-4 bg-transparent hover:bg-white/10 text-white rounded-xl font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18] border border-white/20"
+                  className="relative flex flex-col items-center justify-center gap-2 p-4 bg-transparent hover:bg-white/10 text-white rounded-xl font-bold transition-transform hover:-translate-y-1 shadow-[0_4px_12px_rgba(0,0,0,0.2)] border border-white/20"
                 >
                   <MicVocal className="w-6 h-6" />
                   <span>Events</span>
@@ -253,7 +253,7 @@ export const DashboardPage: React.FC = () => {
                 </Link>
                 <Link
                   to="/society/calendar"
-                  className="relative flex flex-col items-center justify-center gap-2 p-4 bg-transparent hover:bg-white/10 text-white rounded-xl font-bold transition-transform hover:-translate-y-1 shadow-[4px_4px_0px_0px_#1B1B18] border border-white/20"
+                  className="relative flex flex-col items-center justify-center gap-2 p-4 bg-transparent hover:bg-white/10 text-white rounded-xl font-bold transition-transform hover:-translate-y-1 shadow-[0_4px_12px_rgba(0,0,0,0.2)] border border-white/20"
                 >
                   <CalendarDays className="w-6 h-6" />
                   <span>Annual Calendar</span>
@@ -287,7 +287,7 @@ export const DashboardPage: React.FC = () => {
               </div>
 
               {pendingEvents.length === 0 ? (
-                <div className="bg-transparent p-10 rounded-[18px] text-center text-gray-400 space-y-3 flex flex-col items-center border border-white/20">
+                <div className="bg-white/[0.08] backdrop-blur-[20px] shadow-[0_12px_40px_rgba(0,0,0,0.4)] p-10 rounded-[18px] text-center text-gray-400 space-y-3 flex flex-col items-center border border-white/20">
                   <Shield className="w-12 h-12 text-gray-400 opacity-30" />
                   <p className="font-bold text-sm">You're all caught up! No events pending approval or revisions.</p>
                 </div>
@@ -312,7 +312,7 @@ export const DashboardPage: React.FC = () => {
               </div>
 
               {upcomingEvents.length === 0 ? (
-                <div className="bg-transparent p-10 rounded-[18px] text-center text-gray-400 space-y-3 flex flex-col items-center border border-white/20">
+                <div className="bg-white/[0.08] backdrop-blur-[20px] shadow-[0_12px_40px_rgba(0,0,0,0.4)] p-10 rounded-[18px] text-center text-gray-400 space-y-3 flex flex-col items-center border border-white/20">
                   <CalendarIcon className="w-12 h-12 text-gray-400 opacity-30" />
                   <p className="font-bold text-sm">No upcoming events scheduled right now.</p>
                 </div>
@@ -329,7 +329,7 @@ export const DashboardPage: React.FC = () => {
       {/* Non-society user dashboard fallback */}
       {user?.role !== 'SOCIETY' && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-transparent p-6 rounded-[18px] space-y-3 border border-white/20">
+          <div className="bg-white/[0.08] backdrop-blur-[20px] shadow-[0_12px_40px_rgba(0,0,0,0.4)] p-6 rounded-[18px] space-y-3 border border-white/20">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-transparent border border-forest-ink text-forest-ink rounded-xl">
                 <UserCheck className="w-6 h-6" />
