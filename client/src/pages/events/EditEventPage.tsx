@@ -98,6 +98,7 @@ export const EditEventPage: React.FC = () => {
   }, [eventData, reset]);
 
   const updateMutation = useMutation({
+    meta: { notify: true },
     mutationFn: (data: EventFormData) => eventService.updateEvent(id!, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['myEvents'] });

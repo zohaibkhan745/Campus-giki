@@ -42,6 +42,7 @@ export const AdvisorPlanReviewPage: React.FC = () => {
 
   // Review plan mutation
   const reviewMutation = useMutation({
+    meta: { notify: true },
     mutationFn: (data: { decision: 'APPROVED' | 'CHANGES_REQUESTED'; comment?: string }) =>
       yearlyPlanService.reviewPlan(id!, data),
     onSuccess: () => {

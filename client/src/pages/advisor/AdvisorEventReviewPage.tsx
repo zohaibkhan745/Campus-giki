@@ -84,6 +84,7 @@ export const AdvisorEventReviewPage: React.FC = () => {
   }, [eventData, reset]);
 
   const updateMutation = useMutation({
+    meta: { notify: true },
     mutationFn: (data: EventFormData) => eventService.updateEvent(id!, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['event', id] });
@@ -101,6 +102,7 @@ export const AdvisorEventReviewPage: React.FC = () => {
   });
 
   const updateEventStatusMutation = useMutation({
+    meta: { notify: true },
     mutationFn: ({ status }: { status: string }) =>
       advisorService.updateEventStatus(id!, { status, comments: advisorComment }),
     onSuccess: () => {

@@ -15,6 +15,7 @@ export const MakeAnnouncementDialog: React.FC<MakeAnnouncementDialogProps> = ({
   const queryClient = useQueryClient();
 
   const createPostMutation = useMutation({
+    meta: { notify: true },
     mutationFn: async (data: { content: string; imageUrl?: string; videoUrl?: string }) => {
       const response = await api.post('/posts', data);
       return response.data;

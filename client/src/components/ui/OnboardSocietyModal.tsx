@@ -52,6 +52,7 @@ export const OnboardSocietyModal: React.FC<OnboardSocietyModalProps> = ({ isOpen
   const advisorOptions = advisors.map(adv => ({ value: adv.id, label: `${adv.user.fullName} (${adv.designation})` }));
 
   const onboardMutation = useMutation({
+    meta: { notify: true },
     mutationFn: (payload: OnboardSocietyFormData) => adminService.onboardSociety(payload),
     onSuccess: (data) => {
       setProvisionedData(data);

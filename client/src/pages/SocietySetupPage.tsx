@@ -100,6 +100,7 @@ export const SocietySetupPage: React.FC = () => {
   }, [mySociety, reset]);
 
   const setupMutation = useMutation({
+    meta: { notify: true },
     mutationFn: (data: SocietySetupFormData) => 
       isEditing ? societyService.updateSociety(data) : societyService.setupSociety(data),
     onSuccess: () => {

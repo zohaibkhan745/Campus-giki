@@ -92,6 +92,7 @@ export const YearlyCalendarPage: React.FC = () => {
 
   // Create plan mutation
   const createMutation = useMutation({
+    meta: { notify: true },
     mutationFn: (data: { payload: YearlyPlanFormData; status: PlanStatus }) =>
       yearlyPlanService.createPlan({
         year: data.payload.year,
@@ -121,6 +122,7 @@ export const YearlyCalendarPage: React.FC = () => {
 
   // Update plan mutation
   const updateMutation = useMutation({
+    meta: { notify: true },
     mutationFn: (data: { payload: YearlyPlanFormData; status?: PlanStatus }) =>
       yearlyPlanService.updatePlan(existingPlan.id, {
         status: data.status,

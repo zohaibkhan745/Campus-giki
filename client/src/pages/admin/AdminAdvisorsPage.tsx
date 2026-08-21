@@ -30,6 +30,7 @@ export const AdminAdvisorsPage: React.FC = () => {
   });
 
   const createMutation = useMutation({
+    meta: { notify: true },
     mutationFn: (data: CreateAdvisorPayload) => adminService.createAdvisor(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['availableAdvisors'] });

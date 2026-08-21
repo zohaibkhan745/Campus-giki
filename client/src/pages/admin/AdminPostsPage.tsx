@@ -111,6 +111,7 @@ export const AdminPostsPage: React.FC = () => {
   };
 
   const saveMutation = useMutation({
+    meta: { notify: true },
     mutationFn: (formData: PostFormData) =>
       editingPost
         ? postService.updatePost(editingPost.id, formData)
@@ -127,6 +128,7 @@ export const AdminPostsPage: React.FC = () => {
   });
 
   const deleteMutation = useMutation({
+    meta: { notify: true },
     mutationFn: (id: string) => postService.deletePost(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['adminPosts'] });

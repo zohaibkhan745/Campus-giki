@@ -20,6 +20,7 @@ export const DeleteEventDialog: React.FC<DeleteEventDialogProps> = ({
   const queryClient = useQueryClient();
 
   const deleteMutation = useMutation({
+    meta: { notify: true },
     mutationFn: (id: string) => eventService.deleteEvent(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['myEvents'] });

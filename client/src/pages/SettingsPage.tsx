@@ -33,6 +33,7 @@ export const SettingsPage: React.FC = () => {
   const isAdvisor = user?.role === 'ADVISOR';
 
   const profileMutation = useMutation({
+    meta: { notify: true },
     mutationFn: (data: any) => authService.updateProfile(data),
     onSuccess: async () => {
       await refetchUser();
@@ -50,6 +51,7 @@ export const SettingsPage: React.FC = () => {
   });
 
   const passwordMutation = useMutation({
+    meta: { notify: true },
     mutationFn: (data: any) => authService.updateProfile(data),
     onSuccess: () => {
       setPasswordSuccess(true);

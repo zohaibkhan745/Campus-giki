@@ -98,6 +98,7 @@ export const AdminSocietiesPage: React.FC = () => {
 
   // Edit Mutation
   const updateMutation = useMutation({
+    meta: { notify: true },
     mutationFn: (data: { id: string; payload: { name?: string; categoryId?: string; advisorId?: string | null } }) =>
       adminService.updateSociety(data.id, data.payload),
     onSuccess: () => {
@@ -113,6 +114,7 @@ export const AdminSocietiesPage: React.FC = () => {
 
   // Delete Mutation
   const deleteMutation = useMutation({
+    meta: { notify: true },
     mutationFn: (id: string) => adminService.deleteSociety(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['adminSocietiesList'] });
@@ -127,6 +129,7 @@ export const AdminSocietiesPage: React.FC = () => {
 
   // Deactivate Mutation
   const deactivateMutation = useMutation({
+    meta: { notify: true },
     mutationFn: (id: string) => adminService.deactivateSociety(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['adminSocietiesList'] });
@@ -141,6 +144,7 @@ export const AdminSocietiesPage: React.FC = () => {
 
     // Warning Mutation
   const warningMutation = useMutation({
+    meta: { notify: true },
     mutationFn: (data: { id: string; hasWarning: boolean }) => adminService.toggleWarning(data.id, data.hasWarning),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['adminSocietiesList'] });
@@ -153,6 +157,7 @@ export const AdminSocietiesPage: React.FC = () => {
 
   // Reactivate Mutation
   const reactivateMutation = useMutation({
+    meta: { notify: true },
     mutationFn: (id: string) => adminService.reactivateSociety(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['adminSocietiesList'] });

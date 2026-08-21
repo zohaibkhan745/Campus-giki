@@ -101,6 +101,7 @@ export const CreateEventPage: React.FC = () => {
   };
 
   const createMutation = useMutation({
+    meta: { notify: true },
     mutationFn: (data: EventFormData) => eventService.createEvent(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['myEvents'] });

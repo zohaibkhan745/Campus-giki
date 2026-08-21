@@ -83,6 +83,7 @@ export const AdminYearlyPlanDetailPage: React.FC = () => {
   }, [plan, reset]);
 
   const updateMutation = useMutation({
+    meta: { notify: true },
     mutationFn: (eventsList: any[]) => adminService.updateYearlyPlan(id!, { events: eventsList }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['adminYearlyPlanDetail', id] });

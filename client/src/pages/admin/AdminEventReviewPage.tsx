@@ -86,6 +86,7 @@ export const AdminEventReviewPage: React.FC = () => {
   }, [eventData, reset]);
 
   const updateMutation = useMutation({
+    meta: { notify: true },
     mutationFn: (data: EventFormData) => eventService.updateEvent(id!, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['event', id] });
@@ -103,6 +104,7 @@ export const AdminEventReviewPage: React.FC = () => {
   });
 
   const updateEventStatusMutation = useMutation({
+    meta: { notify: true },
     mutationFn: (data: { status: 'PUBLISHED' | 'CHANGES_REQUESTED' }) =>
       adminService.updateEventStatus(id!, { status: data.status, comments: dsaComment.trim() || undefined, rules: rules.trim() || undefined }),
     onSuccess: () => {
