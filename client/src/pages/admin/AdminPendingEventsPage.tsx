@@ -125,8 +125,8 @@ export const AdminPendingEventsPage: React.FC = () => {
   const events = (data as any)?.pages?.flatMap((page: any) => page.items) || [];
   const meta = (data as any)?.pages?.[(data as any).pages.length - 1]?.meta;
 
-  const upcomingEvents = events.filter((e: any) => e.isUpcoming);
-  const pastEvents = events.filter((e: any) => !e.isUpcoming);
+  
+  
 
   return (
     <div className="max-w-7xl mx-auto space-y-6 text-left py-4">
@@ -213,23 +213,13 @@ export const AdminPendingEventsPage: React.FC = () => {
           <h3 className="font-bold text-white text-base">No Campus Events Found</h3>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4 items-start">
-          <div className="space-y-4" style={{ perspective: '1200px' }}>
-            <h2 className="text-2xl font-bold text-white border-b-2 border-white/10 pb-3">Upcoming Events ({upcomingEvents.length})</h2>
-            {upcomingEvents.length === 0 ? (
-              <p className="text-sm text-gray-400 italic">No upcoming events match the filters.</p>
-            ) : (
-              <EventGrid events={upcomingEvents} />
-            )}
-          </div>
-          <div className="space-y-4" style={{ perspective: '1200px' }}>
-            <h2 className="text-2xl font-bold text-white border-b-2 border-white/10 pb-3">Past Events ({pastEvents.length})</h2>
-            {pastEvents.length === 0 ? (
-              <p className="text-sm text-gray-400 italic">No past events match the filters.</p>
-            ) : (
-              <EventGrid events={pastEvents} />
-            )}
-          </div>
+        <div className="space-y-4 pt-4">
+          <h2 className="text-2xl font-bold text-white border-b-2 border-white/10 pb-3">Pending Events ({events.length})</h2>
+          {events.length === 0 ? (
+            <p className="text-sm text-gray-400 italic">No pending events match the filters.</p>
+          ) : (
+            <EventGrid events={events} />
+          )}
         </div>
       )}
 

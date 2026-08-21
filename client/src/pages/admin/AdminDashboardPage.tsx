@@ -187,7 +187,7 @@ export const AdminDashboardPage: React.FC = () => {
               <Calendar className="w-5 h-5 text-forest-ink" />
               <h3>Upcoming Events ({upcomingEvents.length})</h3>
             </div>
-            <Link to="/admin/events?type=upcoming" className="text-sm font-bold text-white hover:text-forest-ink transition-colors underline underline-offset-2">
+            <Link to="/admin/events" className="text-sm font-bold text-white hover:text-forest-ink transition-colors underline underline-offset-2">
               View All
             </Link>
           </div>

@@ -282,7 +282,7 @@ export const DockNav: React.FC = () => {
 
           .fluid-nav-item.active {
               background-color: #ffffff;
-              box-shadow: 0 0 12px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.5), inset 0 0 10px rgba(255, 255, 255, 0.2);
+              box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3), 0 0 12px rgba(255, 255, 255, 0.6);
           }
 
           .fluid-nav-item.active svg {
