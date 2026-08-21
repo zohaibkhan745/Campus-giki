@@ -1,9 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 
 export interface DropdownOption {
   value: string;
   label: string;
-  code?: string; // Maps to the country code or secondary short text in the template
+  code?: string;
 }
 
 interface CustomDropdownProps {
@@ -14,7 +15,7 @@ interface CustomDropdownProps {
   className?: string;
   disabled?: boolean;
   icon?: React.ReactNode;
-  variant?: 'default' | 'ghost'; // Preserved for compatibility, but the glassmorphic theme overrides it anyway
+  variant?: 'default' | 'ghost';
 }
 
 export const CustomDropdown: React.FC<CustomDropdownProps> = ({ 
@@ -28,18 +29,48 @@ export const CustomDropdown: React.FC<CustomDropdownProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const [menuStyle, setMenuStyle] = useState<React.CSSProperties>({});
 
   const selectedOption = options.find(o => o.value === value) || { value: '', label: placeholder, code: '' };
 
+  const updatePosition = () => {
+    if (containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect();
+      setMenuStyle({
+        position: 'absolute',
+        top: rect.bottom + window.scrollY + 8,
+        left: rect.left + window.scrollX,
+        minWidth: rect.width,
+        width: 'max-content',
+        zIndex: 9999
+      });
+    }
+  };
+
   useEffect(() => {
     const handleOutsideClick = (e: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+      const isInsideContainer = containerRef.current && containerRef.current.contains(e.target as Node);
+      const isInsideMenu = menuRef.current && menuRef.current.contains(e.target as Node);
+      
+      if (!isInsideContainer && !isInsideMenu) {
         setIsOpen(false);
       }
     };
-    document.addEventListener('click', handleOutsideClick);
-    return () => document.removeEventListener('click', handleOutsideClick);
-  }, []);
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleOutsideClick);
+      window.addEventListener('resize', updatePosition);
+      window.addEventListener('scroll', updatePosition, true);
+      updatePosition();
+    }
+    
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+      window.removeEventListener('resize', updatePosition);
+      window.removeEventListener('scroll', updatePosition, true);
+    };
+  }, [isOpen]);
 
   const handleSelect = (e: React.MouseEvent, val: string) => {
     e.stopPropagation();
@@ -76,30 +107,33 @@ export const CustomDropdown: React.FC<CustomDropdownProps> = ({
         </svg>
       </button>
 
-      <div className="dropdown-menu">
-        <div className="dropdown-list">
-          {options.map((opt) => {
-            const isActive = opt.value === value;
-            return (
-              <div 
-                key={opt.value}
-                className={`dropdown-item ${isActive ? 'active' : ''}`} 
-                data-code={opt.code || ''} 
-                data-label={opt.label}
-                onClick={(e) => handleSelect(e, opt.value)}
-              >
-                <div className="item-left">
-                  {opt.code && <span className="country-code">{opt.code}</span>}
-                  <span className="language-name">{opt.label}</span>
+      {isOpen && typeof document !== 'undefined' && createPortal(
+        <div className="dropdown-menu open" style={{ ...menuStyle, display: 'block' }} ref={menuRef}>
+          <div className="dropdown-list">
+            {options.map((opt) => {
+              const isActive = opt.value === value;
+              return (
+                <div 
+                  key={opt.value}
+                  className={`dropdown-item ${isActive ? 'active' : ''}`} 
+                  data-code={opt.code || ''} 
+                  data-label={opt.label}
+                  onClick={(e) => handleSelect(e, opt.value)}
+                >
+                  <div className="item-left">
+                    {opt.code && <span className="country-code">{opt.code}</span>}
+                    <span className="language-name">{opt.label}</span>
+                  </div>
+                  <svg className="check-icon" viewBox="0 0 24 24">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
                 </div>
-                <svg className="check-icon" viewBox="0 0 24 24">
-                  <polyline points="20 6 9 17 4 12"></polyline>
-                </svg>
-              </div>
-            );
-          })}
-        </div>
-      </div>
+              );
+            })}
+          </div>
+        </div>,
+        document.body
+      )}
     </div>
   );
 };

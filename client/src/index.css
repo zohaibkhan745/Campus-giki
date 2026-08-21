@@ -1065,7 +1065,7 @@ body.is-focused nav {
 /* --- EXACT DROPDOWN TEMPLATE STYLES --- */
 .dropdown-container {
   position: relative;
-  width: max-content;
+  /* width: 240px; removed to let React components decide width, but we use max-content where needed */
   z-index: 1;
 }
 
@@ -1086,6 +1086,7 @@ body.is-focused nav {
   outline: none;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   transition: all 0.25s ease;
+  white-space: nowrap;
 }
 
 .dropdown-btn:hover {
@@ -1104,13 +1105,14 @@ body.is-focused nav {
   font-size: 13px;
   font-weight: 600;
   min-width: 22px;
+  white-space: nowrap;
 }
 
 .language-name {
-  white-space: nowrap;
   color: #ffffff;
   font-weight: 500;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  white-space: nowrap;
 }
 
 .arrow-icon {
@@ -1120,6 +1122,8 @@ body.is-focused nav {
   stroke-width: 2;
   fill: none;
   transition: transform 0.25s ease;
+  flex-shrink: 0;
+  margin-left: 8px;
 }
 
 .dropdown-container.open .arrow-icon {
@@ -1130,14 +1134,15 @@ body.is-focused nav {
   position: absolute;
   top: calc(100% + 8px);
   left: 0;
-  width: 100%;
+  width: max-content;
+  min-width: 100%;
   background: rgba(20, 20, 24, 0.65);
   backdrop-filter: blur(25px);
   -webkit-backdrop-filter: blur(25px);
   border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 14px;
   display: none;
-  z-index: 1000;
+  z-index: 9999;
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
   padding: 6px 4px 6px 6px;
 }
@@ -1147,7 +1152,7 @@ body.is-focused nav {
 }
 
 .dropdown-list {
-  max-height: 300px;
+  max-height: 210px;
   overflow-y: auto;
   overflow-x: hidden;
   padding-right: 4px;
@@ -1165,6 +1170,7 @@ body.is-focused nav {
   cursor: pointer;
   font-size: 14px;
   transition: background-color 0.15s ease, color 0.15s ease;
+  white-space: nowrap;
 }
 
 .dropdown-item:hover {
@@ -1195,6 +1201,8 @@ body.is-focused nav {
   stroke-width: 2.5;
   fill: none;
   display: none;
+  flex-shrink: 0;
+  margin-left: 12px;
 }
 
 .dropdown-item.active .check-icon {
@@ -1306,6 +1314,7 @@ body.is-focused nav {
 
 .btn-cancel,
 .btn-confirm {
+  white-space: nowrap;
   flex: 1;
   padding: 11px 16px;
   border-radius: 10px;
