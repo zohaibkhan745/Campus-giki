@@ -107,7 +107,7 @@ export const SettingsPage: React.FC = () => {
   return (
     <div className="max-w-3xl mx-auto space-y-6 text-left py-4">
       {/* Top Back Navigation */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mb-2">
         <button
           onClick={() => navigate(-1)}
           className="fixed top-4 left-4 sm:top-6 sm:left-6 z-[100] inline-flex items-center justify-center w-10 h-10 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white rounded-full transition-all cursor-pointer shadow-lg"
@@ -117,159 +117,126 @@ export const SettingsPage: React.FC = () => {
         </button>
       </div>
 
-      {/* Header Banner */}
-      <div className="flex items-center gap-4 relative z-1 w-full p-8 rounded-[18px] bg-white/[0.08] backdrop-blur-[20px] border border-white/20 shadow-[0_12px_40px_rgba(0,0,0,0.4)] text-white">
-        {user.avatarUrl ? (
-          <img src={user.avatarUrl} alt="Avatar" className="w-16 h-16 rounded-full border border-vast-ink/20 object-cover shrink-0" />
-        ) : (
-          <div className="w-16 h-16 rounded-full border border-vast-ink/20 bg-lumen-stone flex items-center justify-center shrink-0">
-            <User className="w-8 h-8 text-white" />
-          </div>
-        )}
-        <div className="space-y-1">
-          <div className="flex items-center gap-2 text-white text-xs font-semibold uppercase tracking-wider mb-1">
-            <Shield className="w-4 h-4" />
-            <span>Account Settings</span>
-          </div>
-          <h1 className="text-2xl font-extrabold text-white">
-            Personal Profile
-          </h1>
-          <p className="text-sm text-gray-300">
-            Manage your general information and security credentials.
-          </p>
-        </div>
-      </div>
+      <h1 className="text-4xl font-extrabold text-white mb-6">Personal Profile</h1>
 
       <div className="grid grid-cols-1 gap-6">
-        {/* Profile Information Panel */}
-        <div className="relative z-1 w-full p-8 rounded-[18px] bg-white/[0.08] backdrop-blur-[20px] border border-white/20 shadow-[0_12px_40px_rgba(0,0,0,0.4)] text-white space-y-5 text-left">
-          <h3 className="font-extrabold text-lg text-white flex items-center gap-2 border-b-2 border-vast-ink/10 pb-3">
-            <User className="w-5 h-5 text-white" />
-            General Information
-          </h3>
+        <div className="relative z-1 w-full p-8 rounded-[18px] bg-white/[0.08] backdrop-blur-[20px] border border-white/20 shadow-[0_12px_40px_rgba(0,0,0,0.4)] text-white space-y-6 text-left">
+          
+          <form onSubmit={(e) => {
+            e.preventDefault();
+            handleProfileSubmit(e);
+            if (currentPassword && newPassword) {
+              handlePasswordSubmit(e);
+            }
+          }} className="space-y-6">
+            
+            {/* General Section */}
+            <div>
+              <h3 className="font-extrabold text-lg text-white flex items-center gap-2 mb-4">
+                <User className="w-5 h-5 text-white" />
+                General Information
+              </h3>
+              
+              <div className="space-y-4">
+                <div className="space-y-1">
+                  <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Account Email</label>
+                  <div className="w-full bg-[#111111] text-gray-400 text-sm rounded-lg border border-white/10 px-4 py-3 cursor-not-allowed">
+                    {user.email}
+                  </div>
+                </div>
 
-          {profileError && null /* Removed error alert */}
-          {profileSuccess && null /* Removed success alert */}
+                <Input
+                  label="Full Name"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  required
+                />
 
-          <form onSubmit={handleProfileSubmit} className="space-y-4">
-            <div className="space-y-1">
-              <label className="text-xs font-semibold text-gray-300">Account Email</label>
-              <div className="w-full bg-lavender-whisper text-gray-300 text-sm rounded-inputs border border-vast-ink/20/20 px-3.5 py-2.5 font-mono cursor-not-allowed">
-                {user.email}
+                {isAdvisor && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Faculty</label>
+                      <CustomDropdown
+                        options={[
+                          { value: 'FCSE', label: 'FCSE' },
+                          { value: 'FEE', label: 'FEE' },
+                          { value: 'FCVE', label: 'FCVE' },
+                          { value: 'FME', label: 'FME' },
+                          { value: 'FCME', label: 'FCME' },
+                          { value: 'FMTE', label: 'FMTE' }
+                        ]}
+                        value={faculty}
+                        onChange={(val: string) => setFaculty(val)}
+                        placeholder="Select Faculty"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Designation</label>
+                      <CustomDropdown
+                        options={[
+                          { value: 'Lecturer', label: 'Lecturer' },
+                          { value: 'Assistant Professor', label: 'Assistant Professor' },
+                          { value: 'Associate Professor', label: 'Associate Professor' },
+                          { value: 'Professor', label: 'Professor' }
+                        ]}
+                        value={designation}
+                        onChange={(val: string) => setDesignation(val)}
+                        placeholder="Select Designation"
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
-            <Input
-              label="Full Name"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-              required
-            />
+            {/* Mid Line */}
+            <div className="w-full h-px bg-white/10 my-6"></div>
 
-            <Input
-              label="Avatar URL"
-              value={avatarUrl}
-              onChange={(e) => setAvatarUrl(e.target.value)}
-              placeholder="https://example.com/avatar.png"
-              leftIcon={<Image className="w-4 h-4" />}
-            />
+            {/* Security Section */}
+            <div>
+              <h3 className="font-extrabold text-lg text-white flex items-center gap-2 mb-4">
+                <KeyRound className="w-5 h-5 text-white" />
+                Security & Password
+              </h3>
 
-            {isAdvisor && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                
-                  <div className="space-y-1">
-                    <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Faculty</label>
-                    <CustomDropdown
-                      options={[
-                        { value: 'FCSE', label: 'FCSE' },
-                        { value: 'FEE', label: 'FEE' },
-                        { value: 'FCVE', label: 'FCVE' },
-                        { value: 'FME', label: 'FME' },
-                        { value: 'FCME', label: 'FCME' },
-                        { value: 'FMTE', label: 'FMTE' }
-                      ]}
-                      value={faculty}
-                      onChange={(val: string) => setFaculty(val)}
-                      placeholder="Select Faculty"
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Designation</label>
-                    <CustomDropdown
-                      options={[
-                        { value: 'Lecturer', label: 'Lecturer' },
-                        { value: 'Assistant Professor', label: 'Assistant Professor' },
-                        { value: 'Associate Professor', label: 'Associate Professor' },
-                        { value: 'Professor', label: 'Professor' }
-                      ]}
-                      value={designation}
-                      onChange={(val: string) => setDesignation(val)}
-                      placeholder="Select Designation"
-                    />
-                  </div>
+              <div className="space-y-4">
+                <Input
+                  type="password"
+                  label="Current Password"
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  placeholder="******"
+                />
 
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                  <Input
+                    type="password"
+                    label="New Password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder="******"
+                  />
+                  <Input
+                    type="password"
+                    label="Confirm New Password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="******"
+                  />
+                </div>
               </div>
-            )}
+            </div>
 
-            <div className="pt-2 flex justify-end">
+            {/* Save Button */}
+            <div className="pt-4 flex justify-end">
               <Button
                 type="submit"
                 variant="primary"
-                className="w-full sm:w-auto px-8"
-                isLoading={profileMutation.isPending}
+                className="w-full sm:w-auto px-8 bg-white text-black hover:bg-white/90"
+                isLoading={profileMutation.isPending || passwordMutation.isPending}
                 leftIcon={<Check className="w-4 h-4" />}
               >
                 Save Changes
-              </Button>
-            </div>
-          </form>
-        </div>
-
-        {/* Security / Password Panel */}
-        <div className="relative z-1 w-full p-8 rounded-[18px] bg-white/[0.08] backdrop-blur-[20px] border border-white/20 shadow-[0_12px_40px_rgba(0,0,0,0.4)] text-white space-y-5 text-left">
-          <h3 className="font-extrabold text-lg text-white flex items-center gap-2 border-b-2 border-vast-ink/10 pb-3">
-            <KeyRound className="w-5 h-5 text-white" />
-            Security & Password
-          </h3>
-
-          {passwordError && null /* Removed error alert */}
-          {passwordSuccess && null /* Removed success alert */}
-
-          <form onSubmit={handlePasswordSubmit} className="space-y-4">
-            <Input
-              type="password"
-              label="Current Password"
-              value={currentPassword}
-              onChange={(e) => setCurrentPassword(e.target.value)}
-              required
-            />
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-              <Input
-                type="password"
-                label="New Password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                required
-              />
-              <Input
-                type="password"
-                label="Confirm New Password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                required
-              />
-            </div>
-
-            <div className="pt-2 flex justify-end">
-              <Button
-                type="submit"
-                variant="primary"
-                className="w-full sm:w-auto px-8"
-                isLoading={passwordMutation.isPending}
-                leftIcon={<Shield className="w-4 h-4" />}
-              >
-                Update Password
               </Button>
             </div>
           </form>
