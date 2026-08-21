@@ -839,7 +839,7 @@ body.is-focused .card-wrapper:not(.in-focus) {
 }
 
 .glass-dropdown-list {
-  max-height: 300px;
+  max-height: 210px;
   overflow-y: auto;
   overflow-x: hidden;
   padding-right: 4px;
@@ -1065,7 +1065,7 @@ body.is-focused nav {
 /* --- EXACT DROPDOWN TEMPLATE STYLES --- */
 .dropdown-container {
   position: relative;
-  width: 100%;
+  width: max-content;
   z-index: 1;
 }
 
@@ -1107,6 +1107,7 @@ body.is-focused nav {
 }
 
 .language-name {
+  white-space: nowrap;
   color: #ffffff;
   font-weight: 500;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
