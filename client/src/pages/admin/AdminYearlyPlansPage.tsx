@@ -112,9 +112,9 @@ export const AdminYearlyPlansPage: React.FC = () => {
       </div>
 
       {/* Filter Toolbar */}
-      <div className="relative z-[200] bg-white/[0.08] backdrop-blur-[20px] p-5 rounded-[18px] border border-white/20 shadow-[0_12px_40px_rgba(0,0,0,0.4)] flex flex-col md:flex-row items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row gap-2.5 mb-6">
         {/* Search Input */}
-        <div className="relative w-full md:w-72 flex items-center">
+        <div className="relative w-full flex-1 flex items-center">
           <div className="absolute left-3 text-gray-400 pointer-events-none flex items-center justify-center">
             <Search className="w-4 h-4" />
           </div>
@@ -126,19 +126,19 @@ export const AdminYearlyPlansPage: React.FC = () => {
               setSearchQuery(e.target.value);
               setPage(1);
             }}
-            className="w-full bg-transparent text-white placeholder:text-gray-400 text-sm rounded-inputs border border-white/10 px-3.5 py-2 pl-10 transition-all outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+            className="search-input w-full pl-10"
           />
         </div>
 
         {/* Dropdown Filters & Clear */}
-        <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
+        <div className="flex flex-col sm:flex-row items-center gap-2.5 w-full sm:w-auto">
           {/* Status Filter */}
-          <div className="w-full md:flex-1 shrink-0">
+          <div className="w-full sm:w-[220px] shrink-0">
             <CustomDropdown
               className="w-full"
               icon={<Filter className="w-4 h-4" />}
               value={statusFilter}
-              onChange={(val: string) => { setStatusFilter(val); setPage(1); }}
+              onChange={(e: any) => { setStatusFilter(e.target.value); setPage(1); }}
               placeholder="All Submitted Plans"
               options={[
                 { value: '', label: 'All Submitted Plans' },
@@ -150,12 +150,12 @@ export const AdminYearlyPlansPage: React.FC = () => {
           </div>
 
           {/* Year Select Filter */}
-          <div className="w-full md:flex-1 shrink-0">
+          <div className="w-full sm:w-[220px] shrink-0">
             <CustomDropdown
               className="w-full"
               icon={<Calendar className="w-4 h-4" />}
               value={yearFilter}
-              onChange={(val: string) => { setYearFilter(val); setPage(1); }}
+              onChange={(e: any) => { setYearFilter(e.target.value); setPage(1); }}
               placeholder="All Years"
               options={[
                 { value: '', label: 'All Years' },
@@ -311,3 +311,4 @@ export const AdminYearlyPlansPage: React.FC = () => {
     </div>
   );
 };
+

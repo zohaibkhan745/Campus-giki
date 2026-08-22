@@ -2357,3 +2357,7 @@ body.is-focused .cards-container {
   background: rgba(255, 77, 79, 0.15);
   color: #ff8787;
 }
+
+/* Global Cursor Pointer */
+button, a, select, .glass-btn, .custom-dropdown-btn, [role="button"] { cursor: pointer !important; }
+

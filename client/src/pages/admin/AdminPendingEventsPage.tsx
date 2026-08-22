@@ -177,7 +177,7 @@ export const AdminPendingEventsPage: React.FC = () => {
           
           <CustomDropdown className="w-full md:flex-1 shrink-0" icon={<Building2 className="w-4 h-4" />} options={[{ value: '', label: 'All Societies' }, ...societies.map((soc: any) => ({ value: soc.id, label: soc.name }))]}
             value={societyFilter}
-            onChange={(val: string) => { setSocietyFilter(val); /* reset handled by queryKey */ }}
+            onChange={(e: any) => { setSocietyFilter(e.target.value); /* reset handled by queryKey */ }}
             placeholder="All Societies"
           />
           <div className="w-full md:flex-1 shrink-0"><CustomDatePicker value={fromDate} onChange={(val: string) => { setFromDate(val); setTypeToggle("all"); /* reset handled by queryKey */ }} placeholder="From Date" /></div>

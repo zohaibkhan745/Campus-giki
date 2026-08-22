@@ -310,11 +310,7 @@ export const CampusCalendarPage: React.FC = () => {
             <h2 className="text-2xl font-bold drop-shadow-md mr-2">
               {currentDate.toLocaleString('default', { month: 'long', year: 'numeric' })}
             </h2>
-            <div className="flex gap-1">
-              <button className="glass-btn" onClick={prevMonth}>&lt;</button>
-              <button className={`glass-btn ${!isCurrentMonthView ? "current-month-btn" : ""}`} onClick={goToday} style={!isCurrentMonthView ? { background: "#ffffff", color: "#000000", fontWeight: "600" } : {}}>Current Month</button>
-              <button className="glass-btn" onClick={nextMonth}>&gt;</button>
-            </div>
+            
             {isCalendarLoading && <Loader2 className="w-4 h-4 animate-spin ml-2" />}
           </div>
 
@@ -335,11 +331,17 @@ export const CampusCalendarPage: React.FC = () => {
             onChange={e => setSearchQuery(e.target.value)}
           />
           
+          <div className="flex gap-1 shrink-0 items-center justify-center">
+            <button className="glass-btn" onClick={prevMonth}>&lt;</button>
+            <button className={`glass-btn ${!isCurrentMonthView ? "current-month-btn" : ""}`} onClick={goToday} style={!isCurrentMonthView ? { background: "#ffffff", color: "#000000", fontWeight: "600" } : {}}>Current Month</button>
+            <button className="glass-btn" onClick={nextMonth}>&gt;</button>
+          </div>
+
           <div className="w-full sm:w-[280px] shrink-0">
             <CustomDropdown 
               className="w-full"
               value={selectedSociety}
-              onChange={setSelectedSociety}
+              onChange={(e: any) => setSelectedSociety(e.target.value)}
               placeholder="All Societies"
               options={[{value: 'all', label: 'All Societies'}, ...societies.map(s => ({ value: s.id, label: s.name }))]}
             />
@@ -437,3 +439,5 @@ export const CampusCalendarPage: React.FC = () => {
     </div>
   );
 };
+
+

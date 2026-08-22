@@ -202,7 +202,8 @@ export const AdminPostsPage: React.FC = () => {
               { value: 'society', label: 'Societies' }
             ]}
             value={typeFilter}
-            onChange={(val: string) => {
+            onChange={(e: any) => {
+              const val = e.target.value;
               setTypeFilter(val as any);
               if (val === 'global') setSocietyFilter('');
               /* reset handled by queryKey */
@@ -217,8 +218,8 @@ export const AdminPostsPage: React.FC = () => {
               ...societies.map((soc: any) => ({ value: soc.id, label: soc.name }))
             ]}
             value={societyFilter}
-            onChange={(val: string) => {
-              setSocietyFilter(val);
+            onChange={(e: any) => {
+              setSocietyFilter(e.target.value);
               setTypeFilter('society');
               /* reset handled by queryKey */
             }}
@@ -344,3 +345,4 @@ export const AdminPostsPage: React.FC = () => {
     </div>
   );
 };
+

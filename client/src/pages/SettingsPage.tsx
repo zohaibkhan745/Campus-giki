@@ -166,7 +166,7 @@ export const SettingsPage: React.FC = () => {
                           { value: 'FMTE', label: 'FMTE' }
                         ]}
                         value={faculty}
-                        onChange={(val: string) => setFaculty(val)}
+                        onChange={(e: any) => setFaculty(e.target.value)}
                         placeholder="Select Faculty"
                       />
                     </div>
@@ -180,7 +180,7 @@ export const SettingsPage: React.FC = () => {
                           { value: 'Professor', label: 'Professor' }
                         ]}
                         value={designation}
-                        onChange={(val: string) => setDesignation(val)}
+                        onChange={(e: any) => setDesignation(e.target.value)}
                         placeholder="Select Designation"
                       />
                     </div>

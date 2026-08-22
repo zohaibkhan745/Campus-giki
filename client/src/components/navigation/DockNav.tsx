@@ -58,7 +58,11 @@ export const DockNav: React.FC = () => {
     const items = Array.from(portalsContainer.querySelectorAll('.reparented-item')) as HTMLElement[];
 
     const animate = () => {
+      
       let isSettled = true;
+      const phRects = placeholders.map(ph => ph.getBoundingClientRect());
+
+      
 
       placeholders.forEach((ph, index) => {
         const item = items[index];
@@ -77,7 +81,7 @@ export const DockNav: React.FC = () => {
             targetOpacity = 0;
             targetScale = 0.3;
         } else if (isHovering.current && mouseX.current !== null && !isCollapsed.current) {
-            const rect = ph.getBoundingClientRect();
+            const rect = phRects[index];
             const itemCenterX = rect.left + rect.width / 2;
             const distance = Math.abs(mouseX.current - itemCenterX);
 
@@ -109,7 +113,7 @@ export const DockNav: React.FC = () => {
         ph.style.height = `${state.size}px`;
         ph.style.margin = `0 ${state.margin}px`;
 
-        const phRect = ph.getBoundingClientRect();
+        const phRect = phRects[index];
         
         item.style.width = `${state.size}px`;
         item.style.height = `${state.size}px`;
@@ -188,24 +192,31 @@ export const DockNav: React.FC = () => {
       threshold: 0.1
     };
 
-    const footer = document.getElementById('global-footer');
-    let footerObserver: IntersectionObserver | null = null;
-    
-    if (footer) {
-      footerObserver = new IntersectionObserver((entries) => {
+    let footerObserver: IntersectionObserver | null = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
           isFooterVisible.current = entry.isIntersecting;
           evaluateDockState();
           if (!animationFrameId.current) animationFrameId.current = requestAnimationFrame(animate);
         });
       }, observerOptions);
-      footerObserver.observe(footer);
-    }
+
+      const checkFooter = () => {
+        const footer = document.getElementById('global-footer');
+        if (footer && footerObserver) {
+          footerObserver.observe(footer);
+        }
+      };
+
+      const mutationObserver = new MutationObserver(() => {
+        checkFooter();
+      });
+      mutationObserver.observe(document.body, { childList: true, subtree: true });
+      checkFooter();
 
     return () => {
       document.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('resize', handleResize);
-      if (footerObserver && footer) footerObserver.unobserve(footer);
+      if (footerObserver) footerObserver.disconnect(); mutationObserver.disconnect();
       if (animationFrameId.current) cancelAnimationFrame(animationFrameId.current);
     };
   }, []);
@@ -383,3 +394,4 @@ export const DockNav: React.FC = () => {
     </>
   );
 };
+

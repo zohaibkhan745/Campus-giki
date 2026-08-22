@@ -68,69 +68,69 @@ export class SetupSocietyDto {
   @ApiPropertyOptional({
     example: 'https://giki.edu.pk/societies/acm-logo.png',
   })
-  @Transform(({ value }: { value: unknown }) => (value === '' ? undefined : value))
+  @Transform(({ value }: { value: unknown }) => (value === '' ? null : value))
   @IsOptional()
-  @IsUrl({}, { message: 'Logo URL must be a valid URL address' })
+  @IsString()
   logoUrl?: string;
 
   @ApiPropertyOptional({
     example: 'https://giki.edu.pk/societies/acm-banner.png',
   })
-  @Transform(({ value }: { value: unknown }) => (value === '' ? undefined : value))
+  @Transform(({ value }: { value: unknown }) => (value === '' ? null : value))
   @IsOptional()
-  @IsUrl({}, { message: 'Banner URL must be a valid URL address' })
+  @IsString()
   bannerUrl?: string;
 
   @ApiPropertyOptional({ example: 'https://instagram.com/acm_giki' })
-  @Transform(({ value }: { value: unknown }) => (value === '' ? undefined : value))
+  @Transform(({ value }: { value: unknown }) => (value === '' ? null : value))
   @IsOptional()
   @IsUrl({}, { message: 'Instagram link must be a valid URL address' })
   instagram?: string;
 
   @ApiPropertyOptional({ example: 'https://facebook.com/acmgiki' })
-  @Transform(({ value }: { value: unknown }) => (value === '' ? undefined : value))
+  @Transform(({ value }: { value: unknown }) => (value === '' ? null : value))
   @IsOptional()
   @IsUrl({}, { message: 'Facebook link must be a valid URL address' })
   facebook?: string;
 
   @ApiPropertyOptional({ example: 'https://linkedin.com/company/acmgiki' })
-  @Transform(({ value }: { value: unknown }) => (value === '' ? undefined : value))
+  @Transform(({ value }: { value: unknown }) => (value === '' ? null : value))
   @IsOptional()
   @IsUrl({}, { message: 'LinkedIn link must be a valid URL address' })
   linkedin?: string;
 
   @ApiPropertyOptional({ example: 'https://acm.giki.edu.pk' })
-  @Transform(({ value }: { value: unknown }) => (value === '' ? undefined : value))
+  @Transform(({ value }: { value: unknown }) => (value === '' ? null : value))
   @IsOptional()
   @IsUrl({}, { message: 'Website link must be a valid URL address' })
   website?: string;
 
   @ApiPropertyOptional({ example: 'acm@giki.edu.pk' })
-  @Transform(({ value }: { value: unknown }) => (value === '' ? undefined : value))
+  @Transform(({ value }: { value: unknown }) => (value === '' ? null : value))
   @IsOptional()
   @IsEmail({}, { message: 'Official society email must be a valid email format' })
   email?: string;
 
   @ApiPropertyOptional({ example: 'John Doe' })
-  @Transform(({ value }: { value: unknown }) => (value === '' ? undefined : value))
+  @Transform(({ value }: { value: unknown }) => (value === '' ? null : value))
   @IsOptional()
   @IsString()
   presidentName?: string;
 
   @ApiPropertyOptional({ example: '2023123' })
-  @Transform(({ value }: { value: unknown }) => (value === '' ? undefined : value))
+  @Transform(({ value }: { value: unknown }) => (value === '' ? null : value))
   @IsOptional()
   @IsString()
   presidentRegNum?: string;
 
   @ApiPropertyOptional({ example: '+923001234567' })
-  @Transform(({ value }: { value: unknown }) => (value === '' ? undefined : value))
+  @Transform(({ value }: { value: unknown }) => (value === '' ? null : value))
   @IsOptional()
   @IsString()
   presidentContact?: string;
 
   @ApiPropertyOptional({ example: 'FCSE' })
-  @Transform(({ value }: { value: unknown }) => (value === '' ? undefined : value))
+  @Transform(({ value }: { value: unknown }) => (value === '' ? null : value))
   @IsOptional()
   @IsString()
   presidentFaculty?: string;
