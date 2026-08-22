@@ -28,6 +28,7 @@ const SocietySetupPage = React.lazy(() => import('@/pages/SocietySetupPage').the
 const SocietyDirectoryPage = React.lazy(() => import('@/pages/societies/SocietyDirectoryPage').then(m => ({ default: m.SocietyDirectoryPage })));
 const SocietyProfilePage = React.lazy(() => import('@/pages/societies/SocietyProfilePage').then(m => ({ default: m.SocietyProfilePage })));
 const CampusCalendarPage = React.lazy(() => import('@/pages/events/CampusCalendarPage').then(m => ({ default: m.CampusCalendarPage })));
+const UpcomingEventsPage = React.lazy(() => import('@/pages/events/UpcomingEventsPage').then(m => ({ default: m.UpcomingEventsPage })));
 const CreateEventPage = React.lazy(() => import('@/pages/events/CreateEventPage').then(m => ({ default: m.CreateEventPage })));
 const EditEventPage = React.lazy(() => import('@/pages/events/EditEventPage').then(m => ({ default: m.EditEventPage })));
 const EventDetailPage = React.lazy(() => import('@/pages/events/EventDetailPage').then(m => ({ default: m.EventDetailPage })));
@@ -56,6 +57,7 @@ export const AppRoutes: React.FC = () => {
         {/* Public Routes with Global Navigation */}
         <Route element={<RootLayout />}>
           <Route path="/" element={<HomePage />} />
+          <Route path="/upcoming-events" element={<UpcomingEventsPage />} />
           <Route path="/societies" element={<SocietyDirectoryPage />} />
           <Route path="/societies/:id" element={<SocietyProfilePage />} />
           <Route path="/events" element={<CampusCalendarPage />} />
@@ -141,3 +143,4 @@ export const AppRoutes: React.FC = () => {
     </Suspense>
   );
 };
+

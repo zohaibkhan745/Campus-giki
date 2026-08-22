@@ -282,7 +282,41 @@ const deleteMutation = useMutation({
             </form>
           </div>
         </div>, document.body)}
+
+      {deleteModalOpen && createPortal(
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
+          <div
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
+            onClick={() => setDeleteModalOpen(false)}
+          />
+          <div className="relative w-full max-w-md bg-[#1a1f2e] border border-white/10 rounded-2xl shadow-2xl p-6">
+            <h3 className="text-xl font-bold text-white mb-2">Delete Advisor</h3>
+            <p className="text-gray-400 mb-6 text-sm">
+              Are you sure you want to delete this advisor? This action cannot be undone and will permanently remove their access.
+            </p>
+            <div className="flex justify-end gap-3">
+              <Button
+                variant="outline"
+                onClick={() => setDeleteModalOpen(false)}
+                className="btn-cancel" style={{width:"auto"}}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="primary"
+                isLoading={deleteMutation.isPending}
+                onClick={() => {
+                  if (advisorToDelete) {
+                    deleteMutation.mutate(advisorToDelete);
+                  }
+                }}
+                className="btn-cancel" style={{width:"auto", background:"#ef4444", color:"#fff", border:"1px solid #dc2626"}}
+              >
+                Delete
+              </Button>
+            </div>
+          </div>
+        </div>, document.body)}
     </div>
   );
 };
-

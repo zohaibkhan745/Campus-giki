@@ -55,7 +55,7 @@ export const AdvisorQueuePage: React.FC = () => {
       advisorService.getMySocietyYearlyPlans({
         page,
         limit: 10,
-        status: (statusFilter as PlanStatus) || undefined,
+        status: (statusFilter === 'ALL' || !statusFilter) ? undefined : (statusFilter as PlanStatus),
       }),
     enabled: activeTab === 'plans',
   });
@@ -71,7 +71,7 @@ export const AdvisorQueuePage: React.FC = () => {
       advisorService.getMySocietyEvents({
         page,
         limit: 10,
-        status: statusFilter || undefined,
+        status: (statusFilter === 'ALL' || !statusFilter) ? undefined : statusFilter,
       }),
     enabled: activeTab === 'events',
   });
