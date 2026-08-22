@@ -1,3 +1,4 @@
+import { getSocietyLogo, getSocietyBanner } from '@/lib/utils';
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useParams, Link, useNavigate } from 'react-router-dom';
@@ -219,8 +220,8 @@ export const SocietyProfilePage: React.FC = () => {
 
       {/* Banner */}
       <div className="society-banner">
-        {society.bannerUrl ? (
-          <img src={society.bannerUrl} alt="Banner Image" className="society-banner-img" />
+        {true ? (
+          <img src={getSocietyBanner(society.bannerUrl)} alt="Banner Image" className="society-banner-img" />
         ) : (
           <div className="society-banner-img bg-[#1e3c72]" />
         )}
@@ -256,8 +257,8 @@ export const SocietyProfilePage: React.FC = () => {
 
         {/* Profile Circle */}
         <div className="society-profile-container">
-          {society.logoUrl ? (
-            <img src={society.logoUrl} alt="Society Logo" className="society-profile-img" />
+          {true ? (
+            <img src={getSocietyLogo(society.logoUrl)} alt="Society Logo" className="society-profile-img" />
           ) : (
             <div className="society-profile-fallback">
               <Building2 className="w-16 h-16 text-gray-500" />
@@ -405,3 +406,4 @@ export const SocietyProfilePage: React.FC = () => {
     </div>
   );
 };
+

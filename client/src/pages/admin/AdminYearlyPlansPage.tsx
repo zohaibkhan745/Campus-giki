@@ -126,7 +126,7 @@ export const AdminYearlyPlansPage: React.FC = () => {
               setSearchQuery(e.target.value);
               setPage(1);
             }}
-            className="search-input w-full pl-10"
+            className="search-input w-full pl-10 h-[44px]"
           />
         </div>
 
@@ -311,4 +311,5 @@ export const AdminYearlyPlansPage: React.FC = () => {
     </div>
   );
 };
+
 

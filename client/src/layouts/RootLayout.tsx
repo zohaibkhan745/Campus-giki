@@ -19,7 +19,7 @@ export const RootLayout: React.FC = () => {
         <Footer />
       </div>
 
-      {/* DockNav removed from here to be global */}
+      <DockNav />
     </div>
   );
 };

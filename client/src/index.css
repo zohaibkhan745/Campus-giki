@@ -1,4 +1,4 @@
-﻿@import "tailwindcss";
+@import "tailwindcss";
 
 @theme {
   --color-lavender-whisper: #2a2235;
@@ -2361,3 +2361,19 @@ body.is-focused .cards-container {
 /* Global Cursor Pointer */
 button, a, select, .glass-btn, .custom-dropdown-btn, [role="button"] { cursor: pointer !important; }
 
+
+/* Global Search Input (Frosted) */
+.search-input {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 12px;
+  outline: none;
+  font-size: 0.9rem;
+}
+.search-input::placeholder { color: rgba(255, 255, 255, 0.4); }
+.search-input:focus { border-color: rgba(255, 255, 255, 0.3); }

@@ -8,7 +8,6 @@ import { AuthProvider } from '@/context/AuthContext';
 import { NotificationProvider } from '@/contexts/NotificationContext';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { AppRoutes } from '@/routes/AppRoutes';
-import { DockNav } from '@/components/navigation/DockNav';
 import { ScrollToTop } from '@/components/ScrollToTop';
 
 export const App: React.FC = () => {
@@ -21,7 +20,6 @@ export const App: React.FC = () => {
             <BrowserRouter>
               <ScrollToTop />
               <AppRoutes />
-              <DockNav />
               <div className="focus-backdrop" id="focusBackdrop"></div>
             </BrowserRouter>
           </ErrorBoundary>

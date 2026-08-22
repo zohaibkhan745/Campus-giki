@@ -1,3 +1,4 @@
+import { getSocietyLogo, getSocietyBanner } from '@/lib/utils';
 import React from 'react';
 import { Building2, User } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
@@ -143,7 +144,7 @@ export const BannerHeader: React.FC<BannerHeaderProps> = ({
       `}</style>
 
       <div className="shared-banner">
-        <img src={bannerUrl || '/default-banner.jpg'} alt="Banner Image" className="shared-banner-img" />
+        <img src={getSocietyBanner(bannerUrl)} alt="Banner Image" className="shared-banner-img" />
 
         {/* Profile Circle */}
         <div className="shared-profile-container">
@@ -161,3 +162,4 @@ export const BannerHeader: React.FC<BannerHeaderProps> = ({
     </>
   );
 };
+

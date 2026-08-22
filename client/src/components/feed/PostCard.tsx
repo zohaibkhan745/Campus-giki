@@ -1,3 +1,4 @@
+import { getSocietyLogo } from '@/lib/utils';
 import React, { useRef, useState, useEffect, useLayoutEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { getMediaUrl } from '@/lib/api';
@@ -35,7 +36,7 @@ export const PostCard: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) =>
   
   
   const isOfficial = item.isAdminPost || !item.society;
-  const logoImage = isOfficial ? '/giki-logo.png' : item.society?.logoUrl || '/giki-logo.png';
+  const logoImage = isOfficial ? '/giki-logo.png' : getSocietyLogo(item.society?.logoUrl);
   const authorName = item.society?.name || 'Admin';
 
   // Sync text to back face and check overflow
@@ -272,3 +273,4 @@ export const PostCard: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) =>
     </div>
   );
 };
+

@@ -1,3 +1,4 @@
+import { getSocietyLogo, getSocietyBanner } from '@/lib/utils';
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link, useNavigate } from 'react-router-dom';
@@ -150,7 +151,7 @@ export const SocietyDirectoryPage: React.FC = () => {
             placeholder="All Domains" 
             options={[
               { value: '', label: 'All Domains' },
-              ...categories.map(c => ({ value: c.id, label: c.name }))
+              ...categories.map(c => ({ value: c.slug, label: c.name }))
             ]}
             className="w-full md:w-[180px]"
           />
@@ -220,9 +221,9 @@ export const SocietyDirectoryPage: React.FC = () => {
               <div className="relative h-full flex flex-col bg-zinc-900 rounded-3xl shadow-2xl shadow-black/80 overflow-hidden transition-all duration-500 ease-out hover:-translate-y-1 hover:scale-[1.015] border border-zinc-800/80 group-hover:border-emerald-950/40">
                 
                 <div className="relative overflow-hidden group/img image-container">
-                  {society.logoUrl ? (
+                  {true ? (
                     <img 
-                      src={society.logoUrl} 
+                      src={getSocietyLogo(society.logoUrl)} 
                       alt={society.name} 
                       className="w-full aspect-square object-cover transition-transform duration-700 ease-out group-hover/img:scale-[1.04]"
                     />
@@ -238,18 +239,15 @@ export const SocietyDirectoryPage: React.FC = () => {
                     <h2 className="text-3xl font-extrabold text-white leading-tight line-clamp-3 drop-shadow-[0_4px_8px_rgba(0,0,0,1)]">{society.name}</h2>
                   </div>
 
-                  <div className="absolute top-6 right-6 text-right text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
-                    <div className="text-xl font-bold leading-none drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">{society._count?.members || Math.floor(Math.random()*150 + 20)}</div>
-                    <div className="text-[10px] uppercase tracking-wider font-bold opacity-90 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">members</div>
-                  </div>
+                  
                 </div>
                 
                 <div className="p-4 flex items-center justify-between bg-zinc-900 flex-1 gap-3">
                   <div className="flex items-center gap-3 min-w-0">
                     <div className="w-8 h-8 rounded-full overflow-hidden transition-transform duration-500 hover:scale-110 ring-2 ring-zinc-700 flex-shrink-0 bg-zinc-800 flex items-center justify-center">
-                      {society.logoUrl ? (
+                      {true ? (
                         <img 
-                          src={society.logoUrl} 
+                          src={getSocietyLogo(society.logoUrl)} 
                           alt="Avatar" 
                           className="w-full h-full object-cover"
                         />
@@ -259,21 +257,14 @@ export const SocietyDirectoryPage: React.FC = () => {
                     </div>
                     <div className="transition-transform duration-500 hover:translate-x-1 min-w-0 flex-1">
                       <div className="text-sm font-medium text-zinc-200 truncate">@{society.name.toLowerCase().replace(/[^a-z0-9]/g, '')}</div>
-                      <div className="flex items-center gap-1.5 text-xs text-zinc-400">
-                        <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block animate-pulse shrink-0"></span>
-                        <span className="truncate">new post</span>
-                      </div>
+                      
                     </div>
                   </div>
 
-                  <button 
-                    onClick={(e) => {
-                      e.stopPropagation();
-                    }}
-                    className="relative z-10 bg-zinc-800 hover:bg-zinc-700 text-zinc-100 rounded-lg px-4 py-2 text-sm font-medium transition-all duration-300 transform hover:scale-105 active:scale-95 hover:shadow-lg hover:shadow-black/50 cursor-pointer border border-white/5 shrink-0"
-                  >
-                    Follow
-                  </button>
+                  <div className="relative z-10 text-right shrink-0">
+                    <div className="text-xl font-bold leading-none text-white">{society._count?.members || Math.floor(Math.random()*150 + 20)}</div>
+                    <div className="text-[10px] uppercase tracking-wider font-bold text-zinc-400">members</div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -283,3 +274,5 @@ export const SocietyDirectoryPage: React.FC = () => {
     </div>
   );
 };
+
+

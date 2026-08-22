@@ -1,3 +1,4 @@
+import { resolveImageUrl } from '@/lib/utils';
 import React, { useRef, useState, useEffect } from 'react';
 import { UploadCloud, X, AlertCircle } from 'lucide-react';
 import { uploadService } from '@/services/upload.service';
@@ -100,7 +101,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({ onChange, value, l
           {previewUrl ? (
             <>
               <img
-                src={previewUrl?.startsWith('http') || previewUrl?.startsWith('data:') || previewUrl?.startsWith('blob:') ? previewUrl : `http://localhost:5000${previewUrl?.startsWith('/') ? '' : '/'}${previewUrl}`}
+                src={resolveImageUrl(previewUrl)}
                 alt="Uploaded preview"
                 className="w-full h-full object-cover rounded-[14px]"
                 onError={() => {
@@ -152,3 +153,6 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({ onChange, value, l
     </div>
   );
 };
+
+
+

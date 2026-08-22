@@ -1,3 +1,4 @@
+import { resolveImageUrl } from '@/lib/utils';
 import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Image as ImageIcon, Loader2 } from 'lucide-react';
@@ -123,7 +124,7 @@ export const PostCreateModal: React.FC<PostCreateModalProps> = ({
             <div className="flex items-center gap-3">
               {displayAvatar ? (
                 <img
-                  src={displayAvatar}
+                  src={resolveImageUrl(displayAvatar)}
                   alt={displayName}
                   className="w-11 h-11 rounded-full object-cover border border-vast-ink/20 shadow-sm"
                 />
@@ -233,3 +234,4 @@ export const PostCreateModal: React.FC<PostCreateModalProps> = ({
     document.body
   ) : null;
 };
+

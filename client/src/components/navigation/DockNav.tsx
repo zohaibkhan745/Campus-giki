@@ -12,8 +12,6 @@ const navLinks = [
 
 export const DockNav: React.FC = () => {
   const location = useLocation();
-  const isAuthPage = ['/login', '/register', '/activate-society'].some(p => location.pathname.startsWith(p));
-  if (isAuthPage) return null;
   const dockRef = useRef<HTMLDivElement>(null);
   const portalsRef = useRef<HTMLDivElement>(null);
   
@@ -58,11 +56,7 @@ export const DockNav: React.FC = () => {
     const items = Array.from(portalsContainer.querySelectorAll('.reparented-item')) as HTMLElement[];
 
     const animate = () => {
-      
       let isSettled = true;
-      const phRects = placeholders.map(ph => ph.getBoundingClientRect());
-
-      
 
       placeholders.forEach((ph, index) => {
         const item = items[index];
@@ -81,7 +75,7 @@ export const DockNav: React.FC = () => {
             targetOpacity = 0;
             targetScale = 0.3;
         } else if (isHovering.current && mouseX.current !== null && !isCollapsed.current) {
-            const rect = phRects[index];
+            const rect = ph.getBoundingClientRect();
             const itemCenterX = rect.left + rect.width / 2;
             const distance = Math.abs(mouseX.current - itemCenterX);
 
@@ -113,7 +107,7 @@ export const DockNav: React.FC = () => {
         ph.style.height = `${state.size}px`;
         ph.style.margin = `0 ${state.margin}px`;
 
-        const phRect = phRects[index];
+        const phRect = ph.getBoundingClientRect();
         
         item.style.width = `${state.size}px`;
         item.style.height = `${state.size}px`;
@@ -192,31 +186,24 @@ export const DockNav: React.FC = () => {
       threshold: 0.1
     };
 
-    let footerObserver: IntersectionObserver | null = new IntersectionObserver((entries) => {
+    const footer = document.getElementById('global-footer');
+    let footerObserver: IntersectionObserver | null = null;
+    
+    if (footer) {
+      footerObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
           isFooterVisible.current = entry.isIntersecting;
           evaluateDockState();
           if (!animationFrameId.current) animationFrameId.current = requestAnimationFrame(animate);
         });
       }, observerOptions);
-
-      const checkFooter = () => {
-        const footer = document.getElementById('global-footer');
-        if (footer && footerObserver) {
-          footerObserver.observe(footer);
-        }
-      };
-
-      const mutationObserver = new MutationObserver(() => {
-        checkFooter();
-      });
-      mutationObserver.observe(document.body, { childList: true, subtree: true });
-      checkFooter();
+      footerObserver.observe(footer);
+    }
 
     return () => {
       document.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('resize', handleResize);
-      if (footerObserver) footerObserver.disconnect(); mutationObserver.disconnect();
+      if (footerObserver && footer) footerObserver.unobserve(footer);
       if (animationFrameId.current) cancelAnimationFrame(animationFrameId.current);
     };
   }, []);
@@ -394,4 +381,3 @@ export const DockNav: React.FC = () => {
     </>
   );
 };
-

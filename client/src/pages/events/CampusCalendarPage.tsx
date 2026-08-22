@@ -323,23 +323,25 @@ export const CampusCalendarPage: React.FC = () => {
 
         {/* Controls */}
         <div className="flex flex-col sm:flex-row gap-2.5">
-          <input 
-            type="text" 
-            className="search-input flex-1" 
-            placeholder="Search events..." 
-            value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
-          />
-          
-          <div className="flex gap-1 shrink-0 items-center justify-center">
-            <button className="glass-btn" onClick={prevMonth}>&lt;</button>
-            <button className={`glass-btn ${!isCurrentMonthView ? "current-month-btn" : ""}`} onClick={goToday} style={!isCurrentMonthView ? { background: "#ffffff", color: "#000000", fontWeight: "600" } : {}}>Current Month</button>
-            <button className="glass-btn" onClick={nextMonth}>&gt;</button>
+          <div className="flex flex-row gap-2.5 flex-1">
+            <input 
+              type="text" 
+              className="search-input flex-1 min-w-[120px] h-[44px]" 
+              placeholder="Search events..." 
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+            />
+            
+            <div className="flex gap-1 shrink-0 items-center justify-center">
+              <button className="glass-btn flex items-center justify-center" style={{ width: "40px", height: "44px" }} onClick={prevMonth}>&lt;</button>
+              <button className={`glass-btn ${!isCurrentMonthView ? "current-month-btn" : ""}`} onClick={goToday} style={{ width: "135px", height: "44px", ...( !isCurrentMonthView ? { background: "#ffffff", color: "#000000", fontWeight: "600" } : {})}}>Current Month</button>
+              <button className="glass-btn flex items-center justify-center" style={{ width: "40px", height: "44px" }} onClick={nextMonth}>&gt;</button>
+            </div>
           </div>
 
-          <div className="w-full sm:w-[280px] shrink-0">
+          <div className="w-full sm:w-[280px] shrink-0 h-[44px]">
             <CustomDropdown 
-              className="w-full"
+              className="w-full h-full"
               value={selectedSociety}
               onChange={(e: any) => setSelectedSociety(e.target.value)}
               placeholder="All Societies"
@@ -439,5 +441,6 @@ export const CampusCalendarPage: React.FC = () => {
     </div>
   );
 };
+
 
 

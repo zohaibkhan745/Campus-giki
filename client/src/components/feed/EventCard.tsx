@@ -1,3 +1,4 @@
+import { getSocietyLogo } from '@/lib/utils';
 import React, { useRef, useState, useEffect, useLayoutEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar, MapPin, X, Edit2, Trash2 } from 'lucide-react';
@@ -46,7 +47,7 @@ export const EventCard: React.FC<EventCardProps> = ({ item }) => {
 
   
   const isOfficial = item.isAdminPost || !item.society;
-  const logoImage = isOfficial ? '/giki-logo.png' : item.society?.logoUrl || '/giki-logo.png';
+  const logoImage = isOfficial ? '/giki-logo.png' : getSocietyLogo(item.society?.logoUrl);
   const authorName = item.society?.name || 'Society';
 
   // Sync text to back face and check overflow
@@ -314,3 +315,4 @@ export const EventCard: React.FC<EventCardProps> = ({ item }) => {
     </div>
   );
 };
+
