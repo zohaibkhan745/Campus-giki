@@ -21,7 +21,7 @@ import { PostCard } from '@/components/feed/PostCard';
 export const SocietyProfilePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<'posts' | 'upcoming' | 'past'>('posts');
+  const [activeTab, setActiveTab] = useState<'posts' | 'upcoming' | 'past'>('upcoming');
 
   const {
     data: society,
@@ -292,6 +292,18 @@ export const SocietyProfilePage: React.FC = () => {
         {/* Navigation Tabs */}
         <div className="mt-10 flex flex-col sm:flex-row justify-center items-stretch sm:items-center bg-white/5 border border-white/10 rounded-2xl p-1 gap-1">
           <button
+            onClick={() => setActiveTab('upcoming')}
+            className={`flex-1 flex justify-center items-center gap-2 px-4 py-3 text-sm font-bold rounded-xl transition-all ${
+              activeTab === 'upcoming'
+                ? 'bg-white text-gray-900 shadow-md'
+                : 'text-gray-400 hover:text-white hover:bg-white/5'
+            }`}
+          >
+            <CalendarIcon className="w-4 h-4" />
+            <span>Upcoming Events</span>
+          </button>
+
+          <button
             onClick={() => setActiveTab('posts')}
             className={`flex-1 flex justify-center items-center gap-2 px-4 py-3 text-sm font-bold rounded-xl transition-all ${
               activeTab === 'posts'
@@ -300,7 +312,7 @@ export const SocietyProfilePage: React.FC = () => {
             }`}
           >
             <Megaphone className="w-4 h-4" />
-            <span>Announcements & Events</span>
+            <span>Announcements</span>
           </button>
 
           <button
@@ -312,12 +324,46 @@ export const SocietyProfilePage: React.FC = () => {
             }`}
           >
             <History className="w-4 h-4" />
-            <span>Past Announcements & Events</span>
+            <span>Past Events</span>
           </button>
         </div>
 
         {/* Tab Content */}
         <div className="mt-8">
+          {activeTab === 'upcoming' && (
+            <div className="space-y-4">
+              {isLoadingEvents ? (
+                <div className="py-8 text-center text-gray-400 text-sm flex items-center justify-center gap-2">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>Loading society events...</span>
+                </div>
+              ) : upcomingEvents.length === 0 ? (
+                <div className="bg-white/5 p-8 rounded-2xl border border-white/10 text-center space-y-2">
+                  <CalendarIcon className="w-10 h-10 text-gray-500 mx-auto" />
+                  <h3 className="font-semibold text-white text-sm">No Upcoming Events</h3>
+                  <p className="text-xs text-gray-400">
+                    {society.name} has no scheduled upcoming campus events right now.
+                  </p>
+                </div>
+              ) : (
+                <div className="flex flex-wrap justify-center gap-8">
+                  {upcomingEvents.map((event) => (
+                    <EventCard
+                      key={event.id}
+                      item={
+                        {
+                          ...event,
+                          type: 'event',
+                          society: event.society || society,
+                        } as any
+                      }
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
           {activeTab === 'posts' && (
             <div className="space-y-4">
               {isLoadingPosts ? (
