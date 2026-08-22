@@ -58,3 +58,4 @@ export interface CreateEventPayload {
 }
 
 export type UpdateEventPayload = Partial<CreateEventPayload>;
+

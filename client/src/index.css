@@ -2377,3 +2377,7 @@ button, a, select, .glass-btn, .custom-dropdown-btn, [role="button"] { cursor: p
 }
 .search-input::placeholder { color: rgba(255, 255, 255, 0.4); }
 .search-input:focus { border-color: rgba(255, 255, 255, 0.3); }
+
+
+.modal-open .reparented-item { display: none !important; opacity: 0; pointer-events: none; }
+

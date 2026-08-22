@@ -41,7 +41,7 @@ export const AdvisorQueuePage: React.FC = () => {
     queryFn: advisorService.getMe,
   });
 
-  const assignedSocietyName = profileData?.societies?.[0]?.name || 'Assigned Society';
+  const assignedSocietyName = profileData?.societies?.length ? profileData.societies.map(s => s.name).join(', ') : 'Unassigned';
   const assignedSocietyLogo = profileData?.societies?.[0]?.logoUrl;
 
   const {
@@ -203,7 +203,7 @@ export const AdvisorQueuePage: React.FC = () => {
           {/* Status Filter */}
           <div className="relative z-10">
             
-            <CustomDropdown value={statusFilter} onChange={handleStatusChange} options={[{value:"ALL",label:"All Statuses"},{value:"PENDING_ADVISOR",label:"Pending Advisor"},{value:"CHANGES_REQUESTED",label:"Changes Requested"},{value:"PENDING_ADMIN",label:"Pending DSA"},{value:"APPROVED",label:"Approved"},{value:"PUBLISHED",label:"Published"}]} />
+            <CustomDropdown value={statusFilter} onChange={handleStatusChange} options={[{value:"ALL",label:"All Statuses"},{value:"PENDING_ADVISOR",label:"Pending Advisor"},{value:"CHANGES_REQUESTED",label:"Changes Requested"},{value:"PENDING_ADMIN",label:"Pending DSA"},{value:"APPROVED",label:"Approved"},{value:"REJECTED",label:"Rejected"},{value:"PUBLISHED",label:"Published"},{value:"CANCELLED",label:"Cancelled"}]} />
           </div>
 
           {/* Decorative background */}
@@ -407,6 +407,8 @@ export const AdvisorQueuePage: React.FC = () => {
     </div>
   );
 };
+
+
 
 
 

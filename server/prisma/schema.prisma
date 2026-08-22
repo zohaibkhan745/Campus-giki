@@ -26,6 +26,8 @@ enum PlanStatus {
   PENDING
   CHANGES_REQUESTED
   APPROVED
+  REJECTED
+  CANCELLED
 }
 
 enum EventApprovalStatus {
@@ -35,6 +37,8 @@ enum EventApprovalStatus {
   PENDING_ADMIN
   CHANGES_REQUESTED
   APPROVED
+  REJECTED
+  CANCELLED
 }
 
 enum OrganizationType {
@@ -229,5 +233,7 @@ model Post {
   @@index([authorId])
   @@index([createdAt])
 }
+
+
 
 

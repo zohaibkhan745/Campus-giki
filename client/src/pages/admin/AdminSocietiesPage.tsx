@@ -1,5 +1,5 @@
 import { CustomDropdown } from '@/components/ui/CustomDropdown';
-import React, {  useState  } from 'react';
+import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -63,6 +63,15 @@ export const AdminSocietiesPage: React.FC = () => {
   const [reactivatingSociety, setReactivatingSociety] = useState<AdminSocietyItem | null>(null);
   const [deletingSociety, setDeletingSociety] = useState<AdminSocietyItem | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (isAddSocietyModalOpen || editingSociety || deletingSociety) {
+      document.body.classList.add('modal-open');
+    } else {
+      document.body.classList.remove('modal-open');
+    }
+    return () => document.body.classList.remove('modal-open');
+  }, [isAddSocietyModalOpen, editingSociety, deletingSociety]);
 
   // Query categories
   const { data: categories = [] } = useQuery({
@@ -356,13 +365,11 @@ export const AdminSocietiesPage: React.FC = () => {
                 onChange={(e) => setEditName(e.target.value)}
               />
 
-              <div className="space-y-1">
-                <label className="text-xs font-semibold text-vast-ink font-medium">Category</label>
+              <div className="space-y-3 mb-4"><label className="text-xs font-semibold text-white font-medium mb-1 block">Category</label>
                 <CustomDropdown value={editCategoryId} onChange={(e: any) => setEditCategoryId(e.target.value)} options={categories?.map((c: any) => ({value: c.id, label: c.name})) || []} />
               </div>
 
-              <div className="space-y-1">
-                <label className="text-xs font-semibold text-vast-ink font-medium">Assigned Faculty Advisor</label>
+              <div className="space-y-3"><label className="text-xs font-semibold text-white font-medium mb-1 block">Assigned Faculty Advisor</label>
                 <CustomDropdown value={editAdvisorId} onChange={(e: any) => setEditAdvisorId(e.target.value)} options={[{value:"", label:"None / Unassign Advisor"}, ...(advisors || []).map((a: any) => ({value: a.id, label: (a.user?.fullName || "Unknown Advisor") + " (" + a.department + ")"}))]} />
               </div>
             </div>
@@ -507,3 +514,4 @@ export const AdminSocietiesPage: React.FC = () => {
     </div>
   );
 };
+

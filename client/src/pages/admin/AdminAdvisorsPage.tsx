@@ -1,5 +1,5 @@
 import { getAdvisorLogo } from '@/lib/utils';
-import React, {  useState  } from 'react';
+import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
@@ -13,6 +13,7 @@ import { CustomDropdown } from '@/components/ui/CustomDropdown';
 import type { AxiosError } from 'axios';
 
 export const AdminAdvisorsPage: React.FC = () => {
+
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const handleDelete = (id: string) => {
@@ -32,6 +33,15 @@ const deleteMutation = useMutation({
 
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [advisorToDelete, setAdvisorToDelete] = useState<string | null>(null);
+  useEffect(() => {
+    if (isModalOpen || deleteModalOpen) {
+      document.body.classList.add('modal-open');
+    } else {
+      document.body.classList.remove('modal-open');
+    }
+    return () => document.body.classList.remove('modal-open');
+  }, [isModalOpen, deleteModalOpen]);
+
   const [formData, setFormData] = useState<CreateAdvisorPayload>({
     fullName: '',
     email: '',
@@ -285,17 +295,14 @@ const deleteMutation = useMutation({
 
       {deleteModalOpen && createPortal(
         <>
-          <style>{`
-            body { overflow: hidden !important; }
-            #dock, .nav-container { display: none !important; }
-          `}</style>
+          
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
             <div
               className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
               onClick={() => setDeleteModalOpen(false)}
             />
             <div className="relative w-full max-w-md bg-white/10 backdrop-blur-[20px] border border-white/20 rounded-[18px] shadow-[0_12px_40px_rgba(0,0,0,0.4)] p-8 text-white flex flex-col gap-4">
-              <span className="self-start text-xs font-semibold uppercase tracking-wider px-3 py-1 rounded-full bg-red-500/20 border border-red-500/30 text-red-100">Danger Zone</span>
+              
               <h3 className="text-[1.4rem] font-bold leading-tight drop-shadow-md">Delete Advisor</h3>
               <p className="text-[0.95rem] text-white/85 leading-relaxed drop-shadow-sm mb-2">
                 Are you sure you want to delete this advisor? This action cannot be undone and will permanently remove their access.
@@ -329,3 +336,7 @@ const deleteMutation = useMutation({
     </div>
   );
 };
+
+
+
+

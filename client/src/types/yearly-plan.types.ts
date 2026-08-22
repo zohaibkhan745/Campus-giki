@@ -1,4 +1,4 @@
-export type PlanStatus = 'DRAFT' | 'PENDING' | 'CHANGES_REQUESTED' | 'APPROVED';
+export type PlanStatus = 'DRAFT' | 'PENDING' | 'CHANGES_REQUESTED' | 'APPROVED' | 'REJECTED' | 'CANCELLED';
 
 export interface PlannedEventPayload {
   eventName: string;
@@ -60,3 +60,4 @@ export interface UpdateYearlyPlanPayload {
   status?: PlanStatus;
   events?: PlannedEventPayload[];
 }
+
