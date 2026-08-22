@@ -177,9 +177,10 @@ export const SocietyProfilePage: React.FC = () => {
           }
 
           .society-profile-container {
+            top: 45%;
             left: 50%;
-            bottom: -55px;
-            transform: translateX(-50%);
+            transform: translate(-50%, -50%);
+            bottom: auto;
           }
 
           .society-profile-img, .society-profile-fallback {
@@ -189,13 +190,16 @@ export const SocietyProfilePage: React.FC = () => {
           }
 
           .society-name-text {
-            bottom: 16px;
+            top: 75%;
+            bottom: auto;
+            left: 50%;
+            transform: translateX(-50%);
             font-size: 20px;
             max-width: 90%;
           }
 
           .society-content-section {
-            padding-top: 80px;
+            padding-top: 30px;
             padding-left: 20px;
             padding-right: 20px;
           }
@@ -274,12 +278,12 @@ export const SocietyProfilePage: React.FC = () => {
       <div className="society-content-section">
         <div className="society-about-heading">About</div>
         {(society.presidentName || society.presidentFaculty) && (
-          <div className="mb-4 text-gray-300 text-lg">
+          <p className="society-about-text mb-4">
             President:{' '}
-            {society.presidentName && <strong className="text-white">{society.presidentName}</strong>}
+            {society.presidentName && <strong className="text-white font-bold">{society.presidentName}</strong>}
             {society.presidentName && society.presidentFaculty && ' '}
             {society.presidentFaculty && <span>({society.presidentFaculty})</span>}
-          </div>
+          </p>
         )}
         <p className="society-about-text">
           {society.longDescription || society.shortDescription || 'No detailed overview provided.'}
@@ -296,19 +300,7 @@ export const SocietyProfilePage: React.FC = () => {
             }`}
           >
             <Megaphone className="w-4 h-4" />
-            <span>Posts & Announcements ({postsData.length})</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('upcoming')}
-            className={`flex-1 flex justify-center items-center gap-2 px-4 py-3 text-sm font-bold rounded-xl transition-all ${
-              activeTab === 'upcoming'
-                ? 'bg-white text-gray-900 shadow-md'
-                : 'text-gray-400 hover:text-white hover:bg-white/5'
-            }`}
-          >
-            <CalendarIcon className="w-4 h-4" />
-            <span>Upcoming Events ({upcomingEvents.length})</span>
+            <span>Announcements & Events</span>
           </button>
 
           <button
@@ -320,7 +312,7 @@ export const SocietyProfilePage: React.FC = () => {
             }`}
           >
             <History className="w-4 h-4" />
-            <span>Past Events ({pastEvents.length})</span>
+            <span>Past Announcements & Events</span>
           </button>
         </div>
 
@@ -345,40 +337,6 @@ export const SocietyProfilePage: React.FC = () => {
                 <div className="flex flex-wrap justify-center gap-8">
                   {postsData.map((post) => (
                     <PostCard key={post.id} item={post} />
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-
-          {activeTab === 'upcoming' && (
-            <div className="space-y-4">
-              {isLoadingEvents ? (
-                <div className="py-8 text-center text-gray-400 text-sm flex items-center justify-center gap-2">
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Loading society events...</span>
-                </div>
-              ) : upcomingEvents.length === 0 ? (
-                <div className="bg-white/5 p-8 rounded-2xl border border-white/10 text-center space-y-2">
-                  <CalendarIcon className="w-10 h-10 text-gray-500 mx-auto" />
-                  <h3 className="font-semibold text-white text-sm">No Upcoming Events</h3>
-                  <p className="text-xs text-gray-400">
-                    {society.name} has no scheduled upcoming campus events right now.
-                  </p>
-                </div>
-              ) : (
-                <div className="flex flex-wrap justify-center gap-8">
-                  {upcomingEvents.map((event) => (
-                    <EventCard
-                      key={event.id}
-                      item={
-                        {
-                          ...event,
-                          type: 'event',
-                          society: event.society || society,
-                        } as any
-                      }
-                    />
                   ))}
                 </div>
               )}
