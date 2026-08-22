@@ -33,6 +33,18 @@ export const CustomDropdown = forwardRef<HTMLSelectElement, CustomDropdownProps>
   const containerRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const [menuStyle, setMenuStyle] = useState<React.CSSProperties>({});
+  const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1024);
+
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const truncateLabel = (label: string) => {
+    const limit = windowWidth < 768 ? 30 : 50;
+    return label.length > limit ? label.substring(0, limit) + '...' : label;
+  };
 
   const currentValue = controlledValue !== undefined ? controlledValue : internalValue;
   const selectedOption = options.find(o => o.value === currentValue) || { value: '', label: placeholder, code: '' };
@@ -57,7 +69,9 @@ export const CustomDropdown = forwardRef<HTMLSelectElement, CustomDropdownProps>
         position: 'absolute',
         top: rect.bottom + window.scrollY + 8,
         left: rect.left + window.scrollX,
-        width: rect.width,
+        minWidth: rect.width,
+          width: 'max-content',
+          maxWidth: '90vw',
         zIndex: 99999
       });
     }
@@ -147,7 +161,7 @@ export const CustomDropdown = forwardRef<HTMLSelectElement, CustomDropdownProps>
       >
         <div className="btn-left-content">
           {selectedOption.code && <span className="country-code">{selectedOption.code}</span>}
-          <span className="language-name">{selectedOption.label}</span>
+          <span className="language-name" title={selectedOption.label}>{truncateLabel(selectedOption.label)}</span>
         </div>
         <svg className="arrow-icon" viewBox="0 0 24 24">
           <polyline points="6 9 12 15 18 9"></polyline>
@@ -167,7 +181,7 @@ export const CustomDropdown = forwardRef<HTMLSelectElement, CustomDropdownProps>
                 >
                   <div className="item-left">
                     {opt.code && <span className="country-code">{opt.code}</span>}
-                    <span className="language-name">{opt.label}</span>
+                    <span className="language-name" title={opt.label}>{truncateLabel(opt.label)}</span>
                   </div>
                   <svg className="check-icon" viewBox="0 0 24 24">
                     <polyline points="20 6 9 17 4 12"></polyline>

@@ -184,7 +184,7 @@ export const DockNav: React.FC = () => {
       requestAnimation();
       
       // If we are over the footer, collapse again when mouse leaves
-      const footer = document.getElementById('main-footer');
+      const footer = document.getElementById('global-footer');
       if (footer) {
         const rect = footer.getBoundingClientRect();
         if (rect.top <= window.innerHeight) {

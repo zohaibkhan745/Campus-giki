@@ -1391,12 +1391,12 @@ html:has(body.modal-open), .modal-open {
 }
 
 .dropdown-item .language-name {
-  max-width: 350px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: block;
-}
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    max-width: 100%;
+  }
 
 
 /* Lock scroll when any modal is open */
@@ -1421,12 +1421,7 @@ body:has(.modal-overlay) {
   background-color: rgba(255, 255, 255, 0.4);
 }
 
-@media (max-width: 768px) {
-  .dropdown-item .language-name,
-  .dropdown-btn .language-name {
-    max-width: 30ch;
-  }
-}
+
 
 select {
   width: 100%;
