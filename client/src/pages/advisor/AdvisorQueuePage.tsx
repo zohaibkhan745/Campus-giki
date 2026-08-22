@@ -124,7 +124,7 @@ export const AdvisorQueuePage: React.FC = () => {
 
   return (
     <div className="w-full">
-      <BannerHeader title={user?.fullName || "Advisor"} subtitle={`Faculty Advisor - ${assignedSocietyName}`} logoUrl={assignedSocietyLogo || user?.avatarUrl} />
+      <BannerHeader title={user?.fullName || "Advisor"} subtitle={`Faculty Advisor - ${assignedSocietyName}`} logoUrl='/giki-mono-bw.jpg' bannerUrl='/giki-banner-disney.png' />
       <div className="max-w-6xl mx-auto space-y-6 text-left py-4 px-4">
         {/* Actions Row */}
         <div className="flex justify-end mb-4">

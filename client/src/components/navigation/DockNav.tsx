@@ -12,6 +12,8 @@ const navLinks = [
 
 export const DockNav: React.FC = () => {
   const location = useLocation();
+  const isAuthPage = ['/login', '/register', '/activate-society'].some(p => location.pathname.startsWith(p));
+  if (isAuthPage) return null;
   const dockRef = useRef<HTMLDivElement>(null);
   const portalsRef = useRef<HTMLDivElement>(null);
   

@@ -297,7 +297,7 @@ export const AdminPostsPage: React.FC = () => {
         <div className="flex justify-center items-center pt-8 pb-4">
           <Button
             variant="outline"
-            className="rounded-full px-8 py-2 bg-transparent text-white border-white/20 hover:bg-white/10"
+            className="rounded-[12px] px-8 py-3 bg-[rgba(255,255,255,0.08)] backdrop-blur-[12px] text-[16px] font-semibold text-white border border-[rgba(255,255,255,0.15)] hover:bg-[rgba(255,255,255,0.16)] hover:border-[rgba(255,255,255,0.25)] transition-all"
             onClick={() => fetchNextPage()}
             disabled={isFetchingNextPage}
           >

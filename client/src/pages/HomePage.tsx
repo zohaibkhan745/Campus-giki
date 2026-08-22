@@ -77,7 +77,7 @@ export const HomePage: React.FC = () => {
               <button
                 onClick={loadMore}
                 disabled={isLoadingMore}
-                className="inline-flex items-center gap-3 bg-[#17181c] border border-white/10 rounded-xl px-8 py-3 text-[16px] font-semibold text-white hover:bg-white/10 disabled:opacity-50 transition-colors focus:outline-none"
+                className="inline-flex items-center gap-3 bg-[rgba(255,255,255,0.08)] backdrop-blur-[12px] border border-[rgba(255,255,255,0.15)] rounded-[12px] px-8 py-3 text-[16px] font-semibold text-white hover:bg-[rgba(255,255,255,0.16)] hover:border-[rgba(255,255,255,0.25)] disabled:opacity-50 transition-all focus:outline-none"
               >
                 {isLoadingMore ? (
                   <>
