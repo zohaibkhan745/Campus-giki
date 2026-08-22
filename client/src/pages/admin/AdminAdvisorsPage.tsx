@@ -284,39 +284,48 @@ const deleteMutation = useMutation({
         </div>, document.body)}
 
       {deleteModalOpen && createPortal(
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
-          <div
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
-            onClick={() => setDeleteModalOpen(false)}
-          />
-          <div className="relative w-full max-w-md bg-[#1a1f2e] border border-white/10 rounded-2xl shadow-2xl p-6">
-            <h3 className="text-xl font-bold text-white mb-2">Delete Advisor</h3>
-            <p className="text-gray-400 mb-6 text-sm">
-              Are you sure you want to delete this advisor? This action cannot be undone and will permanently remove their access.
-            </p>
-            <div className="flex justify-end gap-3">
-              <Button
-                variant="outline"
-                onClick={() => setDeleteModalOpen(false)}
-                className="btn-cancel" style={{width:"auto"}}
-              >
-                Cancel
-              </Button>
-              <Button
-                variant="primary"
-                isLoading={deleteMutation.isPending}
-                onClick={() => {
-                  if (advisorToDelete) {
-                    deleteMutation.mutate(advisorToDelete);
-                  }
-                }}
-                className="btn-cancel" style={{width:"auto", background:"#ef4444", color:"#fff", border:"1px solid #dc2626"}}
-              >
-                Delete
-              </Button>
+        <>
+          <style>{`
+            body { overflow: hidden !important; }
+            #dock, .nav-container { display: none !important; }
+          `}</style>
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
+            <div
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
+              onClick={() => setDeleteModalOpen(false)}
+            />
+            <div className="relative w-full max-w-md bg-white/10 backdrop-blur-[20px] border border-white/20 rounded-[18px] shadow-[0_12px_40px_rgba(0,0,0,0.4)] p-8 text-white flex flex-col gap-4">
+              <span className="self-start text-xs font-semibold uppercase tracking-wider px-3 py-1 rounded-full bg-red-500/20 border border-red-500/30 text-red-100">Danger Zone</span>
+              <h3 className="text-[1.4rem] font-bold leading-tight drop-shadow-md">Delete Advisor</h3>
+              <p className="text-[0.95rem] text-white/85 leading-relaxed drop-shadow-sm mb-2">
+                Are you sure you want to delete this advisor? This action cannot be undone and will permanently remove their access.
+              </p>
+              <div className="flex justify-end gap-3 mt-2">
+                <Button
+                  variant="outline"
+                  onClick={() => setDeleteModalOpen(false)}
+                  className="px-4 py-3 rounded-lg border border-white/30 bg-white/15 backdrop-blur-md text-white font-semibold transition-all hover:bg-white/30 hover:border-white/50"
+                  style={{width:"auto", minHeight: "44px"}}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  variant="primary"
+                  isLoading={deleteMutation.isPending}
+                  onClick={() => {
+                    if (advisorToDelete) {
+                      deleteMutation.mutate(advisorToDelete);
+                    }
+                  }}
+                  className="px-4 py-3 rounded-lg border border-red-500/50 bg-red-500/80 backdrop-blur-md text-white font-semibold transition-all hover:bg-red-500"
+                  style={{width:"auto", minHeight: "44px"}}
+                >
+                  Delete
+                </Button>
+              </div>
             </div>
           </div>
-        </div>, document.body)}
+        </>, document.body)}
     </div>
   );
 };

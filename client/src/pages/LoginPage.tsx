@@ -2,12 +2,10 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
-import { useNavigate, useLocation, Link } from 'react-router-dom';
-import { Mail, Lock, Eye, EyeOff, LogIn } from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { Mail, Lock, Eye, EyeOff, GraduationCap, ArrowRight } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { loginSchema, type LoginFormData } from '@/lib/validations/auth.schema';
-import { Input } from '@/components/ui/Input';
-import { Button } from '@/components/ui/Button';
 import { Alert } from '@/components/ui/Alert';
 import type { AxiosError } from 'axios';
 
@@ -18,7 +16,6 @@ export const LoginPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
 
-  // Target route after successful login
   const fromLocation = (location.state as { from?: { pathname: string } })?.from?.pathname;
 
   const {
@@ -37,29 +34,14 @@ export const LoginPage: React.FC = () => {
     mutationFn: (data: LoginFormData) => login(data),
     meta: { notify: false },
     onSuccess: (data) => {
-      setServerError('');
+      setServerError(null);
 
-      // Role-Based Redirection Strategy
       if (fromLocation) {
         navigate(fromLocation, { replace: true });
         return;
       }
 
-      switch (data.user.role) {
-        case 'DSA_ADMIN':
-          navigate('/dashboard', { replace: true });
-          break;
-        case 'SOCIETY':
-          navigate('/dashboard', { replace: true });
-          break;
-        case 'ADVISOR':
-          navigate('/dashboard', { replace: true });
-          break;
-        case 'STUDENT':
-        default:
-          navigate('/dashboard', { replace: true });
-          break;
-      }
+      navigate('/dashboard', { replace: true });
     },
     onError: (error: AxiosError<{ message?: string | string[]; error?: string }>) => {
       const respMessage = error.response?.data?.message;
@@ -71,77 +53,91 @@ export const LoginPage: React.FC = () => {
         errText = respMessage;
       }
 
-      setServerError('');
+      setServerError(errText);
     },
   });
 
   const onSubmit = (data: LoginFormData) => {
-    setServerError('');
+    setServerError(null);
     loginMutation.mutate(data);
   };
 
   return (
-    <div className="space-y-6 text-left">
-      <div className="space-y-1">
-        <h1 className="text-[26px] font-extrabold text-vast-ink leading-tight font-eb-garamond">
-          Management Portal
-        </h1>
-        <p className="text-sm font-medium text-fog">
-          Authorized sign-in for Society Executives, Faculty Advisors, and DSA Administration.
-        </p>
-      </div>
+    <main className="relative z-10 flex flex-col items-center justify-center w-full h-full p-4 space-y-6">
+        
+        <div className="text-center space-y-2">
+            <div className="flex items-center justify-center space-x-3">
+                <GraduationCap className="w-8 h-8 text-white" />
+                <h1 className="text-3xl font-bold tracking-wide">Campus GIKI</h1>
+            </div>
+            <p className="text-gray-300 text-sm font-medium">Centralized Platform for GIKI Students & Societies</p>
+        </div>
 
-      {null}
+        <div className="w-full max-w-xl p-8 space-y-6 bg-white/10 backdrop-blur-lg rounded-2xl border border-white/20 shadow-2xl">
+            
+            <div className="space-y-1">
+                <h2 className="text-2xl font-bold text-white">Welcome</h2>
+                <p className="text-sm text-gray-300">Sign in to continue</p>
+            </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
-        <Input
-          label="Email Address *"
-          type="email"
-          placeholder="e.g. acm@giki.edu.pk"
-          leftIcon={<Mail className="w-4 h-4 text-vast-ink" />}
-          disabled={loginMutation.isPending}
-          error={errors.email?.message}
-          {...register('email')}
-        />
+            {serverError && (
+              <Alert variant="error" message={serverError} />
+            )}
+            
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" noValidate>
+                <div className="space-y-2">
+                    <label htmlFor="email" className="block text-xs font-bold uppercase tracking-wider text-gray-200">Email Address *</label>
+                    <div className="relative">
+                        <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                            <Mail className="w-4 h-4 text-gray-400" />
+                        </div>
+                        <input
+                            type="email"
+                            id="email"
+                            className="w-full pl-10 pr-4 py-3 bg-black/20 border border-gray-500/50 rounded-lg text-sm text-white placeholder-gray-400 focus:outline-none focus:border-white focus:ring-1 focus:ring-white transition-colors"
+                            placeholder="e.g. acm@giki.edu.pk"
+                            {...register('email')}
+                        />
+                        {errors.email && <p className="text-red-400 text-xs mt-1 font-semibold">{errors.email.message}</p>}
+                    </div>
+                </div>
+                
+                <div className="space-y-2">
+                    <label htmlFor="password" className="block text-xs font-bold uppercase tracking-wider text-gray-200">Password *</label>
+                    <div className="relative">
+                        <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                            <Lock className="w-4 h-4 text-gray-400" />
+                        </div>
+                        <input
+                            type={showPassword ? "text" : "password"}
+                            id="password"
+                            className="w-full pl-10 pr-10 py-3 bg-black/20 border border-gray-500/50 rounded-lg text-sm text-white placeholder-gray-400 focus:outline-none focus:border-white focus:ring-1 focus:ring-white transition-colors"
+                            placeholder="********"
+                            {...register('password')}
+                        />
+                        <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-white transition-colors">
+                            {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        </button>
+                    </div>
+                    {errors.password && <p className="text-red-400 text-xs mt-1 font-semibold">{errors.password.message}</p>}
+                </div>
 
-        <Input
-          label="Password *"
-          type={showPassword ? 'text' : 'password'}
-          placeholder="••••••••"
-          leftIcon={<Lock className="w-4 h-4 text-vast-ink" />}
-          rightIcon={
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="text-fog hover:text-vast-ink transition-colors cursor-pointer p-1"
-            >
-              {showPassword ? (
-                <EyeOff className="w-4 h-4" />
-              ) : (
-                <Eye className="w-4 h-4" />
-              )}
-            </button>
-          }
-          disabled={loginMutation.isPending}
-          error={errors.password?.message}
-          {...register('password')}
-        />
-
-        <Button
-          type="submit"
-          variant="wispr"
-          size="md"
-          className="w-full mt-2"
-          isLoading={loginMutation.isPending}
-          leftIcon={<LogIn className="w-4 h-4" />}
-        >
-          Sign In
-        </Button>
-      </form>
-
-      <div className="text-center pt-3 text-xs font-medium text-fog border-t border-vast-ink/20">
-        Authorized personnel only. Society accounts are provisioned via DSA invitation.
-      </div>
-    </div>
+                <button
+                    type="submit"
+                    disabled={loginMutation.isPending}
+                    className="group w-full flex items-center justify-center py-3 px-4 bg-white hover:bg-gray-200 disabled:opacity-50 text-black rounded-lg font-bold focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-white transition-all duration-300"
+                >
+                    {loginMutation.isPending ? 'Signing In...' : 'Sign In'}
+                    {!loginMutation.isPending && <ArrowRight className="ml-2 w-5 h-5 transform group-hover:translate-x-1 transition-transform" />}
+                </button>
+            </form>
+            
+            <div className="pt-5 border-t border-gray-400/30">
+                <p className="text-center text-xs text-gray-400 leading-relaxed">
+                    Authorized personnel only. Society accounts are provisioned via DSA invitation.
+                </p>
+            </div>
+        </div>
+    </main>
   );
 };

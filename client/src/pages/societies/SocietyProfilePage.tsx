@@ -264,15 +264,22 @@ export const SocietyProfilePage: React.FC = () => {
       {/* Content Section */}
       <div className="society-content-section">
         <div className="society-about-heading">About</div>
-        {(society.presidentName || society.presidentFaculty) && (
-          <p className="society-about-text mb-4">
-            President:{' '}
-            {society.presidentName && <strong className="text-white font-bold">{society.presidentName}</strong>}
-            {society.presidentName && society.presidentFaculty && ' '}
-            {society.presidentFaculty && <span>({society.presidentFaculty})</span>}
-          </p>
-        )}
-        <p className="society-about-text">
+          {(society.presidentName || society.presidentFaculty) && (
+            <p className="society-about-text mb-2">
+              President:{' '}
+              {society.presidentName && <strong className="text-white font-bold">{society.presidentName}</strong>}
+              {society.presidentName && society.presidentFaculty && ' '}
+              {society.presidentFaculty && <span>({society.presidentFaculty})</span>}
+            </p>
+          )}
+          {society.advisor?.user?.fullName && (
+            <p className="society-about-text mb-4">
+              Advisor:{' '}
+              <strong className="text-white font-bold">{society.advisor.user.fullName}</strong>
+              {society.advisor.department && <span> ({society.advisor.department})</span>}
+            </p>
+          )}
+          <p className="society-about-text">
           {society.longDescription || society.shortDescription || 'No detailed overview provided.'}
         </p>
 

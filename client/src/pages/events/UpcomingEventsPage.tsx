@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
-import { Sparkles, Loader2, ArrowRight } from 'lucide-react';
+import { Loader2, ArrowRight } from 'lucide-react';
 import { eventService } from '@/services/event.service';
 import { EventCard } from '@/components/feed/EventCard';
 import { Link } from 'react-router-dom';
@@ -10,7 +10,7 @@ export const UpcomingEventsPage: React.FC = () => {
 
   const { data: listEventsData, isLoading } = useQuery({
     queryKey: ['events', 'upcoming'],
-    queryFn: () => eventService.getPublicEvents({ timeFilter: 'upcoming', limit: 50, page: 1 }),
+    queryFn: () => eventService.getAllPublicEvents({ from: new Date().toISOString(), limit: 50, page: 1 }),
     placeholderData: keepPreviousData,
   });
 
@@ -24,7 +24,6 @@ export const UpcomingEventsPage: React.FC = () => {
         {/* Page Header */}
         <div className="flex flex-col gap-2 mb-4">
           <h1 className="font-extrabold text-5xl sm:text-6xl text-white tracking-tight leading-tight flex items-center gap-4">
-            <Sparkles className="w-10 h-10 sm:w-12 sm:h-12 text-[#ff715b]" />
             Upcoming Events
           </h1>
           <p className="text-lg text-gray-400 font-medium max-w-2xl mt-2">
@@ -39,10 +38,9 @@ export const UpcomingEventsPage: React.FC = () => {
           </div>
         ) : visibleEvents.length === 0 ? (
           <div className="flex flex-col items-center justify-center p-20 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md text-center">
-            <Sparkles className="w-12 h-12 text-gray-500 mb-4" />
             <h3 className="text-xl font-bold text-white mb-2">No Upcoming Events</h3>
             <p className="text-gray-400">There are currently no events scheduled for the future.</p>
-            <Link to="/events" className="mt-6 text-[#ff715b] font-bold hover:underline flex items-center gap-2">
+            <Link to="/events" className="mt-6 text-white font-bold hover:underline flex items-center gap-2">
               View past events on calendar <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
