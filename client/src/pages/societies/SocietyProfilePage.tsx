@@ -1,20 +1,17 @@
 import { getSocietyLogo, getSocietyBanner } from '@/lib/utils';
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import {
-  Building2,
-  Tag,
+  Calendar as CalendarIcon,
+  Megaphone,
   History,
   Loader2,
-  Megaphone,
-  Calendar as CalendarIcon,
+  ArrowLeft,
   AlertCircle,
-  ArrowLeft
+  Tag,
 } from 'lucide-react';
 import { societyService } from '@/services/society.service';
-import type { EventFeedItem } from '@/types/feed.types';
-import { Alert } from '@/components/ui/Alert';
 import { EventCard } from '@/components/feed/EventCard';
 import { PostCard } from '@/components/feed/PostCard';
 
@@ -224,11 +221,7 @@ export const SocietyProfilePage: React.FC = () => {
 
       {/* Banner */}
       <div className="society-banner">
-        {true ? (
-          <img src={getSocietyBanner(society.bannerUrl)} alt="Banner Image" className="society-banner-img" onError={(e) => { e.currentTarget.src = '/default-banner.png'; }} />
-        ) : (
-          <div className="society-banner-img bg-[#1e3c72]" />
-        )}
+        <img src={getSocietyBanner(society.bannerUrl)} alt="Banner Image" className="society-banner-img" onError={(e) => { e.currentTarget.src = '/default-banner.png'; }} />
         
         {/* Warning Badge */}
         {society.hasWarning && (
@@ -261,13 +254,7 @@ export const SocietyProfilePage: React.FC = () => {
 
         {/* Profile Circle */}
         <div className="society-profile-container">
-          {true ? (
-            <img src={getSocietyLogo(society.logoUrl)} alt="Society Logo" className="society-profile-img" onError={(e) => { e.currentTarget.src = '/default-society.jpg'; }} />
-          ) : (
-            <div className="society-profile-fallback">
-              <Building2 className="w-16 h-16 text-gray-500" />
-            </div>
-          )}
+          <img src={getSocietyLogo(society.logoUrl)} alt="Society Logo" className="society-profile-img" onError={(e) => { e.currentTarget.src = '/default-society.jpg'; }} />
         </div>
 
         {/* Society Name */}
