@@ -255,10 +255,13 @@ export const SocietySetupPage: React.FC = () => {
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-1.5">
-                    <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Faculty</label>
-                    <CustomDropdown className="w-full" placeholder="Select Faculty" options={[{value:"FCSE",label:"FCSE"},{value:"FEE",label:"FEE"},{value:"FCVE",label:"FCVE"},{value:"FME",label:"FME"},{value:"FCME",label:"FCME"},{value:"FMTE",label:"FMTE"},{value:"MGS",label:"MGS"},{value:"FES",label:"FES"}]} {...register('presidentFaculty')} />
-                  </div>
+                  <Input
+                    {...register('presidentEmail')}
+                    error={errors.presidentEmail?.message}
+                    label="President Email Address"
+                    placeholder="e.g. president@giki.edu.pk"
+                    disabled={setupMutation.isPending}
+                  />
                   <Input
                     {...register('presidentContact')}
                     onChange={(e) => {
@@ -270,6 +273,12 @@ export const SocietySetupPage: React.FC = () => {
                     placeholder="e.g. 03001234567"
                     disabled={setupMutation.isPending}
                   />
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Faculty</label>
+                    <CustomDropdown className="w-full" placeholder="Select Faculty" options={[{value:"FCSE",label:"FCSE"},{value:"FEE",label:"FEE"},{value:"FCVE",label:"FCVE"},{value:"FME",label:"FME"},{value:"FCME",label:"FCME"},{value:"FMTE",label:"FMTE"},{value:"MGS",label:"MGS"},{value:"FES",label:"FES"}]} {...register('presidentFaculty')} />
+                  </div>
                 </div>
               </div>
             </div>

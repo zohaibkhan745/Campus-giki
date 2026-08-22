@@ -421,6 +421,7 @@ export class SocietiesService {
           ...(dto.presidentName !== undefined && { presidentName: dto.presidentName || null }),
           ...(dto.presidentRegNum !== undefined && { presidentRegNum: dto.presidentRegNum || null }),
           ...(dto.presidentContact !== undefined && { presidentContact: dto.presidentContact || null }),
+          ...(dto.presidentEmail !== undefined && { presidentEmail: dto.presidentEmail || null }),
           isSetupComplete: true,
         },
         create: {
@@ -524,3 +525,4 @@ export class SocietiesService {
     return updated;
   }
 }
+

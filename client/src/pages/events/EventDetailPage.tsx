@@ -1,3 +1,4 @@
+import { getSocietyLogo } from '@/lib/utils';
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useParams, Link, useNavigate } from 'react-router-dom';
@@ -205,7 +206,7 @@ export const EventDetailPage: React.FC = () => {
               <div className="flex items-center gap-3">
                 {eventItem.society.logoUrl ? (
                   <img
-                    src={eventItem.society.logoUrl}
+                    src={getSocietyLogo(eventItem.society.logoUrl)}
                     alt={eventItem.society.name}
                     className="w-12 h-12 rounded-inputs object-cover border border-vast-ink/20"
                   />
@@ -256,3 +257,4 @@ export const EventDetailPage: React.FC = () => {
     </div>
   );
 };
+

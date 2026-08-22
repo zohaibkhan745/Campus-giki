@@ -9,6 +9,7 @@ export interface AdvisorOption {
     id: string;
     fullName: string;
     email: string;
+    avatarUrl?: string | null;
   };
   societies?: { name: string }[];
 }
@@ -17,12 +18,14 @@ export interface OnboardSocietyPayload {
   name: string;
   categoryId: string;
   presidentEmail: string;
+    avatarUrl?: string | null;
   advisorId: string;
 }
 
 export interface CreateAdvisorPayload {
   fullName: string;
   email: string;
+    avatarUrl?: string | null;
   password?: string;
   department: string;
   designation: string;
@@ -32,6 +35,7 @@ export interface OnboardSocietyResult {
   id: string;
   name: string;
   presidentEmail: string;
+    avatarUrl?: string | null;
   temporaryPassword?: string;
   activationEmailSent: boolean;
   emailPreviewUrl?: string;
@@ -62,6 +66,7 @@ export interface AdminSocietyItem {
   hasWarning: boolean;
   status: AdminSocietyStatusType;
   presidentEmail: string;
+    avatarUrl?: string | null;
   category?: {
     id: string;
     name: string;
@@ -74,6 +79,7 @@ export interface AdminSocietyItem {
     user: {
       fullName: string;
       email: string;
+    avatarUrl?: string | null;
     };
   } | null;
   createdAt: string;
@@ -137,6 +143,7 @@ export interface AdminAdvisorSummary {
   user: {
     fullName: string;
     email: string;
+    avatarUrl?: string | null;
   };
 }
 
@@ -351,3 +358,5 @@ export const adminService = {
     return api.patch(`/admin/events/${id}/status`, payload);
   },
 };
+
+

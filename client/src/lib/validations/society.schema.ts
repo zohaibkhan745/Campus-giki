@@ -43,6 +43,8 @@ export const societySetupSchema = z.object({
   presidentRegNum: z.string().regex(/^\d{7}$/, 'Must be exactly 7 digits').optional().or(z.literal('')),
   presidentFaculty: z.string().optional().or(z.literal('')),
   presidentContact: z.string().regex(/^\d{11}$/, 'Must be exactly 11 digits').optional().or(z.literal('')),
+  presidentEmail: optionalEmail,
 });
 
 export type SocietySetupFormData = z.infer<typeof societySetupSchema>;
+

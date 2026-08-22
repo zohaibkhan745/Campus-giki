@@ -11,15 +11,22 @@ export function resolveImageUrl(url?: string | null): string {
     return url;
   }
   const baseUrl = import.meta.env.VITE_API_BASE_URL?.replace('/api/v1', '') || 'http://localhost:5000';
-  return ``;
+  return baseUrl + (url.startsWith('/') ? '' : '/') + url;
 }
 export function getSocietyLogo(logoUrl?: string | null): string {
-  if (!logoUrl) return '/giki-black.jpg';
+  if (!logoUrl) return '/default-society.jpg';
   return resolveImageUrl(logoUrl);
 }
 
 export function getSocietyBanner(bannerUrl?: string | null): string {
-  if (!bannerUrl) return '/giki-banner-disney.png';
+  if (!bannerUrl) return '/default-banner.png';
   return resolveImageUrl(bannerUrl);
 }
 
+
+
+
+export function getAdvisorLogo(logoUrl?: string | null): string {
+  if (!logoUrl) return '/default-advisor.jpg';
+  return resolveImageUrl(logoUrl);
+}

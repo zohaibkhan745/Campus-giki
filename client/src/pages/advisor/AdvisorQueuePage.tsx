@@ -1,3 +1,4 @@
+import { getAdvisorLogo, getSocietyLogo } from '@/lib/utils';
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
@@ -124,7 +125,7 @@ export const AdvisorQueuePage: React.FC = () => {
 
   return (
     <div className="w-full">
-      <BannerHeader title={user?.fullName || "Advisor"} subtitle={`Faculty Advisor - ${assignedSocietyName}`} logoUrl='/giki-mono-bw.jpg' bannerUrl='/giki-banner-disney.png' />
+      <BannerHeader title={user?.fullName || "Advisor"} subtitle={`Faculty Advisor - ${assignedSocietyName}`} logoUrl={getAdvisorLogo(user?.avatarUrl)} />
       <div className="max-w-6xl mx-auto space-y-6 text-left py-4 px-4">
         {/* Actions Row */}
         <div className="flex justify-end mb-4">
@@ -267,7 +268,7 @@ export const AdvisorQueuePage: React.FC = () => {
                 <div className="flex items-center gap-4">
                   {plan.society?.logoUrl ? (
                     <img
-                      src={plan.society.logoUrl}
+                      src={getSocietyLogo(plan.society.logoUrl)}
                       alt={plan.society.name}
                       className="w-12 h-12 rounded-xl object-cover border border-white/20 shrink-0"
                     />
@@ -324,7 +325,7 @@ export const AdvisorQueuePage: React.FC = () => {
                 <div className="flex items-center gap-4">
                   {event.society?.logoUrl ? (
                     <img
-                      src={event.society.logoUrl}
+                      src={getSocietyLogo(event.society.logoUrl)}
                       alt={event.society.name}
                       className="w-12 h-12 rounded-xl object-cover border border-white/20 shrink-0"
                     />
@@ -406,3 +407,6 @@ export const AdvisorQueuePage: React.FC = () => {
     </div>
   );
 };
+
+
+

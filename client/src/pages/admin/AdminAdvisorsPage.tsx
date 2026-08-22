@@ -1,3 +1,4 @@
+import { getAdvisorLogo } from '@/lib/utils';
 import React, {  useState  } from 'react';
 import { createPortal } from 'react-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -138,7 +139,7 @@ const deleteMutation = useMutation({
                     </td>
                     <td className="py-[18px] px-[15px] text-[15px] border-b border-white/5 text-white font-semibold group-last:border-b-0">
 <div className="flex items-center gap-3">
-<img src='/giki-mono-bw.jpg' alt={advisor.user?.fullName} className="w-8 h-8 rounded-full border border-white/20 object-cover" />
+<img src={getAdvisorLogo(advisor.user?.avatarUrl)} alt={advisor.user?.fullName} className="w-8 h-8 rounded-full border border-white/20 object-cover" />
 <span>{advisor.user?.fullName}</span>
 </div>
 </td>
@@ -284,3 +285,4 @@ const deleteMutation = useMutation({
     </div>
   );
 };
+

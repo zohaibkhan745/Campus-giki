@@ -1,3 +1,4 @@
+import { getSocietyLogo } from '@/lib/utils';
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams, Link, useNavigate } from 'react-router-dom';
@@ -187,7 +188,7 @@ export const AdminYearlyPlanDetailPage: React.FC = () => {
         <div className="flex items-center gap-4">
           {plan.society?.logoUrl ? (
             <img
-              src={plan.society.logoUrl}
+              src={getSocietyLogo(plan.society.logoUrl)}
               alt={plan.society.name}
               className="w-14 h-14 rounded-cards object-cover border border-vast-ink/20"
             />
@@ -508,3 +509,4 @@ export const AdminYearlyPlanDetailPage: React.FC = () => {
     </div>
   );
 };
+

@@ -13,7 +13,7 @@ interface BannerHeaderProps {
 export const BannerHeader: React.FC<BannerHeaderProps> = ({
   title,
   subtitle,
-  bannerUrl = '/default-banner.jpg',
+  bannerUrl = '/default-banner.png',
   logoUrl,
 }) => {
   const { user } = useAuth();
@@ -162,4 +162,5 @@ export const BannerHeader: React.FC<BannerHeaderProps> = ({
     </>
   );
 };
+
 

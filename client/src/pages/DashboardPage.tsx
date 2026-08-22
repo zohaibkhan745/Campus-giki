@@ -1,3 +1,4 @@
+import { getSocietyLogo, getSocietyBanner } from '@/lib/utils';
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Navigate, Link } from 'react-router-dom';
@@ -180,7 +181,7 @@ export const DashboardPage: React.FC = () => {
 
   return (
     <div className="w-full">
-      <BannerHeader title={profile?.name || user?.fullName || 'User'} subtitle={profile?.advisor?.user ? `Advisor: ${profile.advisor.user.fullName}` : undefined} logoUrl={profile?.logoUrl} bannerUrl={profile?.bannerUrl} />
+      <BannerHeader title={profile?.name || user?.fullName || 'User'} subtitle={profile?.advisor?.user ? `Advisor: ${profile.advisor.user.fullName}` : undefined} logoUrl={getSocietyLogo(profile?.logoUrl)} bannerUrl={getSocietyBanner(profile?.bannerUrl)} />
       <div className="space-y-6 text-left py-4 px-4">
         {/* Actions Row */}
         <div className="flex justify-end mb-4">
@@ -366,3 +367,4 @@ export const DashboardPage: React.FC = () => {
     </div>
   );
 };
+

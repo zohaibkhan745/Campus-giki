@@ -129,6 +129,12 @@ export class SetupSocietyDto {
   @IsString()
   presidentContact?: string;
 
+  @ApiPropertyOptional({ example: 'president@giki.edu.pk' })
+  @Transform(({ value }: { value: unknown }) => (value === '' ? null : value))
+  @IsOptional()
+  @IsEmail({}, { message: 'Invalid president email format' })
+  presidentEmail?: string;
+
   @ApiPropertyOptional({ example: 'FCSE' })
   @Transform(({ value }: { value: unknown }) => (value === '' ? null : value))
   @IsOptional()
@@ -136,3 +142,4 @@ export class SetupSocietyDto {
   presidentFaculty?: string;
 
 }
+

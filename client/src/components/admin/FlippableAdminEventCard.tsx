@@ -1,3 +1,4 @@
+import { getSocietyLogo, resolveImageUrl } from '@/lib/utils';
 import React, { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Building2, X, ExternalLink, ArrowRight, Calendar, MapPin, Clock } from 'lucide-react';
@@ -22,8 +23,8 @@ export const FlippableAdminEventCard = ({ evt }: { evt: any }) => {
     if (!isFlipped) setRotation({ x: 0, y: 0 });
   };
 
-  const coverImg = evt.coverImageUrl || evt.society?.logoUrl;
-  const societyLogo = evt.society?.logoUrl || '/giki-logo.png';
+  const coverImg = evt.coverImageUrl ? resolveImageUrl(evt.coverImageUrl) : getSocietyLogo(evt.society?.logoUrl);
+  const societyLogo = getSocietyLogo(evt.society?.logoUrl);
   
   const eventDate = new Date(evt.eventDate);
   const dateStr = eventDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
@@ -292,5 +293,6 @@ export const EventGrid = ({ events }: { events: any[] }) => {
     </div>
   );
 };
+
 
 
