@@ -312,7 +312,7 @@ export const CampusCalendarPage: React.FC = () => {
             </h2>
             <div className="flex gap-1">
               <button className="glass-btn" onClick={prevMonth}>&lt;</button>
-              <button className={`glass-btn ${!isCurrentMonthView ? "current-month-btn" : ""}`} onClick={goToday} style={!isCurrentMonthView ? { background: "#ffffff", color: "#000000", fontWeight: "600" } : {}}>{isCurrentMonthView ? "Today" : "Current Month"}</button>
+              <button className={`glass-btn ${!isCurrentMonthView ? "current-month-btn" : ""}`} onClick={goToday} style={!isCurrentMonthView ? { background: "#ffffff", color: "#000000", fontWeight: "600" } : {}}>Current Month</button>
               <button className="glass-btn" onClick={nextMonth}>&gt;</button>
             </div>
             {isCalendarLoading && <Loader2 className="w-4 h-4 animate-spin ml-2" />}

@@ -88,7 +88,7 @@ export const DockNav: React.FC = () => {
         }
 
         const state = itemStates.current[index];
-        const easeSpeed = 0.16;
+        const easeSpeed = 0.28;
 
         state.size = lerp(state.size, targetSize, easeSpeed);
         state.margin = lerp(state.margin, targetMargin, easeSpeed);
@@ -124,7 +124,7 @@ export const DockNav: React.FC = () => {
       });
 
       const targetPadding = isCollapsed.current ? collapsedPadding : baseSidePadding;
-      currentContainerPadding.current = lerp(currentContainerPadding.current, targetPadding, 0.16);
+      currentContainerPadding.current = lerp(currentContainerPadding.current, targetPadding, 0.28);
 
       dock.style.width = `${contentWidth + (currentContainerPadding.current * 2) + containerBorder}px`;
       dock.style.padding = `0 ${currentContainerPadding.current}px`;
@@ -206,7 +206,7 @@ export const DockNav: React.FC = () => {
       if (footerObserver && footer) footerObserver.unobserve(footer);
       if (animationFrameId.current) cancelAnimationFrame(animationFrameId.current);
     };
-  }, [location.pathname]);
+  }, []);
 
   return (
     <>
