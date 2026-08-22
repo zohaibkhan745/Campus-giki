@@ -262,6 +262,10 @@ export const adminService = {
     return api.get('/admin/dashboard');
   },
 
+  async deleteAdvisor(id: string): Promise<void> {
+    return api.delete(`/admin/advisors/${id}`);
+  },
+
   async getAvailableAdvisors(): Promise<AdvisorOption[]> {
     return api.get('/admin/advisors');
   },

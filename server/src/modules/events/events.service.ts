@@ -345,7 +345,32 @@ export class EventsService {
   /**
    * Updates an existing event after enforcing ownership validation.
    */
+  
+  async requestEdit(id: string, reason: string): Promise<EventResponseDto> {
+    const event = await this.prisma.event.update({
+      where: { id },
+      data: {
+        editRequestStatus: 'PENDING',
+        editRequestReason: reason
+      },
+      include: { society: true }
+    });
+    return event as any;
+  }
+
+  async resolveEditRequest(id: string, status: 'APPROVED' | 'REJECTED'): Promise<EventResponseDto> {
+    const event = await this.prisma.event.update({
+      where: { id },
+      data: {
+        editRequestStatus: status
+      },
+      include: { society: true }
+    });
+    return event as any;
+  }
+
   async updateEvent(
+
     eventId: string,
     userId: string,
     dto: UpdateEventDto,

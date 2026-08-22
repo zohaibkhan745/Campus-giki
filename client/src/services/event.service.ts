@@ -30,6 +30,14 @@ export const eventService = {
     return api.get(`/events/${id}`);
   },
 
+  async requestEdit(id: string, reason: string): Promise<void> {
+    return api.patch(`/events/${id}/edit-request`, { reason });
+  },
+
+  async resolveEditRequest(id: string, status: 'APPROVED' | 'REJECTED'): Promise<void> {
+    return api.patch(`/events/${id}/edit-request-resolve`, { status });
+  },
+
   async updateEvent(id: string, payload: UpdateEventPayload): Promise<EventItem> {
     return api.patch(`/events/${id}`, payload);
   },

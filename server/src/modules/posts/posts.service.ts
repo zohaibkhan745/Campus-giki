@@ -15,6 +15,7 @@ export class PostsService {
     }
     return this.prisma.post.create({
       data: {
+        title: dto.title,
         content: dto.content,
         imageUrl: dto.imageUrl,
         videoUrl: dto.videoUrl,
@@ -153,6 +154,7 @@ export class PostsService {
     return this.prisma.post.update({
       where: { id: postId },
       data: {
+        title: dto.title,
         content: dto.content,
         imageUrl: dto.imageUrl,
       },

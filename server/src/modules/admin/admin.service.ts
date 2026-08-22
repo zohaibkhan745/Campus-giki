@@ -239,6 +239,20 @@ export class AdminService {
   /**
    * Retrieves list of available faculty advisors for society onboarding forms.
    */
+  
+  async deleteAdvisor(advisorId: string) {
+    const advisor = await this.prisma.advisor.findUnique({
+      where: { id: advisorId },
+    });
+    if (!advisor) {
+      throw new NotFoundException('Advisor not found');
+    }
+    await this.prisma.user.delete({
+      where: { id: advisor.userId },
+    });
+    return { success: true, message: 'Advisor deleted successfully' };
+  }
+
   async getAvailableAdvisors() {
     return this.prisma.advisor.findMany({
       select: {

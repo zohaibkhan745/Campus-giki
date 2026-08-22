@@ -1,3 +1,4 @@
+import { CustomDropdown } from '@/components/ui/CustomDropdown';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -306,24 +307,7 @@ export const AdminEventReviewPage: React.FC = () => {
               <label className="block text-xs font-semibold text-vast-ink font-medium uppercase tracking-wider">
                 Event Type
               </label>
-            <select
-              disabled={true}
-              className="w-full bg-lumen-cream text-vast-ink text-sm rounded-inputs border border-vast-ink/20 px-3.5 py-2.5 transition-all outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50"
-              {...register('eventType')}
-            >
-              <option value="">-- Select Event Type --</option>
-              <option value="Workshop/Training">Workshop / Training</option>
-              <option value="Hackathon/Competition">Hackathon / Competition</option>
-              <option value="Cultural/Social">Cultural / Social Event</option>
-              <option value="Lecture/Seminar">Lecture / Seminar</option>
-              <option value="Conference/Symposium">Conference / Symposium</option>
-              <option value="Entertainment">Entertainment</option>
-              <option value="Sports/Esports">Sports / E-Sports</option>
-              <option value="Exhibition/Showcase">Exhibition / Showcase</option>
-              <option value="Community Service">Community Service</option>
-              <option value="Literary">Literary</option>
-              <option value="Other">Other</option>
-            </select>
+            <CustomDropdown placeholder="Select Type" disabled={true} options={[{value:"Workshop",label:"Workshop"},{value:"Seminar",label:"Seminar"},{value:"Hackathon",label:"Hackathon"},{value:"Competition",label:"Competition"},{value:"Social",label:"Social"},{value:"Other",label:"Other"}]} {...register('eventType')} />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

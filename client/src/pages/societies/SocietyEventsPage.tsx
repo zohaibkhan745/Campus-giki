@@ -12,6 +12,8 @@ import {
 } from 'lucide-react';
 import { eventService } from '@/services/event.service';
 import { Alert } from '@/components/ui/Alert';
+import { CustomDropdown } from '@/components/ui/CustomDropdown';
+import { FeedCard } from '@/components/feed/FeedCard';
 import type { EventItem } from '@/types/event.types';
 
 export const SocietyEventsPage: React.FC = () => {
@@ -109,16 +111,16 @@ export const SocietyEventsPage: React.FC = () => {
       </div>
 
       {/* Header Banner */}
-      <div className="bg-transparent p-6 rounded-cards border border-vast-ink/20 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shadow-sm">
+      <div className="bg-white/[0.08] backdrop-blur-[20px] shadow-[0_12px_40px_rgba(0,0,0,0.4)] p-6 md:p-8 rounded-[18px] border border-white/20 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shadow-sm">
         <div className="flex items-center gap-4">
-          <div className="p-3.5 bg-lumen-cream border border-vast-ink/20 rounded-full text-vast-ink hidden sm:block">
+          <div className="p-3.5 bg-lumen-cream border border-vast-ink/20 rounded-full text-white hidden sm:block">
             <MicVocal className="w-6 h-6" />
           </div>
           <div>
-            <h1 className="text-2xl font-extrabold text-vast-ink">
+            <h1 className="text-2xl font-extrabold text-white">
               Manage Events
             </h1>
-            <p className="text-sm font-medium text-fog mt-1">
+            <p className="text-sm font-medium text-gray-400 mt-1">
               View all your society events, track approvals, and update schedules.
             </p>
           </div>
@@ -141,7 +143,7 @@ export const SocietyEventsPage: React.FC = () => {
         <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
           
           <div className="relative w-full lg:w-80 flex items-center shrink-0">
-            <div className="absolute left-3 text-fog pointer-events-none flex items-center justify-center">
+            <div className="absolute left-3 text-gray-400 pointer-events-none flex items-center justify-center">
               <Search className="w-4 h-4" />
             </div>
             <input
@@ -149,7 +151,7 @@ export const SocietyEventsPage: React.FC = () => {
               placeholder="Search title or venue..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-transparent text-vast-ink text-sm rounded-inputs border border-vast-ink/20 px-3.5 py-2 pl-10 transition-all outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:border-indigo-500 font-medium"
+              className="w-full bg-transparent text-white text-sm rounded-inputs border border-vast-ink/20 px-3.5 py-2 pl-10 transition-all outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:border-indigo-500 font-medium"
             />
           </div>
 
@@ -159,8 +161,8 @@ export const SocietyEventsPage: React.FC = () => {
               onClick={() => setTypeToggle('all')}
               className={`px-4 py-1.5 rounded-inputs text-xs font-bold transition-all ${
                 typeToggle === 'all'
-                  ? 'bg-vast-ink text-white shadow-sm'
-                  : 'text-fog hover:text-vast-ink'
+                  ? 'bg-white text-black shadow-lg shadow-white/10'
+                  : 'text-gray-400 hover:text-white'
               }`}
             >
               All Time
@@ -170,8 +172,8 @@ export const SocietyEventsPage: React.FC = () => {
               onClick={() => setTypeToggle('this_week')}
               className={`px-4 py-1.5 rounded-inputs text-xs font-bold transition-all ${
                 typeToggle === 'this_week'
-                  ? 'bg-vast-ink text-white shadow-sm'
-                  : 'text-fog hover:text-vast-ink'
+                  ? 'bg-white text-black shadow-lg shadow-white/10'
+                  : 'text-gray-400 hover:text-white'
               }`}
             >
               This Week
@@ -181,8 +183,8 @@ export const SocietyEventsPage: React.FC = () => {
               onClick={() => setTypeToggle('this_month')}
               className={`px-4 py-1.5 rounded-inputs text-xs font-bold transition-all ${
                 typeToggle === 'this_month'
-                  ? 'bg-vast-ink text-white shadow-sm'
-                  : 'text-fog hover:text-vast-ink'
+                  ? 'bg-white text-black shadow-lg shadow-white/10'
+                  : 'text-gray-400 hover:text-white'
               }`}
             >
               This Month
@@ -192,8 +194,8 @@ export const SocietyEventsPage: React.FC = () => {
               onClick={() => setTypeToggle('upcoming')}
               className={`px-4 py-1.5 rounded-inputs text-xs font-bold transition-all ${
                 typeToggle === 'upcoming'
-                  ? 'bg-vast-ink text-white shadow-sm'
-                  : 'text-fog hover:text-vast-ink'
+                  ? 'bg-white text-black shadow-lg shadow-white/10'
+                  : 'text-gray-400 hover:text-white'
               }`}
             >
               Upcoming
@@ -203,8 +205,8 @@ export const SocietyEventsPage: React.FC = () => {
               onClick={() => setTypeToggle('past')}
               className={`px-4 py-1.5 rounded-inputs text-xs font-bold transition-all ${
                 typeToggle === 'past'
-                  ? 'bg-vast-ink text-white shadow-sm'
-                  : 'text-fog hover:text-vast-ink'
+                  ? 'bg-white text-black shadow-lg shadow-white/10'
+                  : 'text-gray-400 hover:text-white'
               }`}
             >
               Past
@@ -213,29 +215,16 @@ export const SocietyEventsPage: React.FC = () => {
         </div>
 
         {/* Bottom Row: Status Filter & Clear */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t-2 border-vast-ink/10">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-6 mt-6 border-t border-white/10 w-full">
           <div className="relative flex items-center w-full sm:w-64">
-            <div className="absolute left-3 text-fog pointer-events-none flex items-center justify-center z-10">
-              <Filter className="w-4 h-4" />
-            </div>
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-full bg-lumen-cream text-vast-ink font-bold text-xs rounded-inputs border border-vast-ink/20 px-3 py-2.5 pl-9 outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 cursor-pointer appearance-none"
-            >
-              <option value="" className="bg-lumen-cream text-vast-ink font-semibold">All Statuses</option>
-              <option value="DRAFT" className="bg-lumen-cream text-vast-ink font-semibold">Draft</option>
-              <option value="PENDING_ADVISOR" className="bg-lumen-cream text-vast-ink font-semibold">Pending Advisor</option>
-              <option value="PENDING_ADMIN" className="bg-lumen-cream text-vast-ink font-semibold">Pending Admin (DSA)</option>
-              <option value="CHANGES_REQUESTED" className="bg-lumen-cream text-vast-ink font-semibold">Changes Requested</option>
-              <option value="PUBLISHED" className="bg-lumen-cream text-vast-ink font-semibold">Published / Approved</option>
-            </select>
+            
+            <CustomDropdown value={statusFilter} onChange={(e: any) => setStatusFilter(e.target.value as any)} options={[{value:"ALL",label:"All Statuses"},{value:"PENDING_ADVISOR",label:"Pending Advisor"},{value:"CHANGES_REQUESTED",label:"Changes Requested"},{value:"PENDING_ADMIN",label:"Pending DSA"},{value:"APPROVED",label:"Approved"},{value:"REJECTED",label:"Rejected"},{value:"PUBLISHED",label:"Published"},{value:"CANCELLED",label:"Cancelled"}]} />
           </div>
 
           {(searchQuery || statusFilter || typeToggle !== 'all') && (
             <button
               onClick={handleClearFilters}
-              className="flex items-center justify-center gap-1.5 px-4 py-2 text-red-500 hover:text-white bg-transparent hover:bg-red-500 font-bold text-xs border-2 border-transparent hover:border-vast-ink rounded-inputs transition-all focus:outline-none"
+              className="flex items-center justify-center gap-2 px-4 py-2 text-red-400 hover:text-white bg-red-500/10 hover:bg-red-500/30 font-bold text-sm border border-red-500/20 rounded-xl transition-all focus:outline-none ml-auto"
             >
               <FilterX className="w-3.5 h-3.5" />
               Clear Filters
@@ -257,18 +246,18 @@ export const SocietyEventsPage: React.FC = () => {
         </div>
       ) : (
         <>
-          <div className="flex items-center justify-between text-sm font-bold text-vast-ink">
+          <div className="flex items-center justify-between text-sm font-bold text-white">
             <span>Showing {filteredEvents.length} events</span>
           </div>
           
           {filteredEvents.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20 px-4 bg-transparent border border-vast-ink/20 rounded-cards text-center space-y-4">
               <div className="p-4 bg-lumen-stone rounded-full">
-                <Calendar className="w-10 h-10 text-fog" />
+                <Calendar className="w-10 h-10 text-gray-400" />
               </div>
               <div>
-                <h3 className="text-xl font-extrabold text-vast-ink mb-1">No Events Found</h3>
-                <p className="text-fog text-sm font-medium">
+                <h3 className="text-xl font-extrabold text-white mb-1">No Events Found</h3>
+                <p className="text-gray-400 text-sm font-medium">
                   We couldn't find any events matching your current filters.
                 </p>
               </div>
@@ -280,60 +269,13 @@ export const SocietyEventsPage: React.FC = () => {
               </button>
             </div>
           ) : (
-            <div className="space-y-4">
-              {filteredEvents.map((event: EventItem) => (
-                <div
-                  key={event.id}
-                  className="bg-transparent p-5 rounded-cards border border-vast-ink/20 hover:border-2 hover:bg-lumen-stone transition-all flex flex-col md:flex-row items-start md:items-center justify-between gap-4 group"
-                >
-                  <div className="flex items-start md:items-center gap-4">
-                    <div className="space-y-1">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <Link
-                          to={`/events/${event.id}`}
-                          className="font-bold text-vast-ink text-base group-hover:text-vast-ink transition-colors hover:underline"
-                        >
-                          {event.title}
-                        </Link>
-                        <span className={`text-[11px] font-semibold px-2.5 py-0.5 rounded-inputs ${
-                          event.approvalStatus === 'PUBLISHED' ? 'text-forest-ink bg-transparent border border-forest-ink' : 
-                          event.approvalStatus === 'CHANGES_REQUESTED' ? 'text-ember-glow bg-red-50 border border-ember-glow' : 
-                          'text-fog bg-lumen-stone border border-fog'
-                        }`}>
-                          {event.approvalStatus}
-                        </span>
-                      </div>
-
-                      <div className="flex flex-wrap items-center gap-4 text-xs text-fog">
-                        <div className="flex items-center gap-1.5">
-                          <Calendar className="w-3.5 h-3.5 text-vast-ink" />
-                          <span>
-                            {new Date(event.eventDate).toLocaleDateString(undefined, {
-                              month: 'short',
-                              day: 'numeric',
-                              year: 'numeric',
-                            })}{' '}
-                            ({event.startTime} - {event.endTime})
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-3 w-full md:w-auto justify-end pt-2 md:pt-0 border-t-2 md:border-t-0 border-vast-ink/10">
-                    <Link
-                      to={`/events/${event.id}/edit`}
-                      className="inline-flex items-center gap-2 px-4 py-2 bg-transparent hover:bg-lavender-whisper border border-vast-ink/20 text-vast-ink text-xs font-bold transition-transform hover:-translate-y-0.5 shadow-[2px_2px_0px_0px_#1B1B18] rounded-inputs focus:outline-none"
-                    >
-                      <Search className="w-3.5 h-3.5" />
-                      Manage Event
-                    </Link>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredEvents.map((event: EventItem) => (
+                  <FeedCard key={event.id} item={event} />
+                ))}
+              </div>
+            )}
+          </>
       )}
     </div>
   );

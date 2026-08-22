@@ -1,55 +1,38 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { UploadCloud, Image as ImageIcon, X, Loader2, AlertCircle } from 'lucide-react';
+import React, { useRef, useState, useEffect } from 'react';
+import { UploadCloud, X, AlertCircle } from 'lucide-react';
 import { uploadService } from '@/services/upload.service';
 
 interface ImageUploaderProps {
-  value?: string;
   onChange: (url: string) => void;
-  folder?: 'posts' | 'events' | 'avatars' | 'societies' | 'general';
+  value?: string;
   label?: string;
-  className?: string;
-  hideLinkOption?: boolean;
+  folder?: 'posts' | 'events' | 'avatars' | 'societies' | 'general';
 }
 
-export const ImageUploader: React.FC<ImageUploaderProps> = ({
-  value,
-  onChange,
-  folder = 'general',
-  label,
-  className = '',
-}) => {
+export const ImageUploader: React.FC<ImageUploaderProps> = ({ onChange, value, label, folder = 'general' }) => {
   const [isUploading, setIsUploading] = useState(false);
   const [dragActive, setDragActive] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(value || null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Sync internal preview when value changes externally
   useEffect(() => {
     setPreviewUrl(value || null);
   }, [value]);
 
   const handleFileSelect = async (file: File) => {
-    setError(null);
-
-    // File validation
     if (!file.type.startsWith('image/')) {
-      setError('Please select a valid image file (PNG, JPG, WebP, GIF)');
+      setError('Please select a valid image file');
       return;
     }
 
-    if (file.size > 5 * 1024 * 1024) {
-      setError('File size must be under 5MB');
-      return;
-    }
-
-    // Instant local preview
     const localPreview = URL.createObjectURL(file);
     setPreviewUrl(localPreview);
     setIsUploading(true);
+    setError(null);
 
     try {
-      const res = await uploadService.uploadImage(file, folder);
+      const res = await uploadService.uploadMedia(file, folder);
       const finalUrl = res.url || res.relativePath;
       setPreviewUrl(finalUrl);
       onChange(finalUrl);
@@ -60,6 +43,17 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
       onChange('');
     } finally {
       setIsUploading(false);
+    }
+  };
+
+  const handleClear = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setPreviewUrl(null);
+    setError(null);
+    onChange('');
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
     }
   };
 
@@ -82,98 +76,79 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
     }
   };
 
-  const handleClear = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setPreviewUrl(null);
-    setError(null);
-    onChange('');
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
-  };
-
   return (
-    <div className={`space-y-2 text-left ${className}`}>
-      {label && (
-        <label className="block text-xs font-semibold uppercase tracking-wider text-vast-ink">
-          {label}
-        </label>
+    <div className="w-full space-y-2">
+      {label && <label className="block text-xs uppercase tracking-wider text-gray-400 font-semibold mb-1">{label}</label>}
+
+      {error && (
+        <div className="flex items-center gap-2 text-red-400 text-sm bg-red-500/10 p-2.5 rounded-lg border border-red-500/20">
+          <AlertCircle className="w-4 h-4 shrink-0" />
+          <p>{error}</p>
+        </div>
       )}
 
-      {previewUrl ? (
-        <div className="relative group rounded-cards overflow-hidden border-2 border-vast-ink bg-lumen-stone shadow-md max-h-56 flex items-center justify-center">
-          <img
-            src={previewUrl}
-            alt="Uploaded preview"
-            className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-[1.01]"
-            onError={() => {
-              setError('Failed to load image preview');
-            }}
-          />
-          <div className="absolute inset-0 bg-vast-ink/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-            <button
-              type="button"
-              onClick={handleClear}
-              className="p-2.5 rounded-full bg-vast-ink text-white hover:bg-red-600 transition-all active:scale-95 shadow-lg flex items-center gap-1.5 text-xs font-bold"
-              title="Remove image"
-            >
-              <X className="w-4 h-4" />
-              <span>Remove Image</span>
-            </button>
-          </div>
-          {isUploading && (
-            <div className="absolute inset-0 bg-vast-ink/75 flex flex-col items-center justify-center text-white gap-2">
-              <Loader2 className="w-7 h-7 animate-spin text-white" />
-              <span className="text-xs font-bold">Compressing & Uploading Banner...</span>
+      <div className="relative group w-full h-48 rounded-[18px] overflow-hidden" 
+        onDragEnter={handleDrag} onDragLeave={handleDrag} onDragOver={handleDrag} onDrop={handleDrop}>
+        
+        {/* Background / Base Container */}
+        <div className={`absolute inset-0 transition-all duration-300 border ${
+          dragActive ? 'bg-white/[0.15] border-white/40' : 'bg-white/[0.08] border-white/20'
+        } backdrop-blur-[20px] rounded-[18px] shadow-[0_12px_40px_rgba(0,0,0,0.4)] flex flex-col items-center justify-center p-4`}
+        onClick={() => !previewUrl && fileInputRef.current?.click()}
+        style={{ cursor: previewUrl ? 'default' : 'pointer' }}
+        >
+          {previewUrl ? (
+            <>
+              <img
+                src={previewUrl?.startsWith('http') || previewUrl?.startsWith('data:') || previewUrl?.startsWith('blob:') ? previewUrl : `http://localhost:5000${previewUrl?.startsWith('/') ? '' : '/'}${previewUrl}`}
+                alt="Uploaded preview"
+                className="w-full h-full object-cover rounded-[14px]"
+                onError={() => {
+                  setError('Failed to load image preview');
+                }}
+              />
+              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-[18px]">
+                 <button
+                   onClick={handleClear}
+                   type="button"
+                   className="px-4 py-2 rounded-xl bg-red-500/20 hover:bg-red-500/40 border border-red-500/50 text-red-200 hover:text-white transition-all active:scale-95 shadow-[0_4px_15px_rgba(239,68,68,0.4)] flex items-center gap-2 text-sm font-bold backdrop-blur-md"
+                 >
+                   <X className="w-4 h-4" />
+                   Remove Image
+                 </button>
+              </div>
+            </>
+          ) : (
+            <div className="flex flex-col items-center justify-center text-center space-y-3">
+              <div className="p-3 bg-white/10 rounded-full">
+                <UploadCloud className="w-8 h-8 text-white/70" />
+              </div>
+              <div>
+                <p className="text-sm font-bold text-white mb-1">
+                  Click to upload <span className="font-normal text-white/70">or drag and drop</span>
+                </p>
+                <p className="text-xs text-white/50">
+                  PNG, JPG, WebP or GIF (Max 5MB)
+                </p>
+              </div>
             </div>
           )}
         </div>
-      ) : (
-        <div
-          onDragEnter={handleDrag}
-          onDragLeave={handleDrag}
-          onDragOver={handleDrag}
-          onDrop={handleDrop}
-          onClick={() => fileInputRef.current?.click()}
-          className={`relative border-2 border-dashed rounded-cards p-6 text-center cursor-pointer transition-all duration-200 bg-lumen-stone ${
-            dragActive
-              ? 'border-vast-ink bg-slate-100 scale-[0.99]'
-              : 'border-vast-ink/30 hover:border-vast-ink hover:bg-slate-50/80 shadow-sm'
-          }`}
-        >
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/png, image/jpeg, image/webp, image/gif"
-            className="hidden"
-            onChange={(e) => {
-              if (e.target.files && e.target.files[0]) {
-                handleFileSelect(e.target.files[0]);
-              }
-            }}
-          />
-          <div className="flex flex-col items-center gap-2.5">
-            <div className="p-3 rounded-full bg-vast-ink text-white shadow-sm flex items-center justify-center">
-              <UploadCloud className="w-6 h-6" />
-            </div>
-            <div className="space-y-1">
-              <p className="text-sm font-bold text-vast-ink">
-                <span className="underline underline-offset-2">Click to upload banner</span> or drag and drop
-              </p>
-              <p className="text-xs text-fog font-medium">
-                PNG, JPG, WebP or GIF (Max 5MB • Auto WebP Compression)
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
 
-      {error && (
-        <div className="flex items-center gap-1.5 text-red-500 text-xs mt-1.5 bg-red-50 border border-red-200 p-2.5 rounded-inputs font-medium">
-          <AlertCircle className="w-4 h-4 shrink-0" />
-          <span>{error}</span>
-        </div>
-      )}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/png, image/jpeg, image/webp, image/gif"
+          className="hidden"
+          onChange={(e) => e.target.files?.[0] && handleFileSelect(e.target.files[0])}
+        />
+        
+        {isUploading && (
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-20 rounded-[18px]">
+            <div className="w-8 h-8 border-4 border-white/20 border-t-white rounded-full animate-spin"></div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

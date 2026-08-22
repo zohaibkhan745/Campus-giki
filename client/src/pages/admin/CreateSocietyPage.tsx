@@ -135,7 +135,7 @@ export const CreateSocietyPage: React.FC = () => {
               <CustomDropdown 
                 options={categoryOptions} 
                 value={categoryId} 
-                onChange={(val) => setValue('categoryId', val, { shouldValidate: true })} 
+                onChange={(e: any) => setValue('categoryId', e.target.value, { shouldValidate: true })} 
                 placeholder="Select Category..." 
               />
               {errors.categoryId?.message && (
@@ -151,7 +151,7 @@ export const CreateSocietyPage: React.FC = () => {
               <CustomDropdown 
                 options={advisorOptions} 
                 value={advisorId} 
-                onChange={(val) => setValue('advisorId', val, { shouldValidate: true })} 
+                onChange={(e: any) => setValue('advisorId', e.target.value, { shouldValidate: true })} 
                 placeholder="Select Advisor..." 
               />
               {errors.advisorId?.message && (

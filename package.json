@@ -26,5 +26,8 @@
     "tailwind"
   ],
   "author": "GIKI Development Team",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "glob": "^13.0.6"
+  }
 }

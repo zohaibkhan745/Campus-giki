@@ -9,6 +9,7 @@ import {
   IsUUID,
   MaxLength,
   MinLength,
+  Matches,
 } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { OrganizationType } from '@prisma/client';
@@ -127,4 +128,11 @@ export class SetupSocietyDto {
   @IsOptional()
   @IsString()
   presidentContact?: string;
+
+  @ApiPropertyOptional({ example: 'FCSE' })
+  @Transform(({ value }: { value: unknown }) => (value === '' ? undefined : value))
+  @IsOptional()
+  @IsString()
+  presidentFaculty?: string;
+
 }

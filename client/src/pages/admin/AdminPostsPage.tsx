@@ -22,7 +22,7 @@ import {
 import { postService, type PostItem } from '@/services/post.service';
 import { societyService } from '@/services/society.service';
 import { Button } from '@/components/ui/Button';
-import { PostCard } from '@/components/feed/PostCard';
+import { FeedCard } from '@/components/feed/FeedCard';
 import { CustomDropdown } from '@/components/ui/CustomDropdown';
 import { CustomDatePicker } from '@/components/ui/date-picker';
 import { Alert } from '@/components/ui/Alert';
@@ -30,6 +30,7 @@ import { PostCreateModal } from '@/components/feed/PostCreateModal';
 import type { AxiosError } from 'axios';
 
 const postSchema = z.object({
+  title: z.string().min(1, 'Heading is required').max(255, 'Heading is too long'),
   content: z.string().min(1, 'Post content is required').max(2000, 'Too long'),
   imageUrl: z.string().optional(),
 });
@@ -201,7 +202,7 @@ export const AdminPostsPage: React.FC = () => {
               { value: 'society', label: 'Societies' }
             ]}
             value={typeFilter}
-            onChange={(val) => {
+            onChange={(val: string) => {
               setTypeFilter(val as any);
               if (val === 'global') setSocietyFilter('');
               /* reset handled by queryKey */
@@ -216,7 +217,7 @@ export const AdminPostsPage: React.FC = () => {
               ...societies.map((soc: any) => ({ value: soc.id, label: soc.name }))
             ]}
             value={societyFilter}
-            onChange={(val) => {
+            onChange={(val: string) => {
               setSocietyFilter(val);
               setTypeFilter('society');
               /* reset handled by queryKey */
@@ -225,8 +226,8 @@ export const AdminPostsPage: React.FC = () => {
             className="w-full md:flex-1"
           />
 
-          <div className="w-full md:flex-1 shrink-0"><CustomDatePicker value={dateFrom} max={dateTo} onChange={(val) => { setDateFrom(val); /* reset handled by queryKey */ }} placeholder="From Date" /></div>
-          <div className="w-full md:flex-1 shrink-0"><CustomDatePicker value={dateTo} min={dateFrom} onChange={(val) => { setDateTo(val); /* reset handled by queryKey */ }} placeholder="To Date" /></div>
+          <div className="w-full md:flex-1 shrink-0"><CustomDatePicker value={dateFrom} max={dateTo} onChange={(val: string) => { setDateFrom(val); /* reset handled by queryKey */ }} placeholder="From Date" /></div>
+          <div className="w-full md:flex-1 shrink-0"><CustomDatePicker value={dateTo} min={dateFrom} onChange={(val: string) => { setDateTo(val); /* reset handled by queryKey */ }} placeholder="To Date" /></div>
 
           {(typeFilter !== 'all' || societyFilter || dateFrom || dateTo) && (
             <button
@@ -280,7 +281,7 @@ export const AdminPostsPage: React.FC = () => {
             };
             
             return (
-              <PostCard 
+              <FeedCard 
                 key={post.id} 
                 item={feedItem as any} 
                 onEdit={isOwnPost ? () => handleOpenEdit(post) : undefined}
@@ -310,6 +311,7 @@ export const AdminPostsPage: React.FC = () => {
         isOpen={isModalOpen}
         onClose={closeModal}
         initialContent={editingPost?.content || ''}
+          initialTitle={editingPost?.title || ''}
         initialImageUrl={editingPost?.imageUrl || ''}
         isSubmitting={saveMutation.isPending}
         onSubmit={async (data) => {

@@ -138,7 +138,7 @@ export const AdminYearlyPlansPage: React.FC = () => {
               className="w-full"
               icon={<Filter className="w-4 h-4" />}
               value={statusFilter}
-              onChange={(val) => { setStatusFilter(val); setPage(1); }}
+              onChange={(val: string) => { setStatusFilter(val); setPage(1); }}
               placeholder="All Submitted Plans"
               options={[
                 { value: '', label: 'All Submitted Plans' },
@@ -155,7 +155,7 @@ export const AdminYearlyPlansPage: React.FC = () => {
               className="w-full"
               icon={<Calendar className="w-4 h-4" />}
               value={yearFilter}
-              onChange={(val) => { setYearFilter(val); setPage(1); }}
+              onChange={(val: string) => { setYearFilter(val); setPage(1); }}
               placeholder="All Years"
               options={[
                 { value: '', label: 'All Years' },

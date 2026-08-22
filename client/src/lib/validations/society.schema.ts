@@ -5,7 +5,7 @@ const optionalUrl = z
   .trim()
   .optional()
   .refine(
-    (val) => !val || val === '' || z.string().url().safeParse(val).success,
+    (val) => !val || val === '' || z.string().url().safeParse(val).success || val.startsWith('/') || val.startsWith('/'),
     { message: 'Must be a valid URL address (e.g. https://example.com)' },
   );
 
@@ -39,9 +39,10 @@ export const societySetupSchema = z.object({
   linkedin: optionalUrl,
   website: optionalUrl,
   email: optionalEmail,
-  presidentName: z.string().optional(),
-  presidentRegNum: z.string().optional(),
-  presidentContact: z.string().optional(),
+  presidentName: z.string().regex(/^[a-zA-Z., \\-]+$/, 'Only letters, spaces, dots, commas, and dashes allowed').optional().or(z.literal('')),
+  presidentRegNum: z.string().regex(/^\d{7}$/, 'Must be exactly 7 digits').optional().or(z.literal('')),
+  presidentFaculty: z.string().optional().or(z.literal('')),
+  presidentContact: z.string().regex(/^\d{11}$/, 'Must be exactly 11 digits').optional().or(z.literal('')),
 });
 
 export type SocietySetupFormData = z.infer<typeof societySetupSchema>;

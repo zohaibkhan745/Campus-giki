@@ -1,6 +1,5 @@
 import { useFeed } from '@/hooks/useFeed';
-import { EventCard } from '@/components/feed/EventCard';
-import { PostCard } from '@/components/feed/PostCard';
+import { FeedCard } from '@/components/feed/FeedCard';
 import { FeedCardSkeleton } from '@/components/feed/FeedCardSkeleton';
 import { HomeSidebar } from '@/components/feed/HomeSidebar';
 import { RefreshCw, AlertCircle } from 'lucide-react';
@@ -62,11 +61,7 @@ export const HomePage: React.FC = () => {
             /* Feed Items Stack */
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 justify-items-center">
               {items.map((item) =>
-                item.type === 'event' ? (
-                  <EventCard key={`event-${item.id}`} item={item}  />
-                ) : (
-                  <PostCard key={`post-${item.id}`} item={item} />
-                ),
+                <FeedCard key={`${item.type}-${item.id}`} item={item} />,
               )}
             </div>
           )}

@@ -23,6 +23,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { advisorService } from '@/services/advisor.service';
 import type { PlanStatus } from '@/types/yearly-plan.types';
 import { Alert } from '@/components/ui/Alert';
+import { CustomDropdown } from '@/components/ui/CustomDropdown';
 import { usePendingCounts } from '@/hooks/usePendingCounts';
 import { BannerHeader } from '@/components/layout/BannerHeader';
 
@@ -146,7 +147,7 @@ export const AdvisorQueuePage: React.FC = () => {
       </div>
 
       {/* 2. Command Center — matching Society & Admin */}
-      <div className="flex flex-col md:flex-row bg-white/[0.08] backdrop-blur-[20px] border border-white/20 rounded-[18px] shadow-[0_12px_40px_rgba(0,0,0,0.4)] overflow-hidden">
+      <div className="flex flex-col md:flex-row bg-white/[0.08] backdrop-blur-[20px] border border-white/20 rounded-[18px] shadow-[0_12px_40px_rgba(0,0,0,0.4)] overflow-visible">
         {/* Quick Actions */}
         <div className="flex-1 p-6 flex flex-col justify-center space-y-5 border-b md:border-b-0 md:border-r border-white/10">
           <h3 className="font-extrabold text-lg text-white flex items-center gap-2">
@@ -190,7 +191,7 @@ export const AdvisorQueuePage: React.FC = () => {
         </div>
 
         {/* At a Glance */}
-        <div className="flex-1 p-6 flex flex-col justify-center space-y-5 relative overflow-hidden group">
+        <div className="flex-1 p-6 flex flex-col justify-center space-y-5 relative overflow-visible group">
           <h3 className="font-extrabold text-lg text-white flex items-center gap-2 z-10">
             Review Queue
           </h3>
@@ -200,22 +201,8 @@ export const AdvisorQueuePage: React.FC = () => {
 
           {/* Status Filter */}
           <div className="relative z-10">
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
-              <Filter className="w-4 h-4" />
-            </div>
-            <select
-              value={statusFilter}
-              onChange={handleStatusChange}
-              className="w-full bg-transparent text-white text-sm font-semibold rounded-xl border border-white/20 px-3.5 py-2.5 pl-10 transition-all outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 cursor-pointer"
-            >
-              <option value="" className="bg-gray-900">All Statuses</option>
-              {activeTab === 'plans' && <option value="PENDING" className="bg-gray-900">Pending Review</option>}
-              {activeTab === 'events' && <option value="PENDING_ADVISOR" className="bg-gray-900">Pending Review</option>}
-              <option value="CHANGES_REQUESTED" className="bg-gray-900">Changes Requested</option>
-              <option value="APPROVED" className="bg-gray-900">Approved</option>
-              {activeTab === 'plans' && <option value="DRAFT" className="bg-gray-900">Draft</option>}
-              {activeTab === 'events' && <option value="PUBLISHED" className="bg-gray-900">Published</option>}
-            </select>
+            
+            <CustomDropdown value={statusFilter} onChange={handleStatusChange} options={[{value:"ALL",label:"All Statuses"},{value:"PENDING_ADVISOR",label:"Pending Advisor"},{value:"CHANGES_REQUESTED",label:"Changes Requested"},{value:"PENDING_ADMIN",label:"Pending DSA"},{value:"APPROVED",label:"Approved"},{value:"REJECTED",label:"Rejected"},{value:"PUBLISHED",label:"Published"},{value:"CANCELLED",label:"Cancelled"}]} />
           </div>
 
           {/* Decorative background */}

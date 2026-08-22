@@ -147,7 +147,7 @@ export const BannerHeader: React.FC<BannerHeaderProps> = ({
 
         {/* Profile Circle */}
         <div className="shared-profile-container">
-          <img src={logoUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(title)}&background=14161b&color=fff&size=200`} alt="Logo" className="shared-profile-img" />
+          <img src={logoUrl || `/giki-mono.jpg`} alt="Logo" className="shared-profile-img" />
         </div>
 
         {/* Name */}

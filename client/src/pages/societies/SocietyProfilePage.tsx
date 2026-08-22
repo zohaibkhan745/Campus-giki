@@ -14,8 +14,7 @@ import {
 import { societyService } from '@/services/society.service';
 import type { EventFeedItem } from '@/types/feed.types';
 import { Alert } from '@/components/ui/Alert';
-import { EventCard } from '@/components/feed/EventCard';
-import { PostCard } from '@/components/feed/PostCard';
+import { FeedCard } from '@/components/feed/FeedCard';
 
 export const SocietyProfilePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -335,7 +334,7 @@ export const SocietyProfilePage: React.FC = () => {
               ) : (
                 <div className="flex flex-wrap justify-center gap-8">
                   {postsData.map((post) => (
-                    <PostCard key={post.id} item={post} />
+                    <FeedCard key={post.id} item={post} />
                   ))}
                 </div>
               )}
@@ -360,7 +359,7 @@ export const SocietyProfilePage: React.FC = () => {
               ) : (
                 <div className="flex flex-wrap justify-center gap-8">
                   {upcomingEvents.map((event) => (
-                    <EventCard
+                    <FeedCard
                       key={event.id}
                       item={
                         {
@@ -385,7 +384,7 @@ export const SocietyProfilePage: React.FC = () => {
               ) : (
                 <div className="flex flex-wrap justify-center gap-8 opacity-80">
                   {pastEvents.map((event) => (
-                    <EventCard
+                    <FeedCard
                       key={event.id}
                       item={
                         {

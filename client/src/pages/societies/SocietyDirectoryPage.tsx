@@ -146,7 +146,7 @@ export const SocietyDirectoryPage: React.FC = () => {
         {/* Category Dropdown Filter */}
         <div className="w-full md:w-auto shrink-0 flex items-center">
           <CustomDropdown value={selectedCategory} 
-            onChange={(val) => handleCategoryChange(val)} 
+            onChange={(val: string) => handleCategoryChange(val)} 
             placeholder="All Domains" 
             options={[
               { value: '', label: 'All Domains' },

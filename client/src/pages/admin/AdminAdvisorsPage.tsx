@@ -2,9 +2,10 @@ import React, {  useState  } from 'react';
 import { createPortal } from 'react-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { UserPlus, UserCircle2, ArrowLeft } from 'lucide-react';
+import { Trash, UserPlus, Trash2, UserCircle2, ArrowLeft } from 'lucide-react';
 import { adminService, type AdvisorOption, type CreateAdvisorPayload } from '@/services/admin.service';
 import { Button } from '@/components/ui/Button';
+import { ConfirmModal } from '@/components/ui/ConfirmModal';
 import { Input } from '@/components/ui/Input';
 import { Alert } from '@/components/ui/Alert';
 import { CustomDropdown } from '@/components/ui/CustomDropdown';
@@ -13,9 +14,23 @@ import type { AxiosError } from 'axios';
 export const AdminAdvisorsPage: React.FC = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const handleDelete = (id: string) => {
+    setAdvisorToDelete(id);
+    setDeleteModalOpen(true);
+  };
+
+const deleteMutation = useMutation({
+    mutationFn: adminService.deleteAdvisor,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['availableAdvisors'] }); setDeleteModalOpen(false);
+      
+    },
+  });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [advisorToDelete, setAdvisorToDelete] = useState<string | null>(null);
   const [formData, setFormData] = useState<CreateAdvisorPayload>({
     fullName: '',
     email: '',
@@ -122,8 +137,11 @@ export const AdminAdvisorsPage: React.FC = () => {
                       {String(index + 1).padStart(2, '0')}
                     </td>
                     <td className="py-[18px] px-[15px] text-[15px] border-b border-white/5 text-white font-semibold group-last:border-b-0">
-                      {advisor.user.fullName}
-                    </td>
+<div className="flex items-center gap-3">
+<img src={(advisor.user as any)?.avatarUrl || '/giki-mono.jpg'} alt={advisor.user?.fullName} className="w-8 h-8 rounded-full border border-white/20 object-cover" />
+<span>{advisor.user?.fullName}</span>
+</div>
+</td>
                     <td className="py-[18px] px-[15px] text-[15px] border-b border-white/5 text-slate-200 group-last:border-b-0">
                       <a href={`mailto:${advisor.user.email}`} className="text-blue-400 hover:text-blue-300 hover:underline transition-colors">
                         {advisor.user.email}
@@ -145,7 +163,10 @@ export const AdminAdvisorsPage: React.FC = () => {
                         <span className="text-slate-500 italic text-sm">Unassigned</span>
                       )}
                     </td>
-                  </tr>
+<td className="py-[18px] px-[15px] text-[15px] border-b border-white/5 text-slate-200 group-last:border-b-0 text-center">
+<button onClick={() => handleDelete(advisor.id)} className="px-3 py-1.5 flex items-center gap-1.5 mx-auto bg-red-500 text-white hover:bg-red-600 rounded-lg transition-colors font-semibold text-xs shadow-md"><Trash2 className="w-3.5 h-3.5" /><span>Delete</span></button>
+</td>
+</tr>
                 ))}
               </tbody>
             </table>
@@ -201,16 +222,17 @@ export const AdminAdvisorsPage: React.FC = () => {
                     Designation
                   </label>
                   <CustomDropdown
-                    options={[
-                      { value: 'Lecturer', label: 'Lecturer' },
-                      { value: 'Assistant Professor', label: 'Assistant Professor' },
-                      { value: 'Associate Professor', label: 'Associate Professor' },
-                      { value: 'Professor', label: 'Professor' }
-                    ]}
-                    value={formData.designation}
-                    onChange={(val) => setFormData(prev => ({ ...prev, designation: val }))}
-                    placeholder="Select..."
-                  />
+                      name="designation"
+                      options={[
+                        { value: 'Lecturer', label: 'Lecturer' },
+                        { value: 'Assistant Professor', label: 'Assistant Professor' },
+                        { value: 'Associate Professor', label: 'Associate Professor' },
+                        { value: 'Professor', label: 'Professor' }
+                      ]}
+                      value={formData.designation}
+                      onChange={(e: any) => setFormData(prev => ({ ...prev, designation: e?.target?.value !== undefined ? e.target.value : e }))}
+                      placeholder="Select Designation..."
+                    />
                 </div>
 
                 <div className="space-y-1.5 flex flex-col">
@@ -218,19 +240,20 @@ export const AdminAdvisorsPage: React.FC = () => {
                     Faculty
                   </label>
                   <CustomDropdown
-                    options={[
-                      { value: 'FCSE', label: 'FCSE' },
-                      { value: 'FEE', label: 'FEE' },
-                      { value: 'FCVE', label: 'FCVE' },
-                      { value: 'FME', label: 'FME' },
-                      { value: 'FCME', label: 'FCME' },
-                      { value: 'FMTE', label: 'FMTE' },
-                      { value: 'MGS', label: 'MGS' }
-                    ]}
-                    value={formData.department}
-                    onChange={(val) => setFormData(prev => ({ ...prev, department: val }))}
-                    placeholder="Select..."
-                  />
+                      name="department"
+                      options={[
+                        { value: 'FCSE', label: 'FCSE' },
+                        { value: 'FEE', label: 'FEE' },
+                        { value: 'FCVE', label: 'FCVE' },
+                        { value: 'FME', label: 'FME' },
+                        { value: 'FCME', label: 'FCME' },
+                        { value: 'FMTE', label: 'FMTE' },
+                        { value: 'MGS', label: 'MGS' }
+                      ]}
+                      value={formData.department}
+                      onChange={(e: any) => setFormData(prev => ({ ...prev, department: e?.target?.value !== undefined ? e.target.value : e }))}
+                      placeholder="Select Faculty..."
+                    />
                 </div>
               </div>
 

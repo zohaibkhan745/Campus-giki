@@ -95,7 +95,7 @@ export const DashboardPage: React.FC = () => {
         className="p-4 block space-y-3 cursor-pointer group focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded-t-cards"
       >
         {event.coverImageUrl && (
-          <div className="w-full h-32 rounded-xl overflow-hidden bg-white/10">
+          <div className="w-full h-32 rounded-xl overflow-visible bg-white/10">
             <img
               src={event.coverImageUrl}
               alt={event.title}
@@ -205,72 +205,69 @@ export const DashboardPage: React.FC = () => {
       {user?.role === 'SOCIETY' && profile && (
         <>
           {/* 2. Command Center: Actions & Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            
-            {/* Quick Actions Panel */}
-            <div className="bg-white/[0.08] backdrop-blur-[20px] shadow-[0_12px_40px_rgba(0,0,0,0.4)] p-6 rounded-[18px] flex flex-col justify-center space-y-5 border border-white/20">
-              <h3 className="font-extrabold text-lg text-white flex items-center gap-2">
-                Command Center
-              </h3>
+            <div className="w-full relative z-1 p-6 md:p-8 rounded-[18px] bg-white/[0.08] backdrop-blur-[20px] border border-white/20 shadow-[0_12px_40px_rgba(0,0,0,0.4)] text-white space-y-6">
               
-              <div className="grid grid-cols-2 gap-3">
-                <Link
-                  to="/society/posts"
-                  className="flex flex-col items-center justify-center gap-2 p-4 bg-transparent hover:bg-white/10 text-white rounded-xl font-bold transition-transform hover:-translate-y-1 shadow-[0_4px_12px_rgba(0,0,0,0.2)] border border-white/20"
-                >
-                  <Megaphone className="w-6 h-6" />
-                  <span>Posts</span>
-                </Link>
-                <Link
-                  to="/events/create"
-                  className="flex flex-col items-center justify-center gap-2 p-4 bg-transparent hover:bg-white/10 text-white rounded-xl font-bold transition-transform hover:-translate-y-1 shadow-[0_4px_12px_rgba(0,0,0,0.2)] border border-white/20"
-                >
-                  <Plus className="w-6 h-6" />
-                  <span>Create Event</span>
-                </Link>
-              </div>
-              {/* Edit Profile and Plan Calendar moved out */}
-            </div>
-
-            {/* Manage Events & Metrics Area */}
-            <div className="bg-white/[0.08] backdrop-blur-[20px] shadow-[0_12px_40px_rgba(0,0,0,0.4)] p-6 rounded-[18px] flex flex-col justify-center space-y-5 relative overflow-hidden group border border-white/20">
-              <h3 className="font-extrabold text-lg text-white flex items-center gap-2 z-10">
-                Manage Events
-              </h3>
-              
-              <div className="grid grid-cols-2 gap-3 z-10">
-                <Link
-                  to="/society/events"
-                  className="relative flex flex-col items-center justify-center gap-2 p-4 bg-transparent hover:bg-white/10 text-white rounded-xl font-bold transition-transform hover:-translate-y-1 shadow-[0_4px_12px_rgba(0,0,0,0.2)] border border-white/20"
-                >
-                  <MicVocal className="w-6 h-6" />
-                  <span>Events</span>
-                  {changesRequestedEventsCount > 0 && (
-                    <span className="absolute -top-2 -right-2 flex items-center justify-center w-6 h-6 bg-ember-glow text-pure-white text-xs rounded-full shadow-sm animate-pulse border-2 border-pure-white">
-                      {changesRequestedEventsCount > 9 ? '9+' : changesRequestedEventsCount}
-                    </span>
-                  )}
-                </Link>
-                <Link
-                  to="/society/calendar"
-                  className="relative flex flex-col items-center justify-center gap-2 p-4 bg-transparent hover:bg-white/10 text-white rounded-xl font-bold transition-transform hover:-translate-y-1 shadow-[0_4px_12px_rgba(0,0,0,0.2)] border border-white/20"
-                >
-                  <CalendarDays className="w-6 h-6" />
-                  <span>Annual Calendar</span>
-                  {changesRequestedPlanCount > 0 && (
-                    <span className="absolute -top-2 -right-2 flex items-center justify-center w-6 h-6 bg-ember-glow text-pure-white text-xs rounded-full shadow-sm animate-pulse">
-                      !
-                    </span>
-                  )}
-                </Link>
+              {/* Create Event/Post */}
+              <div>
+                <h3 className="font-extrabold text-lg text-white flex items-center gap-2 mb-4">
+                  Create Event/Post
+                </h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <Link
+                    to="/society/posts"
+                    className="flex flex-col items-center justify-center gap-2 p-4 bg-transparent hover:bg-white/10 text-white rounded-xl font-bold transition-transform hover:-translate-y-1 shadow-[0_4px_12px_rgba(0,0,0,0.2)] border border-white/20"
+                  >
+                    <Megaphone className="w-6 h-6" />
+                    <span>Posts</span>
+                  </Link>
+                  <Link
+                    to="/events/create"
+                    className="flex flex-col items-center justify-center gap-2 p-4 bg-transparent hover:bg-white/10 text-white rounded-xl font-bold transition-transform hover:-translate-y-1 shadow-[0_4px_12px_rgba(0,0,0,0.2)] border border-white/20"
+                  >
+                    <Plus className="w-6 h-6" />
+                    <span>Create Event</span>
+                  </Link>
+                </div>
               </div>
 
-              {/* Decorative background element */}
-              <CalendarIcon className="absolute -right-4 -bottom-4 w-40 h-40 text-white opacity-[0.03] z-0 pointer-events-none group-hover:scale-110 transition-transform duration-500" />
-            </div>
-          </div>
+              {/* Separator Line */}
+              <div className="w-full h-px bg-white/10"></div>
 
-          {/* 3. Focused Events Overview */}
+              {/* Manage Events */}
+              <div>
+                <h3 className="font-extrabold text-lg text-white flex items-center gap-2 mb-4">
+                  Manage Events
+                </h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <Link
+                    to="/society/events"
+                    className="relative flex flex-col items-center justify-center gap-2 p-4 bg-transparent hover:bg-white/10 text-white rounded-xl font-bold transition-transform hover:-translate-y-1 shadow-[0_4px_12px_rgba(0,0,0,0.2)] border border-white/20"
+                  >
+                    <MicVocal className="w-6 h-6" />
+                    <span>Events</span>
+                    {changesRequestedEventsCount > 0 && (
+                      <span className="absolute -top-2 -right-2 flex items-center justify-center w-6 h-6 bg-ember-glow text-pure-white text-xs rounded-full shadow-sm animate-pulse border-2 border-pure-white">
+                        {changesRequestedEventsCount > 9 ? '9+' : changesRequestedEventsCount}
+                      </span>
+                    )}
+                  </Link>
+                  <Link
+                    to="/society/calendar"
+                    className="relative flex flex-col items-center justify-center gap-2 p-4 bg-transparent hover:bg-white/10 text-white rounded-xl font-bold transition-transform hover:-translate-y-1 shadow-[0_4px_12px_rgba(0,0,0,0.2)] border border-white/20"
+                  >
+                    <CalendarDays className="w-6 h-6" />
+                    <span>Annual Calendar</span>
+                    {changesRequestedPlanCount > 0 && (
+                      <span className="absolute -top-2 -right-2 flex items-center justify-center w-6 h-6 bg-ember-glow text-pure-white text-xs rounded-full shadow-sm animate-pulse">
+                        !
+                      </span>
+                    )}
+                  </Link>
+                </div>
+              </div>
+            </div>
+
+            {/* 3. Focused Events Overview */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             
             {/* Under Review & Revisions Column */}

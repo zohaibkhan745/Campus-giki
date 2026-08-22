@@ -18,11 +18,13 @@ import {
 } from 'lucide-react';
 import { postService, type PostItem } from '@/services/post.service';
 import { Button } from '@/components/ui/Button';
+import { FeedCard } from '@/components/feed/FeedCard';
 import { Alert } from '@/components/ui/Alert';
 import { PostCreateModal } from '@/components/feed/PostCreateModal';
 import type { AxiosError } from 'axios';
 
 const postSchema = z.object({
+  title: z.string().min(1, 'Heading is required').max(255, 'Heading is too long'),
   content: z.string().min(1, 'Post content is required').max(2000, 'Too long'),
   imageUrl: z.string().optional(),
 });
@@ -257,6 +259,7 @@ export const SocietyPostsPage: React.FC = () => {
         isOpen={isModalOpen}
         onClose={closeModal}
         initialContent={editingPost?.content || ''}
+          initialTitle={editingPost?.title || ''}
         initialImageUrl={editingPost?.imageUrl || ''}
         isSubmitting={saveMutation.isPending}
         onSubmit={async (data) => {

@@ -8,10 +8,11 @@ import { uploadService } from '@/services/upload.service';
 interface PostCreateModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: { content: string; imageUrl?: string }) => Promise<void> | void;
+  onSubmit: (data: { title: string; content: string; imageUrl?: string }) => Promise<void> | void;
   isSubmitting?: boolean;
   initialContent?: string;
   initialImageUrl?: string;
+  initialTitle?: string;
 }
 
 export const PostCreateModal: React.FC<PostCreateModalProps> = ({
@@ -20,9 +21,11 @@ export const PostCreateModal: React.FC<PostCreateModalProps> = ({
   onSubmit,
   isSubmitting = false,
   initialContent = '',
-  initialImageUrl = '',
+    initialImageUrl = '',
+    initialTitle = '',
 }) => {
   const { user } = useAuth();
+  const [title, setTitle] = useState(initialTitle);
   const [content, setContent] = useState(initialContent);
   const [imageUrl, setImageUrl] = useState(initialImageUrl);
   const [previewUrl, setPreviewUrl] = useState<string | null>(initialImageUrl || null);
@@ -33,12 +36,13 @@ export const PostCreateModal: React.FC<PostCreateModalProps> = ({
 
   useEffect(() => {
     if (isOpen) {
+      setTitle(initialTitle);
       setContent(initialContent);
       setImageUrl(initialImageUrl);
       setPreviewUrl(initialImageUrl || null);
       setUploadError(null);
     }
-  }, [isOpen, initialContent, initialImageUrl]);
+  }, [isOpen, initialContent, initialImageUrl, initialTitle]);
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -88,6 +92,7 @@ export const PostCreateModal: React.FC<PostCreateModalProps> = ({
     if (!content.trim() || isUploading || isSubmitting) return;
 
     await onSubmit({
+      title: title.trim(),
       content: content.trim(),
       imageUrl: imageUrl.trim() || undefined,
     });
@@ -144,8 +149,20 @@ export const PostCreateModal: React.FC<PostCreateModalProps> = ({
             onSubmit={handleSubmitForm}
             className="space-y-3"
           >
+            <div className="mb-3">
+              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">
+                Heading <span className="text-red-400">*</span>
+              </label>
+              <input
+                autoFocus
+                value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Enter Heading/Title..."
+              className="w-full text-white text-lg font-bold placeholder:text-gray-400 bg-transparent border-b border-vast-ink/20 outline-none focus:ring-0 px-0 pb-2 mb-2"
+              required
+              />
+            </div>
             <textarea
-              autoFocus
               value={content}
               onChange={(e) => setContent(e.target.value)}
               placeholder="What's on your mind?"
@@ -204,7 +221,7 @@ export const PostCreateModal: React.FC<PostCreateModalProps> = ({
             <button
               type="submit"
               form="post-create-dialog-form"
-              disabled={isSubmitting || isUploading || content.trim().length === 0}
+              disabled={isSubmitting || isUploading || content.trim().length === 0 || title.trim().length === 0}
               className="btn-cancel" style={{width: "auto", background: "rgba(255,255,255,0.9)", color: "#000"}}
             >
               {isSubmitting ? 'Posting...' : 'Post'}

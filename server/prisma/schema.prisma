@@ -109,6 +109,7 @@ model Society {
   email            String?
   presidentName    String?
   presidentRegNum  String?
+  presidentFaculty String?
   presidentContact String?
   presidentEmail   String?
   
@@ -156,6 +157,8 @@ model Event {
   
   isPublished      Boolean             @default(true)
   approvalStatus   EventApprovalStatus @default(PUBLISHED)
+  editRequestStatus String? // PENDING, APPROVED, REJECTED
+  editRequestReason String?
   advisorComments  String?            
   dsaComments      String?            
   advisorApprovedAt DateTime?
@@ -212,6 +215,7 @@ model PlannedEvent {
 
 model Post {
   id          String   @id @default(uuid())
+  title       String   @default("")
   content     String  
   imageUrl    String?
   videoUrl    String?

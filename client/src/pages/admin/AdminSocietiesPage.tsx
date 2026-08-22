@@ -1,3 +1,4 @@
+import { CustomDropdown } from '@/components/ui/CustomDropdown';
 import React, {  useState  } from 'react';
 import { createPortal } from 'react-dom';
 
@@ -357,34 +358,12 @@ export const AdminSocietiesPage: React.FC = () => {
 
               <div className="space-y-1">
                 <label className="text-xs font-semibold text-vast-ink font-medium">Category</label>
-                <select
-                  value={editCategoryId}
-                  onChange={(e) => setEditCategoryId(e.target.value)}
-                  className="w-full bg-transparent text-vast-ink text-sm rounded-inputs border border-vast-ink/20 px-3 py-2 outline-none focus:border-amber-500"
-                >
-                  <option value="">Select Category...</option>
-                  {categories.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.name}
-                    </option>
-                  ))}
-                </select>
+                <CustomDropdown value={editCategoryId} onChange={(e: any) => setEditCategoryId(e.target.value)} options={categories?.map((c: any) => ({value: c.id, label: c.name})) || []} />
               </div>
 
               <div className="space-y-1">
                 <label className="text-xs font-semibold text-vast-ink font-medium">Assigned Faculty Advisor</label>
-                <select
-                  value={editAdvisorId}
-                  onChange={(e) => setEditAdvisorId(e.target.value)}
-                  className="w-full bg-transparent text-vast-ink text-sm rounded-inputs border border-vast-ink/20 px-3 py-2 outline-none focus:border-amber-500"
-                >
-                  <option value="">None / Unassign Advisor</option>
-                  {advisors.map((a) => (
-                    <option key={a.id} value={a.id}>
-                      {a.user.fullName} ({a.department})
-                    </option>
-                  ))}
-                </select>
+                <CustomDropdown value={editAdvisorId} onChange={(e: any) => setEditAdvisorId(e.target.value)} options={[{value:"", label:"None / Unassign Advisor"}, ...(advisors || []).map((a: any) => ({value: a.id, label: (a.user?.fullName || "Unknown Advisor") + " (" + a.department + ")"}))]} />
               </div>
             </div>
 

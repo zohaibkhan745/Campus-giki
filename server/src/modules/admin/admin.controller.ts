@@ -62,6 +62,18 @@ export class AdminController {
     return this.adminService.getAvailableAdvisors();
   }
 
+  
+  @Delete('advisors/:id')
+  @Auth(Role.DSA_ADMIN)
+  @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({
+    summary: 'DSA Management: Delete a faculty advisor',
+  })
+  async deleteAdvisor(@Param('id') id: string) {
+    return this.adminService.deleteAdvisor(id);
+  }
+
   @Get('events')
   @Auth(Role.DSA_ADMIN)
   @HttpCode(HttpStatus.OK)

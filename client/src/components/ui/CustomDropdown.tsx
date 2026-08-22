@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, forwardRef } from 'react';
 import { createPortal } from 'react-dom';
 
 export interface DropdownOption {
@@ -7,32 +7,48 @@ export interface DropdownOption {
   code?: string;
 }
 
-interface CustomDropdownProps {
+interface CustomDropdownProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   options: DropdownOption[];
-  value: string;
-  onChange: (val: string) => void;
+  value?: string;
+  onChange?: any;
   placeholder?: string;
   className?: string;
   disabled?: boolean;
   icon?: React.ReactNode;
-  variant?: 'default' | 'ghost';
 }
 
-export const CustomDropdown: React.FC<CustomDropdownProps> = ({ 
+export const CustomDropdown = forwardRef<HTMLSelectElement, CustomDropdownProps>(({ 
   options, 
-  value, 
+  value: controlledValue, 
   onChange, 
   placeholder = "Select...", 
   className = "",
   disabled = false,
-  icon
-}) => {
+  name,
+  onBlur,
+  ...rest
+}, ref) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [internalValue, setInternalValue] = useState(controlledValue || '');
   const containerRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const [menuStyle, setMenuStyle] = useState<React.CSSProperties>({});
 
-  const selectedOption = options.find(o => o.value === value) || { value: '', label: placeholder, code: '' };
+  const currentValue = controlledValue !== undefined ? controlledValue : internalValue;
+  const selectedOption = options.find(o => o.value === currentValue) || { value: '', label: placeholder, code: '' };
+
+  useEffect(() => {
+    if (controlledValue !== undefined) {
+      setInternalValue(controlledValue);
+    }
+  }, [controlledValue]);
+
+  // Global close listener so only one dropdown opens at a time
+  useEffect(() => {
+    const handleGlobalClose = () => setIsOpen(false);
+    window.addEventListener('close-custom-dropdowns', handleGlobalClose);
+    return () => window.removeEventListener('close-custom-dropdowns', handleGlobalClose);
+  }, []);
 
   const updatePosition = () => {
     if (containerRef.current) {
@@ -41,9 +57,8 @@ export const CustomDropdown: React.FC<CustomDropdownProps> = ({
         position: 'absolute',
         top: rect.bottom + window.scrollY + 8,
         left: rect.left + window.scrollX,
-        minWidth: rect.width,
-        width: 'max-content',
-        zIndex: 9999
+        width: rect.width,
+        zIndex: 99999
       });
     }
   };
@@ -59,14 +74,14 @@ export const CustomDropdown: React.FC<CustomDropdownProps> = ({
     };
 
     if (isOpen) {
-      document.addEventListener('mousedown', handleOutsideClick);
+      document.addEventListener('click', handleOutsideClick);
       window.addEventListener('resize', updatePosition);
       window.addEventListener('scroll', updatePosition, true);
       updatePosition();
     }
     
     return () => {
-      document.removeEventListener('mousedown', handleOutsideClick);
+      document.removeEventListener('click', handleOutsideClick);
       window.removeEventListener('resize', updatePosition);
       window.removeEventListener('scroll', updatePosition, true);
     };
@@ -75,22 +90,55 @@ export const CustomDropdown: React.FC<CustomDropdownProps> = ({
   const handleSelect = (e: React.MouseEvent, val: string) => {
     e.stopPropagation();
     if (disabled) return;
-    onChange(val);
+    
+    setInternalValue(val);
+    
+    if (onChange) {
+      const event = {
+        target: { name, value: val },
+        currentTarget: { name, value: val }
+      } as any;
+      onChange(event);
+    }
     setIsOpen(false);
   };
 
   const toggleDropdown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     if (!disabled) {
-      setIsOpen((prev) => !prev);
+      if (!isOpen) {
+        window.dispatchEvent(new CustomEvent('close-custom-dropdowns'));
+      }
+      setIsOpen(!isOpen);
     }
   };
 
+  const cleanClassName = (className || '').replace(/bg-[\w-\[\]\.]+/g, '').replace(/border-[\w-\/]+/g, '').replace(/text-[\w-\/]+/g, '').replace(/rounded-[\w-\/]+/g, '');
+
   return (
     <div 
-      className={`dropdown-container ${isOpen ? 'open' : ''} ${className}`} 
-      id="langDropdown" 
+      className={`dropdown-container ${isOpen ? 'open' : ''} ${cleanClassName}`} 
       ref={containerRef}
+      style={{ position: 'relative', width: '100%' }}
     >
+      <select 
+        ref={ref} 
+        name={name} 
+        value={currentValue}
+        onChange={(e) => {
+          setInternalValue(e.target.value);
+          if (onChange) onChange(e);
+        }}
+        onBlur={onBlur}
+        style={{ display: 'none' }}
+        disabled={disabled}
+        {...rest}
+      >
+        <option value="">{placeholder}</option>
+        {options.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+      </select>
+
       <button 
         className="dropdown-btn" 
         type="button" 
@@ -98,7 +146,6 @@ export const CustomDropdown: React.FC<CustomDropdownProps> = ({
         disabled={disabled}
       >
         <div className="btn-left-content">
-          {icon && <span className="text-white/70">{icon}</span>}
           {selectedOption.code && <span className="country-code">{selectedOption.code}</span>}
           <span className="language-name">{selectedOption.label}</span>
         </div>
@@ -111,13 +158,11 @@ export const CustomDropdown: React.FC<CustomDropdownProps> = ({
         <div className="dropdown-menu open" style={{ ...menuStyle, display: 'block' }} ref={menuRef}>
           <div className="dropdown-list">
             {options.map((opt) => {
-              const isActive = opt.value === value;
+              const isActive = opt.value === currentValue;
               return (
                 <div 
                   key={opt.value}
                   className={`dropdown-item ${isActive ? 'active' : ''}`} 
-                  data-code={opt.code || ''} 
-                  data-label={opt.label}
                   onClick={(e) => handleSelect(e, opt.value)}
                 >
                   <div className="item-left">
@@ -136,4 +181,6 @@ export const CustomDropdown: React.FC<CustomDropdownProps> = ({
       )}
     </div>
   );
-};
+});
+
+CustomDropdown.displayName = 'CustomDropdown';

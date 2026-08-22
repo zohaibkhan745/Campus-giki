@@ -1,6 +1,7 @@
 import { api } from '@/lib/api';
 
 export interface PostItem {
+  title?: string;
   id: string;
   content: string;
   imageUrl?: string;
@@ -30,11 +31,11 @@ export interface PaginatedPostsResponse {
 }
 
 export const postService = {
-  createPost: async (data: { content: string; imageUrl?: string; videoUrl?: string }) => {
+  createPost: async (data: { title: string; content: string; imageUrl?: string; videoUrl?: string }) => {
     return api.post('/posts', data);
   },
 
-  updatePost: async (id: string, data: { content: string; imageUrl?: string; videoUrl?: string }) => {
+  updatePost: async (id: string, data: { title?: string; content: string; imageUrl?: string; videoUrl?: string }) => {
     return api.put(`/posts/${id}`, data);
   },
 

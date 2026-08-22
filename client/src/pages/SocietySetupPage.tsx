@@ -1,11 +1,12 @@
+import { CustomDropdown } from '@/components/ui/CustomDropdown';
 import React, { useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import {  useForm} from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import {
   ArrowLeft,
-  Building2,
+  Building2, User,
   Tag,
   FileText,
   AlignLeft,
@@ -107,6 +108,7 @@ export const SocietySetupPage: React.FC = () => {
       isEditing ? societyService.updateSociety(data) : societyService.setupSociety(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['mySociety'] });
+      queryClient.invalidateQueries({ queryKey: ['authStatus'] });
       queryClient.invalidateQueries({ queryKey: ['societyDashboard'] });
       navigate('/dashboard', { replace: true });
     },
@@ -155,13 +157,13 @@ export const SocietySetupPage: React.FC = () => {
       <div className="grid grid-cols-1 gap-6">
         <div className="relative z-1 w-full p-8 rounded-[18px] bg-white/[0.08] backdrop-blur-[20px] border border-white/20 shadow-[0_12px_40px_rgba(0,0,0,0.4)] text-white space-y-6 text-left">
           
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" noValidate>
+                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" noValidate>
             
-            {/* General Section */}
+            {/* Society Info Section */}
             <div>
               <h3 className="font-extrabold text-lg text-white flex items-center gap-2 mb-4">
                 <Building2 className="w-5 h-5 text-white" />
-                General Information
+                Society Info
               </h3>
               
               <div className="space-y-4">
@@ -195,36 +197,19 @@ export const SocietySetupPage: React.FC = () => {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Input
-                    {...register('presidentName')}
-                    error={errors.presidentName?.message}
-                    label="President Name"
-                    placeholder="e.g. John Doe"
-                    disabled={setupMutation.isPending}
-                  />
-                  <Input
-                    {...register('presidentRegNum')}
-                    error={errors.presidentRegNum?.message}
-                    label="President Reg. No"
-                    placeholder="e.g. 2022000"
-                    disabled={setupMutation.isPending}
-                  />
-                </div>
-                <Input
-                  {...register('presidentContact')}
-                  error={errors.presidentContact?.message}
-                  label="President Contact Number"
-                  placeholder="e.g. +923001234567"
-                  disabled={setupMutation.isPending}
-                />
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="w-full space-y-1.5 text-left">
-                    <label className="block text-xs uppercase tracking-wider text-gray-400 font-semibold mb-1">
-                      Society Logo
-                    </label>
+                    
                     <ImageUploader
-                      onChange={(url: string) => setValue('bannerUrl', url)}
+                      onChange={(url: string) => setValue('logoUrl', url, { shouldValidate: true, shouldDirty: true })}
+                      value={watch('logoUrl') || undefined}
+                      label="Society Logo"
+                    />
+                  </div>
+
+                  <div className="w-full space-y-1.5 text-left">
+                    
+                    <ImageUploader
+                      onChange={(url: string) => setValue('bannerUrl', url, { shouldValidate: true, shouldDirty: true })}
                       value={watch('bannerUrl') || undefined}
                       label="Society Banner Image"
                     />
@@ -236,11 +221,67 @@ export const SocietySetupPage: React.FC = () => {
             {/* Mid Line */}
             <div className="w-full h-px bg-white/10 my-6"></div>
 
-            {/* Contact & Socials */}
+            {/* President Info Section */}
+            <div>
+              <h3 className="font-extrabold text-lg text-white flex items-center gap-2 mb-4">
+                <User className="w-5 h-5 text-white" />
+                President Info
+              </h3>
+
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Input
+                    {...register('presidentName')}
+                    onChange={(e) => {
+                      e.target.value = e.target.value.replace(/[^A-Za-z.,\- ]/g, '');
+                      setValue('presidentName', e.target.value);
+                    }}
+                    error={errors.presidentName?.message}
+                    label="President Name"
+                    placeholder="e.g. John Doe"
+                    disabled={setupMutation.isPending}
+                  />
+                  <Input
+                    {...register('presidentRegNum')}
+                    onChange={(e) => {
+                      e.target.value = e.target.value.replace(/[^0-9]/g, '').slice(0, 7);
+                      setValue('presidentRegNum', e.target.value);
+                    }}
+                    error={errors.presidentRegNum?.message}
+                    label="President Reg. No"
+                    placeholder="e.g. 2023123"
+                    disabled={setupMutation.isPending}
+                  />
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Faculty</label>
+                    <CustomDropdown placeholder="Select Faculty" options={[{value:"FCSE",label:"FCSE"},{value:"FEE",label:"FEE"},{value:"FCVE",label:"FCVE"},{value:"FME",label:"FME"},{value:"FCME",label:"FCME"},{value:"FMTE",label:"FMTE"},{value:"MGS",label:"MGS"},{value:"FES",label:"FES"}]} {...register('presidentFaculty')} />
+                  </div>
+                  <Input
+                    {...register('presidentContact')}
+                    onChange={(e) => {
+                      e.target.value = e.target.value.replace(/[^0-9]/g, '').slice(0, 11);
+                      setValue('presidentContact', e.target.value);
+                    }}
+                    error={errors.presidentContact?.message}
+                    label="President Contact Number"
+                    placeholder="e.g. 03001234567"
+                    disabled={setupMutation.isPending}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Mid Line */}
+            <div className="w-full h-px bg-white/10 my-6"></div>
+
+            {/* Society Social Section */}
             <div>
               <h3 className="font-extrabold text-lg text-white flex items-center gap-2 mb-4">
                 <Globe className="w-5 h-5 text-white" />
-                Contact & Socials
+                Society Socials
               </h3>
 
               <div className="space-y-4">
@@ -280,14 +321,6 @@ export const SocietySetupPage: React.FC = () => {
                     disabled={setupMutation.isPending}
                   />
                 </div>
-                <Input
-                  {...register('email')}
-                  error={errors.email?.message}
-                  label="Official Contact Email"
-                  placeholder="society@giki.edu.pk"
-                  leftIcon={<Mail className="w-4 h-4" />}
-                  disabled={setupMutation.isPending}
-                />
               </div>
             </div>
 
