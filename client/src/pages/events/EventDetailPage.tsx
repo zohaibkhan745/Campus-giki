@@ -209,6 +209,7 @@ export const EventDetailPage: React.FC = () => {
                     src={getSocietyLogo(eventItem.society.logoUrl)}
                     alt={eventItem.society.name}
                     className="w-12 h-12 rounded-inputs object-cover border border-vast-ink/20"
+                    onError={(e) => { e.currentTarget.src = '/default-society.jpg'; }}
                   />
                 ) : (
                   <div className="p-3 bg-blue-600/20 text-vast-ink rounded-inputs">

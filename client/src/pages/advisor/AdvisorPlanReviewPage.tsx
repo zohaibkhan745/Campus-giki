@@ -159,7 +159,7 @@ export const AdvisorPlanReviewPage: React.FC = () => {
               src={getSocietyLogo(plan.society.logoUrl)}
               alt={plan.society.name}
               className="w-14 h-14 rounded-cards object-cover border border-vast-ink/20"
-            />
+            onError={(e) => { e.currentTarget.src = '/default-society.jpg'; }} />
           ) : (
             <div className="p-3 bg-transparent border border-ember-glow text-ember-glow rounded-cards border border-amber-500/20">
               <Building2 className="w-8 h-8" />
@@ -306,4 +306,6 @@ export const AdvisorPlanReviewPage: React.FC = () => {
     </div>
   );
 };
+
+
 

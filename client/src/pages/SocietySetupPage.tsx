@@ -73,6 +73,8 @@ export const SocietySetupPage: React.FC = () => {
       presidentName: '',
       presidentRegNum: '',
       presidentContact: '',
+      presidentEmail: '',
+      presidentFaculty: '',
     },
   });
 
@@ -98,6 +100,8 @@ export const SocietySetupPage: React.FC = () => {
         presidentName: mySociety.presidentName || '',
         presidentRegNum: mySociety.presidentRegNum || '',
         presidentContact: mySociety.presidentContact || '',
+        presidentEmail: mySociety.presidentEmail || '',
+        presidentFaculty: mySociety.presidentFaculty || '',
       });
     }
   }, [mySociety, reset]);

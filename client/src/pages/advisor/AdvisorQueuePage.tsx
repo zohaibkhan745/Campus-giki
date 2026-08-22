@@ -271,7 +271,7 @@ export const AdvisorQueuePage: React.FC = () => {
                       src={getSocietyLogo(plan.society.logoUrl)}
                       alt={plan.society.name}
                       className="w-12 h-12 rounded-xl object-cover border border-white/20 shrink-0"
-                    />
+                    onError={(e) => { e.currentTarget.src = '/default-society.jpg'; }} />
                   ) : (
                     <div className="p-3 bg-white/10 border border-white/20 text-white rounded-xl shrink-0">
                       <Building2 className="w-6 h-6" />
@@ -328,7 +328,7 @@ export const AdvisorQueuePage: React.FC = () => {
                       src={getSocietyLogo(event.society.logoUrl)}
                       alt={event.society.name}
                       className="w-12 h-12 rounded-xl object-cover border border-white/20 shrink-0"
-                    />
+                    onError={(e) => { e.currentTarget.src = '/default-society.jpg'; }} />
                   ) : (
                     <div className="p-3 bg-white/10 border border-white/20 text-white rounded-xl shrink-0">
                       <Building2 className="w-6 h-6" />
@@ -407,6 +407,8 @@ export const AdvisorQueuePage: React.FC = () => {
     </div>
   );
 };
+
+
 
 
 

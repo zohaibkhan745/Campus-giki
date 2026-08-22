@@ -39,6 +39,21 @@ export class SocietyResponseDto {
   @ApiPropertyOptional({ example: 'acm@giki.edu.pk' })
   email?: string | null;
 
+  @ApiPropertyOptional({ example: 'Abdullah Zia' })
+  presidentName?: string | null;
+
+  @ApiPropertyOptional({ example: '2023123' })
+  presidentRegNum?: string | null;
+
+  @ApiPropertyOptional({ example: '03139686967' })
+  presidentContact?: string | null;
+
+  @ApiPropertyOptional({ example: 'president@giki.edu.pk' })
+  presidentEmail?: string | null;
+
+  @ApiPropertyOptional({ example: 'FCSE' })
+  presidentFaculty?: string | null;
+
   @ApiProperty({ example: true })
   isSetupComplete: boolean;
 
@@ -68,3 +83,4 @@ export class SocietyResponseDto {
   @ApiProperty({ example: '2026-07-26T00:00:00.000Z' })
   updatedAt: Date;
 }
+

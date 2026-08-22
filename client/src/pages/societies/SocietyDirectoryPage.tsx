@@ -226,6 +226,7 @@ export const SocietyDirectoryPage: React.FC = () => {
                       src={getSocietyLogo(society.logoUrl)} 
                       alt={society.name} 
                       className="w-full aspect-square object-cover transition-transform duration-700 ease-out group-hover/img:scale-[1.04]"
+                      onError={(e) => { e.currentTarget.src = '/default-society.jpg'; }}
                     />
                   ) : (
                     <div className="w-full aspect-square flex items-center justify-center transition-transform duration-700 ease-out group-hover/img:scale-[1.04] text-gray-600 bg-zinc-800">
@@ -250,6 +251,7 @@ export const SocietyDirectoryPage: React.FC = () => {
                           src={getSocietyLogo(society.logoUrl)} 
                           alt="Avatar" 
                           className="w-full h-full object-cover"
+                          onError={(e) => { e.currentTarget.src = '/default-society.jpg'; }}
                         />
                       ) : (
                         <Building2 className="w-4 h-4 text-gray-500" />

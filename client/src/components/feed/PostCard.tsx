@@ -215,7 +215,7 @@ export const PostCard: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) =>
             <div className="user-profile">
               <div className="profile-header w-full flex justify-between items-start">
                 <div className="flex items-center gap-3">
-                  <img src={logoImage} alt={authorName} className="avatar" />
+                  <img src={logoImage} alt={authorName} className="avatar" onError={(e) => { e.currentTarget.src = '/default-society.jpg'; }} />
                   <div className="author-name-group">
                     <span className="author-name">{authorName}</span>
                     <span className="post-timestamp drop-shadow-md font-medium text-white/90">Posted: {formattedDate} • {formattedTime}</span>
@@ -245,7 +245,7 @@ export const PostCard: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) =>
 
           <div className="back-content-section">
             <div className="society-header">
-              <img src={logoImage} alt={authorName} className="society-avatar" />
+              <img src={logoImage} alt={authorName} className="society-avatar" onError={(e) => { e.currentTarget.src = '/default-society.jpg'; }} />
               <div className="society-text">
                 <h3>{authorName}</h3>
                 <p className="drop-shadow-md font-medium text-white/90">Posted: {formattedDate} • {formattedTime}</p>
@@ -273,4 +273,7 @@ export const PostCard: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) =>
     </div>
   );
 };
+
+
+
 

@@ -191,7 +191,7 @@ export const AdminYearlyPlanDetailPage: React.FC = () => {
               src={getSocietyLogo(plan.society.logoUrl)}
               alt={plan.society.name}
               className="w-14 h-14 rounded-cards object-cover border border-vast-ink/20"
-            />
+            onError={(e) => { e.currentTarget.src = '/default-society.jpg'; }} />
           ) : (
             <div className="p-3 bg-lavender-whisper border border-vast-ink text-vast-ink rounded-cards border border-indigo-500/20">
               <Building2 className="w-8 h-8" />
@@ -509,4 +509,6 @@ export const AdminYearlyPlanDetailPage: React.FC = () => {
     </div>
   );
 };
+
+
 

@@ -221,7 +221,7 @@ export const SocietyProfilePage: React.FC = () => {
       {/* Banner */}
       <div className="society-banner">
         {true ? (
-          <img src={getSocietyBanner(society.bannerUrl)} alt="Banner Image" className="society-banner-img" />
+          <img src={getSocietyBanner(society.bannerUrl)} alt="Banner Image" className="society-banner-img" onError={(e) => { e.currentTarget.src = '/default-banner.png'; }} />
         ) : (
           <div className="society-banner-img bg-[#1e3c72]" />
         )}
@@ -258,7 +258,7 @@ export const SocietyProfilePage: React.FC = () => {
         {/* Profile Circle */}
         <div className="society-profile-container">
           {true ? (
-            <img src={getSocietyLogo(society.logoUrl)} alt="Society Logo" className="society-profile-img" />
+            <img src={getSocietyLogo(society.logoUrl)} alt="Society Logo" className="society-profile-img" onError={(e) => { e.currentTarget.src = '/default-society.jpg'; }} />
           ) : (
             <div className="society-profile-fallback">
               <Building2 className="w-16 h-16 text-gray-500" />

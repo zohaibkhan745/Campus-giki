@@ -239,7 +239,7 @@ export const EventCard: React.FC<EventCardProps> = ({ item }) => {
           <div className="card-overlay">
             <div className="user-profile">
               <div className="profile-header">
-                <img src={logoImage} alt={authorName} className="avatar" />
+                <img src={logoImage} alt={authorName} className="avatar" onError={(e) => { e.currentTarget.src = '/default-society.jpg'; }} />
                 <div className="author-name-group">
                   <span className="author-name">{authorName}</span>
                   <span className="post-timestamp">Posted: {formattedDate}</span>
@@ -274,7 +274,7 @@ export const EventCard: React.FC<EventCardProps> = ({ item }) => {
 
           <div className="back-content-section">
             <div className="society-header">
-              <img src={logoImage} alt={authorName} className="society-avatar" />
+              <img src={logoImage} alt={authorName} className="society-avatar" onError={(e) => { e.currentTarget.src = '/default-society.jpg'; }} />
               <div className="society-text">
                 <h3>{authorName}</h3>
                 <p>Posted: {formattedDate}</p>
@@ -315,4 +315,7 @@ export const EventCard: React.FC<EventCardProps> = ({ item }) => {
     </div>
   );
 };
+
+
+
 

@@ -39,6 +39,13 @@ export class PublicSocietyDetailResponseDto {
   @ApiPropertyOptional({ example: 'acm@giki.edu.pk' })
   email?: string | null;
 
+  @ApiPropertyOptional({ example: 'Abdullah Zia' })
+  presidentName?: string | null;
+
+  @ApiPropertyOptional({ example: 'FCSE' })
+  presidentFaculty?: string | null;
+
   @ApiPropertyOptional({ type: MinimalCategoryDto })
   category?: MinimalCategoryDto | null;
 }
+
