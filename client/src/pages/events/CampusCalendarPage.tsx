@@ -6,7 +6,7 @@ import { Calendar as CalendarIcon, Loader2 } from 'lucide-react';
 import { CustomDropdown } from '@/components/ui/CustomDropdown';
 import { eventService } from '@/services/event.service';
 import { societyService } from '@/services/society.service';
-import { FeedCard } from '@/components/feed/FeedCard';
+import { EventCard } from '@/components/feed/EventCard';
 
 export const CampusCalendarPage: React.FC = () => {
   const navigate = useNavigate();
@@ -416,7 +416,7 @@ export const CampusCalendarPage: React.FC = () => {
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {visibleEvents.map((event) => (
-                  <FeedCard key={event.id} item={{ ...event, type: 'event' } as any} />
+                  <EventCard key={event.id} item={{ ...event, type: 'event' } as any} />
                 ))}
               </div>
               

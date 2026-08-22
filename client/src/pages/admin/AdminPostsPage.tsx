@@ -22,7 +22,7 @@ import {
 import { postService, type PostItem } from '@/services/post.service';
 import { societyService } from '@/services/society.service';
 import { Button } from '@/components/ui/Button';
-import { FeedCard } from '@/components/feed/FeedCard';
+import { PostCard } from '@/components/feed/PostCard';
 import { CustomDropdown } from '@/components/ui/CustomDropdown';
 import { CustomDatePicker } from '@/components/ui/date-picker';
 import { Alert } from '@/components/ui/Alert';
@@ -281,7 +281,7 @@ export const AdminPostsPage: React.FC = () => {
             };
             
             return (
-              <FeedCard 
+              <PostCard 
                 key={post.id} 
                 item={feedItem as any} 
                 onEdit={isOwnPost ? () => handleOpenEdit(post) : undefined}

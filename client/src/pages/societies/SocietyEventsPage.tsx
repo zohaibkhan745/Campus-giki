@@ -13,7 +13,7 @@ import {
 import { eventService } from '@/services/event.service';
 import { Alert } from '@/components/ui/Alert';
 import { CustomDropdown } from '@/components/ui/CustomDropdown';
-import { FeedCard } from '@/components/feed/FeedCard';
+import { EventCard } from '@/components/feed/EventCard';
 import type { EventItem } from '@/types/event.types';
 
 export const SocietyEventsPage: React.FC = () => {
@@ -271,7 +271,7 @@ export const SocietyEventsPage: React.FC = () => {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredEvents.map((event: EventItem) => (
-                  <FeedCard key={event.id} item={event} />
+                  <EventCard key={event.id} item={{ ...event, type: 'event' } as any} />
                 ))}
               </div>
             )}

@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 import { postService, type PostItem } from '@/services/post.service';
 import { Button } from '@/components/ui/Button';
-import { FeedCard } from '@/components/feed/FeedCard';
+import { PostCard } from '@/components/feed/PostCard';
 import { Alert } from '@/components/ui/Alert';
 import { PostCreateModal } from '@/components/feed/PostCreateModal';
 import type { AxiosError } from 'axios';
