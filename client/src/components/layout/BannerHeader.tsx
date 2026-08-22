@@ -8,6 +8,7 @@ interface BannerHeaderProps {
   subtitle?: string;
   bannerUrl?: string | null;
   logoUrl?: string | null;
+  fallbackImage?: string;
 }
 
 export const BannerHeader: React.FC<BannerHeaderProps> = ({
@@ -15,6 +16,7 @@ export const BannerHeader: React.FC<BannerHeaderProps> = ({
   subtitle,
   bannerUrl = '/default-banner.png',
   logoUrl,
+  fallbackImage = '/default-society.jpg',
 }) => {
   const { user } = useAuth();
   
@@ -144,11 +146,11 @@ export const BannerHeader: React.FC<BannerHeaderProps> = ({
       `}</style>
 
       <div className="shared-banner">
-        <img src={getSocietyBanner(bannerUrl)} alt="Banner Image" className="shared-banner-img" />
+        <img src={getSocietyBanner(bannerUrl)} alt="Banner Image" className="shared-banner-img" onError={(e) => { e.currentTarget.src = '/default-banner.png'; }} />
 
         {/* Profile Circle */}
         <div className="shared-profile-container">
-          <img src={logoUrl || `/giki-mono.jpg`} alt="Logo" className="shared-profile-img" />
+          <img src={logoUrl || fallbackImage} alt="Logo" className="shared-profile-img" onError={(e) => { e.currentTarget.src = fallbackImage; }} />
         </div>
 
         {/* Name */}

@@ -48,7 +48,7 @@ export const AdminDashboardPage: React.FC = () => {
 
   return (
     <div className="w-full">
-      <BannerHeader title={user?.fullName || "Dean Student Affairs"} logoUrl={user?.avatarUrl ? resolveImageUrl(user.avatarUrl) : "/default-dsa.png"} />
+      <BannerHeader title={user?.fullName || "Dean Student Affairs"} logoUrl={user?.avatarUrl ? resolveImageUrl(user.avatarUrl) : "/default-dsa.png"} fallbackImage="/default-dsa.png" />
       <div className="max-w-6xl mx-auto space-y-6 text-left py-4 px-4">
         {/* Actions Row */}
         <div className="flex justify-end mb-4">
@@ -221,4 +221,5 @@ export const AdminDashboardPage: React.FC = () => {
     </div>
   );
 };
+
 

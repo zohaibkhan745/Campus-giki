@@ -120,6 +120,8 @@ export class SocietiesService {
         linkedin: true,
         website: true,
         email: true,
+        presidentName: true,
+        presidentFaculty: true,
         isSetupComplete: true,
         category: {
           select: {
