@@ -56,6 +56,7 @@ export interface Society {
   presidentRegNum?: string | null;
   presidentContact?: string | null;
   presidentEmail?: string | null;
+  presidentFaculty?: string | null;
   isSetupComplete: boolean;
   hasWarning: boolean;
   userId: string;
@@ -110,7 +111,11 @@ export interface SetupSocietyPayload {
   presidentName?: string;
   presidentRegNum?: string;
   presidentContact?: string;
+  presidentEmail?: string;
+  presidentFaculty?: string;
 }
 
 export type UpdateSocietyPayload = Partial<SetupSocietyPayload>;
+
+
 

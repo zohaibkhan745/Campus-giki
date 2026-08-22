@@ -144,8 +144,8 @@ export const SocietyProfilePage: React.FC = () => {
         }
 
         .society-content-section {
-          padding-top: 20px;
-          padding-left: 138px;
+          padding-top: 110px;
+          padding-left: 48px;
           padding-right: 48px;
           max-width: 1000px;
           margin: 0 auto;
@@ -178,7 +178,7 @@ export const SocietyProfilePage: React.FC = () => {
 
           .society-profile-container {
             left: 50%;
-            bottom: 65px;
+            bottom: -55px;
             transform: translateX(-50%);
           }
 
@@ -195,7 +195,7 @@ export const SocietyProfilePage: React.FC = () => {
           }
 
           .society-content-section {
-            padding-top: 20px;
+            padding-top: 80px;
             padding-left: 20px;
             padding-right: 20px;
           }
@@ -273,6 +273,14 @@ export const SocietyProfilePage: React.FC = () => {
       {/* Content Section */}
       <div className="society-content-section">
         <div className="society-about-heading">About</div>
+        {(society.presidentName || society.presidentFaculty) && (
+          <div className="mb-4 text-gray-300 text-lg">
+            President:{' '}
+            {society.presidentName && <strong className="text-white">{society.presidentName}</strong>}
+            {society.presidentName && society.presidentFaculty && ' '}
+            {society.presidentFaculty && <span>({society.presidentFaculty})</span>}
+          </div>
+        )}
         <p className="society-about-text">
           {society.longDescription || society.shortDescription || 'No detailed overview provided.'}
         </p>

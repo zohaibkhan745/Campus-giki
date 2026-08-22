@@ -7,7 +7,7 @@ export function cn(...inputs: ClassValue[]) {
 
 export function resolveImageUrl(url?: string | null): string {
   if (!url) return '';
-  if (url.startsWith('http') || url.startsWith('data:') || url.startsWith('blob:')) {
+  if (url.startsWith('http') || url.startsWith('data:') || url.startsWith('blob:') || url.startsWith('/default-') || url.startsWith('/giki-')) {
     return url;
   }
   const baseUrl = import.meta.env.VITE_API_BASE_URL?.replace('/api/v1', '') || 'http://localhost:5000';
@@ -30,3 +30,4 @@ export function getAdvisorLogo(logoUrl?: string | null): string {
   if (!logoUrl) return '/default-advisor.jpg';
   return resolveImageUrl(logoUrl);
 }
+
