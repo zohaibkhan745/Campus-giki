@@ -133,7 +133,7 @@ export const CampusCalendarPage: React.FC = () => {
   };
 
   const today = new Date();
-  const isToday = (d: Date) => d.getDate() === today.getDate() && d.getMonth() === today.getMonth() && d.getFullYear() === today.getFullYear();
+  const isCurrentMonthView = currentDate.getMonth() === today.getMonth() && currentDate.getFullYear() === today.getFullYear(); const isToday = (d: Date) => d.getDate() === today.getDate() && d.getMonth() === today.getMonth() && d.getFullYear() === today.getFullYear();
 
   return (
     <div className="min-h-screen text-white flex justify-center py-6 px-3 font-sans relative">
@@ -312,7 +312,7 @@ export const CampusCalendarPage: React.FC = () => {
             </h2>
             <div className="flex gap-1">
               <button className="glass-btn" onClick={prevMonth}>&lt;</button>
-              <button className="glass-btn" onClick={goToday}>Today</button>
+              <button className={`glass-btn ${!isCurrentMonthView ? "current-month-btn" : ""}`} onClick={goToday} style={!isCurrentMonthView ? { background: "#ffffff", color: "#000000", fontWeight: "600" } : {}}>{isCurrentMonthView ? "Today" : "Current Month"}</button>
               <button className="glass-btn" onClick={nextMonth}>&gt;</button>
             </div>
             {isCalendarLoading && <Loader2 className="w-4 h-4 animate-spin ml-2" />}

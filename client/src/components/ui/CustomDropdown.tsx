@@ -41,10 +41,7 @@ export const CustomDropdown = forwardRef<HTMLSelectElement, CustomDropdownProps>
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const truncateLabel = (label: string) => {
-    const limit = windowWidth < 768 ? 30 : 50;
-    return label.length > limit ? label.substring(0, limit) + '...' : label;
-  };
+  
 
   const currentValue = controlledValue !== undefined ? controlledValue : internalValue;
   const selectedOption = options.find(o => o.value === currentValue) || { value: '', label: placeholder, code: '' };
@@ -62,16 +59,22 @@ export const CustomDropdown = forwardRef<HTMLSelectElement, CustomDropdownProps>
     return () => window.removeEventListener('close-custom-dropdowns', handleGlobalClose);
   }, []);
 
-  const updatePosition = () => {
+    const updatePosition = () => {
     if (containerRef.current) {
       const rect = containerRef.current.getBoundingClientRect();
+      const viewportWidth = window.innerWidth;
+      const maxAvailableWidth = viewportWidth - 32;
+      
+      // If the button is on the right half of the screen, we align the dropdown to its right edge
+      const alignRight = rect.left > (viewportWidth / 2);
+      
       setMenuStyle({
         position: 'absolute',
         top: rect.bottom + window.scrollY + 8,
-        left: rect.left + window.scrollX,
+        ...(alignRight ? { right: viewportWidth - rect.right } : { left: Math.max(16, rect.left) + window.scrollX }),
         minWidth: rect.width,
-          width: 'max-content',
-          maxWidth: '90vw',
+        maxWidth: maxAvailableWidth,
+        width: 'max-content',
         zIndex: 99999
       });
     }
@@ -161,7 +164,7 @@ export const CustomDropdown = forwardRef<HTMLSelectElement, CustomDropdownProps>
       >
         <div className="btn-left-content">
           {selectedOption.code && <span className="country-code">{selectedOption.code}</span>}
-          <span className="language-name" title={selectedOption.label}>{truncateLabel(selectedOption.label)}</span>
+          <span className="language-name" title={selectedOption.label}>{selectedOption.label}</span>
         </div>
         <svg className="arrow-icon" viewBox="0 0 24 24">
           <polyline points="6 9 12 15 18 9"></polyline>
@@ -181,7 +184,7 @@ export const CustomDropdown = forwardRef<HTMLSelectElement, CustomDropdownProps>
                 >
                   <div className="item-left">
                     {opt.code && <span className="country-code">{opt.code}</span>}
-                    <span className="language-name" title={opt.label}>{truncateLabel(opt.label)}</span>
+                    <span className="language-name" title={opt.label}>{opt.label}</span>
                   </div>
                   <svg className="check-icon" viewBox="0 0 24 24">
                     <polyline points="20 6 9 17 4 12"></polyline>
