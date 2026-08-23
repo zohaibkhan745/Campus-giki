@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { getSocietyLogo, getSocietyBanner } from '@/lib/utils';
 import { X, Globe, Edit, Trash2, Check } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { createPortal } from 'react-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { societyService } from '@/services/society.service';
 
@@ -44,9 +45,7 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ isOpen
   });
 
   const handleSaveMember = (updatedMember: any) => {
-    const newCouncil = council.map(m => m.name === editingMember.name && m.role === editingMember.role ? updatedMember : m);
-    
-    // Construct payload from profile
+    const newCouncil = council.map(m => m.name === editingMember.original.name && m.role === editingMember.original.role ? updatedMember : m);
     const payload = {
       name: profile.name,
       type: profile.type,
@@ -67,12 +66,11 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ isOpen
       presidentFaculty: profile.presidentFaculty,
       executiveCouncil: JSON.stringify(newCouncil)
     };
-    
     updateMutation.mutate(payload);
   };
 
   const handleDeleteMember = () => {
-    const newCouncil = council.filter(m => !(m.name === editingMember.name && m.role === editingMember.role));
+    const newCouncil = council.filter(m => !(m.name === editingMember.original.name && m.role === editingMember.original.role));
     const payload = {
       name: profile.name,
       type: profile.type,
@@ -103,7 +101,7 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ isOpen
   if (!isOpen || !profile) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 overflow-hidden">
+    <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 sm:p-6 overflow-hidden">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
       
       <div className="relative w-full max-w-5xl bg-[#0d0d0d] border border-white/10 rounded-3xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col z-10">
@@ -132,11 +130,11 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ isOpen
         <div className="p-6 sm:p-8 overflow-y-auto space-y-8">
           
           {/* Header Info */}
-          <div className="flex flex-col sm:flex-row gap-6 items-start sm:items-center -mt-20 relative z-10">
-            <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-2xl overflow-hidden border-4 border-[#0d0d0d] bg-[#1e2025] shadow-xl shrink-0">
-              <img src={getSocietyLogo(profile.logoUrl)} alt="Logo" className="w-full h-full object-cover" />
+          <div className="flex flex-col sm:flex-row gap-6 items-start sm:items-center -mt-16 sm:-mt-20 relative z-10 px-2 sm:px-4">
+            <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-2xl overflow-hidden border-4 border-[#0d0d0d] bg-white shadow-xl shrink-0 flex items-center justify-center">
+              <img src={getSocietyLogo(profile.logoUrl)} alt="Logo" className="w-[85%] h-[85%] object-contain" />
             </div>
-            <div className="flex-1 pt-2 sm:pt-12">
+            <div className="flex-1 pt-2 sm:pt-16">
               <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight">
                 {profile.name}
               </h1>
@@ -150,10 +148,13 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ isOpen
               </div>
             </div>
             
-            <button onClick={handleEdit} className="shrink-0 flex items-center justify-center gap-1.5 px-5 py-2.5 bg-white text-gray-900 hover:bg-gray-100 rounded-xl text-sm font-bold transition-all shadow-lg">
-              <Edit className="w-4 h-4" /> Manage Info
-            </button>
+            <div className="shrink-0 pt-2 sm:pt-16 self-start sm:self-auto">
+              <button onClick={handleEdit} className="flex items-center justify-center gap-1.5 px-5 py-2.5 bg-white text-gray-900 hover:bg-gray-100 rounded-xl text-sm font-bold transition-all shadow-lg">
+                <Edit className="w-4 h-4" /> Manage Info
+              </button>
+            </div>
           </div>
+</div>
 
           <div className="space-y-3">
             <h3 className="text-lg font-bold text-white uppercase tracking-wider border-b border-white/10 pb-2">About Us</h3>
@@ -164,7 +165,7 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ isOpen
 
           <div className="space-y-4">
             <h3 className="text-lg font-bold text-white uppercase tracking-wider border-b border-white/10 pb-2">Executive Council</h3>
-            <div className="bg-[#1e2025]/50 border border-white/10 rounded-2xl overflow-hidden shadow-xl">
+            <div className="bg-[#1e2025]/50 border border-white/10 rounded-2xl overflow-hidden shadow-xl overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-black/20 text-[10px] uppercase tracking-wider font-bold text-gray-500">
@@ -195,7 +196,7 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ isOpen
                         <td className="py-3 px-5 flex justify-end gap-1">
                           {!isUneditable && (
                             <>
-                              <button onClick={() => setEditingMember(member)} className="p-1.5 text-gray-500 hover:text-white transition-colors" title="Edit"><Edit className="w-4 h-4"/></button>
+                              <button onClick={() => setEditingMember({ original: member, current: member, confirmDelete: false })} className="p-1.5 text-gray-500 hover:text-white transition-colors" title="Edit"><Edit className="w-4 h-4"/></button>
                             </>
                           )}
                         </td>
@@ -258,5 +259,6 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ isOpen
         </div>
       )}
     </div>
-  );
+    ), document.body);
 };
+

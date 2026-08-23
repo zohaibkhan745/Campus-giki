@@ -36,5 +36,5 @@ export const CouncilNoticeModal: React.FC<CouncilNoticeModalProps> = ({ isOpen, 
         </div>
       </div>
     </div>
-  );
+  ), document.body);
 };

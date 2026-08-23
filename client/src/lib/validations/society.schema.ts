@@ -54,10 +54,12 @@ export const societySetupSchema = z.object({
   gs: executiveMemberSchema,
   ec: executiveMemberSchema,
   treasurer: executiveMemberSchema,
+  dl: executiveMemberSchema,
   otherMembers: z.array(executiveMemberSchema).optional(),
 });
 
 export type SocietySetupFormData = z.infer<typeof societySetupSchema>;
+
 
 
 
