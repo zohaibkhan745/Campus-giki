@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { getSocietyLogo, getSocietyBanner } from '@/lib/utils';
 import { X, Globe, Edit, Trash2, Check } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -101,11 +101,11 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ isOpen
 
   const UNEDITABLE_ROLES = ["President", "Vice President", "Event Coordinator", "General Secretary", "Treasurer", "Director Liaison"];
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 sm:p-6 overflow-hidden">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
       
-      <div className="relative w-full max-w-5xl bg-[#0d0d0d] border border-white/10 rounded-3xl shadow-2xl overflow-y-auto max-h-[90vh] flex flex-col z-10">
+      <div className="relative w-full max-w-5xl bg-[#0d0d0d] border border-white/10 rounded-3xl shadow-2xl overflow-y-auto custom-scrollbar max-h-[90vh] flex flex-col z-10">
         
         {/* Banner Section */}
         <div className="relative h-48 sm:h-64 w-full shrink-0">
@@ -188,7 +188,7 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ isOpen
                   )}
                   {council.map((member: any, i: number) => {
                     const isUneditable = UNEDITABLE_ROLES.includes(member.role);
-                    return (
+                    return createPortal(
                       <tr key={i} className="hover:bg-white/5 transition-colors">
                         <td className="py-3 px-5 text-sm font-semibold text-gray-300">{member.role}</td>
                         <td className="py-3 px-5 text-sm font-semibold text-white">{member.name}</td>
@@ -270,8 +270,11 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ isOpen
         </div>
       )}
     </div>
-  );
+  , document.getElementById('modal-root') as HTMLElement);
 };
+
+
+
 
 
 
