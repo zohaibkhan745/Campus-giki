@@ -188,8 +188,8 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ isOpen
                   )}
                   {council.map((member: any, i: number) => {
                     const isUneditable = UNEDITABLE_ROLES.includes(member.role);
-                    return createPortal(
-                      <tr key={i} className="hover:bg-white/5 transition-colors">
+                    return (
+                        <tr key={i} className="hover:bg-white/5 transition-colors">
                         <td className="py-3 px-5 text-sm font-semibold text-gray-300">{member.role}</td>
                         <td className="py-3 px-5 text-sm font-semibold text-white">{member.name}</td>
                         <td className="py-3 px-5 text-sm text-gray-400">{member.email}</td>
@@ -272,6 +272,7 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ isOpen
     </div>
   , (document.getElementById('modal-root') || document.body) as HTMLElement);
 };
+
 
 
 
