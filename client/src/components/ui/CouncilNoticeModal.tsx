@@ -44,8 +44,9 @@ export const CouncilNoticeModal: React.FC<CouncilNoticeModalProps> = ({ isOpen, 
         </div>
       </div>
     </div>
-  , document.getElementById('modal-root') as HTMLElement);
+  , (document.getElementById('modal-root') || document.body) as HTMLElement);
 };
+
 
 
 
