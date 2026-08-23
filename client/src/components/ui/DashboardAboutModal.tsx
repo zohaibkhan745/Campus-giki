@@ -101,7 +101,7 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ isOpen
 
   const UNEDITABLE_ROLES = ["President", "Vice President", "Event Coordinator", "General Secretary", "Treasurer", "Director Liaison"];
 
-  return createPortal(
+  return (
     <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 sm:p-6 overflow-hidden">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
       
@@ -270,8 +270,9 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ isOpen
         </div>
       )}
     </div>
-  , document.body);
+  );
 };
+
 
 
 
