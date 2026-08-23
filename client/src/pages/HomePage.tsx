@@ -4,13 +4,25 @@ import { PostCard } from '@/components/feed/PostCard';
 import { FeedCardSkeleton } from '@/components/feed/FeedCardSkeleton';
 
 import { RefreshCw, AlertCircle } from 'lucide-react';
+import { useState } from 'react';
 
 export const HomePage: React.FC = () => {
-  const { items, meta, isLoading, isLoadingMore, error, loadMore, refetch } = useFeed(4);
+  const { items, meta, isLoading, isLoadingMore, error, loadMore: fetchNextPage, refetch } = useFeed(50);
+  const [visibleCount, setVisibleCount] = useState(12);
+
+  const visibleItems = items.slice(0, visibleCount);
+  const hasMoreLocal = visibleCount < items.length || meta?.hasNextPage;
+
+  const handleLoadMore = () => {
+    if (visibleCount + 8 > items.length && meta?.hasNextPage) {
+      fetchNextPage();
+    }
+    setVisibleCount(prev => prev + 8);
+  };
 
   return (
     <div className="bg-transparent text-gray-200 min-h-screen font-inter">
-      <div className="w-full max-w-full px-6 flex justify-center text-left pt-6">
+      <div className="w-full max-w-full px-8 sm:px-10 flex justify-center text-left pt-6">
 
         {/* Left Column: Main Feed */}
         <div className="w-full">
@@ -60,8 +72,8 @@ export const HomePage: React.FC = () => {
             </div>
           ) : (
             /* Feed Items Stack */
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 justify-items-center">
-              {items.map((item) =>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 justify-items-center">
+              {visibleItems.map((item) =>
                 item.type === 'event' ? (
                   <EventCard key={`event-${item.id}`} item={item}  />
                 ) : (
@@ -72,10 +84,10 @@ export const HomePage: React.FC = () => {
           )}
 
           {/* Pagination / Load More Button */}
-          {meta?.hasNextPage && (
+          {hasMoreLocal && (
             <div className="pt-6 text-center pb-8">
               <button
-                onClick={loadMore}
+                onClick={handleLoadMore}
                 disabled={isLoadingMore}
                 className="inline-flex items-center gap-3 bg-[rgba(255,255,255,0.08)] backdrop-blur-[12px] border border-[rgba(255,255,255,0.15)] rounded-[12px] px-8 py-3 text-[16px] font-semibold text-white hover:bg-[rgba(255,255,255,0.16)] hover:border-[rgba(255,255,255,0.25)] disabled:opacity-50 transition-all focus:outline-none"
               >
@@ -95,6 +107,10 @@ export const HomePage: React.FC = () => {
     </div>
   );
 };
+
+
+
+
 
 
 

@@ -1,8 +1,12 @@
 import React from 'react';
 
-export const UpcomingEventIcon = ({ className = "w-5 h-5", style, ...props }: { className?: string, style?: React.CSSProperties, [key: string]: any }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" className={className} style={style} viewBox="0 0 24 24" {...props}>
-    <path d="M0 0h24v24H0z" fill="none" />
-    <path fill="currentColor" d="M15.058 21v-1h3.326q.231 0 .424-.192t.192-.424v-8.768H5V14.5H4V6.616q0-.691.463-1.153T5.616 5h1.769V2.77h1.077V5h7.154V2.77h1V5h1.769q.69 0 1.153.463T20 6.616v12.769q0 .69-.462 1.153T18.384 21zM8 23.288l-.689-.688l3.056-3.1H1.5v-1h8.867l-3.056-3.1l.689-.688L12.289 19zM5 9.615h14v-3q0-.23-.192-.423T18.384 6H5.616q-.231 0-.424.192T5 6.616zm0 0V6z" />
+export const UpcomingEventIcon = ({ className = "w-5 h-5", style, strokeWidth, ...props }: { className?: string, style?: React.CSSProperties, strokeWidth?: number | string, [key: string]: any }) => (
+  <svg width="100%" height="100%" className={className} style={style} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
+    <path d="M22 14V12C22 8.22876 22 6.34315 20.8284 5.17157C19.6569 4 17.7712 4 14 4H10C6.22876 4 4.34315 4 3.17157 5.17157C2 6.34315 2 8.22876 2 12V14C2 17.7712 2 19.6569 3.17157 20.8284C4.34315 22 6.22876 22 10 22H14" stroke="currentColor" strokeWidth={strokeWidth || "1.5"} strokeLinecap="round"/>
+    <path d="M7 4V2.5" stroke="currentColor" strokeWidth={strokeWidth || "1.5"} strokeLinecap="round"/>
+    <path d="M17 4V2.5" stroke="currentColor" strokeWidth={strokeWidth || "1.5"} strokeLinecap="round"/>
+    <circle cx="18" cy="18" r="3" stroke="currentColor" strokeWidth={strokeWidth || "1.5"}/>
+    <path d="M20.5 20.5L22 22" stroke="currentColor" strokeWidth={strokeWidth || "1.5"} strokeLinecap="round"/>
+    <path d="M2.5 9H21.5" stroke="currentColor" strokeWidth={strokeWidth || "1.5"} strokeLinecap="round"/>
   </svg>
 );

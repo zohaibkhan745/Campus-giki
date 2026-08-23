@@ -69,7 +69,7 @@ export const SocietyDirectoryPage: React.FC = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto space-y-8 text-left py-8">
+    <div className="w-full max-w-full px-8 sm:px-10 mx-auto space-y-8 text-left py-8">
       {/* Header Banner */}
       <div className="space-y-4">
         <h1 className="font-extrabold text-5xl sm:text-6xl text-white tracking-tight leading-tight">
@@ -185,7 +185,7 @@ export const SocietyDirectoryPage: React.FC = () => {
 
       {/* Directory Grid View */}
       {isLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
           {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
             <SocietyCardSkeleton key={i} />
           ))}
@@ -207,7 +207,7 @@ export const SocietyDirectoryPage: React.FC = () => {
           )}
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
           {societies.map((society) => (
             <div
               key={society.id}
@@ -276,5 +276,7 @@ export const SocietyDirectoryPage: React.FC = () => {
     </div>
   );
 };
+
+
 
 

@@ -6,7 +6,7 @@ import { EventCard } from '@/components/feed/EventCard';
 import { Link } from 'react-router-dom';
 
 export const UpcomingEventsPage: React.FC = () => {
-  const [visibleEventsCount, setVisibleEventsCount] = useState(12);
+  const [visibleEventsCount, setVisibleEventsCount] = useState(8);
 
   const { data: listEventsData, isLoading } = useQuery({
     queryKey: ['events', 'upcoming'],
@@ -19,7 +19,7 @@ export const UpcomingEventsPage: React.FC = () => {
 
   return (
     <div className="min-h-screen text-white flex justify-center py-6 px-3 font-sans relative">
-      <div className="w-full max-w-[1100px] flex flex-col gap-6 mt-10 pb-20">
+      <div className="w-full max-w-full flex flex-col gap-6 mt-10 pb-20">
         
         {/* Page Header */}
         <div className="flex flex-col gap-2 mb-4">
@@ -46,7 +46,7 @@ export const UpcomingEventsPage: React.FC = () => {
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {visibleEvents.map((event) => (
                 <EventCard key={event.id} item={{ ...event, type: 'event' } as any} />
               ))}
@@ -55,7 +55,7 @@ export const UpcomingEventsPage: React.FC = () => {
             {eventsList.length > visibleEventsCount && (
               <div className="mt-12 flex justify-center">
                 <button 
-                  onClick={() => setVisibleEventsCount(prev => prev + 12)}
+                  onClick={() => setVisibleEventsCount(prev => prev + 4)}
                   className="px-8 py-3 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold transition-all backdrop-blur-md"
                 >
                   Load More Events
@@ -68,3 +68,5 @@ export const UpcomingEventsPage: React.FC = () => {
     </div>
   );
 };
+
+
