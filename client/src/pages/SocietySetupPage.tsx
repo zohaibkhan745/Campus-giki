@@ -1,4 +1,4 @@
-﻿import { CustomDropdown } from '@/components/ui/CustomDropdown';
+import { CustomDropdown } from '@/components/ui/CustomDropdown';
 import React, { useState, useEffect } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -7,19 +7,10 @@ import { useNavigate } from 'react-router-dom';
 import {
   ArrowLeft,
   Building2, User,
-  Tag,
-  FileText,
-  AlignLeft,
-  Image,
-  Globe,
   Share2,
-  Link2,
-  Mail,
-  CheckCircle2,
-  AlertCircle,
-  Check,
-  Plus,
   Trash2,
+  Plus,
+  Users
 } from 'lucide-react';
 import { societyService } from '@/services/society.service';
 import {
@@ -36,6 +27,7 @@ export const SocietySetupPage: React.FC = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [serverError, setServerError] = useState<string | null>(null);
+
   const searchParams = new URLSearchParams(window.location.search);
   const defaultTab = searchParams.get('tab') === 'council' ? 'council' : 'info';
   const [activeTab, setActiveTab] = useState<'info' | 'council'>(defaultTab as any);
@@ -47,7 +39,6 @@ export const SocietySetupPage: React.FC = () => {
 
   const isEditing = mySociety?.isSetupComplete;
 
-  // Fetch predefined categories from backend
   const { data: categories = [], isLoading: isLoadingCategories } = useQuery({
     queryKey: ['categories'],
     queryFn: societyService.getCategories,
@@ -67,7 +58,6 @@ export const SocietySetupPage: React.FC = () => {
       name: '',
       type: 'SOCIETY',
       categoryId: '',
-      shortDescription: '',
       longDescription: '',
       logoUrl: '',
       bannerUrl: '',
@@ -81,23 +71,48 @@ export const SocietySetupPage: React.FC = () => {
       presidentContact: '',
       presidentEmail: '',
       presidentFaculty: '',
+      vp: { role: 'Vice President', name: '', regNum: '', contact: '', email: '', faculty: '' },
+      gs: { role: 'General Secretary', name: '', regNum: '', contact: '', email: '', faculty: '' },
+      ec: { role: 'Event Coordinator', name: '', regNum: '', contact: '', email: '', faculty: '' },
+      treasurer: { role: 'Treasurer', name: '', regNum: '', contact: '', email: '', faculty: '' },
+      otherMembers: [],
     },
   });
 
   const logoUrl = watch('logoUrl');
   const bannerUrl = watch('bannerUrl');
-
-  const { fields: councilFields, append: appendCouncil, remove: removeCouncil, replace: replaceCouncil } = useFieldArray({ control, name: 'executiveCouncil' });
-
   const selectedType = watch('type');
+
+  const { fields: otherMembers, append: appendMember, remove: removeMember } = useFieldArray({
+    control,
+    name: 'otherMembers',
+  });
 
   useEffect(() => {
     if (mySociety) {
+      let vp = { role: 'Vice President', name: '', regNum: '', contact: '', email: '', faculty: '' };
+      let gs = { role: 'General Secretary', name: '', regNum: '', contact: '', email: '', faculty: '' };
+      let ec = { role: 'Event Coordinator', name: '', regNum: '', contact: '', email: '', faculty: '' };
+      let treasurer = { role: 'Treasurer', name: '', regNum: '', contact: '', email: '', faculty: '' };
+      let others: any[] = [];
+
+      try {
+        if (mySociety.executiveCouncil) {
+          const council = JSON.parse(mySociety.executiveCouncil as string);
+          council.forEach((m: any) => {
+            if (m.role === 'Vice President') vp = m;
+            else if (m.role === 'General Secretary') gs = m;
+            else if (m.role === 'Event Coordinator') ec = m;
+            else if (m.role === 'Treasurer') treasurer = m;
+            else others.push(m);
+          });
+        }
+      } catch (e) {}
+
       reset({
         name: mySociety.name || '',
         type: (mySociety.type as any) || 'SOCIETY',
         categoryId: mySociety.category?.id || '',
-        shortDescription: mySociety.shortDescription || '',
         longDescription: mySociety.longDescription || '',
         logoUrl: mySociety.logoUrl || '',
         bannerUrl: mySociety.bannerUrl || '',
@@ -111,14 +126,15 @@ export const SocietySetupPage: React.FC = () => {
         presidentContact: mySociety.presidentContact || '',
         presidentEmail: mySociety.presidentEmail || '',
         presidentFaculty: mySociety.presidentFaculty || '',
+        vp, gs, ec, treasurer, otherMembers: others
       });
     }
   }, [mySociety, reset]);
 
   const setupMutation = useMutation({
     meta: { notify: true },
-    mutationFn: (data: SocietySetupFormData) => 
-      isEditing ? societyService.updateSociety({ ...data, executiveCouncil: data.executiveCouncil ? JSON.stringify(data.executiveCouncil) : undefined } as any) : societyService.setupSociety({ ...data, executiveCouncil: data.executiveCouncil ? JSON.stringify(data.executiveCouncil) : undefined } as any),
+    mutationFn: (data: any) => 
+      isEditing ? societyService.updateSociety(data) : societyService.setupSociety(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['mySociety'] });
       queryClient.invalidateQueries({ queryKey: ['authStatus'] });
@@ -130,20 +146,41 @@ export const SocietySetupPage: React.FC = () => {
     ) => {
       const respMessage = error.response?.data?.message;
       let errText = 'Failed to save profile. Please check your inputs.';
-
-      if (Array.isArray(respMessage)) {
-        errText = respMessage.join(', ');
-      } else if (typeof respMessage === 'string') {
-        errText = respMessage;
-      }
-
-      setServerError('');
+      if (Array.isArray(respMessage)) errText = respMessage.join(', ');
+      else if (typeof respMessage === 'string') errText = respMessage;
+      setServerError(errText);
     },
   });
 
   const onSubmit = (data: SocietySetupFormData) => {
     setServerError('');
-    setupMutation.mutate({ ...data, executiveCouncil: data.executiveCouncil ? JSON.stringify(data.executiveCouncil) : undefined } as any);
+    
+    // Auto-generate shortDescription
+    const shortDesc = data.longDescription.length > 97 ? data.longDescription.substring(0, 97) + '...' : data.longDescription;
+    
+    // Assemble executive council JSON string
+    const councilArray = [
+      { role: 'Vice President', ...data.vp },
+      { role: 'Event Coordinator', ...data.ec },
+      { role: 'General Secretary', ...data.gs },
+      { role: 'Treasurer', ...data.treasurer },
+      ...(data.otherMembers || [])
+    ];
+
+    const submitPayload: any = {
+      ...data,
+      shortDescription: shortDesc,
+      executiveCouncil: JSON.stringify(councilArray),
+    };
+    
+    // Remove individual components
+    delete submitPayload.vp;
+    delete submitPayload.ec;
+    delete submitPayload.gs;
+    delete submitPayload.treasurer;
+    delete submitPayload.otherMembers;
+
+    setupMutation.mutate(submitPayload);
   };
 
   if (isLoadingSociety) {
@@ -151,7 +188,7 @@ export const SocietySetupPage: React.FC = () => {
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6 text-left py-4">
+    <div className="max-w-4xl mx-auto space-y-6 text-left py-4 mb-24">
       {/* Top Back Navigation */}
       <div className="flex items-center justify-between mb-2">
         <button
@@ -175,9 +212,23 @@ export const SocietySetupPage: React.FC = () => {
       {serverError && <Alert type="error" message={serverError} />}
 
       {/* Tabs */}
-      <div className="flex gap-4 border-b border-white/10 mb-8 pt-4">
-        <button type="button" onClick={() => setActiveTab('info')} className={`pb-3 px-4 font-bold text-sm transition-colors ${activeTab === 'info' ? 'border-b-2 border-white text-white' : 'border-b-2 border-transparent text-gray-400 hover:text-white'}`}>Society Info</button>
-        <button type="button" onClick={() => setActiveTab('council')} className={`pb-3 px-4 font-bold text-sm transition-colors ${activeTab === 'council' ? 'border-b-2 border-white text-white' : 'border-b-2 border-transparent text-gray-400 hover:text-white'}`}>Executive Council</button>
+      <div className="flex flex-col sm:flex-row justify-center items-stretch sm:items-center bg-white/5 border border-white/10 rounded-2xl p-1 gap-1 mb-8 max-w-2xl shadow-2xl">
+        <button
+          type="button"
+          onClick={() => setActiveTab('info')}
+          className={`flex-1 flex justify-center items-center gap-2 px-4 py-3 text-sm font-bold rounded-xl transition-all ${activeTab === 'info' ? 'bg-white text-gray-900 shadow-md' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
+        >
+          <Building2 className="w-4 h-4" />
+          <span>Society Info</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab('council')}
+          className={`flex-1 flex justify-center items-center gap-2 px-4 py-3 text-sm font-bold rounded-xl transition-all ${activeTab === 'council' ? 'bg-white text-gray-900 shadow-md' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
+        >
+          <Users className="w-4 h-4" />
+          <span>Executive Council</span>
+        </button>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
@@ -201,8 +252,8 @@ export const SocietySetupPage: React.FC = () => {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider">
-                    Organization Type <span className="text-red-500">*</span>
+                  <label className="block text-[11px] font-bold text-gray-400 mb-2 uppercase tracking-wider">
+                    Organization Type *
                   </label>
                   <CustomDropdown
                     options={[
@@ -220,8 +271,8 @@ export const SocietySetupPage: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider">
-                    Category <span className="text-red-500">*</span>
+                  <label className="block text-[11px] font-bold text-gray-400 mb-2 uppercase tracking-wider">
+                    Category *
                   </label>
                   <CustomDropdown
                     options={categories.map((c: any) => ({ value: c.id, label: c.name }))}
@@ -235,25 +286,10 @@ export const SocietySetupPage: React.FC = () => {
                   )}
                 </div>
               </div>
-
-              <div>
-                <label className="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider">
-                  Short Description <span className="text-red-500">*</span>
-                </label>
-                <textarea
-                  {...register('shortDescription')}
-                  placeholder="A brief one-line description of your society..."
-                  rows={2}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all resize-none font-medium"
-                />
-                {errors.shortDescription?.message && (
-                  <p className="text-red-400 text-xs mt-1.5 font-medium">{errors.shortDescription.message}</p>
-                )}
-              </div>
               
               <div>
-                <label className="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider">
-                  Long Description <span className="text-red-500">*</span>
+                <label className="block text-[11px] font-bold text-gray-400 mb-2 uppercase tracking-wider">
+                  Description *
                 </label>
                 <textarea
                   {...register('longDescription')}
@@ -285,7 +321,6 @@ export const SocietySetupPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Social Links */}
           <div className="bg-[#1e2025]/50 border border-white/10 p-6 sm:p-8 rounded-3xl space-y-6 shadow-xl">
             <h3 className="text-xl font-bold text-white flex items-center gap-2 border-b border-white/10 pb-4">
               <Share2 className="w-5 h-5 text-gray-400" /> Social Links (Optional)
@@ -301,64 +336,163 @@ export const SocietySetupPage: React.FC = () => {
 
         {/* EXECUTIVE COUNCIL TAB */}
         <div className={activeTab === 'council' ? 'block space-y-8' : 'hidden'}>
-          {/* President Section */}
-          <div className="bg-[#1e2025]/50 border border-white/10 p-6 sm:p-8 rounded-3xl space-y-6 shadow-xl relative overflow-hidden">
-            <div className="absolute top-0 right-0 bg-blue-500/20 text-blue-400 text-[10px] font-bold px-3 py-1 rounded-bl-xl border-b border-l border-blue-500/30 uppercase tracking-widest">Fixed Position</div>
+          {/* Executive Posts Section */}
+          <div className="bg-[#1e2025]/50 border border-white/10 p-6 sm:p-8 rounded-3xl space-y-8 shadow-xl">
             <h3 className="text-xl font-bold text-white flex items-center gap-2 border-b border-white/10 pb-4">
-              <User className="w-5 h-5 text-gray-400" /> President Info
+              <User className="w-5 h-5 text-gray-400" /> Executive Posts
             </h3>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <Input label="President Name" placeholder="Full Name" {...register('presidentName')} error={errors.presidentName?.message} required />
-              <Input label="Registration Number" placeholder="e.g. 2023123" {...register('presidentRegNum')} error={errors.presidentRegNum?.message} required />
-              <Input label="Contact Number" placeholder="e.g. 0300-1234567" {...register('presidentContact')} error={errors.presidentContact?.message} required />
-              <Input label="Email Address" type="email" placeholder="president@giki.edu.pk" {...register('presidentEmail')} error={errors.presidentEmail?.message} required />
-              
-              <div>
-                <label className="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider">
-                  Faculty <span className="text-red-500">*</span>
-                </label>
-                <CustomDropdown
-                  options={[
-                    { value: 'FCSE', label: 'FCSE' },
-                    { value: 'FMCE', label: 'FMCE' },
-                    { value: 'FES', label: 'FES' },
-                    { value: 'FCME', label: 'FCME' },
-                    { value: 'FME', label: 'FME' },
-                    { value: 'FSM', label: 'FSM' },
-                  ]}
-                  value={watch('presidentFaculty')}
-                  onChange={(val) => setValue('presidentFaculty', val)}
-                  placeholder="Select Faculty"
-                />
-                {errors.presidentFaculty?.message && (
-                  <p className="text-red-400 text-xs mt-1.5 font-medium">{errors.presidentFaculty.message}</p>
-                )}
+            {/* President */}
+            <div className="space-y-4">
+              <h4 className="text-md font-bold text-blue-400 uppercase tracking-wider">President</h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <Input label="Full Name *" placeholder="Full Name" {...register('presidentName')} error={errors.presidentName?.message} />
+                <Input label="Reg Number *" placeholder="e.g. 2023123" {...register('presidentRegNum')} error={errors.presidentRegNum?.message} />
+                <Input label="Contact Number *" placeholder="e.g. 03001234567" {...register('presidentContact')} error={errors.presidentContact?.message} />
+                <Input label="Email Address *" type="email" placeholder="president@giki.edu.pk" {...register('presidentEmail')} error={errors.presidentEmail?.message} />
+                <div>
+                  <label className="block text-[11px] font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Faculty *</label>
+                  <select {...register('presidentFaculty')} className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white font-medium focus:outline-none focus:border-blue-500/50 transition-colors appearance-none">
+                    <option value="">Select</option>
+                    <option value="FCSE">FCSE</option>
+                    <option value="FMCE">FMCE</option>
+                    <option value="FES">FES</option>
+                    <option value="FCME">FCME</option>
+                    <option value="FME">FME</option>
+                    <option value="FSM">FSM</option>
+                  </select>
+                  {errors.presidentFaculty?.message && <p className="text-red-400 text-xs mt-1 font-medium">{errors.presidentFaculty.message}</p>}
+                </div>
               </div>
             </div>
+            
+            <hr className="border-white/10" />
+
+            {/* Vice President */}
+            <div className="space-y-4">
+              <h4 className="text-md font-bold text-blue-400 uppercase tracking-wider">Vice President</h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <Input label="Full Name *" placeholder="Full Name" {...register('vp.name')} error={errors.vp?.name?.message} />
+                <Input label="Reg Number *" placeholder="e.g. 2023123" {...register('vp.regNum')} error={errors.vp?.regNum?.message} />
+                <Input label="Contact Number *" placeholder="e.g. 03001234567" {...register('vp.contact')} error={errors.vp?.contact?.message} />
+                <Input label="Email Address *" type="email" placeholder="vp@giki.edu.pk" {...register('vp.email')} error={errors.vp?.email?.message} />
+                <div>
+                  <label className="block text-[11px] font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Faculty *</label>
+                  <select {...register('vp.faculty')} className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white font-medium focus:outline-none focus:border-blue-500/50 transition-colors appearance-none">
+                    <option value="">Select</option>
+                    <option value="FCSE">FCSE</option>
+                    <option value="FMCE">FMCE</option>
+                    <option value="FES">FES</option>
+                    <option value="FCME">FCME</option>
+                    <option value="FME">FME</option>
+                    <option value="FSM">FSM</option>
+                  </select>
+                  {errors.vp?.faculty?.message && <p className="text-red-400 text-xs mt-1 font-medium">{errors.vp.faculty.message}</p>}
+                </div>
+              </div>
+            </div>
+
+            <hr className="border-white/10" />
+
+            {/* Event Coordinator */}
+            <div className="space-y-4">
+              <h4 className="text-md font-bold text-blue-400 uppercase tracking-wider">Event Coordinator</h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <Input label="Full Name *" placeholder="Full Name" {...register('ec.name')} error={errors.ec?.name?.message} />
+                <Input label="Reg Number *" placeholder="e.g. 2023123" {...register('ec.regNum')} error={errors.ec?.regNum?.message} />
+                <Input label="Contact Number *" placeholder="e.g. 03001234567" {...register('ec.contact')} error={errors.ec?.contact?.message} />
+                <Input label="Email Address *" type="email" placeholder="ec@giki.edu.pk" {...register('ec.email')} error={errors.ec?.email?.message} />
+                <div>
+                  <label className="block text-[11px] font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Faculty *</label>
+                  <select {...register('ec.faculty')} className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white font-medium focus:outline-none focus:border-blue-500/50 transition-colors appearance-none">
+                    <option value="">Select</option>
+                    <option value="FCSE">FCSE</option>
+                    <option value="FMCE">FMCE</option>
+                    <option value="FES">FES</option>
+                    <option value="FCME">FCME</option>
+                    <option value="FME">FME</option>
+                    <option value="FSM">FSM</option>
+                  </select>
+                  {errors.ec?.faculty?.message && <p className="text-red-400 text-xs mt-1 font-medium">{errors.ec.faculty.message}</p>}
+                </div>
+              </div>
+            </div>
+
+            <hr className="border-white/10" />
+
+            {/* General Secretary */}
+            <div className="space-y-4">
+              <h4 className="text-md font-bold text-blue-400 uppercase tracking-wider">General Secretary</h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <Input label="Full Name *" placeholder="Full Name" {...register('gs.name')} error={errors.gs?.name?.message} />
+                <Input label="Reg Number *" placeholder="e.g. 2023123" {...register('gs.regNum')} error={errors.gs?.regNum?.message} />
+                <Input label="Contact Number *" placeholder="e.g. 03001234567" {...register('gs.contact')} error={errors.gs?.contact?.message} />
+                <Input label="Email Address *" type="email" placeholder="gs@giki.edu.pk" {...register('gs.email')} error={errors.gs?.email?.message} />
+                <div>
+                  <label className="block text-[11px] font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Faculty *</label>
+                  <select {...register('gs.faculty')} className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white font-medium focus:outline-none focus:border-blue-500/50 transition-colors appearance-none">
+                    <option value="">Select</option>
+                    <option value="FCSE">FCSE</option>
+                    <option value="FMCE">FMCE</option>
+                    <option value="FES">FES</option>
+                    <option value="FCME">FCME</option>
+                    <option value="FME">FME</option>
+                    <option value="FSM">FSM</option>
+                  </select>
+                  {errors.gs?.faculty?.message && <p className="text-red-400 text-xs mt-1 font-medium">{errors.gs.faculty.message}</p>}
+                </div>
+              </div>
+            </div>
+
+            <hr className="border-white/10" />
+
+            {/* Treasurer */}
+            <div className="space-y-4">
+              <h4 className="text-md font-bold text-blue-400 uppercase tracking-wider">Treasurer</h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <Input label="Full Name *" placeholder="Full Name" {...register('treasurer.name')} error={errors.treasurer?.name?.message} />
+                <Input label="Reg Number *" placeholder="e.g. 2023123" {...register('treasurer.regNum')} error={errors.treasurer?.regNum?.message} />
+                <Input label="Contact Number *" placeholder="e.g. 03001234567" {...register('treasurer.contact')} error={errors.treasurer?.contact?.message} />
+                <Input label="Email Address *" type="email" placeholder="treasurer@giki.edu.pk" {...register('treasurer.email')} error={errors.treasurer?.email?.message} />
+                <div>
+                  <label className="block text-[11px] font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Faculty *</label>
+                  <select {...register('treasurer.faculty')} className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white font-medium focus:outline-none focus:border-blue-500/50 transition-colors appearance-none">
+                    <option value="">Select</option>
+                    <option value="FCSE">FCSE</option>
+                    <option value="FMCE">FMCE</option>
+                    <option value="FES">FES</option>
+                    <option value="FCME">FCME</option>
+                    <option value="FME">FME</option>
+                    <option value="FSM">FSM</option>
+                  </select>
+                  {errors.treasurer?.faculty?.message && <p className="text-red-400 text-xs mt-1 font-medium">{errors.treasurer.faculty.message}</p>}
+                </div>
+              </div>
+            </div>
+
           </div>
 
           {/* Other Members Section */}
           <div className="bg-[#1e2025]/50 border border-white/10 p-6 sm:p-8 rounded-3xl space-y-6 shadow-xl">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-white/10 pb-4 gap-4">
               <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                <User className="w-5 h-5 text-gray-400" /> Other Executive Members
+                <Users className="w-5 h-5 text-gray-400" /> Other Executive Members
               </h3>
-              <Button type="button" onClick={() => appendCouncil({ role: 'Executive Member', name: '', regNum: '', email: '', contact: '', faculty: 'FCSE' })} className="btn-secondary !px-4 !py-2 !text-xs !bg-white/10 !border-white/20 hover:!bg-white/20">
+              <Button type="button" onClick={() => appendMember({ role: 'Executive Member', name: '', regNum: '', email: '', contact: '', faculty: 'FCSE' })} className="btn-secondary !px-4 !py-2 !text-xs !bg-white/10 !border-white/20 hover:!bg-white/20">
                 <Plus className="w-4 h-4 mr-1.5" /> Add Member
               </Button>
             </div>
             
             <div className="space-y-6">
-              {councilFields.map((field, index) => {
-                const currentRole = watch(`executiveCouncil.${index}.role`);
-                const PREDEFINED_ROLES = ['Executive Member', 'Vice President', 'Event Coordinator', 'General Secretary', 'Treasurer', 'Director Liaison', 'Director Sponsors', 'Director Tech', 'Director Socials'];
+              {otherMembers.map((field, index) => {
+                const currentRole = watch(`otherMembers.${index}.role`);
+                const PREDEFINED_ROLES = ['Executive Member', 'Director Liaison', 'Director Sponsors', 'Director Tech', 'Director Socials'];
                 const isCustomRole = !PREDEFINED_ROLES.includes(currentRole) && currentRole !== undefined && currentRole !== '';
                 const dropdownValue = isCustomRole ? 'Other' : (currentRole || 'Executive Member');
 
                 return (
                   <div key={field.id} className="p-6 rounded-2xl bg-white/5 border border-white/10 space-y-5 relative">
-                    <button type="button" onClick={() => removeCouncil(index)} className="absolute top-5 right-5 text-gray-500 hover:text-red-400 transition-colors p-1" title="Remove Member">
+                    <button type="button" onClick={() => removeMember(index)} className="absolute top-5 right-5 text-gray-500 hover:text-red-400 transition-colors p-1" title="Remove Member">
                       <Trash2 className="w-5 h-5" />
                     </button>
                     
@@ -366,28 +500,29 @@ export const SocietySetupPage: React.FC = () => {
                     
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                       <div>
-                        <label className="block text-[11px] font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Position</label>
+                        <label className="block text-[11px] font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Position *</label>
                         <select
                           className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white font-medium focus:outline-none focus:border-blue-500/50 transition-colors appearance-none"
                           value={dropdownValue}
                           onChange={(e) => {
                             if (e.target.value === 'Other') {
-                              setValue(`executiveCouncil.${index}.role`, '');
+                              setValue(`otherMembers.${index}.role`, '');
                             } else {
-                              setValue(`executiveCouncil.${index}.role`, e.target.value);
+                              setValue(`otherMembers.${index}.role`, e.target.value);
                             }
                           }}
                         >
                           {PREDEFINED_ROLES.map(r => <option key={r} value={r}>{r}</option>)}
                           <option value="Other">Other (Custom Position)</option>
                         </select>
+                        {errors.otherMembers?.[index]?.role?.message && <p className="text-red-400 text-xs mt-1 font-medium">{errors.otherMembers[index].role?.message}</p>}
                       </div>
 
                       {dropdownValue === 'Other' && (
                         <div>
                           <label className="block text-[11px] font-bold text-blue-400 mb-1.5 uppercase tracking-wider">Custom Position Name *</label>
                           <input 
-                            {...register(`executiveCouncil.${index}.role` as const)} 
+                            {...register(`otherMembers.${index}.role` as const)} 
                             className="w-full bg-black/20 border border-blue-500/30 rounded-xl px-4 py-2.5 text-sm text-white font-medium focus:outline-none focus:border-blue-500/70 transition-colors"
                             placeholder="Type position name..."
                             required
@@ -399,23 +534,28 @@ export const SocietySetupPage: React.FC = () => {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 pt-2">
                       <div>
                         <label className="block text-[11px] font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Full Name *</label>
-                        <input {...register(`executiveCouncil.${index}.name` as const)} className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white font-medium focus:outline-none focus:border-blue-500/50 transition-colors" placeholder="Full Name" required />
+                        <input {...register(`otherMembers.${index}.name` as const)} className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white font-medium focus:outline-none focus:border-blue-500/50 transition-colors" placeholder="Full Name" required />
+                        {errors.otherMembers?.[index]?.name?.message && <p className="text-red-400 text-xs mt-1 font-medium">{errors.otherMembers[index].name?.message}</p>}
                       </div>
                       <div>
                         <label className="block text-[11px] font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Reg Number *</label>
-                        <input {...register(`executiveCouncil.${index}.regNum` as const)} className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white font-medium focus:outline-none focus:border-blue-500/50 transition-colors" placeholder="e.g. 2023123" required />
+                        <input {...register(`otherMembers.${index}.regNum` as const)} className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white font-medium focus:outline-none focus:border-blue-500/50 transition-colors" placeholder="e.g. 2023123" required />
+                        {errors.otherMembers?.[index]?.regNum?.message && <p className="text-red-400 text-xs mt-1 font-medium">{errors.otherMembers[index].regNum?.message}</p>}
                       </div>
                       <div>
                         <label className="block text-[11px] font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Email Address *</label>
-                        <input type="email" {...register(`executiveCouncil.${index}.email` as const)} className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white font-medium focus:outline-none focus:border-blue-500/50 transition-colors" placeholder="Email" required />
+                        <input type="email" {...register(`otherMembers.${index}.email` as const)} className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white font-medium focus:outline-none focus:border-blue-500/50 transition-colors" placeholder="Email" required />
+                        {errors.otherMembers?.[index]?.email?.message && <p className="text-red-400 text-xs mt-1 font-medium">{errors.otherMembers[index].email?.message}</p>}
                       </div>
                       <div>
                         <label className="block text-[11px] font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Contact Number *</label>
-                        <input {...register(`executiveCouncil.${index}.contact` as const)} className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white font-medium focus:outline-none focus:border-blue-500/50 transition-colors" placeholder="Phone Number" required />
+                        <input {...register(`otherMembers.${index}.contact` as const)} className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white font-medium focus:outline-none focus:border-blue-500/50 transition-colors" placeholder="Phone Number" required />
+                        {errors.otherMembers?.[index]?.contact?.message && <p className="text-red-400 text-xs mt-1 font-medium">{errors.otherMembers[index].contact?.message}</p>}
                       </div>
                       <div>
                         <label className="block text-[11px] font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Faculty *</label>
-                        <select {...register(`executiveCouncil.${index}.faculty` as const)} className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white font-medium focus:outline-none focus:border-blue-500/50 transition-colors appearance-none">
+                        <select {...register(`otherMembers.${index}.faculty` as const)} className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white font-medium focus:outline-none focus:border-blue-500/50 transition-colors appearance-none">
+                          <option value="">Select</option>
                           <option value="FCSE">FCSE</option>
                           <option value="FMCE">FMCE</option>
                           <option value="FES">FES</option>
@@ -423,12 +563,13 @@ export const SocietySetupPage: React.FC = () => {
                           <option value="FME">FME</option>
                           <option value="FSM">FSM</option>
                         </select>
+                        {errors.otherMembers?.[index]?.faculty?.message && <p className="text-red-400 text-xs mt-1 font-medium">{errors.otherMembers[index].faculty?.message}</p>}
                       </div>
                     </div>
                   </div>
                 );
               })}
-              {councilFields.length === 0 && (
+              {otherMembers.length === 0 && (
                 <div className="text-center py-8 text-gray-500 text-sm font-medium border border-dashed border-white/10 rounded-2xl">
                   No other executive members added yet.
                 </div>
@@ -437,7 +578,7 @@ export const SocietySetupPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex justify-end pt-6 border-t border-white/10">
+        <div className="flex justify-end pt-2">
           <Button
             type="submit"
             isLoading={setupMutation.isPending}
@@ -450,3 +591,4 @@ export const SocietySetupPage: React.FC = () => {
     </div>
   );
 };
+

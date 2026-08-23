@@ -34,13 +34,10 @@ export const societySetupSchema = z.object({
     .max(100, 'Society name cannot exceed 100 characters'),
   type: z.enum(['SOCIETY', 'CLUB', 'TEAM']),
   categoryId: z.string().min(1, 'Please select a category'),
-  shortDescription: z
-    .string()
-    .min(10, 'Short description must be at least 10 characters')
-    .max(250, 'Short description cannot exceed 250 characters'),
+  
   longDescription: z
     .string()
-    .min(20, 'Long description must be at least 20 characters'),
+    .min(20, 'Description must be at least 20 characters'),
   logoUrl: optionalUrl,
   bannerUrl: optionalUrl,
   instagram: optionalUrl,
@@ -48,15 +45,22 @@ export const societySetupSchema = z.object({
   linkedin: optionalUrl,
   website: optionalUrl,
   email: optionalEmail,
-  presidentName: z.string().regex(/^[a-zA-Z., \\-]+$/, 'Only letters, spaces, dots, commas, and dashes allowed').optional().or(z.literal('')),
+  presidentName: z.string().regex(/^[a-zA-Z., \\\-]+$/, 'Only letters, spaces, dots, commas, and dashes allowed').min(1, 'President name is required'),
   presidentRegNum: z.string().regex(/^\d{7}$/, 'Must be exactly 7 digits').optional().or(z.literal('')),
-  presidentFaculty: z.string().optional().or(z.literal('')),
+  presidentFaculty: z.string().min(1, 'Faculty is required'),
   presidentContact: z.string().regex(/^\d{11}$/, 'Must be exactly 11 digits').optional().or(z.literal('')),
-  presidentEmail: optionalEmail,
-  executiveCouncil: z.array(executiveMemberSchema).optional(),
+  presidentEmail: z.string().email('Invalid email address'),
+  vp: executiveMemberSchema,
+  gs: executiveMemberSchema,
+  ec: executiveMemberSchema,
+  treasurer: executiveMemberSchema,
+  otherMembers: z.array(executiveMemberSchema).optional(),
 });
 
 export type SocietySetupFormData = z.infer<typeof societySetupSchema>;
+
+
+
 
 
 

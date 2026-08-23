@@ -164,10 +164,10 @@ export const BannerHeader: React.FC<BannerHeaderProps> = ({
         {/* Name */}
         {socials && (socials.instagram || socials.facebook || socials.linkedin || socials.website) && (
           <div className="absolute top-4 right-4 z-20 flex gap-2">
-            {socials.instagram && <a href={socials.instagram.startsWith('http') ? socials.instagram : \https://\\} target="_blank" rel="noopener noreferrer" className="p-2.5 bg-black/50 hover:bg-black/80 hover:scale-110 hover:text-blue-400 hover:border-blue-400/50 text-white rounded-full backdrop-blur-sm transition-all border border-white/20"><Instagram className="w-5 h-5" /></a>}
-            {socials.facebook && <a href={socials.facebook.startsWith('http') ? socials.facebook : \https://\\} target="_blank" rel="noopener noreferrer" className="p-2.5 bg-black/50 hover:bg-black/80 hover:scale-110 hover:text-blue-400 hover:border-blue-400/50 text-white rounded-full backdrop-blur-sm transition-all border border-white/20"><Facebook className="w-5 h-5" /></a>}
-            {socials.linkedin && <a href={socials.linkedin.startsWith('http') ? socials.linkedin : \https://\\} target="_blank" rel="noopener noreferrer" className="p-2.5 bg-black/50 hover:bg-black/80 hover:scale-110 hover:text-blue-400 hover:border-blue-400/50 text-white rounded-full backdrop-blur-sm transition-all border border-white/20"><Linkedin className="w-5 h-5" /></a>}
-            {socials.website && <a href={socials.website.startsWith('http') ? socials.website : \https://\\} target="_blank" rel="noopener noreferrer" className="p-2.5 bg-black/50 hover:bg-black/80 hover:scale-110 hover:text-blue-400 hover:border-blue-400/50 text-white rounded-full backdrop-blur-sm transition-all border border-white/20"><Globe className="w-5 h-5" /></a>}
+            {socials.instagram && <a href={socials.instagram.startsWith('http') ? socials.instagram : `https://${socials.instagram}`} target="_blank" rel="noopener noreferrer" className="p-2.5 bg-black/50 hover:bg-black/80 hover:scale-110 hover:text-blue-400 hover:border-blue-400/50 text-white rounded-full backdrop-blur-sm transition-all border border-white/20"><Instagram className="w-5 h-5" /></a>}
+            {socials.facebook && <a href={socials.facebook.startsWith('http') ? socials.facebook : `https://${socials.facebook}`} target="_blank" rel="noopener noreferrer" className="p-2.5 bg-black/50 hover:bg-black/80 hover:scale-110 hover:text-blue-400 hover:border-blue-400/50 text-white rounded-full backdrop-blur-sm transition-all border border-white/20"><Facebook className="w-5 h-5" /></a>}
+            {socials.linkedin && <a href={socials.linkedin.startsWith('http') ? socials.linkedin : `https://${socials.linkedin}`} target="_blank" rel="noopener noreferrer" className="p-2.5 bg-black/50 hover:bg-black/80 hover:scale-110 hover:text-blue-400 hover:border-blue-400/50 text-white rounded-full backdrop-blur-sm transition-all border border-white/20"><Linkedin className="w-5 h-5" /></a>}
+            {socials.website && <a href={socials.website.startsWith('http') ? socials.website : `https://${socials.website}`} target="_blank" rel="noopener noreferrer" className="p-2.5 bg-black/50 hover:bg-black/80 hover:scale-110 hover:text-blue-400 hover:border-blue-400/50 text-white rounded-full backdrop-blur-sm transition-all border border-white/20"><Globe className="w-5 h-5" /></a>}
           </div>
         )}
         <div className="shared-name-text">
@@ -180,6 +180,7 @@ export const BannerHeader: React.FC<BannerHeaderProps> = ({
     </>
   );
 };
+
 
 
 

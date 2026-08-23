@@ -190,7 +190,7 @@ export const DashboardPage: React.FC = () => {
       <div className="space-y-6 text-left py-4 px-4">
         {/* Actions Row */}
         <div className="flex justify-end mb-4">
-          <div className="grid grid-cols-2 md:flex md:flex-wrap lg:flex-nowrap md:justify-end gap-2 md:gap-3 w-full md:w-auto shrink-0 mt-4 md:mt-0">
+          <div className="grid grid-cols-3 md:flex md:flex-wrap lg:flex-nowrap md:justify-end gap-2 md:gap-3 w-full md:w-auto shrink-0 mt-4 md:mt-0">
           <Link
             to="/society/setup"
             className="flex justify-center items-center gap-1.5 px-4 py-2.5 bg-white hover:bg-gray-100 text-gray-900 border-none rounded-xl text-sm font-bold transition-colors"
@@ -203,7 +203,7 @@ export const DashboardPage: React.FC = () => {
               className="flex justify-center items-center gap-1.5 px-4 py-2.5 bg-white/10 hover:bg-white/20 text-white border-none rounded-xl text-sm font-bold transition-colors"
             >
               <Info className="w-4 h-4" />
-              <span>About</span>
+              <span>About Society</span>
             </button>
           <button
             onClick={logout}
@@ -383,4 +383,5 @@ export const DashboardPage: React.FC = () => {
     </div>
   );
 };
+
 
