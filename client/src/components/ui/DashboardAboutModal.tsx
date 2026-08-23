@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { getSocietyLogo, getSocietyBanner } from '@/lib/utils';
 import { X, Globe, Edit, Trash2, Check } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { createPortal } from 'react-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { societyService } from '@/services/society.service';
+import { createPortal } from 'react-dom';
 
 const Instagram = ({className}: {className?: string}) => <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>;
 const Facebook = ({className}: {className?: string}) => <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>;
@@ -21,7 +21,16 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ isOpen
   const queryClient = useQueryClient();
   const [editingMember, setEditingMember] = useState<any>(null);
   
+  const updateMutation = useMutation({
+    mutationFn: (data: any) => societyService.updateSociety(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['societyDashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['mySociety'] });
+      setEditingMember(null);
+    }
+  });
 
+  if (!isOpen || !profile) return null;
 
   let council: any[] = [];
   try {
@@ -35,17 +44,10 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ isOpen
     navigate('/society/setup?tab=council');
   };
 
-  const updateMutation = useMutation({
-    mutationFn: (data: any) => societyService.updateSociety(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['societyDashboard'] });
-      queryClient.invalidateQueries({ queryKey: ['mySociety'] });
-      setEditingMember(null);
-    }
-  });
-
   const handleSaveMember = (updatedMember: any) => {
     const newCouncil = council.map(m => m.name === editingMember.original.name && m.role === editingMember.original.role ? updatedMember : m);
+    
+    // Construct payload from profile
     const payload = {
       name: profile.name,
       type: profile.type,
@@ -66,6 +68,7 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ isOpen
       presidentFaculty: profile.presidentFaculty,
       executiveCouncil: JSON.stringify(newCouncil)
     };
+    
     updateMutation.mutate(payload);
   };
 
@@ -94,13 +97,9 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ isOpen
     updateMutation.mutate(payload);
   };
 
-  const CORE_ROLES = ["President", "Vice President", "Event Coordinator", "General Secretary", "Treasurer", "Director Liaison", "Director Sponsors", "Director Tech", "Director Socials"];
-  // Wait, the user specifically mentioned 6 members cannot be edited:
   const UNEDITABLE_ROLES = ["President", "Vice President", "Event Coordinator", "General Secretary", "Treasurer", "Director Liaison"];
 
-  if (!isOpen || !profile) return null;
-
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 sm:p-6 overflow-hidden">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
       
@@ -154,7 +153,6 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ isOpen
               </button>
             </div>
           </div>
-</div>
 
           <div className="space-y-3">
             <h3 className="text-lg font-bold text-white uppercase tracking-wider border-b border-white/10 pb-2">About Us</h3>
@@ -195,9 +193,7 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ isOpen
                         <td className="py-3 px-5 text-sm text-gray-400">{member.email}</td>
                         <td className="py-3 px-5 flex justify-end gap-1">
                           {!isUneditable && (
-                            <>
-                              <button onClick={() => setEditingMember({ original: member, current: member, confirmDelete: false })} className="p-1.5 text-gray-500 hover:text-white transition-colors" title="Edit"><Edit className="w-4 h-4"/></button>
-                            </>
+                            <button onClick={() => setEditingMember({ original: member, current: member, confirmDelete: false })} className="p-1.5 text-gray-500 hover:text-white transition-colors" title="Edit"><Edit className="w-4 h-4"/></button>
                           )}
                         </td>
                       </tr>
@@ -213,52 +209,64 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ isOpen
       
       {/* Editing Overlay Popup */}
       {editingMember && (
-        <div className="absolute inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-          <div className="bg-[#1e2025] border border-white/10 p-6 rounded-2xl shadow-2xl max-w-sm w-full space-y-4">
+        <div className="absolute inset-0 z-[100000] flex items-center justify-center p-4 bg-black/40 backdrop-blur-xl border border-white/20">
+          <div className="bg-[#1e2025] border border-white/10 p-6 rounded-2xl shadow-2xl max-w-sm w-full space-y-4 relative">
             <h3 className="text-white font-bold text-lg">Edit Member</h3>
-            <div className="space-y-3">
-              <div>
-                <label className="block text-[11px] font-bold text-gray-400 mb-1 uppercase">Position</label>
-                <input 
-                  type="text" 
-                  value={editingMember.role} 
-                  onChange={e => setEditingMember({...editingMember, role: e.target.value})}
-                  className="w-full bg-black/20 border border-white/10 rounded-xl px-3 py-2 text-sm text-white" 
-                />
+            
+            {editingMember.confirmDelete ? (
+              <div className="space-y-4 py-2">
+                <p className="text-gray-300 text-sm">Are you sure you want to remove <strong className="text-white">{editingMember.current.name}</strong> from the executive council?</p>
+                <div className="flex gap-2">
+                  <button onClick={handleDeleteMember} disabled={updateMutation.isPending} className="flex-1 bg-red-500 text-white text-sm font-bold py-2 rounded-xl hover:bg-red-600 transition-colors">Confirm Delete</button>
+                  <button onClick={() => setEditingMember({ ...editingMember, confirmDelete: false })} className="flex-1 bg-white text-black text-sm font-bold py-2 rounded-xl hover:bg-gray-200 transition-colors">Cancel</button>
+                </div>
               </div>
-              <div>
-                <label className="block text-[11px] font-bold text-gray-400 mb-1 uppercase">Name</label>
-                <input 
-                  type="text" 
-                  value={editingMember.name} 
-                  onChange={e => setEditingMember({...editingMember, name: e.target.value.replace(/[^a-zA-Z.,\- ]/g, '')})}
-                  className="w-full bg-black/20 border border-white/10 rounded-xl px-3 py-2 text-sm text-white" 
-                />
-              </div>
-            </div>
-            <div className="flex gap-2 pt-2">
-              <button 
-                onClick={() => handleSaveMember(editingMember)} 
-                disabled={updateMutation.isPending}
-                className="flex-1 bg-white text-black text-sm font-bold py-2 rounded-xl hover:bg-gray-200 transition-colors"
-              >
-                {updateMutation.isPending ? 'Saving...' : 'Save'}
-              </button>
-              <button 
-                onClick={handleDeleteMember}
-                disabled={updateMutation.isPending}
-                className="flex-1 bg-red-500/20 text-red-500 text-sm font-bold py-2 rounded-xl hover:bg-red-500/30 transition-colors flex items-center justify-center gap-1"
-              >
-                <Trash2 className="w-4 h-4" /> Delete
-              </button>
-              <button onClick={() => setEditingMember(null)} className="p-2 bg-white/5 text-white rounded-xl hover:bg-white/10">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
+            ) : (
+              <>
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-[11px] font-bold text-gray-400 mb-1 uppercase">Position</label>
+                    <input 
+                      type="text" 
+                      value={editingMember.current.role} 
+                      onChange={e => setEditingMember({...editingMember, current: {...editingMember.current, role: e.target.value}})}
+                      className="w-full bg-black/20 border border-white/10 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500" 
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-gray-400 mb-1 uppercase">Name</label>
+                    <input 
+                      type="text" 
+                      value={editingMember.current.name} 
+                      onChange={e => setEditingMember({...editingMember, current: {...editingMember.current, name: e.target.value.replace(/[^a-zA-Z.,\- ]/g, '')}})}
+                      className="w-full bg-black/20 border border-white/10 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500" 
+                    />
+                  </div>
+                </div>
+                <div className="flex gap-2 pt-2">
+                  <button 
+                    onClick={() => handleSaveMember(editingMember.current)} 
+                    disabled={updateMutation.isPending}
+                    className="flex-1 bg-white text-black text-sm font-bold py-2 rounded-xl hover:bg-gray-200 transition-colors"
+                  >
+                    {updateMutation.isPending ? 'Saving...' : 'Save'}
+                  </button>
+                  <button 
+                    onClick={() => setEditingMember({ ...editingMember, confirmDelete: true })}
+                    disabled={updateMutation.isPending}
+                    className="flex-1 bg-red-500 text-white text-sm font-bold py-2 rounded-xl hover:bg-red-600 transition-colors flex items-center justify-center gap-1"
+                  >
+                    <Trash2 className="w-4 h-4" /> Delete
+                  </button>
+                  <button onClick={() => setEditingMember(null)} className="p-2 bg-white text-black rounded-xl hover:bg-gray-200">
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}
     </div>
-    ), document.body);
+  , document.body);
 };
-

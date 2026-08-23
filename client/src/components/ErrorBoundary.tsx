@@ -32,8 +32,8 @@ export class ErrorBoundary extends Component<Props, State> {
     if (this.state.hasError) {
       return (
         <div className="min-h-screen bg-lumen-cream text-vast-ink flex flex-col justify-center items-center p-6 text-center">
-          <div className="bg-lumen-cream p-8 rounded-cards border border-red-500/30 max-w-md w-full space-y-5 bg-lumen-stone/90 shadow-2xl">
-            <div className="p-3 bg-pure-white border border-vast-ink text-red-400 rounded-cards border border-red-500/20 w-fit mx-auto">
+          <div className="bg-lumen-cream p-8 rounded-cards border border-white/10 max-w-md w-full space-y-5 bg-lumen-stone/90 shadow-2xl">
+            <div className="p-3 bg-pure-white border border-vast-ink text-red-500 rounded-cards border border-white/10 w-fit mx-auto">
               <ShieldAlert className="w-8 h-8" />
             </div>
 
@@ -47,7 +47,7 @@ export class ErrorBoundary extends Component<Props, State> {
             </div>
 
             {this.state.error?.message && (
-              <div className="p-3 bg-lumen-cream rounded-inputs border-2 border-vast-ink text-left text-xs font-mono text-red-300 break-words">
+              <div className="p-3 bg-lumen-cream rounded-inputs border border-white/10 bg-[#0d0d0d] text-left text-xs font-mono text-gray-300 break-words">
                 {this.state.error.message}
               </div>
             )}
@@ -67,3 +67,4 @@ export class ErrorBoundary extends Component<Props, State> {
     return this.props.children;
   }
 }
+
