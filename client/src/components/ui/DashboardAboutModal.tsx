@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { societyService } from '@/services/society.service';
 import { createPortal } from 'react-dom';
+import { globalNotification } from '@/contexts/NotificationContext'; from 'react-dom';
 
 const Instagram = ({className}: {className?: string}) => <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>;
 const Facebook = ({className}: {className?: string}) => <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>;
@@ -25,6 +26,7 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ isOpen
     mutationFn: (data: any) => societyService.updateSociety(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['societyDashboard'] });
+      globalNotification.triggerSuccess('Member updated successfully.');
       queryClient.invalidateQueries({ queryKey: ['mySociety'] });
       setEditingMember(null);
     }
@@ -129,9 +131,9 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ isOpen
         <div className="p-6 sm:p-8 overflow-y-auto space-y-8">
           
           {/* Header Info */}
-          <div className="flex flex-col sm:flex-row gap-6 items-start sm:items-center -mt-16 sm:-mt-20 relative z-10 px-2 sm:px-4">
-            <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-2xl overflow-hidden border-4 border-[#0d0d0d] bg-white shadow-xl shrink-0 flex items-center justify-center">
-              <img src={getSocietyLogo(profile.logoUrl)} alt="Logo" className="w-[85%] h-[85%] object-contain" />
+          <div className="flex flex-col sm:flex-row gap-6 items-start sm:items-end -mt-16 sm:-mt-24 relative z-10 px-4 sm:px-12 pb-4">
+            <div className="w-28 h-28 sm:w-40 sm:h-40 rounded-full overflow-hidden border-4 sm:border-8 border-[#0d0d0d] bg-white shadow-2xl shrink-0 flex items-center justify-center -mb-8 sm:-mb-12 relative z-20">
+              <img src={getSocietyLogo(profile.logoUrl)} alt="Logo" className="w-[80%] h-[80%] object-contain" />
             </div>
             <div className="flex-1 pt-2 sm:pt-16">
               <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight">

@@ -451,7 +451,7 @@ export const SocietyProfilePage: React.FC = () => {
           {activeTab === 'council' && (
               <div className="space-y-4 max-w-5xl mx-auto pb-10">
 
-                <div className="bg-[#1e2025]/50 border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
+                <div className="bg-[#1e2025]/50 border border-white/10 rounded-2xl overflow-hidden shadow-2xl overflow-x-auto">
                   <table className="w-full text-left border-collapse">
                     <thead>
                       <tr className="bg-white/5 border-b border-white/10">
@@ -490,7 +490,7 @@ export const SocietyProfilePage: React.FC = () => {
                             <tr key={idx} className="border-b border-white/5 hover:bg-white/[0.03] transition-colors">
                               <td className="py-4 px-5 text-sm text-gray-300">{(idx + 2).toString().padStart(2, '0')}</td>
                               <td className="py-4 px-5 text-sm font-semibold text-gray-200">{member.name || 'N/A'}</td>
-                              <td className="py-4 px-5 text-sm text-blue-300">{member.role}</td>
+                              <td className={`py-4 px-5 text-sm font-semibold ${['Vice President', 'Event Coordinator', 'General Secretary', 'Treasurer', 'Director Liaison'].includes(member.role) ? 'text-blue-400' : 'text-white'}`}>{member.role}</td>
                               <td className="py-4 px-5 text-sm text-gray-300">{member.faculty || 'N/A'}</td>
                               <td className="py-4 px-5 text-sm text-gray-300">{member.email || 'N/A'}</td>
                               <td className="py-4 px-5 text-sm text-gray-300">{member.contact || 'N/A'}</td>
@@ -520,6 +520,8 @@ export const SocietyProfilePage: React.FC = () => {
     </div>
   );
 };
+
+
 
 
 

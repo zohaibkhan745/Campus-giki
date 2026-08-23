@@ -181,6 +181,7 @@ export const SocietySetupPage: React.FC = () => {
     delete submitPayload.ec;
     delete submitPayload.gs;
     delete submitPayload.treasurer;
+      delete submitPayload.dl;
     delete submitPayload.otherMembers;
 
     setupMutation.mutate(submitPayload);
@@ -347,11 +348,12 @@ export const SocietySetupPage: React.FC = () => {
             
             {/* President */}
             <div className="space-y-4">
-              <h4 className="text-md font-bold text-white uppercase tracking-wider">President</h4>
+              <h4 className="text-md font-bold text-red-500 uppercase tracking-wider">
+                PRESIDENT</h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <Input label="Full Name *" placeholder="Full Name" {...register('presidentName')} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^a-zA-Z.,\- ]/g, '') }} error={errors.presidentName?.message} />
-                <Input label="Reg Number *" placeholder="e.g. 2023123" {...register('presidentRegNum')} maxLength={11} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '') }} error={errors.presidentRegNum?.message} />
-                <Input label="Contact Number *" placeholder="e.g. 03001234567" {...register('presidentContact')} maxLength={11} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '') }} error={errors.presidentContact?.message} />
+                <Input label="Reg Number *" placeholder="e.g. 2023123" {...register('presidentRegNum')} maxLength={7} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '').slice(0, 7) }} error={errors.presidentRegNum?.message} />
+                <Input label="Contact Number *" placeholder="e.g. 03001234567" {...register('presidentContact')} maxLength={11} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '').slice(0, 11) }} error={errors.presidentContact?.message} />
                 <Input label="Email Address *" type="email" placeholder="president@giki.edu.pk" {...register('presidentEmail')}  error={errors.presidentEmail?.message} />
                 <div>
                   <label className="block text-[11px] font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Faculty *</label>
@@ -372,11 +374,12 @@ export const SocietySetupPage: React.FC = () => {
 
             {/* Vice President */}
             <div className="space-y-4">
-              <h4 className="text-md font-bold text-white uppercase tracking-wider">Vice President</h4>
+              <h4 className="text-md font-bold text-blue-400 uppercase tracking-wider">
+                VICE PRESIDENT</h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <Input label="Full Name *" placeholder="Full Name" {...register('vp.name')} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^a-zA-Z.,\- ]/g, '') }} error={errors.vp?.name?.message} />
-                <Input label="Reg Number *" placeholder="e.g. 2023123" {...register('vp.regNum')} maxLength={7} maxLength={11} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '') }} error={errors.vp?.regNum?.message} />
-                <Input label="Contact Number *" placeholder="e.g. 03001234567" {...register('vp.contact')} maxLength={11} maxLength={11} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '') }} error={errors.vp?.contact?.message} />
+                <Input label="Reg Number *" placeholder="e.g. 2023123" {...register('vp.regNum')} maxLength={7} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '').slice(0, 7) }} error={errors.vp?.regNum?.message} />
+                <Input label="Contact Number *" placeholder="e.g. 03001234567" {...register('vp.contact')} maxLength={11} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '').slice(0, 11) }} error={errors.vp?.contact?.message} />
                 <Input label="Email Address *" type="email" placeholder="vp@giki.edu.pk" {...register('vp.email')}  error={errors.vp?.email?.message} />
                 <div>
                   <label className="block text-[11px] font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Faculty *</label>
@@ -397,11 +400,12 @@ export const SocietySetupPage: React.FC = () => {
 
             {/* Event Coordinator */}
             <div className="space-y-4">
-              <h4 className="text-md font-bold text-white uppercase tracking-wider">Event Coordinator</h4>
+              <h4 className="text-md font-bold text-blue-400 uppercase tracking-wider">
+                EVENT COORDINATOR</h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <Input label="Full Name *" placeholder="Full Name" {...register('ec.name')} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^a-zA-Z.,\- ]/g, '') }} error={errors.ec?.name?.message} />
-                <Input label="Reg Number *" placeholder="e.g. 2023123" {...register('ec.regNum')} maxLength={7} maxLength={11} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '') }} error={errors.ec?.regNum?.message} />
-                <Input label="Contact Number *" placeholder="e.g. 03001234567" {...register('ec.contact')} maxLength={11} maxLength={11} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '') }} error={errors.ec?.contact?.message} />
+                <Input label="Reg Number *" placeholder="e.g. 2023123" {...register('ec.regNum')} maxLength={7} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '').slice(0, 7) }} error={errors.ec?.regNum?.message} />
+                <Input label="Contact Number *" placeholder="e.g. 03001234567" {...register('ec.contact')} maxLength={11} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '').slice(0, 11) }} error={errors.ec?.contact?.message} />
                 <Input label="Email Address *" type="email" placeholder="ec@giki.edu.pk" {...register('ec.email')}  error={errors.ec?.email?.message} />
                 <div>
                   <label className="block text-[11px] font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Faculty *</label>
@@ -422,11 +426,12 @@ export const SocietySetupPage: React.FC = () => {
 
             {/* General Secretary */}
             <div className="space-y-4">
-              <h4 className="text-md font-bold text-white uppercase tracking-wider">General Secretary</h4>
+              <h4 className="text-md font-bold text-blue-400 uppercase tracking-wider">
+                GENERAL SECRETARY</h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <Input label="Full Name *" placeholder="Full Name" {...register('gs.name')} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^a-zA-Z.,\- ]/g, '') }} error={errors.gs?.name?.message} />
-                <Input label="Reg Number *" placeholder="e.g. 2023123" {...register('gs.regNum')} maxLength={7} maxLength={11} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '') }} error={errors.gs?.regNum?.message} />
-                <Input label="Contact Number *" placeholder="e.g. 03001234567" {...register('gs.contact')} maxLength={11} maxLength={11} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '') }} error={errors.gs?.contact?.message} />
+                <Input label="Reg Number *" placeholder="e.g. 2023123" {...register('gs.regNum')} maxLength={7} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '').slice(0, 7) }} error={errors.gs?.regNum?.message} />
+                <Input label="Contact Number *" placeholder="e.g. 03001234567" {...register('gs.contact')} maxLength={11} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '').slice(0, 11) }} error={errors.gs?.contact?.message} />
                 <Input label="Email Address *" type="email" placeholder="gs@giki.edu.pk" {...register('gs.email')}  error={errors.gs?.email?.message} />
                 <div>
                   <label className="block text-[11px] font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Faculty *</label>
@@ -447,11 +452,12 @@ export const SocietySetupPage: React.FC = () => {
 
             {/* Treasurer */}
             <div className="space-y-4">
-              <h4 className="text-md font-bold text-white uppercase tracking-wider">Treasurer</h4>
+              <h4 className="text-md font-bold text-blue-400 uppercase tracking-wider">
+                TREASURER</h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <Input label="Full Name *" placeholder="Full Name" {...register('treasurer.name')} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^a-zA-Z.,\- ]/g, '') }} error={errors.treasurer?.name?.message} />
-                <Input label="Reg Number *" placeholder="e.g. 2023123" {...register('treasurer.regNum')} maxLength={7} maxLength={11} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '') }} error={errors.treasurer?.regNum?.message} />
-                <Input label="Contact Number *" placeholder="e.g. 03001234567" {...register('treasurer.contact')} maxLength={11} maxLength={11} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '') }} error={errors.treasurer?.contact?.message} />
+                <Input label="Reg Number *" placeholder="e.g. 2023123" {...register('treasurer.regNum')} maxLength={7} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '').slice(0, 7) }} error={errors.treasurer?.regNum?.message} />
+                <Input label="Contact Number *" placeholder="e.g. 03001234567" {...register('treasurer.contact')} maxLength={11} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '').slice(0, 11) }} error={errors.treasurer?.contact?.message} />
                 <Input label="Email Address *" type="email" placeholder="treasurer@giki.edu.pk" {...register('treasurer.email')}  error={errors.treasurer?.email?.message} />
                 <div>
                   <label className="block text-[11px] font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Faculty *</label>
@@ -464,6 +470,32 @@ export const SocietySetupPage: React.FC = () => {
     { value: 'FSM', label: 'FSM' }
   ]} placeholder="Select Faculty" />
                   {errors.treasurer?.faculty?.message && <p className="text-red-400 text-xs mt-1 font-medium">{errors.treasurer.faculty.message}</p>}
+                </div>
+              </div>
+            </div>
+
+              <div className="border-t border-white/10 my-8"></div>
+
+              {/* Director Liaison */}
+            <div className="space-y-4">
+              <h4 className="text-md font-bold text-blue-400 uppercase tracking-wider">
+                DIRECTOR LIAISON</h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <Input label="Full Name *" placeholder="Full Name" {...register('dl.name')} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^a-zA-Z.,\- ]/g, '') }} error={errors.dl?.name?.message} />
+                <Input label="Reg Number *" placeholder="e.g. 2023123" {...register('dl.regNum')} maxLength={7} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '').slice(0, 7) }} error={errors.dl?.regNum?.message} />
+                <Input label="Contact Number *" placeholder="e.g. 03001234567" {...register('dl.contact')} maxLength={11} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '').slice(0, 11) }} error={errors.dl?.contact?.message} />
+                <Input label="Email Address *" type="email" placeholder="dl@giki.edu.pk" {...register('dl.email')}  error={errors.dl?.email?.message} />
+                <div>
+                  <label className="block text-[11px] font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Faculty *</label>
+                  <CustomDropdown value={watch('dl.faculty')} onChange={(e: any) => setValue('dl.faculty', e.target.value)} options={[
+    { value: 'FCSE', label: 'FCSE' },
+    { value: 'FMCE', label: 'FMCE' },
+    { value: 'FES', label: 'FES' },
+    { value: 'FCME', label: 'FCME' },
+    { value: 'FME', label: 'FME' },
+    { value: 'FSM', label: 'FSM' }
+  ]} placeholder="Select Faculty" />
+                  {errors.dl?.faculty?.message && <p className="text-red-400 text-xs mt-1 font-medium">{errors.dl.faculty.message}</p>}
                 </div>
               </div>
             </div>
@@ -535,12 +567,12 @@ export const SocietySetupPage: React.FC = () => {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 pt-2">
                       <div>
                         <label className="block text-[11px] font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Full Name *</label>
-                        <input {...register(`otherMembers.${index}.name` as const)} className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white font-medium focus:outline-none focus:border-blue-500/50 transition-colors" placeholder="Full Name" required />
+                        <input {...register(`otherMembers.${index}.name` as const)} className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white font-medium focus:outline-none focus:border-blue-500/50 transition-colors" placeholder="Full Name" required onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^a-zA-Z.,\\- ]/g, '') }} />
                         {errors.otherMembers?.[index]?.name?.message && <p className="text-red-400 text-xs mt-1 font-medium">{errors.otherMembers[index].name?.message}</p>}
                       </div>
                       <div>
                         <label className="block text-[11px] font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Reg Number *</label>
-                        <input {...register(`otherMembers.${index}.regNum` as const)} className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white font-medium focus:outline-none focus:border-blue-500/50 transition-colors" placeholder="e.g. 2023123" required />
+                        <input {...register(`otherMembers.${index}.regNum` as const)} className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white font-medium focus:outline-none focus:border-blue-500/50 transition-colors" placeholder="e.g. 2023123" required maxLength={7} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '').slice(0, 7) }} />
                         {errors.otherMembers?.[index]?.regNum?.message && <p className="text-red-400 text-xs mt-1 font-medium">{errors.otherMembers[index].regNum?.message}</p>}
                       </div>
                       <div>
@@ -550,7 +582,7 @@ export const SocietySetupPage: React.FC = () => {
                       </div>
                       <div>
                         <label className="block text-[11px] font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Contact Number *</label>
-                        <input {...register(`otherMembers.${index}.contact` as const)} className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white font-medium focus:outline-none focus:border-blue-500/50 transition-colors" placeholder="Phone Number" required />
+                        <input {...register(`otherMembers.${index}.contact` as const)} className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white font-medium focus:outline-none focus:border-blue-500/50 transition-colors" placeholder="Phone Number" required maxLength={11} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '').slice(0, 11) }} />
                         {errors.otherMembers?.[index]?.contact?.message && <p className="text-red-400 text-xs mt-1 font-medium">{errors.otherMembers[index].contact?.message}</p>}
                       </div>
                       <div>
