@@ -47,6 +47,10 @@ export const LoginPage: React.FC = () => {
       const respMessage = error.response?.data?.message;
       let errText = 'Invalid email address or password. Please try again.';
 
+        if (error.message === 'Network Error') {
+          errText = 'Network Error: Cannot connect to backend server. Is it running?';
+        }
+
       if (Array.isArray(respMessage)) {
         errText = respMessage.join(', ');
       } else if (typeof respMessage === 'string') {
@@ -141,3 +145,4 @@ export const LoginPage: React.FC = () => {
     </main>
   );
 };
+
