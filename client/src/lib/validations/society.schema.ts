@@ -18,6 +18,15 @@ const optionalEmail = z
     { message: 'Must be a valid email address' },
   );
 
+export const executiveMemberSchema = z.object({
+  role: z.string().min(1, 'Role is required'),
+  name: z.string().regex(/^[a-zA-Z., \\-]+$/, 'Only letters, spaces, dots, commas, and dashes allowed').min(1, 'Name is required'),
+  regNum: z.string().regex(/^\d{7}$/, 'Must be exactly 7 digits'),
+  faculty: z.string().min(1, 'Faculty is required'),
+  contact: z.string().regex(/^\d{11}$/, 'Must be exactly 11 digits'),
+  email: z.string().email('Invalid email address'),
+});
+
 export const societySetupSchema = z.object({
   name: z
     .string()
@@ -44,7 +53,10 @@ export const societySetupSchema = z.object({
   presidentFaculty: z.string().optional().or(z.literal('')),
   presidentContact: z.string().regex(/^\d{11}$/, 'Must be exactly 11 digits').optional().or(z.literal('')),
   presidentEmail: optionalEmail,
+  executiveCouncil: z.array(executiveMemberSchema).optional(),
 });
 
 export type SocietySetupFormData = z.infer<typeof societySetupSchema>;
+
+
 

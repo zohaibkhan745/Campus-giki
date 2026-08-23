@@ -17,6 +17,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { eventService } from '@/services/event.service';
+import { societyService } from '@/services/society.service';
 import { yearlyPlanService } from '@/services/yearly-plan.service';
 import type { PlannedEventItem } from '@/types/yearly-plan.types';
 import {
@@ -25,6 +26,7 @@ import {
 } from '@/lib/validations/event.schema';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
+import { CouncilNoticeModal } from '@/components/ui/CouncilNoticeModal';
 import { Alert } from '@/components/ui/Alert';
 import { EventMediaUploader } from '@/components/common/EventMediaUploader';
 import type { AxiosError } from 'axios';
@@ -33,6 +35,7 @@ export const CreateEventPage: React.FC = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [serverError, setServerError] = useState<string | null>(null);
+  const [showNoticeModal, setShowNoticeModal] = useState(false);
 
   const [selectedEventKey, setSelectedEventKey] = useState<string>('');
 
@@ -62,6 +65,27 @@ export const CreateEventPage: React.FC = () => {
 
   const coverImageUrl = watch('coverImageUrl');
   const videoUrl = watch('videoUrl');
+
+  const { data: dashboardData } = useQuery({
+    queryKey: ['societyDashboard'],
+    queryFn: societyService.getDashboard,
+  });
+
+  React.useEffect(() => {
+    if ((dashboardData as any)?.profile) {
+      const profile = (dashboardData as any)?.profile;
+      let hasFullCouncil = false;
+      try {
+        const council = JSON.parse(profile.executiveCouncil || '[]');
+        const mandatoryRoles = ['Vice President', 'Event Coordinator', 'General Secretary', 'Treasurer', 'Director Liaison'];
+        const existingRoles = council.map((m: any) => m.role);
+        hasFullCouncil = mandatoryRoles.every(r => existingRoles.includes(r));
+      } catch {}
+      if (!hasFullCouncil) {
+        setShowNoticeModal(true);
+      }
+    }
+  }, [dashboardData, navigate]);
 
   const { data: myPlans } = useQuery({
     queryKey: ['myYearlyPlans'],
@@ -351,6 +375,8 @@ export const CreateEventPage: React.FC = () => {
           </Button>
         </div>
       </form>
+      <CouncilNoticeModal isOpen={showNoticeModal} onClose={() => navigate('/society/setup?tab=council')} />
     </div>
   );
 };
+

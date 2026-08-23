@@ -10,15 +10,20 @@ import {
   ArrowLeft,
   AlertCircle,
   Tag,
+    Globe,
 } from 'lucide-react';
 import { societyService } from '@/services/society.service';
 import { EventCard } from '@/components/feed/EventCard';
 import { PostCard } from '@/components/feed/PostCard';
 
+const Instagram = ({className}: {className?: string}) => <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>;
+const Facebook = ({className}: {className?: string}) => <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>;
+const Linkedin = ({className}: {className?: string}) => <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg>;
+
 export const SocietyProfilePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<'posts' | 'upcoming' | 'past'>('upcoming');
+  const [activeTab, setActiveTab] = useState<'posts' | 'upcoming' | 'past' | 'council'>('upcoming');
 
   const {
     data: society,
@@ -234,25 +239,50 @@ export const SocietyProfilePage: React.FC = () => {
         )}
 
         {/* Tags */}
-        <div className="absolute top-4 right-4 sm:right-8 flex gap-2 z-10 flex-wrap justify-end max-w-[60%]">
-          {society.type === 'CLUB' && (
-            <span className="inline-flex items-center px-3 py-1 bg-purple-500/80 text-white border border-purple-400 rounded-full text-xs font-bold shadow-sm backdrop-blur-sm">Club</span>
-          )}
-          {society.type === 'TEAM' && (
-            <span className="inline-flex items-center px-3 py-1 bg-emerald-500/80 text-white border border-emerald-400 rounded-full text-xs font-bold shadow-sm backdrop-blur-sm">Team</span>
-          )}
-          {(!society.type || society.type === 'SOCIETY') && (
-            <span className="inline-flex items-center px-3 py-1 bg-[#1e3c72]/80 text-white border border-blue-400 rounded-full text-xs font-bold shadow-sm backdrop-blur-sm">Society</span>
-          )}
-          {society.category && (
-            <span className="inline-flex items-center gap-1 px-3 py-1 bg-black/50 text-white border border-white/20 rounded-full text-xs font-bold shadow-sm backdrop-blur-sm">
-              <Tag className="w-3.5 h-3.5" />
-              {society.category.name}
-            </span>
-          )}
+        <div className="absolute top-4 right-4 sm:right-8 flex flex-col gap-3 z-10 items-end max-w-[60%]">
+          <div className="flex gap-2 flex-wrap justify-end">
+            {society.type === 'CLUB' && (
+              <span className="inline-flex items-center px-3 py-1 bg-purple-500/80 text-white border border-purple-400 rounded-full text-xs font-bold shadow-sm backdrop-blur-sm">Club</span>
+            )}
+            {society.type === 'TEAM' && (
+              <span className="inline-flex items-center px-3 py-1 bg-emerald-500/80 text-white border border-emerald-400 rounded-full text-xs font-bold shadow-sm backdrop-blur-sm">Team</span>
+            )}
+            {(!society.type || society.type === 'SOCIETY') && (
+              <span className="inline-flex items-center px-3 py-1 bg-[#1e3c72]/80 text-white border border-blue-400 rounded-full text-xs font-bold shadow-sm backdrop-blur-sm">Society</span>
+            )}
+            {society.category && (
+              <span className="inline-flex items-center gap-1 px-3 py-1 bg-black/50 text-white border border-white/20 rounded-full text-xs font-bold shadow-sm backdrop-blur-sm">
+                <Tag className="w-3.5 h-3.5" />
+                {society.category.name}
+              </span>
+            )}
+          </div>
+          
+          {/* Social Links */}
+          <div className="flex gap-2">
+            {society.instagram && (
+              <a href={society.instagram.startsWith('http') ? society.instagram : `https://${society.instagram}`} target="_blank" rel="noopener noreferrer" className="p-2.5 bg-black/50 hover:bg-black/80 hover:scale-110 hover:text-blue-400 hover:border-blue-400/50 text-white rounded-full backdrop-blur-sm transition-all border border-white/20">
+                <Instagram className="w-5 h-5" />
+              </a>
+            )}
+            {society.facebook && (
+              <a href={society.facebook.startsWith('http') ? society.facebook : `https://${society.facebook}`} target="_blank" rel="noopener noreferrer" className="p-2.5 bg-black/50 hover:bg-black/80 hover:scale-110 hover:text-blue-400 hover:border-blue-400/50 text-white rounded-full backdrop-blur-sm transition-all border border-white/20">
+                <Facebook className="w-5 h-5" />
+              </a>
+            )}
+            {society.linkedin && (
+              <a href={society.linkedin.startsWith('http') ? society.linkedin : `https://${society.linkedin}`} target="_blank" rel="noopener noreferrer" className="p-2.5 bg-black/50 hover:bg-black/80 hover:scale-110 hover:text-blue-400 hover:border-blue-400/50 text-white rounded-full backdrop-blur-sm transition-all border border-white/20">
+                <Linkedin className="w-5 h-5" />
+              </a>
+            )}
+            {society.website && (
+              <a href={society.website.startsWith('http') ? society.website : `https://${society.website}`} target="_blank" rel="noopener noreferrer" className="p-2.5 bg-black/50 hover:bg-black/80 hover:scale-110 hover:text-blue-400 hover:border-blue-400/50 text-white rounded-full backdrop-blur-sm transition-all border border-white/20">
+                <Globe className="w-5 h-5" />
+              </a>
+            )}
+          </div>
         </div>
 
-        {/* Profile Circle */}
         <div className="society-profile-container">
           <img src={getSocietyLogo(society.logoUrl)} alt="Society Logo" className="society-profile-img" onError={(e) => { e.currentTarget.src = '/default-society.jpg'; }} />
         </div>
@@ -293,7 +323,7 @@ export const SocietyProfilePage: React.FC = () => {
                 : 'text-gray-400 hover:text-white hover:bg-white/5'
             }`}
           >
-            <CalendarIcon className="w-4 h-4" />
+            <CalendarIcon className="w-5 h-5" />
             <span>Upcoming Events</span>
           </button>
 
@@ -305,7 +335,7 @@ export const SocietyProfilePage: React.FC = () => {
                 : 'text-gray-400 hover:text-white hover:bg-white/5'
             }`}
           >
-            <Megaphone className="w-4 h-4" />
+            <Megaphone className="w-5 h-5" />
             <span>Announcements</span>
           </button>
 
@@ -317,9 +347,20 @@ export const SocietyProfilePage: React.FC = () => {
                 : 'text-gray-400 hover:text-white hover:bg-white/5'
             }`}
           >
-            <History className="w-4 h-4" />
+            <History className="w-5 h-5" />
             <span>Past Events</span>
-          </button>
+            </button>
+            <button
+              onClick={() => setActiveTab('council')}
+              className={`flex-1 flex justify-center items-center gap-2 px-4 py-3 text-sm font-bold rounded-xl transition-all ${
+                activeTab === 'council'
+                  ? 'bg-white text-gray-900 shadow-md'
+                  : 'text-gray-400 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <Tag className="w-5 h-5" />
+              <span>Executive Council</span>
+            </button>
         </div>
 
         {/* Tab Content */}
@@ -407,9 +448,82 @@ export const SocietyProfilePage: React.FC = () => {
               )}
             </div>
           )}
+          {activeTab === 'council' && (
+              <div className="space-y-4 max-w-5xl mx-auto pb-10">
+
+                <div className="bg-[#1e2025]/50 border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
+                  <table className="w-full text-left border-collapse">
+                    <thead>
+                      <tr className="bg-white/5 border-b border-white/10">
+                        <th className="py-4 px-5 text-xs font-bold text-gray-400 uppercase tracking-wider">Sr. No</th>
+                        <th className="py-4 px-5 text-xs font-bold text-gray-400 uppercase tracking-wider">Name</th>
+                        <th className="py-4 px-5 text-xs font-bold text-gray-400 uppercase tracking-wider">Post</th>
+                        <th className="py-4 px-5 text-xs font-bold text-gray-400 uppercase tracking-wider">Faculty</th>
+                        <th className="py-4 px-5 text-xs font-bold text-gray-400 uppercase tracking-wider">Email</th>
+                        <th className="py-4 px-5 text-xs font-bold text-gray-400 uppercase tracking-wider">Phone</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr className="border-b border-white/5 hover:bg-white/[0.03] transition-colors">
+                        <td className="py-4 px-5 text-sm text-gray-300">01</td>
+                        <td className="py-4 px-5 text-sm font-bold text-white">{society.presidentName || 'N/A'}</td>
+                        <td className="py-4 px-5 text-sm text-amber-400 font-semibold">President</td>
+                        <td className="py-4 px-5 text-sm text-gray-300">{society.presidentFaculty || 'N/A'}</td>
+                        <td className="py-4 px-5 text-sm text-gray-300">{society.presidentEmail || 'N/A'}</td>
+                        <td className="py-4 px-5 text-sm text-gray-300">{society.presidentContact || 'N/A'}</td>
+                      </tr>
+                      {(() => {
+                        try {
+                          const council = JSON.parse(society.executiveCouncil || '[]');
+                          const mandatoryOrder = ['Vice President', 'Event Coordinator', 'General Secretary', 'Treasurer', 'Director Liaison'];
+                          
+                          council.sort((a: any, b: any) => {
+                            const aIdx = mandatoryOrder.indexOf(a.role);
+                            const bIdx = mandatoryOrder.indexOf(b.role);
+                            if (aIdx !== -1 && bIdx !== -1) return aIdx - bIdx;
+                            if (aIdx !== -1) return -1;
+                            if (bIdx !== -1) return 1;
+                            return 0;
+                          });
+
+                          return council.map((member: any, idx: number) => (
+                            <tr key={idx} className="border-b border-white/5 hover:bg-white/[0.03] transition-colors">
+                              <td className="py-4 px-5 text-sm text-gray-300">{(idx + 2).toString().padStart(2, '0')}</td>
+                              <td className="py-4 px-5 text-sm font-semibold text-gray-200">{member.name || 'N/A'}</td>
+                              <td className="py-4 px-5 text-sm text-blue-300">{member.role}</td>
+                              <td className="py-4 px-5 text-sm text-gray-300">{member.faculty || 'N/A'}</td>
+                              <td className="py-4 px-5 text-sm text-gray-300">{member.email || 'N/A'}</td>
+                              <td className="py-4 px-5 text-sm text-gray-300">{member.contact || 'N/A'}</td>
+                            </tr>
+                          ));
+                        } catch {
+                          return null;
+                        }
+                      })()}
+                      {society.advisor && (
+                        <tr className="hover:bg-white/[0.03] transition-colors border-t border-white/20">
+                          <td className="py-4 px-5 text-sm text-gray-300">--</td>
+                          <td className="py-4 px-5 text-sm font-bold text-white">{society.advisor.user?.fullName || 'N/A'}</td>
+                          <td className="py-4 px-5 text-sm text-purple-400 font-semibold">Faculty Advisor</td>
+                          <td className="py-4 px-5 text-sm text-gray-300">{society.advisor.department || 'N/A'}</td>
+                          <td className="py-4 px-5 text-sm text-gray-300">{society.advisor.user?.email || 'N/A'}</td>
+                          <td className="py-4 px-5 text-sm text-gray-300">N/A</td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
         </div>
       </div>
     </div>
   );
 };
+
+
+
+
+
+
 

@@ -117,7 +117,7 @@ export const SocietyEventsPage: React.FC = () => {
             <MicVocal className="w-6 h-6" />
           </div>
           <div>
-            <h1 className="text-2xl font-extrabold text-white">
+            <h1 className="font-extrabold text-5xl sm:text-6xl text-white tracking-tight leading-tight mb-8">
               Manage Events
             </h1>
             <p className="text-sm font-medium text-gray-400 mt-1">
@@ -280,3 +280,4 @@ export const SocietyEventsPage: React.FC = () => {
     </div>
   );
 };
+

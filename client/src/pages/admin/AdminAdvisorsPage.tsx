@@ -102,7 +102,7 @@ const deleteMutation = useMutation({
 
       <div className="w-[95%] max-w-[1200px] flex justify-between items-end mb-6 text-left">
         <div>
-          <h1 className="text-4xl font-extrabold text-white">Society Advisors</h1>
+          <h1 className="font-extrabold text-5xl sm:text-6xl text-white tracking-tight leading-tight mb-8">Society Advisors</h1>
         </div>
         <button
             onClick={() => setIsModalOpen(true)}
@@ -337,6 +337,7 @@ const deleteMutation = useMutation({
     </div>
   );
 };
+
 
 
 

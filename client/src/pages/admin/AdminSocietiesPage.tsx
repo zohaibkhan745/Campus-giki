@@ -231,7 +231,7 @@ export const AdminSocietiesPage: React.FC = () => {
       </button>
 
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 py-6">
-        <h1 className="text-4xl font-extrabold text-white">Societies Management</h1>
+        <h1 className="font-extrabold text-5xl sm:text-6xl text-white tracking-tight leading-tight mb-8">Societies Management</h1>
         <button
           onClick={() => setIsAddSocietyModalOpen(true)}
           className="bg-white text-black border-none py-[10px] px-[18px] rounded-[12px] text-[14px] font-semibold cursor-pointer transition-all duration-300 hover:bg-gray-100 hover:-translate-y-[2px] shadow-lg"
@@ -504,6 +504,7 @@ export const AdminSocietiesPage: React.FC = () => {
     </div>
   );
 };
+
 
 
 

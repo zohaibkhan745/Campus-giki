@@ -26,6 +26,24 @@ export class YearlyPlansService {
 
     if (!society || !society.isSetupComplete) {
       throw new ForbiddenException(
+        'Access denied: You must complete your society profile setup before managing resources',
+      );
+    }
+
+    let hasFullCouncil = false;
+    try {
+      const council = JSON.parse(society.executiveCouncil || '[]');
+      const mandatoryRoles = ['Vice President', 'Event Coordinator', 'General Secretary', 'Treasurer', 'Director Liaison'];
+      const existingRoles = council.map((m: any) => m.role);
+      hasFullCouncil = mandatoryRoles.every(r => existingRoles.includes(r));
+    } catch(e) {}
+
+    if (!hasFullCouncil) {
+      throw new ForbiddenException('Access denied: You must complete your Executive Council details (all 5 mandatory positions) before managing resources');
+    }
+
+    if (false) {
+      throw new ForbiddenException(
         'Access denied: You must complete your society profile setup before managing yearly calendar plans',
       );
     }
@@ -322,3 +340,4 @@ export class YearlyPlansService {
     return updated;
   }
 }
+

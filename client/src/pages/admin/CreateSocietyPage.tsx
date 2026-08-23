@@ -111,7 +111,7 @@ export const CreateSocietyPage: React.FC = () => {
 
       {/* Header Banner */}
       
-        <h1 className="text-4xl font-extrabold text-white mb-6">Onboard New Campus Society</h1>
+        <h1 className="font-extrabold text-5xl sm:text-6xl text-white tracking-tight leading-tight mb-8">Onboard New Campus Society</h1>
 
 
       {null}
@@ -263,3 +263,4 @@ export const CreateSocietyPage: React.FC = () => {
     </div>
   );
 };
+

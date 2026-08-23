@@ -117,7 +117,7 @@ export const SettingsPage: React.FC = () => {
         </button>
       </div>
 
-      <h1 className="text-4xl font-extrabold text-white mb-6">Personal Profile</h1>
+      <h1 className="font-extrabold text-5xl sm:text-6xl text-white tracking-tight leading-tight mb-8">Personal Profile</h1>
 
       <div className="grid grid-cols-1 gap-6">
         <div className="relative z-1 w-full p-8 rounded-[18px] bg-white/[0.08] backdrop-blur-[20px] border border-white/20 shadow-[0_12px_40px_rgba(0,0,0,0.4)] text-white space-y-6 text-left">
@@ -245,3 +245,4 @@ export const SettingsPage: React.FC = () => {
     </div>
   );
 };
+

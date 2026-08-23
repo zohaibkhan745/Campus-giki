@@ -107,7 +107,7 @@ export const AdminYearlyPlansPage: React.FC = () => {
 
       {/* Header Banner */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 py-6">
-        <h1 className="text-4xl font-extrabold text-white drop-shadow-md">
+        <h1 className="font-extrabold text-5xl sm:text-6xl text-white tracking-tight leading-tight mb-8 drop-shadow-md">
           Campus Society Yearly Plan Records
         </h1>
       </div>
@@ -312,6 +312,7 @@ export const AdminYearlyPlansPage: React.FC = () => {
     </div>
   );
 };
+
 
 
 

@@ -12,6 +12,8 @@ import { MakeAnnouncementDialog } from '@/components/feed/MakeAnnouncementDialog
 import { AdminDashboardPage } from '@/pages/admin/AdminDashboardPage';
 import { AdvisorQueuePage } from '@/pages/advisor/AdvisorQueuePage';
 import { BannerHeader } from '@/components/layout/BannerHeader';
+import { DashboardAboutModal } from '@/components/ui/DashboardAboutModal';
+import { Info } from 'lucide-react';
 import type { EventItem } from '@/types/event.types';
 import {
   UserCheck,
@@ -47,6 +49,7 @@ export const DashboardPage: React.FC = () => {
     title: string;
   } | null>(null);
   const [isAnnouncementDialogOpen, setIsAnnouncementDialogOpen] = useState(false);
+  const [isAboutModalOpen, setIsAboutModalOpen] = useState(false);
 
   // If DSA_ADMIN, render central DSA Dashboard
   if (user?.role === 'DSA_ADMIN') {
@@ -183,7 +186,7 @@ export const DashboardPage: React.FC = () => {
 
   return (
     <div className="w-full">
-      <BannerHeader title={profile?.name || user?.fullName || 'User'} subtitle={profile?.advisor?.user ? `Advisor: ${profile.advisor.user.fullName}` : undefined} logoUrl={getSocietyLogo(profile?.logoUrl)} bannerUrl={getSocietyBanner(profile?.bannerUrl)} />
+      <BannerHeader title={profile?.name || user?.fullName || 'User'} subtitle={profile?.advisor?.user ? `Advisor: ${profile.advisor.user.fullName}` : undefined} logoUrl={getSocietyLogo(profile?.logoUrl)} bannerUrl={getSocietyBanner(profile?.bannerUrl)} socials={{ instagram: profile?.instagram, facebook: profile?.facebook, linkedin: profile?.linkedin, website: profile?.website }} />
       <div className="space-y-6 text-left py-4 px-4">
         {/* Actions Row */}
         <div className="flex justify-end mb-4">
@@ -193,8 +196,15 @@ export const DashboardPage: React.FC = () => {
             className="flex justify-center items-center gap-1.5 px-4 py-2.5 bg-white hover:bg-gray-100 text-gray-900 border-none rounded-xl text-sm font-bold transition-colors"
           >
             <Edit className="w-4 h-4" />
-            <span>Manage Info</span>
-          </Link>
+              <span>Manage Info</span>
+            </Link>
+            <button
+              onClick={() => setIsAboutModalOpen(true)}
+              className="flex justify-center items-center gap-1.5 px-4 py-2.5 bg-white/10 hover:bg-white/20 text-white border-none rounded-xl text-sm font-bold transition-colors"
+            >
+              <Info className="w-4 h-4" />
+              <span>About</span>
+            </button>
           <button
             onClick={logout}
             className="flex justify-center items-center gap-1.5 px-4 py-2.5 bg-red-500 hover:bg-red-600 border-none rounded-xl text-white text-sm font-bold transition-colors"
@@ -368,15 +378,9 @@ export const DashboardPage: React.FC = () => {
         isOpen={isAnnouncementDialogOpen}
         onClose={() => setIsAnnouncementDialogOpen(false)}
       />
-    </div>
+        <DashboardAboutModal isOpen={isAboutModalOpen} onClose={() => setIsAboutModalOpen(false)} profile={profile} />
+      </div>
     </div>
   );
 };
-
-
-
-
-
-
-
 

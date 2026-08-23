@@ -140,7 +140,7 @@ export const AdminPendingEventsPage: React.FC = () => {
       </div>
 
       <div className="space-y-1 py-6 text-left">
-        <h1 className="text-4xl font-extrabold text-white">Pending Reviews</h1>
+        <h1 className="font-extrabold text-5xl sm:text-6xl text-white tracking-tight leading-tight mb-8">Pending Reviews</h1>
       </div>
 
       {/* Filter Toolbar */}
@@ -217,3 +217,4 @@ export const AdminPendingEventsPage: React.FC = () => {
     </div>
   );
 };
+

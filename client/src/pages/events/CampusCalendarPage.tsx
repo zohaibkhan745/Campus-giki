@@ -17,7 +17,7 @@ export const CampusCalendarPage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const viewParam = searchParams.get('view') as 'today' | 'week' | 'month' | 'upcoming' | null;
   const [listFilter, setListFilter] = useState<'today' | 'week' | 'month' | 'upcoming'>(viewParam || 'upcoming');
-  const [visibleEventsCount, setVisibleEventsCount] = useState(6);
+  const [visibleEventsCount, setVisibleEventsCount] = useState(8);
 
   useEffect(() => {
     if (viewParam) {
@@ -136,7 +136,7 @@ export const CampusCalendarPage: React.FC = () => {
   const isCurrentMonthView = currentDate.getMonth() === today.getMonth() && currentDate.getFullYear() === today.getFullYear(); const isToday = (d: Date) => d.getDate() === today.getDate() && d.getMonth() === today.getMonth() && d.getFullYear() === today.getFullYear();
 
   return (
-    <div className="min-h-screen text-white flex justify-center py-6 px-3 font-sans relative">
+    <div className="min-h-screen text-white flex justify-center py-6 px-8 sm:px-10 font-sans relative">
       
       <style>{`
         .glass-btn {
@@ -297,7 +297,7 @@ export const CampusCalendarPage: React.FC = () => {
         }
       `}</style>
 
-      <div className="w-full max-w-[1100px] flex flex-col gap-6 mt-10">
+      <div className="w-full max-w-full flex flex-col gap-6 mt-10 pb-20">
         
         {/* Page Header */}
         <h1 className="font-extrabold text-5xl sm:text-6xl text-white tracking-tight leading-tight pb-4">
@@ -389,7 +389,7 @@ export const CampusCalendarPage: React.FC = () => {
         <div id="events-list" className="pt-8 pb-12">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
             <h2 className="font-eb-garamond text-2xl font-bold text-white flex items-center gap-2">
-              <CalendarIcon className="w-6 h-6" />
+              
               Events 
             </h2>
             
@@ -397,7 +397,7 @@ export const CampusCalendarPage: React.FC = () => {
               {['today', 'week', 'month', 'upcoming'].map((filter) => (
                 <button
                   key={filter}
-                  onClick={() => { setListFilter(filter as any); setVisibleEventsCount(6); }}
+                  onClick={() => { setListFilter(filter as any); setVisibleEventsCount(8); }}
                   className={`px-4 py-2 rounded-full font-bold text-sm border transition-all ${
                     listFilter === filter
                       ? 'bg-white text-gray-900 border-white'
@@ -418,7 +418,7 @@ export const CampusCalendarPage: React.FC = () => {
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {visibleEvents.map((event) => (
                   <EventCard key={event.id} item={{ ...event, type: 'event' } as any} />
                 ))}
@@ -427,7 +427,7 @@ export const CampusCalendarPage: React.FC = () => {
               {eventsList.length > visibleEventsCount && (
                 <div className="mt-8 flex justify-center">
                   <button 
-                    onClick={() => setVisibleEventsCount(prev => prev + 6)}
+                    onClick={() => setVisibleEventsCount(prev => prev + 8)}
                     className="glass-btn !px-8 !py-3 !font-bold"
                   >
                     Load More Events
@@ -441,6 +441,9 @@ export const CampusCalendarPage: React.FC = () => {
     </div>
   );
 };
+
+
+
 
 
 

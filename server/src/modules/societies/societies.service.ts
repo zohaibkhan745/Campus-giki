@@ -122,7 +122,11 @@ export class SocietiesService {
         email: true,
         presidentName: true,
         presidentFaculty: true,
-          advisor: { select: { department: true, user: { select: { fullName: true } } } },
+          presidentEmail: true,
+          presidentContact: true,
+          presidentRegNum: true,
+          executiveCouncil: true,
+          advisor: { select: { department: true, user: { select: { fullName: true, email: true } } } },
           isSetupComplete: true,
         category: {
           select: {
@@ -522,9 +526,8 @@ export class SocietiesService {
         ...(dto.presidentContact !== undefined && {
           presidentContact: dto.presidentContact || null,
         }),
-        ...(dto.presidentEmail !== undefined && {
-          presidentEmail: dto.presidentEmail || null,
-        }),
+        ...(dto.presidentEmail !== undefined && { presidentEmail: dto.presidentEmail || null }),
+        ...(dto.executiveCouncil !== undefined && { executiveCouncil: dto.executiveCouncil || null }),
         ...(dto.presidentFaculty !== undefined && {
           presidentFaculty: dto.presidentFaculty || null,
         }),
@@ -537,6 +540,8 @@ export class SocietiesService {
     return updated;
   }
 }
+
+
 
 
 

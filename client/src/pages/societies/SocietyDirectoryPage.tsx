@@ -264,8 +264,8 @@ export const SocietyDirectoryPage: React.FC = () => {
                   </div>
 
                   <div className="relative z-10 text-right shrink-0">
-                    <div className="text-xl font-bold leading-none text-white">{society._count?.members || Math.floor(Math.random()*150 + 20)}</div>
-                    <div className="text-[10px] uppercase tracking-wider font-bold text-zinc-400">members</div>
+                    <div className="text-xl font-bold leading-none text-white">{(() => { try { return (society.executiveCouncil ? JSON.parse(society.executiveCouncil).length : 0) + (society.presidentName ? 1 : 0); } catch { return 1; } })()}</div>
+                    <div className="text-[10px] uppercase tracking-wider font-bold text-zinc-400">EC Members</div>
                   </div>
                 </div>
               </div>
@@ -276,6 +276,7 @@ export const SocietyDirectoryPage: React.FC = () => {
     </div>
   );
 };
+
 
 
 

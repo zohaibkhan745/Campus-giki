@@ -17,7 +17,9 @@ import {
   AlertTriangle,
 } from 'lucide-react';
 import { postService, type PostItem } from '@/services/post.service';
+import { societyService } from '@/services/society.service';
 import { Button } from '@/components/ui/Button';
+import { CouncilNoticeModal } from '@/components/ui/CouncilNoticeModal';
 import { PostCard } from '@/components/feed/PostCard';
 import { Alert } from '@/components/ui/Alert';
 import { PostCreateModal } from '@/components/feed/PostCreateModal';
@@ -37,8 +39,11 @@ export const SocietyPostsPage: React.FC = () => {
   const [serverError, setServerError] = useState<string | null>(null);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showNoticeModal, setShowNoticeModal] = useState(false);
   const [editingPost, setEditingPost] = useState<PostItem | null>(null);
   const [postToDelete, setPostToDelete] = useState<string | null>(null);
+
+  const { data: dashboardData } = useQuery({ queryKey: ['societyDashboard'], queryFn: societyService.getDashboard });
 
   const { data, isLoading } = useQuery({
     queryKey: ['societyPosts', page],
@@ -53,6 +58,18 @@ export const SocietyPostsPage: React.FC = () => {
   });
 
   const handleOpenCreate = () => {
+    let hasFullCouncil = false;
+    if ((dashboardData as any)?.profile?.executiveCouncil) {
+      try {
+        const council = JSON.parse((dashboardData as any)?.profile?.executiveCouncil);
+        const mandatoryRoles = ['Vice President', 'Event Coordinator', 'General Secretary', 'Treasurer', 'Director Liaison'];
+        hasFullCouncil = mandatoryRoles.every(r => council.map((m:any) => m.role).includes(r));
+      } catch {}
+    }
+    if (!hasFullCouncil) {
+      setShowNoticeModal(true);
+      return;
+    }
     setEditingPost(null);
     reset({ content: '', imageUrl: '' });
     setServerError('');
@@ -136,7 +153,7 @@ export const SocietyPostsPage: React.FC = () => {
             <MessageSquare className="w-4 h-4" />
             <span>Communication Portal</span>
           </div>
-          <h1 className="text-2xl font-extrabold text-vast-ink">
+          <h1 className="font-extrabold text-5xl sm:text-6xl text-white tracking-tight leading-tight mb-8">
             Manage Posts
           </h1>
           <p className="text-sm text-fog">
@@ -289,6 +306,8 @@ export const SocietyPostsPage: React.FC = () => {
           </div>
         </div>
       )}
+      <CouncilNoticeModal isOpen={showNoticeModal} onClose={() => navigate('/society/setup?tab=council')} />
     </div>
   );
 };
+

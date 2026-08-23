@@ -135,6 +135,11 @@ export class SetupSocietyDto {
   @IsEmail({}, { message: 'Invalid president email format' })
   presidentEmail?: string;
 
+  @ApiPropertyOptional({ description: 'Executive Council as JSON string', type: 'string' })
+  @IsOptional()
+  @IsString()
+  executiveCouncil?: string;
+
   @ApiPropertyOptional({ example: 'FCSE' })
   @Transform(({ value }: { value: unknown }) => (value === '' ? null : value))
   @IsOptional()
@@ -142,4 +147,5 @@ export class SetupSocietyDto {
   presidentFaculty?: string;
 
 }
+
 

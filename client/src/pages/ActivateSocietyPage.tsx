@@ -108,7 +108,7 @@ export const ActivateSocietyPage: React.FC = () => {
             <ShieldCheck className="w-4 h-4" />
             Official Portal Onboarding
           </div>
-          <h1 className="text-3xl font-extrabold text-slate-100 tracking-tight">
+          <h1 className="font-extrabold text-5xl sm:text-6xl text-white tracking-tight leading-tight mb-8">
             Activate Society Account
           </h1>
           <p className="text-sm text-slate-400">
@@ -257,3 +257,4 @@ export const ActivateSocietyPage: React.FC = () => {
 };
 
 export default ActivateSocietyPage;
+

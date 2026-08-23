@@ -1,9 +1,13 @@
 import { getSocietyLogo, getSocietyBanner } from '@/lib/utils';
 import React from 'react';
-import { Building2, User } from 'lucide-react';
+import { Building2, User, Globe } from 'lucide-react';
+const Instagram = ({className}: {className?: string}) => <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>;
+const Facebook = ({className}: {className?: string}) => <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>;
+const Linkedin = ({className}: {className?: string}) => <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg>;
 import { useAuth } from '@/hooks/useAuth';
 
 interface BannerHeaderProps {
+  socials?: { instagram?: string | null, facebook?: string | null, linkedin?: string | null, website?: string | null };
   title: string;
   subtitle?: string;
   bannerUrl?: string | null;
@@ -17,6 +21,7 @@ export const BannerHeader: React.FC<BannerHeaderProps> = ({
   bannerUrl = '/default-banner.png',
   logoUrl,
   fallbackImage = '/default-society.jpg',
+  socials,
 }) => {
   const { user } = useAuth();
   
@@ -157,6 +162,14 @@ export const BannerHeader: React.FC<BannerHeaderProps> = ({
         </div>
 
         {/* Name */}
+        {socials && (socials.instagram || socials.facebook || socials.linkedin || socials.website) && (
+          <div className="absolute top-4 right-4 z-20 flex gap-2">
+            {socials.instagram && <a href={socials.instagram.startsWith('http') ? socials.instagram : \https://\\} target="_blank" rel="noopener noreferrer" className="p-2.5 bg-black/50 hover:bg-black/80 hover:scale-110 hover:text-blue-400 hover:border-blue-400/50 text-white rounded-full backdrop-blur-sm transition-all border border-white/20"><Instagram className="w-5 h-5" /></a>}
+            {socials.facebook && <a href={socials.facebook.startsWith('http') ? socials.facebook : \https://\\} target="_blank" rel="noopener noreferrer" className="p-2.5 bg-black/50 hover:bg-black/80 hover:scale-110 hover:text-blue-400 hover:border-blue-400/50 text-white rounded-full backdrop-blur-sm transition-all border border-white/20"><Facebook className="w-5 h-5" /></a>}
+            {socials.linkedin && <a href={socials.linkedin.startsWith('http') ? socials.linkedin : \https://\\} target="_blank" rel="noopener noreferrer" className="p-2.5 bg-black/50 hover:bg-black/80 hover:scale-110 hover:text-blue-400 hover:border-blue-400/50 text-white rounded-full backdrop-blur-sm transition-all border border-white/20"><Linkedin className="w-5 h-5" /></a>}
+            {socials.website && <a href={socials.website.startsWith('http') ? socials.website : \https://\\} target="_blank" rel="noopener noreferrer" className="p-2.5 bg-black/50 hover:bg-black/80 hover:scale-110 hover:text-blue-400 hover:border-blue-400/50 text-white rounded-full backdrop-blur-sm transition-all border border-white/20"><Globe className="w-5 h-5" /></a>}
+          </div>
+        )}
         <div className="shared-name-text">
           {title}
           {subtitle && <div className="text-sm font-normal mt-1 opacity-80">{subtitle}</div>}
@@ -167,6 +180,8 @@ export const BannerHeader: React.FC<BannerHeaderProps> = ({
     </>
   );
 };
+
+
 
 
 

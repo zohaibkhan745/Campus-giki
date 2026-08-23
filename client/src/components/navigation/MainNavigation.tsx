@@ -58,7 +58,7 @@ export const MainNavigation: React.FC = () => {
   return (
     <>
       {/* Desktop Borderless Instagram-Inspired Left Sidebar Navigation */}
-      <aside className="hidden md:flex flex-col w-20 lg:w-60 shrink-0 sticky top-0 h-screen py-6 px-3 lg:px-5 font-figtree select-none z-40 bg-lumen-cream transition-all">
+      <aside className="hidden md:flex flex-col w-20 lg:w-60 shrink-0 sticky top-0 h-[100dvh] py-6 px-3 lg:px-5 font-figtree select-none z-40 bg-lumen-cream transition-all">
         <div className="flex flex-col h-full justify-between overflow-y-auto">
           
           {/* Top Section: Brand & Vertical Icon Nav Stack */}
@@ -194,3 +194,4 @@ export const MainNavigation: React.FC = () => {
     </>
   );
 };
+

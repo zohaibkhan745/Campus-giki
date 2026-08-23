@@ -52,11 +52,11 @@ enum OrganizationType {
 // ==========================================
 
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  password  String
-  fullName  String
-  role      Role     @default(STUDENT)
+  id                  String    @id @default(uuid())
+  email               String    @unique
+  password            String
+  fullName            String
+  role                Role      @default(STUDENT)
   isActive            Boolean   @default(true)
   isEmailVerified     Boolean   @default(false)
   verificationToken   String?   @unique
@@ -100,10 +100,10 @@ model Advisor {
 }
 
 model Society {
-  id               String       @id @default(uuid())
-  name             String       @unique
-  shortDescription String?     
-  longDescription  String?     
+  id               String  @id @default(uuid())
+  name             String  @unique
+  shortDescription String?
+  longDescription  String?
   logoUrl          String?
   bannerUrl        String?
   instagram        String?
@@ -116,17 +116,19 @@ model Society {
   presidentFaculty String?
   presidentContact String?
   presidentEmail   String?
-  
-  hasWarning       Boolean      @default(false)
 
-  isSetupComplete  Boolean          @default(false)
-  type             OrganizationType @default(SOCIETY)
-  categoryId       String?
-  category         Category?    @relation(fields: [categoryId], references: [id], onDelete: SetNull)
-  userId           String       @unique
-  advisorId        String?
-  createdAt        DateTime     @default(now())
-  updatedAt        DateTime     @updatedAt
+  executiveCouncil String? @default("[]")
+
+  hasWarning Boolean @default(false)
+
+  isSetupComplete Boolean          @default(false)
+  type            OrganizationType @default(SOCIETY)
+  categoryId      String?
+  category        Category?        @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  userId          String           @unique
+  advisorId       String?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
 
   // Relationships
   user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -141,9 +143,9 @@ model Society {
 }
 
 model Event {
-  id               String              @id @default(uuid())
+  id               String   @id @default(uuid())
   title            String
-  description      String             
+  description      String
   eventDate        DateTime
   startTime        String
   endTime          String
@@ -151,27 +153,27 @@ model Event {
   coverImageUrl    String?
   videoUrl         String?
   registrationLink String?
-  
+
   // Event Form fields
-  eventType        String?
-  inChargeName     String?
-  inChargeRegNum   String?
-  inChargeContact  String?
-  rules            String?            
-  
-  isPublished      Boolean             @default(true)
-  approvalStatus   EventApprovalStatus @default(PUBLISHED)
-  editRequestStatus String? // PENDING, APPROVED, REJECTED
-  editRequestReason String?
-  advisorComments  String?            
-  dsaComments      String?            
-  advisorApprovedAt DateTime?
-  dsaApprovedAt     DateTime?
+  eventType       String?
+  inChargeName    String?
+  inChargeRegNum  String?
+  inChargeContact String?
+  rules           String?
+
+  isPublished         Boolean             @default(true)
+  approvalStatus      EventApprovalStatus @default(PUBLISHED)
+  editRequestStatus   String? // PENDING, APPROVED, REJECTED
+  editRequestReason   String?
+  advisorComments     String?
+  dsaComments         String?
+  advisorApprovedAt   DateTime?
+  dsaApprovedAt       DateTime?
   lastChangeRequestBy String?
-  
-  societyId        String
-  createdAt        DateTime            @default(now())
-  updatedAt        DateTime            @updatedAt
+
+  societyId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relationships
   society Society @relation(fields: [societyId], references: [id], onDelete: Cascade)
@@ -182,13 +184,13 @@ model Event {
 }
 
 model YearlyPlan {
-  id              String         @id @default(uuid())
+  id              String     @id @default(uuid())
   year            Int
-  status          PlanStatus     @default(DRAFT)
-  advisorComments String?       
+  status          PlanStatus @default(DRAFT)
+  advisorComments String?
   societyId       String
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
 
   // Relationships
   society       Society        @relation(fields: [societyId], references: [id], onDelete: Cascade)
@@ -199,17 +201,17 @@ model YearlyPlan {
 }
 
 model PlannedEvent {
-  id                     String     @id @default(uuid())
-  eventName              String
-  startDate              DateTime
-  endDate                DateTime
-  description            String    
-  venue                  String
-  rules                  String?   
-  societyRules           String?   
-  yearlyPlanId           String
-  createdAt              DateTime   @default(now())
-  updatedAt              DateTime   @updatedAt
+  id           String   @id @default(uuid())
+  eventName    String
+  startDate    DateTime
+  endDate      DateTime
+  description  String
+  venue        String
+  rules        String?
+  societyRules String?
+  yearlyPlanId String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   // Relationships
   yearlyPlan YearlyPlan @relation(fields: [yearlyPlanId], references: [id], onDelete: Cascade)
@@ -218,22 +220,18 @@ model PlannedEvent {
 }
 
 model Post {
-  id          String   @id @default(uuid())
-  title       String   @default("")
-  content     String  
-  imageUrl    String?
-  videoUrl    String?
-  authorId    String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String   @id @default(uuid())
+  title     String   @default("")
+  content   String
+  imageUrl  String?
+  videoUrl  String?
+  authorId  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relationships
-  author  User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
 
   @@index([authorId])
   @@index([createdAt])
 }
-
-
-
-

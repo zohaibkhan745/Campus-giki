@@ -10,6 +10,20 @@ export class PostsService {
   constructor(private readonly prisma: PrismaService) {}
 
   async createPost(user: UserProfileDto, dto: CreatePostDto) {
+    if (user.role === Role.SOCIETY) {
+      const society = await this.prisma.society.findUnique({ where: { userId: user.id } });
+      let hasFullCouncil = false;
+      try {
+        const council = JSON.parse(society?.executiveCouncil || '[]');
+        const mandatoryRoles = ['Vice President', 'Event Coordinator', 'General Secretary', 'Treasurer', 'Director Liaison'];
+        const existingRoles = council.map((m: any) => m.role);
+        hasFullCouncil = mandatoryRoles.every(r => existingRoles.includes(r));
+      } catch(e) {}
+      if (!hasFullCouncil) {
+        throw new ForbiddenException('Access denied: You must complete your Executive Council details (all 5 mandatory positions) before creating posts');
+      }
+    }
+
     if (user.role !== Role.DSA_ADMIN && user.role !== Role.SOCIETY) {
       throw new ForbiddenException('You do not have permission to create an announcement');
     }
@@ -147,7 +161,21 @@ export class PostsService {
 
     if (user.role === Role.SOCIETY && post.authorId !== user.id) {
       throw new ForbiddenException('You can only edit your own posts');
-    } else if (user.role !== Role.DSA_ADMIN && user.role !== Role.SOCIETY) {
+    } else if (user.role === Role.SOCIETY) {
+      const society = await this.prisma.society.findUnique({ where: { userId: user.id } });
+      let hasFullCouncil = false;
+      try {
+        const council = JSON.parse(society?.executiveCouncil || '[]');
+        const mandatoryRoles = ['Vice President', 'Event Coordinator', 'General Secretary', 'Treasurer', 'Director Liaison'];
+        const existingRoles = council.map((m: any) => m.role);
+        hasFullCouncil = mandatoryRoles.every(r => existingRoles.includes(r));
+      } catch(e) {}
+      if (!hasFullCouncil) {
+        throw new ForbiddenException('Access denied: You must complete your Executive Council details (all 5 mandatory positions) before creating posts');
+      }
+    }
+
+    if (user.role !== Role.DSA_ADMIN && user.role !== Role.SOCIETY) {
       throw new ForbiddenException('Permission denied');
     }
 
@@ -187,3 +215,4 @@ export class PostsService {
     return { message: 'Post deleted successfully' };
   }
 }
+

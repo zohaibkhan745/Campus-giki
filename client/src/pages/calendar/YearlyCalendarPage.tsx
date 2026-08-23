@@ -21,6 +21,7 @@ import {
   ShieldCheck,
 } from 'lucide-react';
 import { yearlyPlanService } from '@/services/yearly-plan.service';
+import { societyService } from '@/services/society.service';
 import {
   yearlyPlanFormSchema,
   type YearlyPlanFormData,
@@ -412,3 +413,4 @@ export const YearlyCalendarPage: React.FC = () => {
     </div>
   );
 };
+
