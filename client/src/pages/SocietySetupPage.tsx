@@ -1,5 +1,5 @@
 import { CustomDropdown } from '@/components/ui/CustomDropdown';
-import toast from 'react-hot-toast';
+import { globalNotification } from '@/contexts/NotificationContext';
 import React, { useState, useEffect } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -234,7 +234,7 @@ export const SocietySetupPage: React.FC = () => {
         </button>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit, () => toast.error('Executive members info not provided or invalid.'))} className="space-y-8">
+      <form onSubmit={handleSubmit(onSubmit, () => globalNotification.triggerFailed('Executive members info not provided or invalid.'))} className="space-y-8">
         
         {/* SOCIETY INFO TAB */}
         <div className={activeTab === 'info' ? 'block space-y-8' : 'hidden'}>
@@ -591,5 +591,6 @@ export const SocietySetupPage: React.FC = () => {
     </div>
   );
 };
+
 
 
