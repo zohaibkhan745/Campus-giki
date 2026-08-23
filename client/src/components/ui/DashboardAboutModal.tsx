@@ -105,7 +105,7 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ isOpen
     <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 sm:p-6 overflow-hidden">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
       
-      <div className="relative w-full max-w-5xl bg-[#0d0d0d] border border-white/10 rounded-3xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col z-10">
+      <div className="relative w-full max-w-5xl bg-[#0d0d0d] border border-white/10 rounded-3xl shadow-2xl overflow-y-auto max-h-[90vh] flex flex-col z-10">
         
         {/* Banner Section */}
         <div className="relative h-48 sm:h-64 w-full shrink-0">
@@ -128,10 +128,10 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ isOpen
           </div>
         </div>
 
-        <div className="p-6 sm:p-8 overflow-y-auto space-y-8">
+        <div className="p-6 sm:p-8 space-y-8">
           
           {/* Header Info */}
-          <div className="flex flex-col sm:flex-row gap-6 items-start sm:items-end -mt-16 sm:-mt-24 relative z-10 px-4 sm:px-12 pb-4">
+          <div className="flex flex-col sm:flex-row gap-6 items-start sm:items-end -mt-14 sm:-mt-20 relative z-10 px-4 sm:px-12 pb-4">
             <div className="w-28 h-28 sm:w-40 sm:h-40 rounded-full overflow-hidden border-4 sm:border-8 border-[#0d0d0d] bg-white shadow-2xl shrink-0 flex items-center justify-center -mb-8 sm:-mb-12 relative z-20">
               <img src={getSocietyLogo(profile.logoUrl)} alt="Logo" className="w-[80%] h-[80%] object-contain" />
             </div>
@@ -272,4 +272,7 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ isOpen
     </div>
   , document.body);
 };
+
+
+
 

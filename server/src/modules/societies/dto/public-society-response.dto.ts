@@ -28,6 +28,12 @@ export class PublicSocietyItemDto {
   @ApiPropertyOptional({ example: 'https://giki.edu.pk/societies/acm-logo.png' })
   logoUrl?: string | null;
 
+  @ApiPropertyOptional({ example: '[]' })
+  executiveCouncil?: string | null;
+
+  @ApiPropertyOptional({ example: 'John Doe' })
+  presidentName?: string | null;
+
   @ApiPropertyOptional({ type: MinimalCategoryDto })
   category?: MinimalCategoryDto | null;
 }
@@ -59,3 +65,4 @@ export class PaginatedSocietiesResponseDto {
   @ApiProperty({ type: PaginationMetaDto })
   meta: PaginationMetaDto;
 }
+

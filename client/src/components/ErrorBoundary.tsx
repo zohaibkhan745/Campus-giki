@@ -1,5 +1,5 @@
 import React, { Component, type ErrorInfo, type ReactNode } from 'react';
-import { ShieldAlert, RefreshCw } from 'lucide-react';
+import { TriangleAlert } from 'lucide-react';
 
 interface Props {
   children: ReactNode;
@@ -31,33 +31,32 @@ export class ErrorBoundary extends Component<Props, State> {
   public render(): ReactNode {
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen bg-lumen-cream text-vast-ink flex flex-col justify-center items-center p-6 text-center">
-          <div className="bg-lumen-cream p-8 rounded-cards border border-white/10 max-w-md w-full space-y-5 bg-lumen-stone/90 shadow-2xl">
-            <div className="p-3 bg-pure-white border border-vast-ink text-red-500 rounded-cards border border-white/10 w-fit mx-auto">
-              <ShieldAlert className="w-8 h-8" />
+        <div className="min-h-screen bg-[#0d0d0d] text-white flex flex-col justify-center items-center p-6 text-center">
+          <div className="bg-[#1c1d22] p-8 rounded-3xl border border-white/5 max-w-md w-full space-y-5 shadow-2xl relative z-10">
+            <div className="p-3.5 bg-red-500 text-white rounded-full w-fit mx-auto shadow-lg shadow-red-500/20">
+              <TriangleAlert className="w-8 h-8" />
             </div>
 
             <div className="space-y-2">
-              <h2 className="text-xl font-extrabold text-vast-ink">
+              <h2 className="text-xl font-extrabold text-white">
                 Application Error Encountered
               </h2>
-              <p className="text-xs text-fog leading-relaxed">
+              <p className="text-xs text-gray-400 leading-relaxed">
                 An unexpected error occurred while rendering this interface. The session remains secure.
               </p>
             </div>
 
             {this.state.error?.message && (
-              <div className="p-3 bg-lumen-cream rounded-inputs border border-white/10 bg-[#0d0d0d] text-left text-xs font-mono text-gray-300 break-words">
+              <div className="p-3 rounded-xl border border-white/10 bg-[#0d0d0d] text-left text-xs font-mono text-gray-300 break-words max-h-32 overflow-y-auto">
                 {this.state.error.message}
               </div>
             )}
 
             <button
               onClick={this.handleReload}
-              className="inline-flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-inputs text-xs font-bold transition-colors shadow-lg shadow-indigo-600/20"
+              className="w-full px-4 py-3 bg-white hover:bg-gray-100 text-black rounded-xl text-sm font-bold transition-all shadow-lg"
             >
-              <RefreshCw className="w-4 h-4" />
-              <span>Reload Application</span>
+              Reload Application
             </button>
           </div>
         </div>
@@ -67,4 +66,3 @@ export class ErrorBoundary extends Component<Props, State> {
     return this.props.children;
   }
 }
-

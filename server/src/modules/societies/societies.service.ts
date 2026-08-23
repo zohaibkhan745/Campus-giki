@@ -74,7 +74,9 @@ export class SocietiesService {
           type: true,
           shortDescription: true,
           logoUrl: true,
-          category: {
+            executiveCouncil: true,
+            presidentName: true,
+            category: {
             select: {
               id: true,
               name: true,
@@ -540,6 +542,7 @@ export class SocietiesService {
     return updated;
   }
 }
+
 
 
 
