@@ -2,6 +2,8 @@ import { getSocietyLogo, getSocietyBanner } from '@/lib/utils';
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Navigate, Link } from 'react-router-dom';
+import { UpcomingEventIcon } from '@/components/icons/UpcomingEventIcon';
+import { SocietyIcon } from '@/components/icons/SocietyIcon';
 import { useAuth } from '@/hooks/useAuth';
 import { societyService } from '@/services/society.service';
 import { DashboardSkeleton } from '@/components/dashboard/DashboardSkeleton';
@@ -303,7 +305,7 @@ export const DashboardPage: React.FC = () => {
             <div className="space-y-4">
               <div className="flex items-center justify-between pb-3">
                 <div className="flex items-center gap-2 font-extrabold text-lg text-white">
-                  <CalendarIcon className="w-5 h-5 text-forest-ink" />
+                  <UpcomingEventIcon className="w-5 h-5 text-forest-ink" />
                   <h3>Next Upcoming ({upcomingEvents.length})</h3>
                 </div>
                 {/* Fallback to calendar if there's no general events page for societies */}
@@ -314,7 +316,7 @@ export const DashboardPage: React.FC = () => {
 
               {upcomingEvents.length === 0 ? (
                 <div className="bg-white/[0.08] backdrop-blur-[20px] shadow-[0_12px_40px_rgba(0,0,0,0.4)] p-10 rounded-[18px] text-center text-gray-400 space-y-3 flex flex-col items-center border border-white/20">
-                  <CalendarIcon className="w-12 h-12 text-gray-400 opacity-30" />
+                  <UpcomingEventIcon className="w-12 h-12 text-gray-400 opacity-30" />
                   <p className="font-bold text-sm">No upcoming events scheduled right now.</p>
                 </div>
               ) : (
@@ -370,6 +372,7 @@ export const DashboardPage: React.FC = () => {
     </div>
   );
 };
+
 
 
 

@@ -1827,9 +1827,10 @@ body.is-focused .cards-container {
 }
 
 .card-wrapper {
-  position: relative;
-  width: 340px;
-  height: 490px;
+    position: relative;
+    width: 100%;
+    max-width: 380px;
+    height: 490px;
   transform-style: preserve-3d;
   z-index: 10;
   will-change: transform, width, height, top, left;
@@ -2030,10 +2031,11 @@ body.is-focused .cards-container {
 
 /* ============== POST CARD ============== */
 .post-card-wrapper .card-front {
-  top: 0;
-  left: 0;
-  width: 340px;
-  height: 490px;
+    top: 0;
+    left: 0;
+    width: 100%;
+    max-width: 380px;
+    height: 490px;
   background: transparent;
   z-index: 2;
 }
@@ -2393,3 +2395,4 @@ button, a, select, .glass-btn, .custom-dropdown-btn, [role="button"] { cursor: p
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background-color: rgba(255,255,255,0.25); border-radius: 10px; }
   ::-webkit-scrollbar-thumb:hover { background-color: rgba(255,255,255,0.4); }
+

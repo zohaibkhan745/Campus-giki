@@ -107,7 +107,7 @@ export const AdminDashboardPage: React.FC = () => {
             to="/admin/societies"
             className="flex flex-col items-center justify-center gap-2 p-4 bg-transparent hover:bg-white/10 text-white border border-white/20 rounded-xl font-bold transition-transform hover:-translate-y-1 shadow-[0_4px_12px_rgba(0,0,0,0.2)]"
           >
-            <Building2 className="w-6 h-6" />
+            <SocietyIcon className="w-6 h-6" />
             <span>Societies</span>
           </Link>
           <Link

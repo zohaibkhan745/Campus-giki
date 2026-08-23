@@ -10,10 +10,10 @@ export const HomePage: React.FC = () => {
 
   return (
     <div className="bg-transparent text-gray-200 min-h-screen font-inter">
-      <div className="max-w-[1800px] w-full mx-auto px-4 flex justify-center text-left pt-6">
+      <div className="w-full max-w-full px-6 flex justify-center text-left pt-6">
 
         {/* Left Column: Main Feed */}
-        <div className="w-full max-w-[1600px]">
+        <div className="w-full">
           {/* Page Header */}
           <header className="space-y-2 pb-4 border-b border-white/10 mb-8">
             <h1 className="font-extrabold text-5xl sm:text-6xl text-white tracking-tight leading-tight">
@@ -100,6 +100,7 @@ export const HomePage: React.FC = () => {
     </div>
   );
 };
+
 
 
 
