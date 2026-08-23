@@ -58,17 +58,16 @@ export const BannerHeader: React.FC<BannerHeaderProps> = ({
 
         .shared-profile-container {
           position: absolute;
-          top: 45%;
-          left: 50%;
-          transform: translate(-50%, -50%);
+          left: 48px;
+          bottom: -90px;
           z-index: 20;
         }
 
         .shared-profile-img {
-          width: 140px;
-          height: 140px;
+          width: 180px;
+          height: 180px;
           border-radius: 50%;
-          border: 4px solid #ffffff;
+          border: 5px solid #ffffff;
           object-fit: cover;
           background-color: #e0e0e0;
           display: block;
@@ -76,10 +75,10 @@ export const BannerHeader: React.FC<BannerHeaderProps> = ({
         }
         
         .shared-profile-fallback {
-          width: 140px;
-          height: 140px;
+          width: 180px;
+          height: 180px;
           border-radius: 50%;
-          border: 4px solid #ffffff;
+          border: 5px solid #ffffff;
           background-color: #e0e0e0;
           display: flex;
           align-items: center;
@@ -89,10 +88,11 @@ export const BannerHeader: React.FC<BannerHeaderProps> = ({
 
         .shared-name-text {
           position: absolute;
-          top: calc(45% + 80px);
+          bottom: 20px;
           left: 50%;
           transform: translateX(-50%);
-          width: 90%;
+          width: max-content;
+          max-width: calc(100% - 496px);
           text-align: center;
           word-wrap: break-word;
           font-size: 30px;
@@ -105,22 +105,45 @@ export const BannerHeader: React.FC<BannerHeaderProps> = ({
         }
 
         .shared-content-spacer {
-          height: 20px;
+          height: 110px;
           width: 100%;
+        }
+
+        @media (max-width: 900px) {
+          .shared-name-text {
+            max-width: calc(100% - 496px);
+            font-size: 24px;
+          }
         }
 
         @media (max-width: 768px) {
           .shared-banner {
             height: 280px;
           }
+          
+          .shared-profile-container {
+            top: 45%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            bottom: auto;
+          }
+
           .shared-profile-img, .shared-profile-fallback {
             width: 110px;
             height: 110px;
             border-width: 3px;
           }
+
           .shared-name-text {
             top: calc(45% + 65px);
+            bottom: auto;
+            width: 90%;
+            max-width: 90%;
             font-size: 24px;
+          }
+          
+          .shared-content-spacer {
+            height: 20px;
           }
         }
       `}</style>
