@@ -20,7 +20,7 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ isOpen
   const queryClient = useQueryClient();
   const [editingMember, setEditingMember] = useState<any>(null);
   
-  if (!isOpen || !profile) return null;
+
 
   let council: any[] = [];
   try {
@@ -99,6 +99,8 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ isOpen
   const CORE_ROLES = ["President", "Vice President", "Event Coordinator", "General Secretary", "Treasurer", "Director Liaison", "Director Sponsors", "Director Tech", "Director Socials"];
   // Wait, the user specifically mentioned 6 members cannot be edited:
   const UNEDITABLE_ROLES = ["President", "Vice President", "Event Coordinator", "General Secretary", "Treasurer", "Director Liaison"];
+
+  if (!isOpen || !profile) return null;
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 overflow-hidden">

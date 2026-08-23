@@ -346,7 +346,7 @@ export const SocietySetupPage: React.FC = () => {
             <div className="space-y-4">
               <h4 className="text-md font-bold text-white uppercase tracking-wider">President</h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                <Input label="Full Name *" placeholder="Full Name" {...register('presidentName')} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^a-zA-Z.,\\- ]/g, '') }} error={errors.presidentName?.message} />
+                <Input label="Full Name *" placeholder="Full Name" {...register('presidentName')} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^a-zA-Z.,\- ]/g, '') }} error={errors.presidentName?.message} />
                 <Input label="Reg Number *" placeholder="e.g. 2023123" {...register('presidentRegNum')} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '') }} error={errors.presidentRegNum?.message} />
                 <Input label="Contact Number *" placeholder="e.g. 03001234567" {...register('presidentContact')} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '') }} error={errors.presidentContact?.message} />
                 <Input label="Email Address *" type="email" placeholder="president@giki.edu.pk" {...register('presidentEmail')}  error={errors.presidentEmail?.message} />
@@ -371,7 +371,7 @@ export const SocietySetupPage: React.FC = () => {
             <div className="space-y-4">
               <h4 className="text-md font-bold text-white uppercase tracking-wider">Vice President</h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                <Input label="Full Name *" placeholder="Full Name" {...register('vp.name')} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^a-zA-Z.,\\- ]/g, '') }} error={errors.vp?.name?.message} />
+                <Input label="Full Name *" placeholder="Full Name" {...register('vp.name')} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^a-zA-Z.,\- ]/g, '') }} error={errors.vp?.name?.message} />
                 <Input label="Reg Number *" placeholder="e.g. 2023123" {...register('vp.regNum')} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '') }} error={errors.vp?.regNum?.message} />
                 <Input label="Contact Number *" placeholder="e.g. 03001234567" {...register('vp.contact')} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '') }} error={errors.vp?.contact?.message} />
                 <Input label="Email Address *" type="email" placeholder="vp@giki.edu.pk" {...register('vp.email')}  error={errors.vp?.email?.message} />
@@ -396,7 +396,7 @@ export const SocietySetupPage: React.FC = () => {
             <div className="space-y-4">
               <h4 className="text-md font-bold text-white uppercase tracking-wider">Event Coordinator</h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                <Input label="Full Name *" placeholder="Full Name" {...register('ec.name')} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^a-zA-Z.,\\- ]/g, '') }} error={errors.ec?.name?.message} />
+                <Input label="Full Name *" placeholder="Full Name" {...register('ec.name')} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^a-zA-Z.,\- ]/g, '') }} error={errors.ec?.name?.message} />
                 <Input label="Reg Number *" placeholder="e.g. 2023123" {...register('ec.regNum')} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '') }} error={errors.ec?.regNum?.message} />
                 <Input label="Contact Number *" placeholder="e.g. 03001234567" {...register('ec.contact')} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '') }} error={errors.ec?.contact?.message} />
                 <Input label="Email Address *" type="email" placeholder="ec@giki.edu.pk" {...register('ec.email')}  error={errors.ec?.email?.message} />
@@ -421,7 +421,7 @@ export const SocietySetupPage: React.FC = () => {
             <div className="space-y-4">
               <h4 className="text-md font-bold text-white uppercase tracking-wider">General Secretary</h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                <Input label="Full Name *" placeholder="Full Name" {...register('gs.name')} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^a-zA-Z.,\\- ]/g, '') }} error={errors.gs?.name?.message} />
+                <Input label="Full Name *" placeholder="Full Name" {...register('gs.name')} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^a-zA-Z.,\- ]/g, '') }} error={errors.gs?.name?.message} />
                 <Input label="Reg Number *" placeholder="e.g. 2023123" {...register('gs.regNum')} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '') }} error={errors.gs?.regNum?.message} />
                 <Input label="Contact Number *" placeholder="e.g. 03001234567" {...register('gs.contact')} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '') }} error={errors.gs?.contact?.message} />
                 <Input label="Email Address *" type="email" placeholder="gs@giki.edu.pk" {...register('gs.email')}  error={errors.gs?.email?.message} />
@@ -446,7 +446,7 @@ export const SocietySetupPage: React.FC = () => {
             <div className="space-y-4">
               <h4 className="text-md font-bold text-white uppercase tracking-wider">Treasurer</h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                <Input label="Full Name *" placeholder="Full Name" {...register('treasurer.name')} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^a-zA-Z.,\\- ]/g, '') }} error={errors.treasurer?.name?.message} />
+                <Input label="Full Name *" placeholder="Full Name" {...register('treasurer.name')} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^a-zA-Z.,\- ]/g, '') }} error={errors.treasurer?.name?.message} />
                 <Input label="Reg Number *" placeholder="e.g. 2023123" {...register('treasurer.regNum')} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '') }} error={errors.treasurer?.regNum?.message} />
                 <Input label="Contact Number *" placeholder="e.g. 03001234567" {...register('treasurer.contact')} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '') }} error={errors.treasurer?.contact?.message} />
                 <Input label="Email Address *" type="email" placeholder="treasurer@giki.edu.pk" {...register('treasurer.email')}  error={errors.treasurer?.email?.message} />
