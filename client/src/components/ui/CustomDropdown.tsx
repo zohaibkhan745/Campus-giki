@@ -1,4 +1,4 @@
-﻿import React, { useState, useRef, useEffect, forwardRef } from 'react';
+import React, { useState, useRef, useEffect, forwardRef } from 'react';
 import { createPortal } from 'react-dom';
 
 export interface DropdownOption {
@@ -33,6 +33,7 @@ export const CustomDropdown = forwardRef<HTMLSelectElement, CustomDropdownProps>
   const containerRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const [menuStyle, setMenuStyle] = useState<React.CSSProperties>({});
+  const [listStyle, setListStyle] = useState<React.CSSProperties>({});
   const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1024);
 
   useEffect(() => {
@@ -65,6 +66,9 @@ export const CustomDropdown = forwardRef<HTMLSelectElement, CustomDropdownProps>
   const updatePosition = () => {
     if (containerRef.current) {
       const rect = containerRef.current.getBoundingClientRect();
+      const availableSpace = window.innerHeight - rect.bottom - 24;
+      const calculatedMaxHeight = Math.max(150, Math.min(300, availableSpace));
+      setListStyle({ maxHeight: calculatedMaxHeight });
       setMenuStyle({
         position: 'absolute',
         top: rect.bottom + window.scrollY + 8,
@@ -170,7 +174,7 @@ export const CustomDropdown = forwardRef<HTMLSelectElement, CustomDropdownProps>
 
       {isOpen && typeof document !== 'undefined' && createPortal(
         <div className="dropdown-menu open" style={{ ...menuStyle, display: 'block' }} ref={menuRef}>
-          <div className="dropdown-list">
+          <div className="dropdown-list" style={listStyle}>
             {options.map((opt) => {
               const isActive = opt.value === currentValue;
               return (
@@ -198,3 +202,4 @@ export const CustomDropdown = forwardRef<HTMLSelectElement, CustomDropdownProps>
 });
 
 CustomDropdown.displayName = 'CustomDropdown';
+

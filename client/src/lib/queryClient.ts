@@ -5,7 +5,7 @@ export const queryClient = new QueryClient({
   mutationCache: new MutationCache({
     // sync removed
     onSuccess: (_, __, ___, mutation) => { if (mutation?.meta?.notify === true) globalNotification.triggerSuccess(); },
-    onError: (error, _, __, mutation) => { if (mutation?.meta?.notify === true) globalNotification.triggerFailed(); console.error(error); },
+    onError: (error, _, __, mutation) => { if (mutation?.meta?.notify === true) { const msg = (error as any)?.response?.data?.message; const text = Array.isArray(msg) ? msg.join(', ') : msg; globalNotification.triggerFailed(text); } console.error(error); },
   }),
   defaultOptions: {
     queries: {
@@ -19,3 +19,4 @@ export const queryClient = new QueryClient({
     },
   },
 });
+

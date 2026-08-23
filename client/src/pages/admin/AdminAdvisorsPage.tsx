@@ -138,7 +138,8 @@ const deleteMutation = useMutation({
                   <th className="p-[15px] text-slate-400 text-[13px] uppercase tracking-[1px] border-b border-white/10 w-[20%]">Advisor Name</th>
                   <th className="p-[15px] text-slate-400 text-[13px] uppercase tracking-[1px] border-b border-white/10 w-[25%]">Email</th>
                   <th className="p-[15px] text-slate-400 text-[13px] uppercase tracking-[1px] border-b border-white/10 w-[15%]">Faculty</th>
-                  <th className="p-[15px] text-slate-400 text-[13px] uppercase tracking-[1px] border-b border-white/10 w-[30%]">Assigned Societies</th>`n                    <th className="p-[15px] border-b border-white/10 w-[10%]"></th>
+                  <th className="p-[15px] text-slate-400 text-[13px] uppercase tracking-[1px] border-b border-white/10 w-[20%]">Assigned Societies</th>
+                    <th className="p-[15px] text-slate-400 text-[13px] uppercase tracking-[1px] border-b border-white/10 w-[10%] text-center">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -336,6 +337,8 @@ const deleteMutation = useMutation({
     </div>
   );
 };
+
+
 
 
 

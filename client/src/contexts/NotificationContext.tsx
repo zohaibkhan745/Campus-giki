@@ -1,12 +1,12 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 
-type NotificationType = 'success' | 'failed' | null;
+type NotificationPayload = { type: 'success' | 'failed', message?: string } | null;
 
 // Global event emitter for non-React files like queryClient
 export const globalNotification = {
-  triggerSuccess: () => document.dispatchEvent(new CustomEvent('global-notification', { detail: 'success' })),
-  triggerFailed: () => document.dispatchEvent(new CustomEvent('global-notification', { detail: 'failed' })),
+  triggerSuccess: (message?: string) => document.dispatchEvent(new CustomEvent('global-notification', { detail: { type: 'success', message } })),
+  triggerFailed: (message?: string) => document.dispatchEvent(new CustomEvent('global-notification', { detail: { type: 'failed', message } })),
 };
 
 const NotificationContext = createContext(null);
@@ -34,18 +34,18 @@ const assets = {
 };
 
 export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [notification, setNotification] = useState<NotificationType>(null);
+  const [notification, setNotification] = useState<NotificationPayload>(null);
 
   useEffect(() => {
     let timeout: NodeJS.Timeout;
     
     const handleEvent = (e: Event) => {
-      const type = (e as CustomEvent).detail as NotificationType;
-      setNotification(type);
+      const payload = (e as CustomEvent).detail as NotificationPayload;
+      setNotification(payload);
       
       if (timeout) clearTimeout(timeout);
       
-      if (type === 'success' || type === 'failed') {
+      if (payload?.type === 'success' || payload?.type === 'failed') {
         timeout = setTimeout(() => {
           setNotification(null);
         }, 3000);
@@ -126,7 +126,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
         @keyframes pop-sequence {
           0% { opacity: 0; width: var(--pill-height); transform: scale(0.5) translateY(-20px); }
           10% { opacity: 1; width: var(--pill-height); transform: scale(1) translateY(0); }
-          20%, 80% { width: 140px; opacity: 1; transform: scale(1) translateY(0); }
+          20%, 80% { width: max-content; padding-right: 8px; opacity: 1; transform: scale(1) translateY(0); }
           90% { width: var(--pill-height); opacity: 1; transform: scale(1) translateY(0); }
           100% { opacity: 0; width: var(--pill-height); transform: scale(0.5) translateY(-20px); }
         }
@@ -138,11 +138,11 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
         }
       `}</style>
       
-      {notification && typeof document !== "undefined" && createPortal(
+      {notification?.type && typeof document !== "undefined" && createPortal(
         <div className="notification-container-fixed">
-          <div className={`notification-pill ${assets[notification].className}`}>
-            <div className="icon-container">{assets[notification].svg}</div>
-            <span className="notification-text">{assets[notification].text}</span>
+          <div className={`notification-pill ${assets[notification.type].className}`}>
+            <div className="icon-container">{assets[notification.type].svg}</div>
+            <span className="notification-text">{notification.message || assets[notification.type].text}</span>
           </div>
         </div>,
         document.body
@@ -150,3 +150,4 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     </NotificationContext.Provider>
   );
 };
+

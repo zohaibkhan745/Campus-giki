@@ -608,8 +608,13 @@ export class AdminService {
         where: { id: dto.advisorId },
       });
       if (!advisorExists) {
-        throw new NotFoundException('Selected faculty advisor does not exist');
-      }
+          throw new NotFoundException('Selected faculty advisor does not exist');
+        }
+
+        const existingAssignment = await this.prisma.society.findFirst({ where: { advisorId: dto.advisorId, id: { not: id } } });
+        if (existingAssignment) {
+          throw new BadRequestException('Only one society can be alloted to an advisor.');
+        }
     }
 
     if (dto.name && dto.name !== existing.name) {
@@ -791,8 +796,13 @@ export class AdminService {
       },
     });
     if (!advisor) {
-      throw new NotFoundException('Selected faculty advisor does not exist');
-    }
+        throw new NotFoundException('Selected faculty advisor does not exist');
+      }
+
+      const existingAssignment = await this.prisma.society.findFirst({ where: { advisorId: dto.advisorId } });
+      if (existingAssignment) {
+        throw new BadRequestException('Only one society can be alloted to an advisor.');
+      }
 
     // 5. Generate secure activation token (48 hours expiration)
     const rawToken = crypto.randomBytes(32).toString('hex');
@@ -1070,4 +1080,5 @@ export class AdminService {
     });
   }
 }
+
 
