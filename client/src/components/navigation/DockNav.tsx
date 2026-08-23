@@ -272,6 +272,7 @@ export const DockNav: React.FC = () => {
               background: rgba(255, 255, 255, 0.95);
               border: 1px solid rgba(255, 255, 255, 1);
               box-shadow: 0 0 22px rgba(255, 255, 255, 0.4);
+              color: #0d0d0d;
           }
 
           .reparented-item.active svg {
@@ -384,5 +385,6 @@ export const DockNav: React.FC = () => {
     </>
   );
 };
+
 
 

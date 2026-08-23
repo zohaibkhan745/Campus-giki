@@ -112,16 +112,14 @@
             requestAnimationFrame(render);
         }
 
-        canvas.addEventListener("mousemove", (event) => {
-            const rect = canvas.getBoundingClientRect();
-            mousePosition = { x: event.clientX - rect.left, y: event.clientY - rect.top };
-        });
         
-        canvas.addEventListener("mouseenter", () => isHovering = true);
-        canvas.addEventListener("mouseleave", () => isHovering = false);
+        
+        
+        
 
         render();
     </script>
   </body>
 </html>
+
 

@@ -18,7 +18,7 @@ export const UpcomingEventsPage: React.FC = () => {
   const visibleEvents = eventsList.slice(0, visibleEventsCount);
 
   return (
-    <div className="min-h-screen text-white flex justify-center py-6 px-3 font-sans relative">
+    <div className="min-h-screen text-white flex justify-center py-6 px-8 sm:px-10 font-sans relative">
       <div className="w-full max-w-full flex flex-col gap-6 mt-10 pb-20">
         
         {/* Page Header */}
@@ -68,5 +68,6 @@ export const UpcomingEventsPage: React.FC = () => {
     </div>
   );
 };
+
 
 
