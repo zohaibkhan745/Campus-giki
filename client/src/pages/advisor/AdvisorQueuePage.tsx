@@ -94,7 +94,7 @@ export const AdvisorQueuePage: React.FC = () => {
       case 'APPROVED':
       case 'PUBLISHED':
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-transparent border border-forest-ink text-forest-ink rounded-xl text-xs font-semibold">
+          <span className="flex justify-center items-center gap-1.5 px-3 py-1 bg-transparent border border-forest-ink text-forest-ink rounded-xl text-xs font-semibold">
             <CheckCircle2 className="w-3.5 h-3.5" />
             <span>{status === 'PUBLISHED' ? 'PUBLISHED' : 'APPROVED'}</span>
           </span>
@@ -102,21 +102,21 @@ export const AdvisorQueuePage: React.FC = () => {
       case 'PENDING':
       case 'PENDING_ADVISOR':
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-transparent border border-ember-glow text-ember-glow rounded-xl text-xs font-semibold">
+          <span className="flex justify-center items-center gap-1.5 px-3 py-1 bg-transparent border border-ember-glow text-ember-glow rounded-xl text-xs font-semibold">
             <Clock className="w-3.5 h-3.5" />
             <span>PENDING</span>
           </span>
         );
       case 'CHANGES_REQUESTED':
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-transparent border border-red-400 text-red-400 rounded-xl text-xs font-semibold">
+          <span className="flex justify-center items-center gap-1.5 px-3 py-1 bg-transparent border border-red-400 text-red-400 rounded-xl text-xs font-semibold">
             <AlertCircle className="w-3.5 h-3.5" />
             <span>CHANGES REQ.</span>
           </span>
         );
       default:
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/10 text-white rounded-xl text-xs font-semibold">
+          <span className="flex justify-center items-center gap-1.5 px-3 py-1 bg-white/10 text-white rounded-xl text-xs font-semibold">
             <span>{status}</span>
           </span>
         );
@@ -129,17 +129,17 @@ export const AdvisorQueuePage: React.FC = () => {
       <div className="max-w-6xl mx-auto space-y-6 text-left py-4 px-4">
         {/* Actions Row */}
         <div className="flex justify-end mb-4">
-          <div className="flex items-center gap-3 shrink-0 mt-4 md:mt-0">
+          <div className="grid grid-cols-2 sm:flex sm:flex-wrap md:flex-nowrap sm:justify-end gap-2 md:gap-3 w-full md:w-auto shrink-0 mt-4 md:mt-0">
           <Link
             to="/settings"
-            className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-transparent border border-white/20 hover:bg-white/10 rounded-xl text-white text-sm font-bold transition-colors"
+            className="flex justify-center items-center gap-1.5 px-4 py-2.5 bg-white hover:bg-gray-100 text-gray-900 rounded-xl text-sm font-bold transition-colors"
           >
             <Settings className="w-4 h-4" />
-            <span className="hidden sm:inline">Settings</span>
+            <span>Settings</span>
           </Link>
           <button
             onClick={logout}
-            className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-transparent border border-white/20 hover:bg-red-500/10 rounded-xl text-red-500 text-sm font-bold transition-colors"
+            className="flex justify-center items-center gap-1.5 px-4 py-2.5 bg-red-500 hover:bg-red-600 border-none rounded-xl text-white text-sm font-bold transition-colors"
           >
             <LogOut className="w-4 h-4" />
             <span>Log out</span>
@@ -151,9 +151,7 @@ export const AdvisorQueuePage: React.FC = () => {
       <div className="flex flex-col md:flex-row bg-white/[0.08] backdrop-blur-[20px] border border-white/20 rounded-[18px] shadow-[0_12px_40px_rgba(0,0,0,0.4)] overflow-visible">
         {/* Quick Actions */}
         <div className="flex-1 p-6 flex flex-col justify-center space-y-5 border-b md:border-b-0 md:border-r border-white/10">
-          <h3 className="font-extrabold text-lg text-white flex items-center gap-2">
-            Command Center
-          </h3>
+          <h3 className="font-extrabold text-lg text-white flex items-center gap-2">Dashboard</h3>
 
           <div className="grid grid-cols-2 gap-3">
             <button
@@ -407,6 +405,7 @@ export const AdvisorQueuePage: React.FC = () => {
     </div>
   );
 };
+
 
 
 

@@ -2,7 +2,7 @@ import { useFeed } from '@/hooks/useFeed';
 import { EventCard } from '@/components/feed/EventCard';
 import { PostCard } from '@/components/feed/PostCard';
 import { FeedCardSkeleton } from '@/components/feed/FeedCardSkeleton';
-import { HomeSidebar } from '@/components/feed/HomeSidebar';
+
 import { RefreshCw, AlertCircle } from 'lucide-react';
 
 export const HomePage: React.FC = () => {
@@ -94,9 +94,10 @@ export const HomePage: React.FC = () => {
 
         {/* Right Column: Sidebar */}
         <div className="hidden lg:block w-[350px] shrink-0">
-          <HomeSidebar />
+          
         </div>
       </div>
     </div>
   );
 };
+

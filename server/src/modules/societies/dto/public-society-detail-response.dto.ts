@@ -45,7 +45,11 @@ export class PublicSocietyDetailResponseDto {
   @ApiPropertyOptional({ example: 'FCSE' })
   presidentFaculty?: string | null;
 
+  @ApiPropertyOptional()
+  advisor?: { department?: string | null; user?: { fullName?: string | null } } | null;
+
   @ApiPropertyOptional({ type: MinimalCategoryDto })
   category?: MinimalCategoryDto | null;
 }
+
 

@@ -138,7 +138,7 @@ const deleteMutation = useMutation({
                   <th className="p-[15px] text-slate-400 text-[13px] uppercase tracking-[1px] border-b border-white/10 w-[20%]">Advisor Name</th>
                   <th className="p-[15px] text-slate-400 text-[13px] uppercase tracking-[1px] border-b border-white/10 w-[25%]">Email</th>
                   <th className="p-[15px] text-slate-400 text-[13px] uppercase tracking-[1px] border-b border-white/10 w-[15%]">Faculty</th>
-                  <th className="p-[15px] text-slate-400 text-[13px] uppercase tracking-[1px] border-b border-white/10 w-[30%]">Assigned Societies</th>
+                  <th className="p-[15px] text-slate-400 text-[13px] uppercase tracking-[1px] border-b border-white/10 w-[30%]">Assigned Societies</th>`n                    <th className="p-[15px] border-b border-white/10 w-[10%]"></th>
                 </tr>
               </thead>
               <tbody>
@@ -175,7 +175,7 @@ const deleteMutation = useMutation({
                       )}
                     </td>
 <td className="py-[18px] px-[15px] text-[15px] border-b border-white/5 text-slate-200 group-last:border-b-0 text-center">
-<button onClick={() => handleDelete(advisor.id)} className="px-3 py-1.5 flex items-center gap-1.5 mx-auto bg-red-500 text-white hover:bg-red-600 rounded-lg transition-colors font-semibold text-xs shadow-md"><Trash2 className="w-3.5 h-3.5" /><span>Delete</span></button>
+<button onClick={() => handleDelete(advisor.id)} className="px-4 py-2 flex items-center gap-1.5 mx-auto bg-red-500 text-white hover:bg-red-600 rounded-lg transition-transform hover:-translate-y-0.5 font-bold text-sm shadow-[0_4px_12px_rgba(239,68,68,0.4)]"><Trash2 className="w-3.5 h-3.5" /><span>Delete</span></button>
 </td>
 </tr>
                 ))}
@@ -336,6 +336,7 @@ const deleteMutation = useMutation({
     </div>
   );
 };
+
 
 
 

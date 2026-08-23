@@ -122,7 +122,8 @@ export class SocietiesService {
         email: true,
         presidentName: true,
         presidentFaculty: true,
-        isSetupComplete: true,
+          advisor: { select: { department: true, user: { select: { fullName: true } } } },
+          isSetupComplete: true,
         category: {
           select: {
             id: true,
@@ -536,4 +537,6 @@ export class SocietiesService {
     return updated;
   }
 }
+
+
 

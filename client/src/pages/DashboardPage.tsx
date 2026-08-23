@@ -185,17 +185,17 @@ export const DashboardPage: React.FC = () => {
       <div className="space-y-6 text-left py-4 px-4">
         {/* Actions Row */}
         <div className="flex justify-end mb-4">
-          <div className="flex items-center gap-3 shrink-0 mt-4 md:mt-0">
+          <div className="grid grid-cols-2 sm:flex sm:flex-wrap md:flex-nowrap sm:justify-end gap-2 md:gap-3 w-full md:w-auto shrink-0 mt-4 md:mt-0">
           <Link
             to="/society/setup"
-            className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-transparent hover:bg-white/10 rounded-xl text-white text-sm font-bold transition-colors border border-white/20"
+            className="flex justify-center items-center gap-1.5 px-4 py-2.5 bg-white hover:bg-gray-100 text-gray-900 border-none rounded-xl text-sm font-bold transition-colors"
           >
             <Edit className="w-4 h-4" />
-            <span>Edit Profile</span>
+            <span>Manage Info</span>
           </Link>
           <button
             onClick={logout}
-            className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-transparent hover:bg-red-500/10 rounded-xl text-red-500 text-sm font-bold transition-colors border border-white/20"
+            className="flex justify-center items-center gap-1.5 px-4 py-2.5 bg-red-500 hover:bg-red-600 border-none rounded-xl text-white text-sm font-bold transition-colors"
           >
             <LogOut className="w-4 h-4" />
             <span>Log out</span>
@@ -205,7 +205,7 @@ export const DashboardPage: React.FC = () => {
 
       {user?.role === 'SOCIETY' && profile && (
         <>
-          {/* 2. Command Center: Actions & Stats */}
+          {/* 2. Dashboard: Actions & Stats */}
             <div className="w-full relative z-1 p-6 md:p-8 rounded-[18px] bg-white/[0.08] backdrop-blur-[20px] border border-white/20 shadow-[0_12px_40px_rgba(0,0,0,0.4)] text-white space-y-6">
               
               {/* Create Event/Post */}
@@ -338,7 +338,7 @@ export const DashboardPage: React.FC = () => {
               </div>
               <button
                 onClick={logout}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-transparent border border-white/10 hover:bg-red-500/20 border border-red-500/20 rounded-xl text-red-400 text-xs font-semibold transition-colors"
+                className="flex justify-center items-center gap-1.5 px-3 py-1.5 bg-transparent border border-white/10 hover:bg-red-500/20 border border-red-500/20 rounded-xl text-red-400 text-xs font-semibold transition-colors"
               >
                 <LogOut className="w-4 h-4" />
                 <span>Log out</span>
@@ -367,5 +367,7 @@ export const DashboardPage: React.FC = () => {
     </div>
   );
 };
+
+
 
 

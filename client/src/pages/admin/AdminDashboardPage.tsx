@@ -52,31 +52,31 @@ export const AdminDashboardPage: React.FC = () => {
       <div className="max-w-6xl mx-auto space-y-6 text-left py-4 px-4">
         {/* Actions Row */}
         <div className="flex justify-end mb-4">
-          <div className="flex items-center gap-3 shrink-0 mt-4 md:mt-0">
+          <div className="grid grid-cols-2 sm:flex sm:flex-wrap md:flex-nowrap sm:justify-end gap-2 md:gap-3 w-full md:w-auto shrink-0 mt-4 md:mt-0">
                     <Link
             to="/admin/societies/create"
-            className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-white hover:bg-gray-100 text-gray-900 rounded-xl text-sm font-bold transition-colors shadow-lg"
+            className="flex justify-center items-center gap-1.5 px-4 py-2.5 bg-white hover:bg-gray-100 text-gray-900 rounded-xl text-sm font-bold transition-colors shadow-lg"
           >
             <UserPlus className="w-4 h-4" />
-            <span className="hidden sm:inline">Onboard Society</span>
+            <span>Onboard Society</span>
           </Link>
           <button
             onClick={() => setIsAnnouncementDialogOpen(true)}
-            className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-white hover:bg-gray-100 text-gray-900 rounded-xl text-sm font-bold transition-colors shadow-lg"
+            className="flex justify-center items-center gap-1.5 px-4 py-2.5 bg-white hover:bg-gray-100 text-gray-900 rounded-xl text-sm font-bold transition-colors shadow-lg"
           >
             <Megaphone className="w-4 h-4" />
             <span>Make Post</span>
           </button>
           <Link
             to="/settings"
-            className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-transparent border border-white/20 hover:bg-white/10 rounded-xl text-white text-sm font-bold transition-colors"
+            className="flex justify-center items-center gap-1.5 px-4 py-2.5 bg-white hover:bg-gray-100 text-gray-900 rounded-xl text-sm font-bold transition-colors"
           >
             <Settings className="w-4 h-4" />
-            <span className="hidden sm:inline">Settings</span>
+            <span>Settings</span>
           </Link>
           <button
             onClick={logout}
-            className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-transparent border border-white/20 hover:bg-red-500/10 rounded-xl text-red-500 text-sm font-bold transition-colors"
+            className="flex justify-center items-center gap-1.5 px-4 py-2.5 bg-red-500 hover:bg-red-600 border-none rounded-xl text-white text-sm font-bold transition-colors"
           >
             <LogOut className="w-4 h-4" />
             <span>Log out</span>
@@ -98,9 +98,7 @@ export const AdminDashboardPage: React.FC = () => {
 
       {/* 2. Command Center */}
       <div className="bg-white/[0.08] backdrop-blur-[20px] p-6 rounded-[18px] border border-white/20 shadow-[0_12px_40px_rgba(0,0,0,0.4)] space-y-5">
-        <h3 className="font-extrabold text-lg text-white flex items-center gap-2">
-          Command Center
-        </h3>
+        <h3 className="font-extrabold text-lg text-white flex items-center gap-2">Dashboard</h3>
 
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
           <Link
@@ -137,8 +135,7 @@ export const AdminDashboardPage: React.FC = () => {
             <span>Yearly Plans</span>
           </Link>
           <Link
-            to="/admin/advisors"
-            className="flex flex-col items-center justify-center gap-2 p-4 bg-transparent hover:bg-white/10 text-white border border-white/20 rounded-xl font-bold transition-transform hover:-translate-y-1 shadow-[0_4px_12px_rgba(0,0,0,0.2)]"
+            to="/admin/advisors" className="col-span-2 md:col-span-1 flex flex-col items-center justify-center gap-2 p-4 bg-transparent hover:bg-white/10 text-white border border-white/20 rounded-xl font-bold transition-transform hover:-translate-y-1 shadow-[0_4px_12px_rgba(0,0,0,0.2)]"
           >
             <Users className="w-6 h-6" />
             <span>Advisors</span>
@@ -221,5 +218,8 @@ export const AdminDashboardPage: React.FC = () => {
     </div>
   );
 };
+
+
+
 
 
