@@ -1,3 +1,4 @@
+import { createPortal } from 'react-dom';
 import React from 'react';
 
 interface CouncilNoticeModalProps {
@@ -8,7 +9,7 @@ interface CouncilNoticeModalProps {
 export const CouncilNoticeModal: React.FC<CouncilNoticeModalProps> = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 w-screen h-screen bg-black/20 backdrop-blur-md flex justify-center items-center p-5 z-[1000] opacity-100 transition-opacity">
       <div className="w-full max-w-[420px] min-h-[340px] bg-white/10 backdrop-blur-2xl border border-white/30 rounded-3xl p-8 flex flex-col justify-between gap-5 shadow-[0_24px_60px_rgba(0,0,0,0.4),inset_0_0_0_1px_rgba(255,255,255,0.2)] scale-100 transition-transform">
         <div className="flex flex-col gap-3">
@@ -36,5 +37,7 @@ export const CouncilNoticeModal: React.FC<CouncilNoticeModalProps> = ({ isOpen, 
         </div>
       </div>
     </div>
-  ), document.body);
+  , document.body);
 };
+
+

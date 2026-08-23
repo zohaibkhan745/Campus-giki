@@ -55,6 +55,7 @@ export const SocietySetupPage: React.FC = () => {
     formState: { errors },
   } = useForm<SocietySetupFormData>({
     resolver: zodResolver(societySetupSchema),
+      mode: 'onTouched',
     defaultValues: {
       name: '',
       type: 'SOCIETY',
@@ -76,6 +77,7 @@ export const SocietySetupPage: React.FC = () => {
       gs: { role: 'General Secretary', name: '', regNum: '', contact: '', email: '', faculty: '' },
       ec: { role: 'Event Coordinator', name: '', regNum: '', contact: '', email: '', faculty: '' },
       treasurer: { role: 'Treasurer', name: '', regNum: '', contact: '', email: '', faculty: '' },
+        dl: { role: 'Director Liaison', name: '', regNum: '', contact: '', email: '', faculty: '' },
       otherMembers: [],
     },
   });
@@ -91,11 +93,11 @@ export const SocietySetupPage: React.FC = () => {
 
   useEffect(() => {
     if (mySociety) {
-      let vp = { role: 'Vice President', name: '', regNum: '', contact: '', email: '', faculty: '' };
-      let gs = { role: 'General Secretary', name: '', regNum: '', contact: '', email: '', faculty: '' };
-      let ec = { role: 'Event Coordinator', name: '', regNum: '', contact: '', email: '', faculty: '' };
-      let treasurer = { role: 'Treasurer', name: '', regNum: '', contact: '', email: '', faculty: '' };
-      let dl = { role: 'Director Liaison', name: '', regNum: '', contact: '', email: '', faculty: '' };
+      let vp = { role: 'Vice President' };
+      let gs = { role: 'General Secretary' };
+      let ec = { role: 'Event Coordinator' };
+      let treasurer = { role: 'Treasurer' };
+      let dl = { role: 'Director Liaison' };
       let others: any[] = [];
 
       try {
@@ -106,6 +108,7 @@ export const SocietySetupPage: React.FC = () => {
             else if (m.role === 'General Secretary') gs = m;
             else if (m.role === 'Event Coordinator') ec = m;
             else if (m.role === 'Treasurer') treasurer = m;
+            else if (m.role === 'Director Liaison') dl = m;
             else others.push(m);
           });
         }
@@ -128,7 +131,7 @@ export const SocietySetupPage: React.FC = () => {
         presidentContact: mySociety.presidentContact || '',
         presidentEmail: mySociety.presidentEmail || '',
         presidentFaculty: mySociety.presidentFaculty || '',
-        vp, gs, ec, treasurer, otherMembers: others
+        vp, gs, ec, treasurer, dl, otherMembers: others
       });
     }
   }, [mySociety, reset]);
@@ -348,7 +351,7 @@ export const SocietySetupPage: React.FC = () => {
             
             {/* President */}
             <div className="space-y-4">
-              <h4 className="text-md font-bold text-red-500 uppercase tracking-wider">
+              <h4 className="text-md font-bold text-white uppercase tracking-wider">
                 PRESIDENT</h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <Input label="Full Name *" placeholder="Full Name" {...register('presidentName')} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^a-zA-Z.,\- ]/g, '') }} error={errors.presidentName?.message} />
@@ -374,7 +377,7 @@ export const SocietySetupPage: React.FC = () => {
 
             {/* Vice President */}
             <div className="space-y-4">
-              <h4 className="text-md font-bold text-blue-400 uppercase tracking-wider">
+              <h4 className="text-md font-bold text-white uppercase tracking-wider">
                 VICE PRESIDENT</h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <Input label="Full Name *" placeholder="Full Name" {...register('vp.name')} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^a-zA-Z.,\- ]/g, '') }} error={errors.vp?.name?.message} />
@@ -400,7 +403,7 @@ export const SocietySetupPage: React.FC = () => {
 
             {/* Event Coordinator */}
             <div className="space-y-4">
-              <h4 className="text-md font-bold text-blue-400 uppercase tracking-wider">
+              <h4 className="text-md font-bold text-white uppercase tracking-wider">
                 EVENT COORDINATOR</h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <Input label="Full Name *" placeholder="Full Name" {...register('ec.name')} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^a-zA-Z.,\- ]/g, '') }} error={errors.ec?.name?.message} />
@@ -426,7 +429,7 @@ export const SocietySetupPage: React.FC = () => {
 
             {/* General Secretary */}
             <div className="space-y-4">
-              <h4 className="text-md font-bold text-blue-400 uppercase tracking-wider">
+              <h4 className="text-md font-bold text-white uppercase tracking-wider">
                 GENERAL SECRETARY</h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <Input label="Full Name *" placeholder="Full Name" {...register('gs.name')} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^a-zA-Z.,\- ]/g, '') }} error={errors.gs?.name?.message} />
@@ -452,7 +455,7 @@ export const SocietySetupPage: React.FC = () => {
 
             {/* Treasurer */}
             <div className="space-y-4">
-              <h4 className="text-md font-bold text-blue-400 uppercase tracking-wider">
+              <h4 className="text-md font-bold text-white uppercase tracking-wider">
                 TREASURER</h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <Input label="Full Name *" placeholder="Full Name" {...register('treasurer.name')} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^a-zA-Z.,\- ]/g, '') }} error={errors.treasurer?.name?.message} />
@@ -478,7 +481,7 @@ export const SocietySetupPage: React.FC = () => {
 
               {/* Director Liaison */}
             <div className="space-y-4">
-              <h4 className="text-md font-bold text-blue-400 uppercase tracking-wider">
+              <h4 className="text-md font-bold text-white uppercase tracking-wider">
                 DIRECTOR LIAISON</h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <Input label="Full Name *" placeholder="Full Name" {...register('dl.name')} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^a-zA-Z.,\- ]/g, '') }} error={errors.dl?.name?.message} />
@@ -623,6 +626,8 @@ export const SocietySetupPage: React.FC = () => {
     </div>
   );
 };
+
+
 
 
 

@@ -5,7 +5,7 @@ export const NotFoundPage: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-5 relative overflow-hidden bg-[#0d0d0d]">
+    <div className="min-h-screen flex items-center justify-center p-5 relative overflow-hidden bg-transparent">
       
       <div className="relative z-10 w-full max-w-[440px] p-10 py-10 px-7 rounded-[18px] bg-white/[0.08] backdrop-blur-[20px] border border-white/20 shadow-[0_12px_40px_rgba(0,0,0,0.4)] text-white flex flex-col gap-4 text-center items-center">
         <div 
@@ -46,3 +46,4 @@ export const NotFoundPage: React.FC = () => {
     </div>
   );
 };
+

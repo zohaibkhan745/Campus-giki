@@ -17,6 +17,8 @@ import { usePendingCounts } from '@/hooks/usePendingCounts';
 export const MainNavigation: React.FC = () => {
   const { user, logout } = useAuth();
   const location = useLocation();
+  const hideRoutes = ['/society/setup', '/admin/settings', '/advisor/settings', '/dsa/settings', '/settings'];
+  if (hideRoutes.some(route => location.pathname.includes(route))) return null;
   const { totalPending } = usePendingCounts();
 
   const navLinks = [
@@ -194,4 +196,5 @@ export const MainNavigation: React.FC = () => {
     </>
   );
 };
+
 

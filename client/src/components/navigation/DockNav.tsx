@@ -15,6 +15,8 @@ const navLinks = [
 
 export const DockNav: React.FC = () => {
   const location = useLocation();
+  const hideRoutes = ['/society/setup', '/admin/settings', '/advisor/settings', '/dsa/settings', '/settings'];
+  if (hideRoutes.some(route => location.pathname.includes(route))) return null;
   const dockRef = useRef<HTMLDivElement>(null);
   const portalsRef = useRef<HTMLDivElement>(null);
   
@@ -385,6 +387,7 @@ export const DockNav: React.FC = () => {
     </>
   );
 };
+
 
 
 
