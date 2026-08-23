@@ -185,7 +185,7 @@ export const DashboardPage: React.FC = () => {
       <div className="space-y-6 text-left py-4 px-4">
         {/* Actions Row */}
         <div className="flex justify-end mb-4">
-          <div className="grid grid-cols-2 sm:flex sm:flex-wrap md:flex-nowrap sm:justify-end gap-2 md:gap-3 w-full md:w-auto shrink-0 mt-4 md:mt-0">
+          <div className="grid grid-cols-2 md:flex md:flex-wrap lg:flex-nowrap md:justify-end gap-2 md:gap-3 w-full md:w-auto shrink-0 mt-4 md:mt-0">
           <Link
             to="/society/setup"
             className="flex justify-center items-center gap-1.5 px-4 py-2.5 bg-white hover:bg-gray-100 text-gray-900 border-none rounded-xl text-sm font-bold transition-colors"
@@ -269,7 +269,7 @@ export const DashboardPage: React.FC = () => {
             </div>
 
             {/* 3. Focused Events Overview */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="bg-white/[0.08] backdrop-blur-[20px] p-6 rounded-[18px] border border-white/20 shadow-[0_12px_40px_rgba(0,0,0,0.4)] flex flex-col gap-6">
             
             {/* Under Review & Revisions Column */}
             <div className="space-y-4">
@@ -291,10 +291,13 @@ export const DashboardPage: React.FC = () => {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {pendingEvents.map((event) => renderEventCard(event))}
+                  {pendingEvents.slice(0, 4).map((event) => renderEventCard(event))}
                 </div>
               )}
             </div>
+
+            <hr className="border-white/10" />
+
 
             {/* Next Upcoming Column */}
             <div className="space-y-4">
@@ -367,6 +370,9 @@ export const DashboardPage: React.FC = () => {
     </div>
   );
 };
+
+
+
 
 
 

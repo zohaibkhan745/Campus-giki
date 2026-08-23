@@ -3,7 +3,6 @@ import { createPortal } from 'react-dom';
 
 type NotificationPayload = { type: 'success' | 'failed', message?: string } | null;
 
-// Global event emitter for non-React files like queryClient
 export const globalNotification = {
   triggerSuccess: (message?: string) => document.dispatchEvent(new CustomEvent('global-notification', { detail: { type: 'success', message } })),
   triggerFailed: (message?: string) => document.dispatchEvent(new CustomEvent('global-notification', { detail: { type: 'failed', message } })),
@@ -13,19 +12,19 @@ const NotificationContext = createContext(null);
 
 const assets = {
   success: {
-    className: 'state-committed',
+    className: 'state-approve',
     text: 'Success',
     svg: (
-      <svg className="status-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+      <svg className="status-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
         <polyline points="20 6 9 17 4 12"></polyline>
       </svg>
     )
   },
   failed: {
-    className: 'state-failed',
+    className: 'state-delete',
     text: 'Failed',
     svg: (
-      <svg className="status-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+      <svg className="status-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
         <line x1="18" y1="6" x2="6" y2="18"></line>
         <line x1="6" y1="6" x2="18" y2="18"></line>
       </svg>
@@ -35,21 +34,39 @@ const assets = {
 
 export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [notification, setNotification] = useState<NotificationPayload>(null);
+  const [visible, setVisible] = useState(false);
+  const [expanded, setExpanded] = useState(false);
 
   useEffect(() => {
-    let timeout: NodeJS.Timeout;
+    let activeTimeout: NodeJS.Timeout;
+    let sequenceTimeout: NodeJS.Timeout;
     
     const handleEvent = (e: Event) => {
       const payload = (e as CustomEvent).detail as NotificationPayload;
+      
+      clearTimeout(activeTimeout);
+      clearTimeout(sequenceTimeout);
+      
+      if (!payload?.type) return;
+      
+      setExpanded(false);
+      setVisible(false);
       setNotification(payload);
       
-      if (timeout) clearTimeout(timeout);
-      
-      if (payload?.type === 'success' || payload?.type === 'failed') {
-        timeout = setTimeout(() => {
-          setNotification(null);
+      setTimeout(() => {
+        setVisible(true);
+        sequenceTimeout = setTimeout(() => {
+          setExpanded(true);
+        }, 50);
+        
+        activeTimeout = setTimeout(() => {
+          setExpanded(false);
+          setTimeout(() => {
+            setVisible(false);
+            setTimeout(() => setNotification(null), 300);
+          }, 300);
         }, 3000);
-      }
+      }, 10);
     };
 
     document.addEventListener('global-notification', handleEvent);
@@ -69,13 +86,12 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
           z-index: 999999;
           pointer-events: none;
           --pill-height: 48px;
-          --icon-size: 24px;
+          --icon-size: 20px;
         }
 
         .notification-pill {
-          display: flex;
+          display: inline-flex;
           align-items: center;
-          justify-content: center;
           height: var(--pill-height);
           color: #ffffff;
           border-radius: calc(var(--pill-height) / 2);
@@ -83,17 +99,27 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
           overflow: hidden;
           white-space: nowrap;
           box-sizing: border-box;
+          
+          padding: 0;
+          max-width: var(--pill-height);
+          opacity: 0;
+          transform: scale(0.5);
+          
+          transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), max-width 0.4s ease, padding 0.4s ease;
         }
 
-        .notification-pill.state-committed {
-          background-color: #10b981; /* Green */
-          animation: pop-sequence 3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        .notification-pill.visible {
+          opacity: 1;
+          transform: scale(1);
         }
 
-        .notification-pill.state-failed {
-          background-color: #ef4444; /* Red */
-          animation: pop-sequence 3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        .notification-pill.expanded {
+          max-width: 400px;
+          padding: 0 5px;
         }
+
+        .state-approve { background-color: #10b981; }
+        .state-delete { background-color: #ef4444; }
 
         .notification-container-fixed .icon-container {
           display: flex;
@@ -111,36 +137,24 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
         }
 
         .notification-container-fixed .notification-text {
-          font-size: 16px;
+          font-size: 15px;
           font-weight: 600;
-          padding-right: 20px;
-          margin-left: -4px;
+          padding-right: 16px;
           opacity: 0;
+          transform: translateX(-10px);
+          transition: opacity 0.3s ease, transform 0.3s ease;
         }
 
-        .state-committed .notification-text,
-        .state-failed .notification-text {
-          animation: text-fade-complete 3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-        }
-
-        @keyframes pop-sequence {
-          0% { opacity: 0; width: var(--pill-height); transform: scale(0.5) translateY(-20px); }
-          10% { opacity: 1; width: var(--pill-height); transform: scale(1) translateY(0); }
-          20%, 80% { width: max-content; padding-right: 8px; opacity: 1; transform: scale(1) translateY(0); }
-          90% { width: var(--pill-height); opacity: 1; transform: scale(1) translateY(0); }
-          100% { opacity: 0; width: var(--pill-height); transform: scale(0.5) translateY(-20px); }
-        }
-
-        @keyframes text-fade-complete {
-          0%, 15% { opacity: 0; }
-          22%, 78% { opacity: 1; }
-          85%, 100% { opacity: 0; }
+        .notification-pill.expanded .notification-text {
+          opacity: 1;
+          transform: translateX(0);
+          transition-delay: 0.1s;
         }
       `}</style>
       
       {notification?.type && typeof document !== "undefined" && createPortal(
         <div className="notification-container-fixed">
-          <div className={`notification-pill ${assets[notification.type].className}`}>
+          <div className={`notification-pill ${assets[notification.type].className} ${visible ? 'visible' : ''} ${expanded ? 'expanded' : ''}`}>
             <div className="icon-container">{assets[notification.type].svg}</div>
             <span className="notification-text">{notification.message || assets[notification.type].text}</span>
           </div>
@@ -150,4 +164,3 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     </NotificationContext.Provider>
   );
 };
-

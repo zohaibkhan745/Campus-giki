@@ -2387,3 +2387,9 @@ button, a, select, .glass-btn, .custom-dropdown-btn, [role="button"] { cursor: p
 .dropdown-list::-webkit-scrollbar-thumb { background-color: rgba(255,255,255,0.25); border-radius: 10px; }
 .dropdown-list::-webkit-scrollbar-thumb:hover { background-color: rgba(255,255,255,0.4); }
 
+  
+  /* Global Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background-color: rgba(255,255,255,0.25); border-radius: 10px; }
+  ::-webkit-scrollbar-thumb:hover { background-color: rgba(255,255,255,0.4); }

@@ -2,6 +2,8 @@ import { resolveImageUrl } from '@/lib/utils';
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
+import { UpcomingEventIcon } from '@/components/icons/UpcomingEventIcon';
+import { SocietyIcon } from '@/components/icons/SocietyIcon';
 import {
   Shield,
   Building2,
@@ -52,7 +54,7 @@ export const AdminDashboardPage: React.FC = () => {
       <div className="max-w-6xl mx-auto space-y-6 text-left py-4 px-4">
         {/* Actions Row */}
         <div className="flex justify-end mb-4">
-          <div className="grid grid-cols-2 sm:flex sm:flex-wrap md:flex-nowrap sm:justify-end gap-2 md:gap-3 w-full md:w-auto shrink-0 mt-4 md:mt-0">
+          <div className="grid grid-cols-2 md:flex md:flex-wrap lg:flex-nowrap md:justify-end gap-2 md:gap-3 w-full md:w-auto shrink-0 mt-4 md:mt-0">
                     <Link
             to="/admin/societies/create"
             className="flex justify-center items-center gap-1.5 px-4 py-2.5 bg-white hover:bg-gray-100 text-gray-900 rounded-xl text-sm font-bold transition-colors shadow-lg"
@@ -146,7 +148,7 @@ export const AdminDashboardPage: React.FC = () => {
       
 
       {/* 4. Activity Section — 2-column */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="bg-white/[0.08] backdrop-blur-[20px] p-6 rounded-[18px] border border-white/20 shadow-[0_12px_40px_rgba(0,0,0,0.4)] flex flex-col gap-6">
         {/* Pending Events */}
         <div className="space-y-4">
           <div className="flex items-center justify-between border-b-2 border-white/10 pb-3">
@@ -174,15 +176,18 @@ export const AdminDashboardPage: React.FC = () => {
               <p className="font-bold text-sm">You're all caught up! No events pending review.</p>
             </div>
           ) : (
-            <EventGrid events={pendingEvents} />
+            <EventGrid events={pendingEvents.slice(0, 4)} />
           )}
         </div>
+
+        <hr className="border-white/10" />
+
 
         {/* Upcoming Events */}
         <div className="space-y-4">
           <div className="flex items-center justify-between border-b-2 border-white/10 pb-3">
             <div className="flex items-center gap-2 font-extrabold text-lg text-white">
-              <Calendar className="w-5 h-5 text-white" />
+              <UpcomingEventIcon className="w-5 h-5 text-white" />
               <h3>Upcoming Events ({upcomingEvents.length})</h3>
             </div>
             <Link to="/admin/events" className="text-sm font-bold text-white hover:text-forest-ink transition-colors underline underline-offset-2">
@@ -201,11 +206,11 @@ export const AdminDashboardPage: React.FC = () => {
             </div>
           ) : upcomingEvents.length === 0 ? (
             <div className="bg-transparent p-10 rounded-[18px] border border-white/20 text-center text-gray-400 space-y-3 flex flex-col items-center">
-              <Calendar className="w-12 h-12 text-gray-400 opacity-30" />
+              <UpcomingEventIcon className="w-12 h-12 text-gray-400 opacity-30" />
               <p className="font-bold text-sm">No upcoming events scheduled.</p>
             </div>
           ) : (
-            <EventGrid events={upcomingEvents} />
+            <EventGrid events={upcomingEvents.slice(0, 4)} />
           )}
         </div>
       </div>
@@ -218,6 +223,9 @@ export const AdminDashboardPage: React.FC = () => {
     </div>
   );
 };
+
+
+
 
 
 

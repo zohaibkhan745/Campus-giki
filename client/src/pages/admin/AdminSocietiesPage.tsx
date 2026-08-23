@@ -62,8 +62,7 @@ export const AdminSocietiesPage: React.FC = () => {
   const [deactivatingSociety, setDeactivatingSociety] = useState<AdminSocietyItem | null>(null);
   const [reactivatingSociety, setReactivatingSociety] = useState<AdminSocietyItem | null>(null);
   const [deletingSociety, setDeletingSociety] = useState<AdminSocietyItem | null>(null);
-  const [actionError, setActionError] = useState<string | null>(null);
-
+  
   useEffect(() => {
     if (isAddSocietyModalOpen || editingSociety || deletingSociety) {
       document.body.classList.add('modal-open');
@@ -114,11 +113,10 @@ export const AdminSocietiesPage: React.FC = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['adminSocietiesList'] });
       setEditingSociety(null);
-      setActionError(null);
+      
     },
     onError: (error: AxiosError<{ message?: string | string[] }>) => {
       const msg = error.response?.data?.message;
-      setActionError(Array.isArray(msg) ? msg.join(', ') : msg || 'Failed to update society.');
     },
   });
 
@@ -129,11 +127,10 @@ export const AdminSocietiesPage: React.FC = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['adminSocietiesList'] });
       setDeletingSociety(null);
-      setActionError(null);
+      
     },
     onError: (error: AxiosError<{ message?: string | string[] }>) => {
       const msg = error.response?.data?.message;
-      setActionError(Array.isArray(msg) ? msg.join(', ') : msg || 'Failed to delete society.');
     },
   });
 
@@ -144,11 +141,10 @@ export const AdminSocietiesPage: React.FC = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['adminSocietiesList'] });
       setDeactivatingSociety(null);
-      setActionError(null);
+      
     },
     onError: (error: AxiosError<{ message?: string | string[] }>) => {
       const msg = error.response?.data?.message;
-      setActionError(Array.isArray(msg) ? msg.join(', ') : msg || 'Failed to deactivate society.');
     },
   });
 
@@ -161,7 +157,6 @@ export const AdminSocietiesPage: React.FC = () => {
     },
     onError: (error: any) => {
       const msg = error.response?.data?.message;
-      setActionError(Array.isArray(msg) ? msg.join(', ') : msg || 'Failed to update warning status.');
     },
   });
 
@@ -174,7 +169,6 @@ export const AdminSocietiesPage: React.FC = () => {
     },
     onError: (error: any) => {
       const msg = error.response?.data?.message;
-      setActionError(Array.isArray(msg) ? msg.join(', ') : msg || 'Failed to reactivate society.');
     },
   });
 
@@ -183,7 +177,7 @@ export const AdminSocietiesPage: React.FC = () => {
     setEditName(society.name);
     setEditCategoryId(society.category?.id || '');
     setEditAdvisorId(society.advisor?.id || '');
-    setActionError(null);
+    
   };
 
   const handleSaveEdit = () => {
@@ -251,11 +245,7 @@ export const AdminSocietiesPage: React.FC = () => {
           <h2 className="text-lg font-bold text-white m-0 border-b border-white/10 pb-3">Societies</h2>
         </div>
 
-        {actionError && (
-          <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 font-medium">
-            {actionError}
-          </div>
-        )}
+        
 
         {isLoading ? (
           <div className="p-8 text-center text-slate-400 font-semibold animate-pulse">Loading societies...</div>
@@ -365,11 +355,11 @@ export const AdminSocietiesPage: React.FC = () => {
                 onChange={(e) => setEditName(e.target.value)}
               />
 
-              <div className="space-y-3 mb-4"><label className="text-xs font-semibold text-white font-medium mb-1 block">Category</label>
+              <div className="space-y-1.5"><label className="block text-xs font-semibold uppercase tracking-wider text-slate-300">Category</label>
                 <CustomDropdown value={editCategoryId} onChange={(e: any) => setEditCategoryId(e.target.value)} options={categories?.map((c: any) => ({value: c.id, label: c.name})) || []} />
               </div>
 
-              <div className="space-y-3"><label className="text-xs font-semibold text-white font-medium mb-1 block">Assigned Faculty Advisor</label>
+              <div className="space-y-1.5"><label className="block text-xs font-semibold uppercase tracking-wider text-slate-300">Assigned Faculty Advisor</label>
                 <CustomDropdown value={editAdvisorId} onChange={(e: any) => setEditAdvisorId(e.target.value)} options={[{value:"", label:"None / Unassign Advisor"}, ...(advisors || []).map((a: any) => ({value: a.id, label: (a.user?.fullName || "Unknown Advisor") + " (" + a.department + ")"}))]} />
               </div>
             </div>
@@ -514,4 +504,7 @@ export const AdminSocietiesPage: React.FC = () => {
     </div>
   );
 };
+
+
+
 

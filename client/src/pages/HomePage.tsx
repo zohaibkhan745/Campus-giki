@@ -10,10 +10,10 @@ export const HomePage: React.FC = () => {
 
   return (
     <div className="bg-transparent text-gray-200 min-h-screen font-inter">
-      <div className="max-w-7xl mx-auto px-4 flex justify-center text-left pt-6">
+      <div className="max-w-[1800px] w-full mx-auto px-4 flex justify-center text-left pt-6">
 
         {/* Left Column: Main Feed */}
-        <div className="w-full max-w-5xl">
+        <div className="w-full max-w-[1600px]">
           {/* Page Header */}
           <header className="space-y-2 pb-4 border-b border-white/10 mb-8">
             <h1 className="font-extrabold text-5xl sm:text-6xl text-white tracking-tight leading-tight">
@@ -60,7 +60,7 @@ export const HomePage: React.FC = () => {
             </div>
           ) : (
             /* Feed Items Stack */
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 justify-items-center">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 justify-items-center">
               {items.map((item) =>
                 item.type === 'event' ? (
                   <EventCard key={`event-${item.id}`} item={item}  />
@@ -100,5 +100,6 @@ export const HomePage: React.FC = () => {
     </div>
   );
 };
+
 
 
