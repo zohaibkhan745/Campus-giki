@@ -1,13 +1,15 @@
 import React, { useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Home, CalendarDays, UsersRound, Menu, Sparkles } from 'lucide-react';
+import { UpcomingEventIcon } from '@/components/icons/UpcomingEventIcon';
+import { SocietyIcon } from '@/components/icons/SocietyIcon';
 import { createPortal } from 'react-dom';
 
 const navLinks = [
   { label: 'Home', path: '/', icon: <Home /> },
-  { label: 'Upcoming', path: '/upcoming-events', icon: <Sparkles /> },
+  { label: 'Upcoming', path: '/upcoming-events', icon: <UpcomingEventIcon /> },
   { label: 'Calendar', path: '/events', icon: <CalendarDays /> },
-  { label: 'Societies', path: '/societies', icon: <UsersRound /> },
+  { label: 'Societies', path: '/societies', icon: <SocietyIcon /> },
   { label: 'Dashboard', path: '/dashboard', icon: <Menu /> },
 ];
 
@@ -382,4 +384,5 @@ export const DockNav: React.FC = () => {
     </>
   );
 };
+
 

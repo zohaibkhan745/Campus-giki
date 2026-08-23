@@ -91,15 +91,11 @@ export const HomePage: React.FC = () => {
             </div>
           )}
         </div>
-
-        {/* Right Column: Sidebar */}
-        <div className="hidden lg:block w-[350px] shrink-0">
-          
-        </div>
       </div>
     </div>
   );
 };
+
 
 
 
