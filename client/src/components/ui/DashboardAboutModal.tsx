@@ -131,21 +131,20 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ profil
         
         {/* Dynamic CSS for scrollbar track offset */}
         <style>{`
-          .modal-scroll-offset::-webkit-scrollbar-track {
+          .transparent-scrollbar::-webkit-scrollbar {
+            width: 0px;
             background: transparent;
-            margin-top: 320px;
           }
-          @media (max-width: 768px) {
-            .modal-scroll-offset::-webkit-scrollbar-track {
-              margin-top: 280px;
-            }
+          .transparent-scrollbar {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
           }
         `}</style>
 
         {/* Inner Scrollable Container */}
-        <div className="w-full h-full overflow-y-auto custom-scrollbar modal-scroll-offset relative flex-1">
+        <div className="w-full h-full overflow-y-auto transparent-scrollbar relative flex-1">
           {/* Banner Section */}
-          <div className="absolute top-0 left-0 right-0 h-[280px] md:h-[320px] bg-[#1e3c72] z-0">
+          <div className="relative w-full h-[280px] md:h-[320px] bg-[#1e3c72] shrink-0">
              <img src={getSocietyBanner(profile.bannerUrl)} alt="Banner" className="w-full h-full object-cover block" />
             <div className="absolute inset-0 bg-gradient-to-t from-[#0d0d0d]/80 via-transparent to-transparent pointer-events-none" />
             
@@ -199,8 +198,7 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ profil
           
           
           </div>
-            {/* Spacer for absolute banner */}
-            <div className="w-full h-[280px] md:h-[320px] shrink-0 pointer-events-none" />
+            
             
             {/* Content Section */}
             <div className="relative z-10 pt-[24px] px-[20px] md:pt-[110px] md:pl-[138px] md:pr-[48px] pb-10 w-full max-w-[1000px] mx-auto">
