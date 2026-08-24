@@ -35,6 +35,29 @@ export function useCardFlip(wrapperRef: RefObject<HTMLDivElement>) {
     };
   }, [wrapperRef]);
 
+  // Global click listener to close card if clicking outside
+  useEffect(() => {
+    if (!isActive) return;
+
+    const handleGlobalClick = (e: MouseEvent) => {
+      const wrapper = wrapperRef.current;
+      // If click is outside the card wrapper, close it
+      if (wrapper && !wrapper.contains(e.target as Node)) {
+        closeCard();
+      }
+    };
+
+    // Small timeout to prevent immediate triggering from the open click
+    const timer = setTimeout(() => {
+      window.addEventListener('click', handleGlobalClick);
+    }, 100);
+
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('click', handleGlobalClick);
+    };
+  }, [isActive]);
+
   const openCard = (isEvent: boolean) => {
     const wrapper = wrapperRef.current;
     if (!wrapper) return;
@@ -77,7 +100,7 @@ export function useCardFlip(wrapperRef: RefObject<HTMLDivElement>) {
       requestAnimationFrame(() => {
         wrapper.classList.add("has-transition");
 
-        const screenWidth = document.documentElement.clientWidth; 
+        const screenWidth = window.innerWidth; 
         const screenHeight = window.innerHeight;
         const isMobile = screenWidth <= 768;
         

@@ -341,7 +341,7 @@ export const DashboardPage: React.FC = () => {
 
       {/* Non-society user dashboard fallback */}
       {user?.role !== 'SOCIETY' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 justify-items-center w-full mx-auto">
+        <div className="cards-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 w-full mx-auto">
           <div className="bg-white/[0.08] backdrop-blur-[20px] shadow-[0_12px_40px_rgba(0,0,0,0.4)] p-6 rounded-[18px] space-y-3 border border-white/20">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-transparent border border-forest-ink text-forest-ink rounded-xl">

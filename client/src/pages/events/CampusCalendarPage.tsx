@@ -418,7 +418,7 @@ export const CampusCalendarPage: React.FC = () => {
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 justify-items-center w-full mx-auto">
+              <div className="cards-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 w-full mx-auto">
                 {visibleEvents.map((event) => (
                   <EventCard key={event.id} item={{ ...event, type: 'event' } as any} />
                 ))}
