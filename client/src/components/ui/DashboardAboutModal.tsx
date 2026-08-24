@@ -131,16 +131,31 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ profil
             margin-top: 280px;
           }
         }
-      `}</style>
+      `}.modal-scroll-offset {
+          background-image: var(--banner-bg);
+          background-size: 100% 280px;
+          background-repeat: no-repeat;
+          background-position: top left;
+          background-attachment: local;
+        }
+        @media (min-width: 768px) {
+          .modal-scroll-offset {
+            background-size: 100% 320px;
+          }
+        }
+      </style>
 
       {/* Outer Modal Container */}
       <div className="relative w-full max-w-[1000px] h-full max-h-[90vh] bg-[#0d0d0d] border border-white/10 rounded-3xl shadow-2xl flex flex-col z-10 overflow-hidden">
         
         {/* Inner Scrollable Container */}
-        <div className="w-full h-full overflow-y-auto overflow-x-hidden custom-scrollbar modal-scroll-offset relative flex-1">
+        <div 
+          className="w-full h-full overflow-y-auto overflow-x-hidden custom-scrollbar modal-scroll-offset relative flex-1"
+          style={{ '--banner-bg': `url(${getSocietyBanner(profile.bannerUrl)})` } as any}
+        >
           
           {/* Banner Section */}
-          <div className="relative w-[calc(100%+24px)] max-w-none h-[280px] md:h-[320px] bg-[#1e3c72] shrink-0">
+          <div className="relative w-full h-[280px] md:h-[320px] bg-[#1e3c72] shrink-0">
             <img src={getSocietyBanner(profile.bannerUrl)} alt="Banner" className="w-full h-full object-cover block" />
             <div className="absolute inset-0 bg-gradient-to-t from-[#0d0d0d]/80 via-transparent to-transparent pointer-events-none" />
             
