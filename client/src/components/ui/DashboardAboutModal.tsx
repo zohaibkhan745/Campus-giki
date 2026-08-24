@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getSocietyLogo, getSocietyBanner } from '@/lib/utils';
-import { X, Globe, Edit, Trash2, Check } from 'lucide-react';
+import { X, Globe, Edit, Plus, Trash2, Check } from 'lucide-react';
 
 const Instagram = ({className}: {className?: string}) => <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>;
 const Facebook = ({className}: {className?: string}) => <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>;
@@ -137,10 +137,10 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ profil
       <div className="relative w-full max-w-[1000px] h-full max-h-[90vh] bg-[#0d0d0d] border border-white/10 rounded-3xl shadow-2xl flex flex-col z-10 overflow-hidden">
         
         {/* Inner Scrollable Container */}
-        <div className="w-full h-full overflow-y-auto custom-scrollbar modal-scroll-offset relative flex-1">
+        <div className="w-full h-full overflow-y-auto overflow-x-hidden custom-scrollbar modal-scroll-offset relative flex-1">
           
           {/* Banner Section */}
-          <div className="relative w-full h-[280px] md:h-[320px] bg-[#1e3c72] shrink-0">
+          <div className="relative w-[calc(100%+24px)] max-w-none h-[280px] md:h-[320px] bg-[#1e3c72] shrink-0">
             <img src={getSocietyBanner(profile.bannerUrl)} alt="Banner" className="w-full h-full object-cover block" />
             <div className="absolute inset-0 bg-gradient-to-t from-[#0d0d0d]/80 via-transparent to-transparent pointer-events-none" />
             
@@ -204,7 +204,14 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ profil
             </div>
   
             <div className="mt-12 w-full">
-              <h2 className="text-[18px] md:text-[22px] font-bold text-white mb-[16px] uppercase tracking-wider">EXECUTIVE COUNCIL</h2>
+              <div className="flex items-center justify-between mb-[16px]">
+                <h2 className="text-[18px] md:text-[22px] font-bold text-white uppercase tracking-wider">EXECUTIVE COUNCIL</h2>
+                {isCurrentUserSociety && (
+                  <button onClick={() => setEditingMember({ original: { role: 'Executive Member', name: '', email: '', isNew: true }, current: { role: 'Executive Member', name: '', email: '', isNew: true }, confirmDelete: false })} className="px-4 py-2 bg-white text-black hover:bg-gray-200 rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5">
+                    <Plus className="w-4 h-4" /> Add Member
+                  </button>
+                )}
+              </div>
               <div className="bg-white/[0.02] border border-white/5 rounded-2xl overflow-x-auto w-full">
                 <table className="w-full text-left border-collapse min-w-[600px]">
                   <thead>
@@ -225,8 +232,8 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ profil
                         <td className="py-4 px-5 text-[14px] text-gray-400">{profile.presidentEmail}</td>
                         <td className="py-4 px-5 text-right">
                           {isCurrentUserSociety && (
-                            <button onClick={() => setEditingMember({ original: { role: 'President' }, current: { name: profile.presidentName, email: profile.presidentEmail }, confirmDelete: false })} className="p-2 text-gray-500 hover:text-white hover:bg-white/10 rounded-lg transition-colors inline-flex" title="Edit"><Edit className="w-4 h-4"/></button>
-                          )}
+                              <span className="text-gray-500 font-bold px-3">-</span>
+                            )}
                         </td>
                       </tr>
                     ) : null}
@@ -240,9 +247,12 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ profil
                           <td className="py-4 px-5 text-[15px] font-semibold text-white">{member.name}</td>
                           <td className="py-4 px-5 text-[14px] text-gray-400">{member.email}</td>
                           <td className="py-4 px-5 text-right">
-                            {/* !isUneditable removed to allow editing all members */}
                             {isCurrentUserSociety && (
-                              <button onClick={() => setEditingMember({ original: member, current: member, confirmDelete: false })} className="p-2 text-gray-500 hover:text-white hover:bg-white/10 rounded-lg transition-colors inline-flex" title="Edit"><Edit className="w-4 h-4"/></button>
+                              isUneditable ? (
+                                <span className="text-gray-500 font-bold px-3">-</span>
+                              ) : (
+                                <button onClick={() => setEditingMember({ original: member, current: member, confirmDelete: false })} className="p-2 text-gray-500 hover:text-white hover:bg-white/10 rounded-lg transition-colors inline-flex" title="Edit"><Edit className="w-4 h-4"/></button>
+                              )
                             )}
                           </td>
                         </tr>
@@ -271,7 +281,7 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ profil
         <div className="absolute inset-0 bg-black/80 backdrop-blur-sm z-[999999] flex items-center justify-center p-4">
           <div className="bg-[#0d0d0d] border border-white/10 p-6 rounded-2xl w-full max-w-md shadow-2xl relative z-10 flex flex-col gap-5">
             <div className="flex justify-between items-center">
-              <h3 className="text-lg font-bold text-white">Edit {editingMember.original.role}</h3>
+              <h3 className="text-lg font-bold text-white">{editingMember.original.isNew ? 'Add Member' : `Edit ${editingMember.original.role}`}</h3>
               <button onClick={() => setEditingMember(null)} className="p-1.5 text-gray-400 hover:text-white rounded-full hover:bg-white/10"><X className="w-5 h-5"/></button>
             </div>
             

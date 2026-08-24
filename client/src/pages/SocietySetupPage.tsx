@@ -170,7 +170,13 @@ export const SocietySetupPage: React.FC = () => {
       { role: 'General Secretary', ...data.gs },
       { role: 'Treasurer', ...data.treasurer },
       { role: 'Director Liaison', ...data.dl },
-      ...(data.otherMembers || [])
+      ...(mySociety.executiveCouncil ? (() => {
+        try {
+          const c = JSON.parse(mySociety.executiveCouncil as string);
+          const coreRoles = ['Vice President', 'Event Coordinator', 'General Secretary', 'Treasurer', 'Director Liaison'];
+          return c.filter((m: any) => !coreRoles.includes(m.role));
+        } catch { return []; }
+      })() : [])
     ];
 
     const submitPayload: any = {
@@ -464,104 +470,7 @@ export const SocietySetupPage: React.FC = () => {
           </div>
 
           {/* Other Members Section */}
-          <div className="bg-[#1e2025]/50 border border-white/10 p-6 sm:p-8 rounded-3xl space-y-6 shadow-xl">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-white/10 pb-4 gap-4">
-              <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                <Users className="w-5 h-5 text-gray-400" /> Other Executive Members
-              </h3>
-              <button type="button" onClick={() => appendMember({ role: 'Executive Member', name: '', regNum: '', email: '', contact: '', faculty: 'FCSE' })} className="flex items-center justify-center gap-1.5 px-4 py-2 text-xs font-bold bg-white text-gray-900 rounded-lg hover:bg-gray-100 transition-colors whitespace-nowrap">
-                  <Plus className="w-4 h-4" /> Add Member
-                </button>
-            </div>
-            
-            <div className="space-y-6">
-              {otherMembers.map((field, index) => {
-                const currentRole = watch(`otherMembers.${index}.role`);
-                const PREDEFINED_ROLES = ['Executive Member', 'Director Liaison', 'Director Sponsors', 'Director Tech', 'Director Socials'];
-                const isCustomRole = currentRole !== undefined && !PREDEFINED_ROLES.includes(currentRole);
-                const dropdownValue = isCustomRole ? 'Other' : (currentRole || 'Executive Member');
-
-                return (
-                  <div key={field.id} className="p-6 rounded-2xl bg-white/5 border border-white/10 space-y-5 relative">
-                    <button type="button" onClick={() => removeMember(index)} className="absolute top-5 right-5 text-gray-500 hover:text-red-400 transition-colors p-1" title="Remove Member">
-                      <Trash2 className="w-5 h-5" />
-                    </button>
-                    
-                    <h4 className="text-md font-bold text-white mb-2 pb-2 border-b border-white/5 inline-block">Member {index + 1}</h4>
-                    
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                      <div>
-                        <label className="block text-[11px] font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Position *</label>
-                        <CustomDropdown
-                            value={dropdownValue}
-                            onChange={(e: any) => {
-                              if (e.target.value === 'Other') {
-                                setValue(`otherMembers.${index}.role`, '');
-                              } else {
-                                setValue(`otherMembers.${index}.role`, e.target.value);
-                              }
-                            }}
-                            options={[
-                              { value: 'Executive Member', label: 'Executive Member' },
-                              { value: 'Director Sponsors', label: 'Director Sponsors' },
-                              { value: 'Director Tech', label: 'Director Tech' },
-                              { value: 'Director Socials', label: 'Director Socials' },
-                              { value: 'Other', label: 'Other (Custom Position)' }
-                            ]}
-                          />
-                        {errors.otherMembers?.[index]?.role?.message && <p className="text-red-400 text-xs mt-1 font-medium">{errors.otherMembers[index].role?.message}</p>}
-                      </div>
-
-                      {dropdownValue === 'Other' && (
-                        <div>
-                          <label className="block text-[11px] font-bold text-blue-400 mb-1.5 uppercase tracking-wider">Custom Position Name *</label>
-                          <input 
-                            {...register(`otherMembers.${index}.role` as const)} 
-                            className="w-full bg-black/20 border border-blue-500/30 rounded-xl px-4 py-2.5 text-sm text-white font-medium focus:outline-none focus:border-blue-500/70 transition-colors"
-                            placeholder="Type position name..."
-                            required
-                          />
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 pt-2">
-                      <div>
-                        <label className="block text-[11px] font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Full Name *</label>
-                        <input {...register(`otherMembers.${index}.name` as const)} className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white font-medium focus:outline-none focus:border-blue-500/50 transition-colors" placeholder="Full Name" required onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^a-zA-Z.,\- ]/g, '') }} />
-                        {errors.otherMembers?.[index]?.name?.message && <p className="text-red-400 text-xs mt-1 font-medium">{errors.otherMembers[index].name?.message}</p>}
-                      </div>
-                      <div>
-                        <label className="block text-[11px] font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Reg Number *</label>
-                        <input {...register(`otherMembers.${index}.regNum` as const)} className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white font-medium focus:outline-none focus:border-blue-500/50 transition-colors" placeholder="e.g. 2023123" required maxLength={7} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '').slice(0, 7) }} />
-                        {errors.otherMembers?.[index]?.regNum?.message && <p className="text-red-400 text-xs mt-1 font-medium">{errors.otherMembers[index].regNum?.message}</p>}
-                      </div>
-                      <div>
-                        <label className="block text-[11px] font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Email Address *</label>
-                        <input type="email" {...register(`otherMembers.${index}.email` as const)} className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white font-medium focus:outline-none focus:border-blue-500/50 transition-colors" placeholder="Email" required />
-                        {errors.otherMembers?.[index]?.email?.message && <p className="text-red-400 text-xs mt-1 font-medium">{errors.otherMembers[index].email?.message}</p>}
-                      </div>
-                      <div>
-                        <label className="block text-[11px] font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Contact Number *</label>
-                        <input {...register(`otherMembers.${index}.contact` as const)} className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white font-medium focus:outline-none focus:border-blue-500/50 transition-colors" placeholder="Phone Number" required maxLength={11} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '').slice(0, 11) }} />
-                        {errors.otherMembers?.[index]?.contact?.message && <p className="text-red-400 text-xs mt-1 font-medium">{errors.otherMembers[index].contact?.message}</p>}
-                      </div>
-                      <div>
-                        <label className="block text-[11px] font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Faculty *</label>
-                        <CustomDropdown value={watch(`otherMembers.${index}.faculty` as const)} onChange={(e: any) => setValue(`otherMembers.${index}.faculty` as const, e.target.value)} options={[ { value: 'FCSE', label: 'FCSE' }, { value: 'FEE', label: 'FEE' }, { value: 'FME', label: 'FME' }, { value: 'FCVE', label: 'FCVE' }, { value: 'FCME', label: 'FCME' }, { value: 'FMTE', label: 'FMTE' }, { value: 'FES', label: 'FES' }, { value: 'FBS', label: 'FBS' }, { value: 'MGS', label: 'MGS' } ]} placeholder="Select Faculty" />
-                        {errors.otherMembers?.[index]?.faculty?.message && <p className="text-red-400 text-xs mt-1 font-medium">{errors.otherMembers[index].faculty?.message}</p>}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-              {otherMembers.length === 0 && (
-                <div className="text-center py-8 text-gray-500 text-sm font-medium border border-dashed border-white/10 rounded-2xl">
-                  No other executive members added yet.
-                </div>
-              )}
-            </div>
-          </div>
+          
         </div>
 
         <div className="flex justify-end pt-2">
