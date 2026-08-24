@@ -129,12 +129,24 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ profil
       {/* Outer Modal Container */}
       <div className="relative w-full max-w-[1000px] h-full max-h-[90vh] bg-[#0d0d0d] border border-white/10 rounded-3xl shadow-2xl flex flex-col z-10 overflow-hidden">
         
+        {/* Dynamic CSS for scrollbar track offset */}
+        <style>{`
+          .modal-scroll-offset::-webkit-scrollbar-track {
+            background: transparent;
+            margin-top: 320px;
+          }
+          @media (max-width: 768px) {
+            .modal-scroll-offset::-webkit-scrollbar-track {
+              margin-top: 280px;
+            }
+          }
+        `}</style>
+
         {/* Inner Scrollable Container */}
-        
-          {/* Banner Section (Fixed at Top) */}
-          <div className="relative w-full h-[280px] md:h-[320px] bg-[#1e3c72] shrink-0 z-[20]">
-             
-            <img src={getSocietyBanner(profile.bannerUrl)} alt="Banner" className="w-full h-full object-cover block" />
+        <div className="w-full h-full overflow-y-auto custom-scrollbar modal-scroll-offset relative flex-1">
+          {/* Banner Section */}
+          <div className="relative w-[calc(100%+16px)] -mr-[16px] h-[280px] md:h-[320px] bg-[#1e3c72] shrink-0">
+             <img src={getSocietyBanner(profile.bannerUrl)} alt="Banner" className="w-full h-full object-cover block" />
             <div className="absolute inset-0 bg-gradient-to-t from-[#0d0d0d]/80 via-transparent to-transparent pointer-events-none" />
             
             {/* Top Right Controls (Close + Tags) */}
@@ -185,10 +197,8 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ profil
               </div>
             </div>
           
-          </div>
           
-          {/* Inner Scrollable Container (Starts Below Banner) */}
-          <div className="w-full h-full overflow-y-auto custom-scrollbar relative flex-1 z-[10]">
+          </div>
             {/* Content Section */}
             <div className="relative z-10 pt-[24px] px-[20px] md:pt-[110px] md:pl-[138px] md:pr-[48px] pb-10 w-full max-w-[1000px] mx-auto">
             
@@ -202,11 +212,7 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ profil
             <div className="mt-12 w-full">
               <div className="flex items-center justify-between mb-[16px]">
                 <h2 className="text-[18px] md:text-[22px] font-bold text-white uppercase tracking-wider">EXECUTIVE COUNCIL</h2>
-                {isCurrentUserSociety && (
-                  <button onClick={() => setEditingMember({ original: { role: 'Executive Member', name: '', email: '', isNew: true }, current: { role: 'Executive Member', name: '', email: '', isNew: true }, confirmDelete: false })} className="px-4 py-2 bg-white text-black hover:bg-gray-200 rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5">
-                    <Plus className="w-4 h-4" /> Add Member
-                  </button>
-                )}
+                
               </div>
               <div className="bg-white/[0.02] border border-white/5 rounded-2xl overflow-x-auto w-full">
                 <table className="w-full text-left border-collapse min-w-[600px]">
