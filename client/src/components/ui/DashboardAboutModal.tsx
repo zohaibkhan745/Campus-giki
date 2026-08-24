@@ -131,7 +131,7 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ profil
             margin-top: 280px;
           }
         }
-      `}.modal-scroll-offset {
+      \n        .modal-scroll-offset {
           background-image: var(--banner-bg);
           background-size: 100% 280px;
           background-repeat: no-repeat;
@@ -143,7 +143,7 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ profil
             background-size: 100% 320px;
           }
         }
-      </style>
+        `}</style>
 
       {/* Outer Modal Container */}
       <div className="relative w-full max-w-[1000px] h-full max-h-[90vh] bg-[#0d0d0d] border border-white/10 rounded-3xl shadow-2xl flex flex-col z-10 overflow-hidden">
