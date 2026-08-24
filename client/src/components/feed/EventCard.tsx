@@ -20,6 +20,8 @@ export const EventCard: React.FC<EventCardProps> = ({ item, onEdit, onDelete }) 
   const { isActive, openCard, closeCard } = useCardFlip(wrapperRef);
   const { user } = useAuth();
   const canEditOrDelete = user?.role === 'DSA_ADMIN' || (user?.role === 'SOCIETY' && user.society?.id === item.society.id);
+  const canEdit = user?.role === 'SOCIETY' && user.society?.id === item.society.id;
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -122,37 +124,48 @@ export const EventCard: React.FC<EventCardProps> = ({ item, onEdit, onDelete }) 
                     aria-label="Options"
                     ref={buttonRef}
                     onClick={toggleDropdown}
-                    style={{ height: '42px', width: '42px', borderRadius: '12px' }}
+                    style={{ height: '48px', width: '48px', borderRadius: '16px' }}
                   >
                     <svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="2.5"></circle><circle cx="12" cy="12" r="2.5"></circle><circle cx="19" cy="12" r="2.5"></circle></svg>
                   </button>
                   {dropdownOpen && createPortal(
                     <div 
-                      className="dropdown-menu active" 
+                      className="card-dropdown-menu active" 
                       style={{ position: 'fixed', bottom: window.innerHeight - dropdownPos.top + 50, left: dropdownPos.left, zIndex: 9999, margin: 0 }}
                       onClick={(e) => e.stopPropagation()}
                     >
-                      <button className="dropdown-item" onClick={(e) => { 
+                      {canEdit && <button className="card-dropdown-item" onClick={(e) => { 
                         e.stopPropagation(); setDropdownOpen(false); 
                         if(onEdit) onEdit(); else navigate(`/events/${item.id}/edit`);
-                      }}>Edit Event</button>
-                      <button className="dropdown-item delete" onClick={async (e) => { 
+                      }}>Edit Event</button>}
+                      <button className="card-dropdown-item delete" onClick={(e) => { 
                         e.stopPropagation(); setDropdownOpen(false); 
-                        if(onDelete) onDelete(); 
-                        else if (window.confirm('Are you sure you want to delete this event?')) {
-                          try {
-                            await eventService.deleteEvent(item.id);
-                            globalNotification.success('Event deleted successfully');
-                            window.location.reload();
-                          } catch (err) {
-                            globalNotification.error('Failed to delete event');
-                          }
-                        }
+                        setShowDeleteConfirm(true);
                       }}>Delete Event</button>
                     </div>,
                     document.body
                   )}
                 </div>
+              )}
+              {showDeleteConfirm && createPortal(
+                <div id="delete-confirm-modal" style={{ position: 'fixed', inset: 0, zIndex: 10000, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(8px)' }} onClick={(e) => { e.stopPropagation(); setShowDeleteConfirm(false); }}>
+                  <div style={{ background: 'rgba(25, 27, 34, 0.85)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,0.1)', padding: '24px', borderRadius: '24px', maxWidth: '400px', width: '90%', textAlign: 'center', boxShadow: '0 25px 50px rgba(0,0,0,0.5)' }} onClick={e => e.stopPropagation()}>
+                    <h3 style={{ color: '#fff', fontSize: '1.25rem', fontWeight: 700, marginBottom: '12px' }}>Delete Event?</h3>
+                    <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.9rem', marginBottom: '24px' }}>Are you sure you want to permanently delete this event? This action cannot be undone.</p>
+                    <div style={{ display: 'flex', gap: '12px' }}>
+                      <button style={{ flex: 1, padding: '12px', borderRadius: '12px', background: 'rgba(255,255,255,0.1)', color: '#fff', fontWeight: 600, border: 'none', cursor: 'pointer' }} onClick={() => setShowDeleteConfirm(false)}>Cancel</button>
+                      <button style={{ flex: 1, padding: '12px', borderRadius: '12px', background: 'rgba(255, 77, 79, 0.2)', border: '1px solid rgba(255, 77, 79, 0.5)', color: '#ff4d4f', fontWeight: 600, cursor: 'pointer' }} onClick={async () => {
+                        try {
+                          await eventService.deleteEvent(item.id);
+                          globalNotification.success('Event deleted successfully');
+                          window.location.reload();
+                        } catch(err) {
+                          globalNotification.error('Failed to delete event');
+                        }
+                      }}>Delete</button>
+                    </div>
+                  </div>
+                </div>, document.body
               )}
               <button 
                 type="button" 
@@ -213,9 +226,15 @@ export const EventCard: React.FC<EventCardProps> = ({ item, onEdit, onDelete }) 
                 </div>
               </div>
 
-              <Link to={`/events/${item.id}`} className="register-btn mt-4">
-                <span>Register Now <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="inline ml-1"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span>
-              </Link>
+              {item.registrationLink ? (
+                <a href={item.registrationLink.startsWith('http') ? item.registrationLink : `https://${item.registrationLink}`} target="_blank" rel="noopener noreferrer" className="register-btn mt-4">
+                  <span>Register Now <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="inline ml-1"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span>
+                </a>
+              ) : (
+                <Link to={`/events/${item.id}`} className="register-btn mt-4">
+                  <span>View Event Details <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="inline ml-1"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span>
+                </Link>
+              )}
             </div>
           </div>
         </div>

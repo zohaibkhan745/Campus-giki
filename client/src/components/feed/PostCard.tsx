@@ -48,6 +48,8 @@ export const PostCard: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) =>
   const { isActive, openCard, closeCard } = useCardFlip(wrapperRef);
   const { user } = useAuth();
   const canEditOrDelete = user?.role === 'DSA_ADMIN' || (user?.role === 'SOCIETY' && user.society?.id === item.society.id);
+  const canEdit = user?.role === 'SOCIETY' && user.society?.id === item.society.id;
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const logoImage = getSocietyLogo(item.society.logoUrl);
   const authorName = item.society.name;
@@ -155,13 +157,66 @@ export const PostCard: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) =>
             </div>
 
             {showButton && (
+              <div className="flex items-center gap-2 mt-auto w-full">
+              {canEditOrDelete && (
+                <div className="menu-container shrink-0 h-full flex items-center">
+                  <button 
+                    type="button" 
+                    className="three-dots-btn" 
+                    aria-label="Options"
+                    ref={buttonRef}
+                    onClick={toggleDropdown}
+                    style={{ height: '48px', width: '48px', borderRadius: '16px' }}
+                  >
+                    <svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="2.5"></circle><circle cx="12" cy="12" r="2.5"></circle><circle cx="19" cy="12" r="2.5"></circle></svg>
+                  </button>
+                  {dropdownOpen && createPortal(
+                    <div 
+                      className="card-dropdown-menu active" 
+                      style={{ position: 'fixed', bottom: window.innerHeight - dropdownPos.top + 50, left: dropdownPos.left, zIndex: 9999, margin: 0 }}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      {canEdit && <button className="card-dropdown-item" onClick={(e) => { 
+                        e.stopPropagation(); setDropdownOpen(false); 
+                        if(onEdit) onEdit(); else navigate(`/society/posts`);
+                      }}>Edit Post</button>}
+                      <button className="card-dropdown-item delete" onClick={(e) => { 
+                        e.stopPropagation(); setDropdownOpen(false); 
+                        setShowDeleteConfirm(true);
+                      }}>Delete Post</button>
+                    </div>,
+                    document.body
+                  )}
+                </div>
+              )}
+              {showDeleteConfirm && createPortal(
+                <div id="delete-confirm-modal" style={{ position: 'fixed', inset: 0, zIndex: 10000, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(8px)' }} onClick={(e) => { e.stopPropagation(); setShowDeleteConfirm(false); }}>
+                  <div style={{ background: 'rgba(25, 27, 34, 0.85)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,0.1)', padding: '24px', borderRadius: '24px', maxWidth: '400px', width: '90%', textAlign: 'center', boxShadow: '0 25px 50px rgba(0,0,0,0.5)' }} onClick={e => e.stopPropagation()}>
+                    <h3 style={{ color: '#fff', fontSize: '1.25rem', fontWeight: 700, marginBottom: '12px' }}>Delete Post?</h3>
+                    <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.9rem', marginBottom: '24px' }}>Are you sure you want to permanently delete this post? This action cannot be undone.</p>
+                    <div style={{ display: 'flex', gap: '12px' }}>
+                      <button style={{ flex: 1, padding: '12px', borderRadius: '12px', background: 'rgba(255,255,255,0.1)', color: '#fff', fontWeight: 600, border: 'none', cursor: 'pointer' }} onClick={() => setShowDeleteConfirm(false)}>Cancel</button>
+                      <button style={{ flex: 1, padding: '12px', borderRadius: '12px', background: 'rgba(255, 77, 79, 0.2)', border: '1px solid rgba(255, 77, 79, 0.5)', color: '#ff4d4f', fontWeight: 600, cursor: 'pointer' }} onClick={async () => {
+                        try {
+                          await postService.deletePost(item.id);
+                          globalNotification.success('Post deleted successfully');
+                          window.location.reload();
+                        } catch(err) {
+                          globalNotification.error('Failed to delete post');
+                        }
+                      }}>Delete</button>
+                    </div>
+                  </div>
+                </div>, document.body
+              )}
               <button 
                 type="button" 
-                className="card-button open-details-btn visible"
+                className="card-button open-details-btn visible flex-1"
                 onClick={(e) => { e.stopPropagation(); openCard(false); }}
               >
                 View Details
               </button>
+            </div>
             )}
           </div>
         </div>

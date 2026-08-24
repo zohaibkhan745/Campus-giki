@@ -5,6 +5,7 @@ import { Navigate, Link } from 'react-router-dom';
 import { UpcomingEventIcon } from '@/components/icons/UpcomingEventIcon';
 import { SocietyIcon } from '@/components/icons/SocietyIcon';
 import { useAuth } from '@/hooks/useAuth';
+import { EventCard } from '@/components/feed/EventCard';
 import { societyService } from '@/services/society.service';
 import { DashboardSkeleton } from '@/components/dashboard/DashboardSkeleton';
 import { DeleteEventDialog } from '@/components/events/DeleteEventDialog';
