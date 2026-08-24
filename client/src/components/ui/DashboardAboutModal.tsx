@@ -49,18 +49,72 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ profil
 
   const handleSaveMember = () => {
     if (!editingMember) return;
-    const payload = {
-      [editingMember.original.role === 'President' ? 'presidentName' : 'execName']: editingMember.current.name,
-      [editingMember.original.role === 'President' ? 'presidentEmail' : 'execEmail']: editingMember.current.email,
+    
+    let payload = {
+      name: profile.name,
+      type: profile.type,
+      categoryId: profile.category?.id,
+      shortDescription: profile.shortDescription,
+      longDescription: profile.longDescription,
+      logoUrl: profile.logoUrl,
+      bannerUrl: profile.bannerUrl,
+      instagram: profile.instagram,
+      facebook: profile.facebook,
+      linkedin: profile.linkedin,
+      website: profile.website,
+      email: profile.email,
+      presidentName: profile.presidentName,
+      presidentRegNum: profile.presidentRegNum,
+      presidentContact: profile.presidentContact,
+      presidentEmail: profile.presidentEmail,
+      presidentFaculty: profile.presidentFaculty,
+      executiveCouncil: profile.executiveCouncil
     };
-    if (editingMember.original.role !== 'President') {
-      payload.execRole = editingMember.original.role;
+
+    if (editingMember.original.role === 'President') {
+      payload.presidentName = editingMember.current.name;
+      payload.presidentEmail = editingMember.current.email;
+    } else {
+      const newCouncil = council.map((m: any) => m.name === editingMember.original.name && m.role === editingMember.original.role ? editingMember.current : m);
+      payload.executiveCouncil = JSON.stringify(newCouncil);
     }
     updateMutation.mutate(payload);
   };
 
+  const handleDeleteMember = () => {
+    if (!editingMember) return;
+    const newCouncil = council.filter((m: any) => !(m.name === editingMember.original.name && m.role === editingMember.original.role));
+    
+    const payload = {
+      name: profile.name,
+      type: profile.type,
+      categoryId: profile.category?.id,
+      shortDescription: profile.shortDescription,
+      longDescription: profile.longDescription,
+      logoUrl: profile.logoUrl,
+      bannerUrl: profile.bannerUrl,
+      instagram: profile.instagram,
+      facebook: profile.facebook,
+      linkedin: profile.linkedin,
+      website: profile.website,
+      email: profile.email,
+      presidentName: profile.presidentName,
+      presidentRegNum: profile.presidentRegNum,
+      presidentContact: profile.presidentContact,
+      presidentEmail: profile.presidentEmail,
+      presidentFaculty: profile.presidentFaculty,
+      executiveCouncil: JSON.stringify(newCouncil)
+    };
+    updateMutation.mutate(payload);
+  };
+
   const UNEDITABLE_ROLES = ["President", "Vice President", "Event Coordinator", "General Secretary", "Treasurer", "Director Liaison"];
-  const council = profile.executiveCouncil || [];
+  let council: any[] = [];
+  try {
+    if (profile.executiveCouncil) {
+      council = typeof profile.executiveCouncil === 'string' ? JSON.parse(profile.executiveCouncil) : profile.executiveCouncil;
+    }
+  } catch (e) {}
 
   return createPortal(
     <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 sm:p-6 overflow-hidden">
@@ -220,10 +274,7 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ profil
                 <p className="text-gray-300 text-sm">Are you sure you want to remove <strong className="text-white">{editingMember.original.name}</strong> from the Executive Council?</p>
                 <div className="flex justify-end gap-3 pt-2">
                   <button onClick={() => setEditingMember({...editingMember, confirmDelete: false})} className="px-4 py-2 text-gray-300 hover:bg-white/10 rounded-xl text-sm font-semibold transition-colors">Cancel</button>
-                  <button onClick={() => {
-                    const payload = { execRole: editingMember.original.role, delete: true };
-                    updateMutation.mutate(payload);
-                  }} disabled={updateMutation.isPending} className="px-4 py-2 bg-red-500 text-white hover:bg-red-600 rounded-xl text-sm font-bold transition-colors disabled:opacity-50 flex items-center gap-2">
+                  <button onClick={handleDeleteMember} disabled={updateMutation.isPending} className="px-4 py-2 bg-red-500 text-white hover:bg-red-600 rounded-xl text-sm font-bold transition-colors disabled:opacity-50 flex items-center gap-2">
                     <Trash2 className="w-4 h-4"/> Yes, Remove
                   </button>
                 </div>
@@ -236,5 +287,8 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ profil
     </div>
   , (document.getElementById('modal-root') || document.body) as HTMLElement);
 };
+
+
+
 
 
