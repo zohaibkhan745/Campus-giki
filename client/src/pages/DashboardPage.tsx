@@ -378,11 +378,12 @@ export const DashboardPage: React.FC = () => {
         isOpen={isAnnouncementDialogOpen}
         onClose={() => setIsAnnouncementDialogOpen(false)}
       />
-        <DashboardAboutModal isOpen={isAboutModalOpen} onClose={() => setIsAboutModalOpen(false)} profile={profile} />
+        {isAboutModalOpen && <DashboardAboutModal onClose={() => setIsAboutModalOpen(false)} profile={profile} />}
       </div>
     </div>
   );
 };
+
 
 
 
