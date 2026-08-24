@@ -132,11 +132,6 @@ export const PostCard: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) =>
           <div className="glass-card-bg"></div>
 
           <div className="card-top-bar">
-            <span className="card-tag">Post</span>
-          </div>
-
-          <div className="glass-overlay">
-            <div className="user-profile">
               <div className="profile-header">
                 <img 
                   src={logoImage} 
@@ -149,6 +144,11 @@ export const PostCard: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) =>
                   <span className="post-timestamp">Posted: {formattedDate} • {formattedTime}</span>
                 </div>
               </div>
+              <span className="card-tag">Post</span>
+            </div>
+
+          <div className="glass-overlay">
+              <div className="user-profile">
 
               <div className="front-text-content" ref={textContentRef}>
                 {item.title && <h3 className="card-title">{item.title}</h3>}

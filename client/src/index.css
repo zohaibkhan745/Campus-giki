@@ -417,7 +417,7 @@ body.is-focused .cards-container {
   );
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
+  justify-content: space-between;
   padding: 68px 24px 24px 24px;
   z-index: 2;
 }
@@ -569,7 +569,7 @@ body.is-focused .cards-container {
   gap: 12px;
   z-index: 30;
   width: calc(100% - 40px);
-  justify-content: flex-end;
+  justify-content: space-between;
 }
 
 .menu-container {
@@ -1009,7 +1009,6 @@ body.is-focused .reparented-item {
   background-color: rgba(255, 255, 255, 0.4);
 }
 /* --------------------------------- */
-\n
 /* --- MODAL OVERLAY STYLES --- */
 .modal-overlay {
   position: fixed;
@@ -1060,17 +1059,21 @@ body.is-focused .reparented-item {
 }
 
 .btn-cancel {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: #fff;
+  background: #ffffff;
+  border: none;
+  color: #000000;
   padding: 10px 20px;
   border-radius: 10px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .btn-cancel:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: #e5e7eb;
 }
 /* -------------------------------- */

@@ -79,11 +79,6 @@ export const EventCard: React.FC<EventCardProps> = ({ item, onEdit, onDelete }) 
           <img src={coverImage} alt="Event Cover" className="card-image" />
 
           <div className="card-top-bar">
-            <span className="card-tag">Event</span>
-          </div>
-
-          <div className="card-overlay">
-            <div className="user-profile">
               <div className="profile-header">
                 <img 
                   src={logoImage} 
@@ -96,6 +91,11 @@ export const EventCard: React.FC<EventCardProps> = ({ item, onEdit, onDelete }) 
                   <span className="post-timestamp">Posted: {formattedDate}</span>
                 </div>
               </div>
+              <span className="card-tag">Event</span>
+            </div>
+
+          <div className="card-overlay">
+              <div className="user-profile">
 
               <div className="mt-2">
                 <h3 className="card-title">{item.title}</h3>
