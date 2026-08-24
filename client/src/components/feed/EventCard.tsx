@@ -120,11 +120,7 @@ export const EventCard: React.FC<EventCardProps> = ({ item, onEdit, onDelete }) 
                 <div className="menu-container shrink-0 h-full flex items-center">
                   <button 
                     type="button" 
-                    className="three-dots-btn" 
-                    aria-label="Options"
-                    ref={buttonRef}
-                    onClick={toggleDropdown}
-                    style={{ height: '48px', width: '48px', borderRadius: '16px' }}
+                    className="card-button flex items-center justify-center p-0" aria-label="Options" ref={buttonRef} onClick={toggleDropdown} style={{ height: '48px', width: '48px', borderRadius: '12px' }}
                   >
                     <svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="2.5"></circle><circle cx="12" cy="12" r="2.5"></circle><circle cx="19" cy="12" r="2.5"></circle></svg>
                   </button>
@@ -153,14 +149,14 @@ export const EventCard: React.FC<EventCardProps> = ({ item, onEdit, onDelete }) 
                     <h3 style={{ color: '#fff', fontSize: '1.25rem', fontWeight: 700, marginBottom: '12px' }}>Delete Event?</h3>
                     <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.9rem', marginBottom: '24px' }}>Are you sure you want to permanently delete this event? This action cannot be undone.</p>
                     <div style={{ display: 'flex', gap: '12px' }}>
-                      <button style={{ flex: 1, padding: '12px', borderRadius: '12px', background: 'rgba(255,255,255,0.1)', color: '#fff', fontWeight: 600, border: 'none', cursor: 'pointer' }} onClick={() => setShowDeleteConfirm(false)}>Cancel</button>
-                      <button style={{ flex: 1, padding: '12px', borderRadius: '12px', background: 'rgba(255, 77, 79, 0.2)', border: '1px solid rgba(255, 77, 79, 0.5)', color: '#ff4d4f', fontWeight: 600, cursor: 'pointer' }} onClick={async () => {
+                      <button style={{ flex: 1, padding: '12px', borderRadius: '12px', background: '#fff', color: '#000', fontWeight: 600, border: 'none', cursor: 'pointer' }} onClick={() => setShowDeleteConfirm(false)}>Cancel</button>
+                      <button style={{ flex: 1, padding: '12px', borderRadius: '12px', background: '#ff4d4f', border: '1px solid #ff4d4f', color: '#fff', fontWeight: 600, cursor: 'pointer' }} onClick={async () => {
                         try {
                           await eventService.deleteEvent(item.id);
-                          globalNotification.success('Event deleted successfully');
+                          globalNotification.triggerSuccess('Event deleted successfully');
                           window.location.reload();
                         } catch(err) {
-                          globalNotification.error('Failed to delete event');
+                          globalNotification.triggerFailed('Failed to delete event');
                         }
                       }}>Delete</button>
                     </div>
@@ -169,7 +165,7 @@ export const EventCard: React.FC<EventCardProps> = ({ item, onEdit, onDelete }) 
               )}
               <button 
                 type="button" 
-                className="card-button open-details-btn flex-1"
+                className="card-button open-details-btn flex-1" style={{ height: '48px' }}
                 onClick={(e) => { e.stopPropagation(); openCard(true); }}
               >
                 View Details
