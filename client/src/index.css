@@ -1828,7 +1828,7 @@ body.is-focused {
   background: transparent;
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  z-index: 30;
+  z-index: 10;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.8s cubic-bezier(0.25, 1, 0.5, 1);
@@ -1847,6 +1847,7 @@ body.is-focused {
   display: grid !important;
   grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
   gap: 32px !important;
+  align-items: start !important;
   padding: 60px 40px !important;
   max-width: 1440px !important;
   margin: 0 auto !important;
@@ -2425,12 +2426,14 @@ body.is-focused .cards-container {
 /* --- END NEW CARD UI THEME --- */
 
 
+body.is-focused nav,
+body.is-focused header,
+body.is-focused footer,
 body.is-focused .nav-container,
 body.is-focused #dock,
-body.is-focused .dock-nav,
-body.is-focused footer,
-body.is-focused header {
+body.is-focused .dock-nav {
   display: none !important;
   opacity: 0 !important;
   pointer-events: none !important;
+  visibility: hidden !important;
 }

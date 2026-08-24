@@ -1,4 +1,5 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
 import { Calendar, MapPin, X } from 'lucide-react';
 import { getSocietyLogo } from '@/lib/utils';
@@ -12,6 +13,30 @@ interface EventCardProps {
 export const EventCard: React.FC<EventCardProps> = ({ item }) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const { isActive, openCard, closeCard } = useCardFlip(wrapperRef);
+
+  
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0 });
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
+  const toggleDropdown = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (dropdownOpen) {
+      setDropdownOpen(false);
+      return;
+    }
+    const rect = e.currentTarget.getBoundingClientRect();
+    setDropdownPos({ top: rect.bottom + 8, left: rect.left });
+    setDropdownOpen(true);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = () => setDropdownOpen(false);
+    if (dropdownOpen) {
+      window.addEventListener('click', handleClickOutside);
+    }
+    return () => window.removeEventListener('click', handleClickOutside);
+  }, [dropdownOpen]);
 
   const coverImage = item.coverImageUrl || 'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?auto=format&fit=crop&w=800&q=80';
   const logoImage = getSocietyLogo(item.society.logoUrl);
@@ -45,11 +70,30 @@ export const EventCard: React.FC<EventCardProps> = ({ item }) => {
 
           <div className="card-top-bar">
             <div className="menu-container">
-              <button type="button" className="three-dots-btn" aria-label="Options">
+              
+              <button 
+                type="button" 
+                className="three-dots-btn" 
+                aria-label="Options"
+                ref={buttonRef}
+                onClick={toggleDropdown}
+              >
+
                 <svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="2.5"></circle><circle cx="12" cy="12" r="2.5"></circle><circle cx="19" cy="12" r="2.5"></circle></svg>
               </button>
             </div>
             <span className="card-tag">Event</span>
+            {dropdownOpen && createPortal(
+              <div 
+                className="dropdown-menu active" 
+                style={{ position: 'fixed', top: dropdownPos.top, left: dropdownPos.left, zIndex: 9999, margin: 0 }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button className="dropdown-item">Share Event</button>
+                <button className="dropdown-item">Copy Link</button>
+              </div>,
+              document.body
+            )}
           </div>
 
           <div className="card-overlay">

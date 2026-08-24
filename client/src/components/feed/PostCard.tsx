@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import { getSocietyLogo } from '@/lib/utils';
 import type { PostFeedItem } from '@/types/feed.types';
@@ -15,6 +16,29 @@ export const PostCard: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) =>
   const frontDescRef = useRef<HTMLParagraphElement>(null);
   const textContentRef = useRef<HTMLDivElement>(null);
   const [showButton, setShowButton] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0 });
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
+  const toggleDropdown = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (dropdownOpen) {
+      setDropdownOpen(false);
+      return;
+    }
+    const rect = e.currentTarget.getBoundingClientRect();
+    setDropdownPos({ top: rect.bottom + 8, left: rect.left });
+    setDropdownOpen(true);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = () => setDropdownOpen(false);
+    if (dropdownOpen) {
+      window.addEventListener('click', handleClickOutside);
+    }
+    return () => window.removeEventListener('click', handleClickOutside);
+  }, [dropdownOpen]);
+
   
   const { isActive, openCard, closeCard } = useCardFlip(wrapperRef);
 
@@ -100,7 +124,15 @@ export const PostCard: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) =>
 
           <div className="card-top-bar">
             <div className="menu-container">
-              <button type="button" className="three-dots-btn" aria-label="Options">
+              
+              <button 
+                type="button" 
+                className="three-dots-btn" 
+                aria-label="Options"
+                ref={buttonRef}
+                onClick={toggleDropdown}
+              >
+
                 <svg viewBox="0 0 24 24">
                   <circle cx="5" cy="12" r="2.5"></circle>
                   <circle cx="12" cy="12" r="2.5"></circle>
@@ -109,6 +141,17 @@ export const PostCard: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) =>
               </button>
             </div>
             <span className="card-tag">Post</span>
+            {dropdownOpen && createPortal(
+              <div 
+                className="dropdown-menu active" 
+                style={{ position: 'fixed', top: dropdownPos.top, left: dropdownPos.left, zIndex: 9999, margin: 0 }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button className="dropdown-item" onClick={() => { if(onEdit) onEdit(); setDropdownOpen(false); }}>Edit Post</button>
+                <button className="dropdown-item delete" onClick={() => { if(onDelete) onDelete(); setDropdownOpen(false); }}>Delete Post</button>
+              </div>,
+              document.body
+            )}
           </div>
 
           <div className="glass-overlay">

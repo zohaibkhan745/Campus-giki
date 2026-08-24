@@ -100,7 +100,7 @@ export function useCardFlip(wrapperRef: RefObject<HTMLDivElement>) {
       requestAnimationFrame(() => {
         wrapper.classList.add("has-transition");
 
-        const screenWidth = window.innerWidth; 
+        const screenWidth = document.documentElement.clientWidth; 
         const screenHeight = window.innerHeight;
         const isMobile = screenWidth <= 768;
         
