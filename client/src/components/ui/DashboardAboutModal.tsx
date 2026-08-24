@@ -8,16 +8,18 @@ const Linkedin = ({className}: {className?: string}) => <svg className={classNam
 import { useNavigate } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { societyService } from '@/services/society.service';
-import { createPortal } from 'react-dom';
+import { createPortal } from 'react-dom';\nimport { useAuth } from '@/contexts/AuthContext';
 import { globalNotification } from '@/contexts/NotificationContext';
 
 interface DashboardAboutModalProps {
   profile: any;
   onClose: () => void;
-  isCurrentUserSociety?: boolean;
+  
 }
 
-export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ profile, onClose, isCurrentUserSociety = false }) => {
+export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ profile, onClose }) => {
+  const { user } = useAuth();
+  const isCurrentUserSociety = user?.id === profile.user.id;
   useEffect(() => {
     document.body.classList.add('modal-open');
     return () => document.body.classList.remove('modal-open');
@@ -122,40 +124,28 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ profil
       
       {/* Dynamic CSS for scrollbar track offset */}
       <style>{`
-        .modal-scroll-offset::-webkit-scrollbar-track {
-          background: transparent;
-          margin-top: 320px;
-        }
-        @media (max-width: 768px) {
-          .modal-scroll-offset::-webkit-scrollbar-track {
-            margin-top: 280px;
-          }
-        }
-      \n        .modal-scroll-offset {
-          background-image: var(--banner-bg);
-          background-size: 100% 280px;
-          background-repeat: no-repeat;
-          background-position: top left;
-          background-attachment: local;
-        }
-        @media (min-width: 768px) {
           .modal-scroll-offset {
-            background-size: 100% 320px;
+            overflow-y: overlay !important;
           }
-        }
+          .modal-scroll-offset::-webkit-scrollbar-track {
+            background: transparent;
+            margin-top: 320px;
+          }
+          @media (max-width: 768px) {
+            .modal-scroll-offset::-webkit-scrollbar-track {
+              margin-top: 280px;
+            }
+          }
         `}</style>
 
       {/* Outer Modal Container */}
       <div className="relative w-full max-w-[1000px] h-full max-h-[90vh] bg-[#0d0d0d] border border-white/10 rounded-3xl shadow-2xl flex flex-col z-10 overflow-hidden">
         
         {/* Inner Scrollable Container */}
-        <div 
-          className="w-full h-full overflow-y-auto overflow-x-hidden custom-scrollbar modal-scroll-offset relative flex-1"
-          style={{ '--banner-bg': `url(${getSocietyBanner(profile.bannerUrl)})` } as any}
-        >
+        <div className="w-full h-full overflow-y-auto custom-scrollbar modal-scroll-offset relative flex-1">
           
           {/* Banner Section */}
-          <div className="relative w-full h-[280px] md:h-[320px] bg-[#1e3c72] shrink-0">
+          <div className="relative w-[calc(100%+16px)] -mr-[16px] h-[280px] md:h-[320px] bg-[#1e3c72] shrink-0">
             <img src={getSocietyBanner(profile.bannerUrl)} alt="Banner" className="w-full h-full object-cover block" />
             <div className="absolute inset-0 bg-gradient-to-t from-[#0d0d0d]/80 via-transparent to-transparent pointer-events-none" />
             
