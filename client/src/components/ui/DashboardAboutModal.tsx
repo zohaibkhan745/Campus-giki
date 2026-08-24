@@ -40,7 +40,7 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ profil
   const updateMutation = useMutation({
     mutationFn: (data: any) => societyService.updateSociety(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['societyProfile'] });
+      queryClient.invalidateQueries({ queryKey: ['societyDashboard'] });
       setEditingMember(null);
       globalNotification.success('Executive member updated successfully');
     },
@@ -124,29 +124,16 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ profil
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
       
       {/* Dynamic CSS for scrollbar track offset */}
-      <style>{`
-          .modal-scroll-offset {
-            overflow-y: overlay !important;
-          }
-          .modal-scroll-offset::-webkit-scrollbar-track {
-            background: transparent;
-            margin-top: 320px;
-          }
-          @media (max-width: 768px) {
-            .modal-scroll-offset::-webkit-scrollbar-track {
-              margin-top: 280px;
-            }
-          }
-        `}</style>
+      
 
       {/* Outer Modal Container */}
       <div className="relative w-full max-w-[1000px] h-full max-h-[90vh] bg-[#0d0d0d] border border-white/10 rounded-3xl shadow-2xl flex flex-col z-10 overflow-hidden">
         
         {/* Inner Scrollable Container */}
-        <div className="w-full h-full overflow-y-auto custom-scrollbar modal-scroll-offset relative flex-1">
-          
-          {/* Banner Section */}
-          <div className="relative w-[calc(100%+16px)] -mr-[16px] h-[280px] md:h-[320px] bg-[#1e3c72] shrink-0">
+        
+          {/* Banner Section (Fixed at Top) */}
+          <div className="relative w-full h-[280px] md:h-[320px] bg-[#1e3c72] shrink-0 z-[20]">
+             
             <img src={getSocietyBanner(profile.bannerUrl)} alt="Banner" className="w-full h-full object-cover block" />
             <div className="absolute inset-0 bg-gradient-to-t from-[#0d0d0d]/80 via-transparent to-transparent pointer-events-none" />
             
@@ -197,10 +184,13 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ profil
                 {profile.name}
               </div>
             </div>
+          
           </div>
-  
-          {/* Content Section */}
-          <div className="relative z-10 pt-[24px] px-[20px] md:pt-[110px] md:pl-[138px] md:pr-[48px] pb-10 w-full max-w-[1000px] mx-auto">
+          
+          {/* Inner Scrollable Container (Starts Below Banner) */}
+          <div className="w-full h-full overflow-y-auto custom-scrollbar relative flex-1 z-[10]">
+            {/* Content Section */}
+            <div className="relative z-10 pt-[24px] px-[20px] md:pt-[110px] md:pl-[138px] md:pr-[48px] pb-10 w-full max-w-[1000px] mx-auto">
             
             <div className="w-full">
               <h2 className="text-[18px] md:text-[22px] font-bold text-white mb-[12px] uppercase tracking-wider">ABOUT US</h2>
@@ -298,15 +288,15 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ profil
                   <input type="text" value={editingMember.current.name} onChange={e => setEditingMember({...editingMember, current: {...editingMember.current, name: e.target.value}})} className="w-full bg-black/30 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500/50" />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Email</label>
-                  <input type="email" value={editingMember.current.email} onChange={e => setEditingMember({...editingMember, current: {...editingMember.current, email: e.target.value}})} className="w-full bg-black/30 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500/50" />
+                  <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Position</label>
+                  <input type="text" value={editingMember.current.role} disabled={UNEDITABLE_ROLES.includes(editingMember.original.role)} onChange={e => setEditingMember({...editingMember, current: {...editingMember.current, role: e.target.value}})} className="w-full bg-black/30 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500/50 disabled:opacity-50 disabled:cursor-not-allowed" />
                 </div>
                 
                 <div className="flex justify-end gap-3 pt-2">
                   {!UNEDITABLE_ROLES.includes(editingMember.original.role) && (
-                    <button onClick={() => setEditingMember({...editingMember, confirmDelete: true})} className="px-4 py-2 text-red-400 hover:bg-red-400/10 rounded-xl text-sm font-semibold transition-colors mr-auto">Delete</button>
+                    <button onClick={() => setEditingMember({...editingMember, confirmDelete: true})} className="px-4 py-2 bg-red-500 text-white hover:bg-red-600 rounded-xl text-sm font-bold transition-colors mr-auto">Delete</button>
                   )}
-                  <button onClick={() => setEditingMember(null)} className="px-4 py-2 text-gray-300 hover:bg-white/10 rounded-xl text-sm font-semibold transition-colors">Cancel</button>
+                  <button onClick={() => setEditingMember(null)} className="px-4 py-2 bg-white text-black hover:bg-gray-200 rounded-xl text-sm font-bold transition-colors">Cancel</button>
                   <button onClick={handleSaveMember} disabled={updateMutation.isPending} className="px-4 py-2 bg-white text-black hover:bg-gray-200 rounded-xl text-sm font-bold transition-colors disabled:opacity-50">
                     {updateMutation.isPending ? 'Saving...' : 'Save Changes'}
                   </button>
@@ -316,7 +306,7 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ profil
               <div className="space-y-4">
                 <p className="text-gray-300 text-sm">Are you sure you want to remove <strong className="text-white">{editingMember.original.name}</strong> from the Executive Council?</p>
                 <div className="flex justify-end gap-3 pt-2">
-                  <button onClick={() => setEditingMember({...editingMember, confirmDelete: false})} className="px-4 py-2 text-gray-300 hover:bg-white/10 rounded-xl text-sm font-semibold transition-colors">Cancel</button>
+                  <button onClick={() => setEditingMember({...editingMember, confirmDelete: false})} className="px-4 py-2 bg-white text-black hover:bg-gray-200 rounded-xl text-sm font-bold transition-colors">Cancel</button>
                   <button onClick={handleDeleteMember} disabled={updateMutation.isPending} className="px-4 py-2 bg-red-500 text-white hover:bg-red-600 rounded-xl text-sm font-bold transition-colors disabled:opacity-50 flex items-center gap-2">
                     <Trash2 className="w-4 h-4"/> Yes, Remove
                   </button>
