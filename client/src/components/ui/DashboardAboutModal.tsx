@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { societyService } from '@/services/society.service';
 import { createPortal } from 'react-dom';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/hooks/useAuth';
 import { globalNotification } from '@/contexts/NotificationContext';
 
 interface DashboardAboutModalProps {
