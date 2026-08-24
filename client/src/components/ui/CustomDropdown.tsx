@@ -167,9 +167,9 @@ export const CustomDropdown = forwardRef<HTMLSelectElement, CustomDropdownProps>
           {selectedOption.code && <span className="country-code">{selectedOption.code}</span>}
           <span className="language-name" title={selectedOption.label}>{truncateLabel(selectedOption.label)}</span>
         </div>
-        <svg className="arrow-icon" viewBox="0 0 24 24">
-          <polyline points="6 9 12 15 18 9"></polyline>
-        </svg>
+        <svg className="arrow-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="6 9 12 15 18 9"></polyline>
+  </svg>
       </button>
 
       {isOpen && typeof document !== 'undefined' && createPortal(
@@ -187,9 +187,9 @@ export const CustomDropdown = forwardRef<HTMLSelectElement, CustomDropdownProps>
                     {opt.code && <span className="country-code">{opt.code}</span>}
                     <span className="language-name" title={opt.label}>{truncateLabel(opt.label)}</span>
                   </div>
-                  <svg className="check-icon" viewBox="0 0 24 24">
-                    <polyline points="20 6 9 17 4 12"></polyline>
-                  </svg>
+                  <svg className="check-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="20 6 9 17 4 12"></polyline>
+  </svg>
                 </div>
               );
             })}

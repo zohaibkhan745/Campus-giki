@@ -445,8 +445,8 @@ export class EventsService {
   /**
    * Deletes an event after enforcing ownership validation.
    */
-  async deleteEvent(eventId: string, userId: string): Promise<{ message: string; id: string }> {
-    await this.validateEventOwnership(eventId, userId);
+  async deleteEvent(eventId: string, userId: string, userRole: string): Promise<{ message: string; id: string }> {
+    await this.validateEventOwnership(eventId, userId, userRole);
 
     await this.prisma.event.delete({
       where: { id: eventId },

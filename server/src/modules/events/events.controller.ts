@@ -151,7 +151,7 @@ export class EventsController {
   }
 
   @Delete(':id')
-  @Auth(Role.SOCIETY)
+  @Auth(Role.SOCIETY, Role.DSA_ADMIN)
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Delete an event with ownership validation' })
@@ -172,7 +172,7 @@ export class EventsController {
     @Param('id', ParseUUIDPipe) id: string,
     @CurrentUser() user: UserProfileDto,
   ): Promise<{ message: string; id: string }> {
-    return this.eventsService.deleteEvent(id, user.id);
+    return this.eventsService.deleteEvent(id, user.id, user.role);
   }
 
   @Patch(':id/advisor-review')
