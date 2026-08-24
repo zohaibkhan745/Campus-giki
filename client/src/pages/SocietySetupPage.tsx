@@ -360,14 +360,7 @@ export const SocietySetupPage: React.FC = () => {
                 <Input label="Email Address *" type="email" placeholder="president@giki.edu.pk" {...register('presidentEmail')}  error={errors.presidentEmail?.message} />
                 <div>
                   <label className="block text-[11px] font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Faculty *</label>
-                  <CustomDropdown value={watch('presidentFaculty')} onChange={(e: any) => setValue('presidentFaculty', e.target.value)} options={[
-    { value: 'FCSE', label: 'FCSE' },
-    { value: 'FMCE', label: 'FMCE' },
-    { value: 'FES', label: 'FES' },
-    { value: 'FCME', label: 'FCME' },
-    { value: 'FME', label: 'FME' },
-    { value: 'FSM', label: 'FSM' }
-  ]} placeholder="Select Faculty" />
+                  <CustomDropdown value={watch('presidentFaculty')} onChange={(e: any) => setValue('presidentFaculty', e.target.value)} options={[ { value: 'FCSE', label: 'FCSE' }, { value: 'FEE', label: 'FEE' }, { value: 'FME', label: 'FME' }, { value: 'FCVE', label: 'FCVE' }, { value: 'FCME', label: 'FCME' }, { value: 'FMTE', label: 'FMTE' }, { value: 'FES', label: 'FES' }, { value: 'FBS', label: 'FBS' }, { value: 'MGS', label: 'MGS' } ]} placeholder="Select Faculty" />
                   {errors.presidentFaculty?.message && <p className="text-red-400 text-xs mt-1 font-medium">{errors.presidentFaculty.message}</p>}
                 </div>
               </div>
@@ -386,14 +379,7 @@ export const SocietySetupPage: React.FC = () => {
                 <Input label="Email Address *" type="email" placeholder="vp@giki.edu.pk" {...register('vp.email')}  error={errors.vp?.email?.message} />
                 <div>
                   <label className="block text-[11px] font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Faculty *</label>
-                  <CustomDropdown value={watch('vp.faculty')} onChange={(e: any) => setValue('vp.faculty', e.target.value)} options={[
-    { value: 'FCSE', label: 'FCSE' },
-    { value: 'FMCE', label: 'FMCE' },
-    { value: 'FES', label: 'FES' },
-    { value: 'FCME', label: 'FCME' },
-    { value: 'FME', label: 'FME' },
-    { value: 'FSM', label: 'FSM' }
-  ]} placeholder="Select Faculty" />
+                  <CustomDropdown value={watch('vp.faculty')} onChange={(e: any) => setValue('vp.faculty', e.target.value)} options={[ { value: 'FCSE', label: 'FCSE' }, { value: 'FEE', label: 'FEE' }, { value: 'FME', label: 'FME' }, { value: 'FCVE', label: 'FCVE' }, { value: 'FCME', label: 'FCME' }, { value: 'FMTE', label: 'FMTE' }, { value: 'FES', label: 'FES' }, { value: 'FBS', label: 'FBS' }, { value: 'MGS', label: 'MGS' } ]} placeholder="Select Faculty" />
                   {errors.vp?.faculty?.message && <p className="text-red-400 text-xs mt-1 font-medium">{errors.vp.faculty.message}</p>}
                 </div>
               </div>
@@ -412,14 +398,7 @@ export const SocietySetupPage: React.FC = () => {
                 <Input label="Email Address *" type="email" placeholder="ec@giki.edu.pk" {...register('ec.email')}  error={errors.ec?.email?.message} />
                 <div>
                   <label className="block text-[11px] font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Faculty *</label>
-                  <CustomDropdown value={watch('ec.faculty')} onChange={(e: any) => setValue('ec.faculty', e.target.value)} options={[
-    { value: 'FCSE', label: 'FCSE' },
-    { value: 'FMCE', label: 'FMCE' },
-    { value: 'FES', label: 'FES' },
-    { value: 'FCME', label: 'FCME' },
-    { value: 'FME', label: 'FME' },
-    { value: 'FSM', label: 'FSM' }
-  ]} placeholder="Select Faculty" />
+                  <CustomDropdown value={watch('ec.faculty')} onChange={(e: any) => setValue('ec.faculty', e.target.value)} options={[ { value: 'FCSE', label: 'FCSE' }, { value: 'FEE', label: 'FEE' }, { value: 'FME', label: 'FME' }, { value: 'FCVE', label: 'FCVE' }, { value: 'FCME', label: 'FCME' }, { value: 'FMTE', label: 'FMTE' }, { value: 'FES', label: 'FES' }, { value: 'FBS', label: 'FBS' }, { value: 'MGS', label: 'MGS' } ]} placeholder="Select Faculty" />
                   {errors.ec?.faculty?.message && <p className="text-red-400 text-xs mt-1 font-medium">{errors.ec.faculty.message}</p>}
                 </div>
               </div>
@@ -438,14 +417,7 @@ export const SocietySetupPage: React.FC = () => {
                 <Input label="Email Address *" type="email" placeholder="gs@giki.edu.pk" {...register('gs.email')}  error={errors.gs?.email?.message} />
                 <div>
                   <label className="block text-[11px] font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Faculty *</label>
-                  <CustomDropdown value={watch('gs.faculty')} onChange={(e: any) => setValue('gs.faculty', e.target.value)} options={[
-    { value: 'FCSE', label: 'FCSE' },
-    { value: 'FMCE', label: 'FMCE' },
-    { value: 'FES', label: 'FES' },
-    { value: 'FCME', label: 'FCME' },
-    { value: 'FME', label: 'FME' },
-    { value: 'FSM', label: 'FSM' }
-  ]} placeholder="Select Faculty" />
+                  <CustomDropdown value={watch('gs.faculty')} onChange={(e: any) => setValue('gs.faculty', e.target.value)} options={[ { value: 'FCSE', label: 'FCSE' }, { value: 'FEE', label: 'FEE' }, { value: 'FME', label: 'FME' }, { value: 'FCVE', label: 'FCVE' }, { value: 'FCME', label: 'FCME' }, { value: 'FMTE', label: 'FMTE' }, { value: 'FES', label: 'FES' }, { value: 'FBS', label: 'FBS' }, { value: 'MGS', label: 'MGS' } ]} placeholder="Select Faculty" />
                   {errors.gs?.faculty?.message && <p className="text-red-400 text-xs mt-1 font-medium">{errors.gs.faculty.message}</p>}
                 </div>
               </div>
@@ -464,14 +436,7 @@ export const SocietySetupPage: React.FC = () => {
                 <Input label="Email Address *" type="email" placeholder="treasurer@giki.edu.pk" {...register('treasurer.email')}  error={errors.treasurer?.email?.message} />
                 <div>
                   <label className="block text-[11px] font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Faculty *</label>
-                  <CustomDropdown value={watch('treasurer.faculty')} onChange={(e: any) => setValue('treasurer.faculty', e.target.value)} options={[
-    { value: 'FCSE', label: 'FCSE' },
-    { value: 'FMCE', label: 'FMCE' },
-    { value: 'FES', label: 'FES' },
-    { value: 'FCME', label: 'FCME' },
-    { value: 'FME', label: 'FME' },
-    { value: 'FSM', label: 'FSM' }
-  ]} placeholder="Select Faculty" />
+                  <CustomDropdown value={watch('treasurer.faculty')} onChange={(e: any) => setValue('treasurer.faculty', e.target.value)} options={[ { value: 'FCSE', label: 'FCSE' }, { value: 'FEE', label: 'FEE' }, { value: 'FME', label: 'FME' }, { value: 'FCVE', label: 'FCVE' }, { value: 'FCME', label: 'FCME' }, { value: 'FMTE', label: 'FMTE' }, { value: 'FES', label: 'FES' }, { value: 'FBS', label: 'FBS' }, { value: 'MGS', label: 'MGS' } ]} placeholder="Select Faculty" />
                   {errors.treasurer?.faculty?.message && <p className="text-red-400 text-xs mt-1 font-medium">{errors.treasurer.faculty.message}</p>}
                 </div>
               </div>
@@ -490,14 +455,7 @@ export const SocietySetupPage: React.FC = () => {
                 <Input label="Email Address *" type="email" placeholder="dl@giki.edu.pk" {...register('dl.email')}  error={errors.dl?.email?.message} />
                 <div>
                   <label className="block text-[11px] font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Faculty *</label>
-                  <CustomDropdown value={watch('dl.faculty')} onChange={(e: any) => setValue('dl.faculty', e.target.value)} options={[
-    { value: 'FCSE', label: 'FCSE' },
-    { value: 'FMCE', label: 'FMCE' },
-    { value: 'FES', label: 'FES' },
-    { value: 'FCME', label: 'FCME' },
-    { value: 'FME', label: 'FME' },
-    { value: 'FSM', label: 'FSM' }
-  ]} placeholder="Select Faculty" />
+                  <CustomDropdown value={watch('dl.faculty')} onChange={(e: any) => setValue('dl.faculty', e.target.value)} options={[ { value: 'FCSE', label: 'FCSE' }, { value: 'FEE', label: 'FEE' }, { value: 'FME', label: 'FME' }, { value: 'FCVE', label: 'FCVE' }, { value: 'FCME', label: 'FCME' }, { value: 'FMTE', label: 'FMTE' }, { value: 'FES', label: 'FES' }, { value: 'FBS', label: 'FBS' }, { value: 'MGS', label: 'MGS' } ]} placeholder="Select Faculty" />
                   {errors.dl?.faculty?.message && <p className="text-red-400 text-xs mt-1 font-medium">{errors.dl.faculty.message}</p>}
                 </div>
               </div>
@@ -590,14 +548,7 @@ export const SocietySetupPage: React.FC = () => {
                       </div>
                       <div>
                         <label className="block text-[11px] font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Faculty *</label>
-                        <CustomDropdown value={watch(`otherMembers.${index}.faculty` as const)} onChange={(e: any) => setValue(`otherMembers.${index}.faculty` as const, e.target.value)} options={[
-    { value: 'FCSE', label: 'FCSE' },
-    { value: 'FMCE', label: 'FMCE' },
-    { value: 'FES', label: 'FES' },
-    { value: 'FCME', label: 'FCME' },
-    { value: 'FME', label: 'FME' },
-    { value: 'FSM', label: 'FSM' }
-  ]} placeholder="Select Faculty" />
+                        <CustomDropdown value={watch(`otherMembers.${index}.faculty` as const)} onChange={(e: any) => setValue(`otherMembers.${index}.faculty` as const, e.target.value)} options={[ { value: 'FCSE', label: 'FCSE' }, { value: 'FEE', label: 'FEE' }, { value: 'FME', label: 'FME' }, { value: 'FCVE', label: 'FCVE' }, { value: 'FCME', label: 'FCME' }, { value: 'FMTE', label: 'FMTE' }, { value: 'FES', label: 'FES' }, { value: 'FBS', label: 'FBS' }, { value: 'MGS', label: 'MGS' } ]} placeholder="Select Faculty" />
                         {errors.otherMembers?.[index]?.faculty?.message && <p className="text-red-400 text-xs mt-1 font-medium">{errors.otherMembers[index].faculty?.message}</p>}
                       </div>
                     </div>

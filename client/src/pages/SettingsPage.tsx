@@ -157,14 +157,7 @@ export const SettingsPage: React.FC = () => {
                     <div className="space-y-1">
                       <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Faculty</label>
                       <CustomDropdown
-                        options={[
-                          { value: 'FCSE', label: 'FCSE' },
-                          { value: 'FEE', label: 'FEE' },
-                          { value: 'FCVE', label: 'FCVE' },
-                          { value: 'FME', label: 'FME' },
-                          { value: 'FCME', label: 'FCME' },
-                          { value: 'FMTE', label: 'FMTE' }
-                        ]}
+                        options={[ { value: 'FCSE', label: 'FCSE' }, { value: 'FEE', label: 'FEE' }, { value: 'FME', label: 'FME' }, { value: 'FCVE', label: 'FCVE' }, { value: 'FCME', label: 'FCME' }, { value: 'FMTE', label: 'FMTE' }, { value: 'FES', label: 'FES' }, { value: 'FBS', label: 'FBS' }, { value: 'MGS', label: 'MGS' } ]}
                         value={faculty}
                         onChange={(e: any) => setFaculty(e.target.value)}
                         placeholder="Select Faculty"

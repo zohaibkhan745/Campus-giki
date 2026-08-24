@@ -253,15 +253,7 @@ const deleteMutation = useMutation({
                   </label>
                   <CustomDropdown
                       name="department"
-                      options={[
-                        { value: 'FCSE', label: 'FCSE' },
-                        { value: 'FEE', label: 'FEE' },
-                        { value: 'FCVE', label: 'FCVE' },
-                        { value: 'FME', label: 'FME' },
-                        { value: 'FCME', label: 'FCME' },
-                        { value: 'FMTE', label: 'FMTE' },
-                        { value: 'MGS', label: 'MGS' }
-                      ]}
+                      options={[ { value: 'FCSE', label: 'FCSE' }, { value: 'FEE', label: 'FEE' }, { value: 'FME', label: 'FME' }, { value: 'FCVE', label: 'FCVE' }, { value: 'FCME', label: 'FCME' }, { value: 'FMTE', label: 'FMTE' }, { value: 'FES', label: 'FES' }, { value: 'FBS', label: 'FBS' }, { value: 'MGS', label: 'MGS' } ]}
                       value={formData.department}
                       onChange={(e: any) => setFormData(prev => ({ ...prev, department: e?.target?.value !== undefined ? e.target.value : e }))}
                       placeholder="Select Faculty..."

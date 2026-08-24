@@ -116,27 +116,50 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ profil
     }
   } catch (e) {}
 
-    return createPortal(
+      return createPortal(
     <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 sm:p-6">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
       
+      {/* Dynamic CSS for scrollbar track offset */}
+      <style>{`
+        .modal-scroll-offset::-webkit-scrollbar-track {
+          background: transparent;
+          margin-top: 320px;
+        }
+        @media (max-width: 768px) {
+          .modal-scroll-offset::-webkit-scrollbar-track {
+            margin-top: 280px;
+          }
+        }
+      `}</style>
+
       {/* Outer Modal Container */}
       <div className="relative w-full max-w-[1000px] h-full max-h-[90vh] bg-[#0d0d0d] border border-white/10 rounded-3xl shadow-2xl flex flex-col z-10 overflow-hidden">
         
         {/* Inner Scrollable Container */}
-        <div className="w-full h-full overflow-y-auto custom-scrollbar relative flex-1">
+        <div className="w-full h-full overflow-y-auto custom-scrollbar modal-scroll-offset relative flex-1">
           
           {/* Banner Section */}
           <div className="relative w-full h-[280px] md:h-[320px] bg-[#1e3c72] shrink-0">
             <img src={getSocietyBanner(profile.bannerUrl)} alt="Banner" className="w-full h-full object-cover block" />
             <div className="absolute inset-0 bg-gradient-to-t from-[#0d0d0d]/80 via-transparent to-transparent pointer-events-none" />
             
-            <button 
-              onClick={onClose}
-              className="absolute top-4 right-4 p-2 bg-black/50 hover:bg-black/80 text-white rounded-full backdrop-blur-sm transition-all border border-white/20 z-[30]"
-            >
-              <X className="w-5 h-5" />
-            </button>
+            {/* Top Right Controls (Close + Tags) */}
+            <div className="absolute top-4 right-4 flex flex-col items-end z-[30]">
+              <button 
+                onClick={onClose}
+                className="p-2 bg-black/50 hover:bg-black/80 text-white rounded-full backdrop-blur-sm transition-all border border-white/20 shadow-lg mb-3"
+              >
+                <X className="w-5 h-5" />
+              </button>
+              
+              <div className="flex flex-col items-end gap-2">
+                <span className="px-3 py-1 bg-white/20 backdrop-blur-sm border border-white/20 rounded-full text-[10px] md:text-xs font-bold text-white uppercase tracking-wider shadow-md">{profile.type || 'SOCIETY'}</span>
+                {profile.category && (
+                  <span className="px-3 py-1 bg-black/50 backdrop-blur-sm border border-white/20 rounded-full text-[10px] md:text-xs font-bold text-gray-200 shadow-md">{profile.category.name}</span>
+                )}
+              </div>
+            </div>
   
             {/* Socials */}
             <div className="absolute top-4 left-4 flex gap-2 z-[30]">
@@ -160,16 +183,12 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ profil
               <img src={getSocietyLogo(profile.logoUrl)} alt="Society Logo" className="w-[110px] h-[110px] md:w-[180px] md:h-[180px] rounded-full border-[3px] md:border-[5px] border-[#0d0d0d] object-cover bg-[#0d0d0d] shadow-[0_4px_10px_rgba(0,0,0,0.15)] block" />
             </div>
 
-            {/* Society Name and Tags */}
+            {/* Society Name */}
             <div 
               className="absolute bottom-[16px] md:bottom-[20px] left-[50%] -translate-x-[50%] w-max max-w-[90%] md:max-w-[calc(100%-496px)] z-[5] flex flex-col items-center pointer-events-none"
             >
               <div className="text-center break-words text-[20px] md:text-[30px] leading-[1.2] font-bold text-white drop-shadow-lg" style={{ textShadow: '0 2px 8px rgba(0, 0, 0, 0.7)' }}>
                 {profile.name}
-              </div>
-              <div className="flex items-center justify-center gap-2 mt-2" style={{ textShadow: '0 2px 8px rgba(0, 0, 0, 0.7)' }}>
-                <span className="px-3 py-1 bg-white/20 backdrop-blur-sm border border-white/20 rounded-full text-[10px] md:text-xs font-bold text-white uppercase tracking-wider">{profile.type}</span>
-                <span className="text-gray-200 text-sm font-medium">{profile.category?.name}</span>
               </div>
             </div>
           </div>
@@ -179,60 +198,69 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ profil
             
             <div className="w-full">
               <h2 className="text-[18px] md:text-[22px] font-bold text-white mb-[12px] uppercase tracking-wider">ABOUT US</h2>
-              <p className="text-[14px] md:text-[16px] leading-[1.6] text-gray-300">
+              <p className="text-[14px] md:text-[16px] leading-[1.6] text-gray-300 whitespace-pre-wrap">
                 {profile.longDescription || "No description provided."}
               </p>
             </div>
   
             <div className="mt-12 w-full">
               <h2 className="text-[18px] md:text-[22px] font-bold text-white mb-[16px] uppercase tracking-wider">EXECUTIVE COUNCIL</h2>
-              {council.length > 0 ? (
-                <div className="bg-white/[0.02] border border-white/5 rounded-2xl overflow-x-auto w-full">
-                  <table className="w-full text-left border-collapse min-w-[600px]">
-                    <thead>
-                      <tr className="border-b border-white/10">
-                        <th className="py-4 px-5 text-[11px] font-black text-gray-400 uppercase tracking-widest">Position</th>
-                        <th className="py-4 px-5 text-[11px] font-black text-gray-400 uppercase tracking-widest">Name</th>
-                        <th className="py-4 px-5 text-[11px] font-black text-gray-400 uppercase tracking-widest">Email</th>
-                        <th className="py-4 px-5 text-[11px] font-black text-gray-400 uppercase tracking-widest text-right">Actions</th>
+              <div className="bg-white/[0.02] border border-white/5 rounded-2xl overflow-x-auto w-full">
+                <table className="w-full text-left border-collapse min-w-[600px]">
+                  <thead>
+                    <tr className="border-b border-white/10 bg-white/5">
+                      <th className="py-4 px-5 text-[11px] font-black text-gray-400 uppercase tracking-widest w-16">Sr. No</th>
+                      <th className="py-4 px-5 text-[11px] font-black text-gray-400 uppercase tracking-widest">Position</th>
+                      <th className="py-4 px-5 text-[11px] font-black text-gray-400 uppercase tracking-widest">Name</th>
+                      <th className="py-4 px-5 text-[11px] font-black text-gray-400 uppercase tracking-widest">Email</th>
+                      <th className="py-4 px-5 text-[11px] font-black text-gray-400 uppercase tracking-widest text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-white/5">
+                    {profile.presidentName ? (
+                      <tr className="hover:bg-white/5 transition-colors">
+                        <td className="py-4 px-5 text-[14px] font-semibold text-gray-400">01</td>
+                        <td className="py-4 px-5 text-[15px] font-bold text-amber-400">President</td>
+                        <td className="py-4 px-5 text-[15px] font-semibold text-white">{profile.presidentName}</td>
+                        <td className="py-4 px-5 text-[14px] text-gray-400">{profile.presidentEmail}</td>
+                        <td className="py-4 px-5 text-right">
+                          {isCurrentUserSociety && (
+                            <button onClick={() => setEditingMember({ original: { role: 'President' }, current: { name: profile.presidentName, email: profile.presidentEmail }, confirmDelete: false })} className="p-2 text-gray-500 hover:text-white hover:bg-white/10 rounded-lg transition-colors inline-flex" title="Edit"><Edit className="w-4 h-4"/></button>
+                          )}
+                        </td>
                       </tr>
-                    </thead>
-                    <tbody className="divide-y divide-white/5">
-                      {profile.presidentName && (
-                        <tr className="hover:bg-white/5 transition-colors">
-                          <td className="py-4 px-5 text-[15px] font-semibold text-white">President</td>
-                          <td className="py-4 px-5 text-[15px] font-semibold text-white">{profile.presidentName}</td>
-                          <td className="py-4 px-5 text-[14px] text-gray-400">{profile.presidentEmail}</td>
+                    ) : null}
+                    
+                    {council.map((member: any, i: number) => {
+                      const isUneditable = UNEDITABLE_ROLES.includes(member.role);
+                      return (
+                        <tr key={i} className="hover:bg-white/5 transition-colors">
+                          <td className="py-4 px-5 text-[14px] font-semibold text-gray-400">{(profile.presidentName ? i + 2 : i + 1).toString().padStart(2, '0')}</td>
+                          <td className="py-4 px-5 text-[15px] font-semibold text-white">{member.role}</td>
+                          <td className="py-4 px-5 text-[15px] font-semibold text-white">{member.name}</td>
+                          <td className="py-4 px-5 text-[14px] text-gray-400">{member.email}</td>
                           <td className="py-4 px-5 text-right">
+                            {/* !isUneditable removed to allow editing all members */}
                             {isCurrentUserSociety && (
-                              <button onClick={() => setEditingMember({ original: { role: 'President' }, current: { name: profile.presidentName, email: profile.presidentEmail }, confirmDelete: false })} className="p-2 text-gray-500 hover:text-white hover:bg-white/10 rounded-lg transition-colors inline-flex" title="Edit"><Edit className="w-4 h-4"/></button>
+                              <button onClick={() => setEditingMember({ original: member, current: member, confirmDelete: false })} className="p-2 text-gray-500 hover:text-white hover:bg-white/10 rounded-lg transition-colors inline-flex" title="Edit"><Edit className="w-4 h-4"/></button>
                             )}
                           </td>
                         </tr>
-                      )}
-                      {council.map((member: any, i: number) => {
-                        const isUneditable = UNEDITABLE_ROLES.includes(member.role);
-                        return (
-                          <tr key={i} className="hover:bg-white/5 transition-colors">
-                            <td className="py-4 px-5 text-[15px] font-semibold text-white">{member.role}</td>
-                            <td className="py-4 px-5 text-[15px] font-semibold text-white">{member.name}</td>
-                            <td className="py-4 px-5 text-[14px] text-gray-400">{member.email}</td>
-                            <td className="py-4 px-5 text-right">
-                              {isCurrentUserSociety && !isUneditable && (
-                                <button onClick={() => setEditingMember({ original: member, current: member, confirmDelete: false })} className="p-2 text-gray-500 hover:text-white hover:bg-white/10 rounded-lg transition-colors inline-flex" title="Edit"><Edit className="w-4 h-4"/></button>
-                              )}
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              ) : (
-                <div className="bg-white/5 border border-white/10 rounded-2xl p-8 text-center">
-                  <p className="text-gray-400">No executive council members have been added yet.</p>
-                </div>
-              )}
+                      );
+                    })}
+
+                    {profile.advisor && profile.advisor.user && (
+                      <tr className="hover:bg-white/5 transition-colors border-t border-white/20 bg-white/[0.01]">
+                        <td className="py-4 px-5 text-[14px] font-semibold text-gray-500">--</td>
+                        <td className="py-4 px-5 text-[15px] font-bold text-purple-400">Faculty Advisor</td>
+                        <td className="py-4 px-5 text-[15px] font-semibold text-white">{profile.advisor.user.fullName}</td>
+                        <td className="py-4 px-5 text-[14px] text-gray-400">{profile.advisor.user.email}</td>
+                        <td className="py-4 px-5 text-right"></td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
