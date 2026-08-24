@@ -4,6 +4,7 @@ import { X } from 'lucide-react';
 import { getSocietyLogo } from '@/lib/utils';
 import type { PostFeedItem } from '@/types/feed.types';
 import { useCardFlip } from '@/hooks/useCardFlip';
+import { useAuth } from '@/context/AuthContext';
 
 interface PostCardProps {
   item: PostFeedItem;
@@ -41,6 +42,8 @@ export const PostCard: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) =>
 
   
   const { isActive, openCard, closeCard } = useCardFlip(wrapperRef);
+  const { user } = useAuth();
+  const canEditOrDelete = user?.role === 'DSA_ADMIN' || (user?.role === 'SOCIETY' && user.society?.id === item.society.id);
 
   const logoImage = getSocietyLogo(item.society.logoUrl);
   const authorName = item.society.name;
@@ -123,6 +126,7 @@ export const PostCard: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) =>
           <div className="glass-card-bg"></div>
 
           <div className="card-top-bar">
+            {canEditOrDelete && (
             <div className="menu-container">
               
               <button 
@@ -140,6 +144,7 @@ export const PostCard: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) =>
                 </svg>
               </button>
             </div>
+            )}
             <span className="card-tag">Post</span>
             {dropdownOpen && createPortal(
               <div 

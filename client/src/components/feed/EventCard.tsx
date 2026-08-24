@@ -5,14 +5,19 @@ import { Calendar, MapPin, X } from 'lucide-react';
 import { getSocietyLogo } from '@/lib/utils';
 import type { EventFeedItem } from '@/types/feed.types';
 import { useCardFlip } from '@/hooks/useCardFlip';
+import { useAuth } from '@/context/AuthContext';
 
 interface EventCardProps {
   item: EventFeedItem;
+  onEdit?: () => void;
+  onDelete?: () => void;
 }
 
-export const EventCard: React.FC<EventCardProps> = ({ item }) => {
+export const EventCard: React.FC<EventCardProps> = ({ item, onEdit, onDelete }) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const { isActive, openCard, closeCard } = useCardFlip(wrapperRef);
+  const { user } = useAuth();
+  const canEditOrDelete = user?.role === 'DSA_ADMIN' || (user?.role === 'SOCIETY' && user.society?.id === item.society.id);
 
   
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -69,6 +74,7 @@ export const EventCard: React.FC<EventCardProps> = ({ item }) => {
           <img src={coverImage} alt="Event Cover" className="card-image" />
 
           <div className="card-top-bar">
+            {canEditOrDelete && (
             <div className="menu-container">
               
               <button 
@@ -82,6 +88,7 @@ export const EventCard: React.FC<EventCardProps> = ({ item }) => {
                 <svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="2.5"></circle><circle cx="12" cy="12" r="2.5"></circle><circle cx="19" cy="12" r="2.5"></circle></svg>
               </button>
             </div>
+            )}
             <span className="card-tag">Event</span>
             {dropdownOpen && createPortal(
               <div 
@@ -89,8 +96,8 @@ export const EventCard: React.FC<EventCardProps> = ({ item }) => {
                 style={{ position: 'fixed', top: dropdownPos.top, left: dropdownPos.left, zIndex: 9999, margin: 0 }}
                 onClick={(e) => e.stopPropagation()}
               >
-                <button className="dropdown-item">Share Event</button>
-                <button className="dropdown-item">Copy Link</button>
+                <button className="dropdown-item" onClick={(e) => { e.stopPropagation(); setDropdownOpen(false); if(onEdit) onEdit(); }}>Edit Event</button>
+  <button className="dropdown-item delete" onClick={(e) => { e.stopPropagation(); setDropdownOpen(false); if(onDelete) onDelete(); }}>Delete Event</button>
               </div>,
               document.body
             )}
