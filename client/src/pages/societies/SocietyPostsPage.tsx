@@ -188,7 +188,7 @@ export const SocietyPostsPage: React.FC = () => {
           </Button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 justify-items-center w-full mx-auto">
           {posts.map((post) => (
             <div key={post.id} className="bg-transparent p-5 rounded-cards border border-vast-ink/20 flex flex-col h-full shadow-sm hover:shadow-md transition-shadow">
               <div className="flex items-start justify-between mb-3 gap-2">

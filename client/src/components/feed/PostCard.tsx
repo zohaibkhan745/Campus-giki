@@ -1,9 +1,8 @@
+import React, { useRef, useState, useEffect } from 'react';
+import { X } from 'lucide-react';
 import { getSocietyLogo } from '@/lib/utils';
-import React, { useRef, useState, useEffect, useLayoutEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { getMediaUrl } from '@/lib/api';
-import { X, Edit2, Trash2 } from 'lucide-react';
 import type { PostFeedItem } from '@/types/feed.types';
+import { useCardFlip } from '@/hooks/useCardFlip';
 
 interface PostCardProps {
   item: PostFeedItem;
@@ -12,14 +11,17 @@ interface PostCardProps {
 }
 
 export const PostCard: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) => {
-  const [isFlipped, setIsFlipped] = useState(false);
-  const [showReadMore, setShowReadMore] = useState(true);
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const backTextRef = useRef<HTMLParagraphElement>(null);
   const frontDescRef = useRef<HTMLParagraphElement>(null);
+  const textContentRef = useRef<HTMLDivElement>(null);
+  const [showButton, setShowButton] = useState(false);
+  
+  const { isActive, openCard, closeCard } = useCardFlip(wrapperRef);
+
+  const logoImage = getSocietyLogo(item.society.logoUrl);
+  const authorName = item.society.name;
 
   const formattedDate = new Date(item.createdAt).toLocaleDateString('en-US', {
-    weekday: 'short',
     month: 'short',
     day: 'numeric',
     year: 'numeric',
@@ -30,242 +32,145 @@ export const PostCard: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) =>
     minute: '2-digit'
   });
 
-  const coverImage = getMediaUrl(item.imageUrl);
-  const isGlass = !coverImage;
-  const defaultHeight = 490;
-  
-  
-  const isOfficial = item.isAdminPost || !item.society;
-  const logoImage = isOfficial ? '/giki-logo.png' : getSocietyLogo(item.society?.logoUrl);
-  const authorName = item.society?.name || 'Admin';
-
-  // Sync text to back face and check overflow
-  useLayoutEffect(() => {
-    if (isGlass && frontDescRef.current && backTextRef.current) {
-      backTextRef.current.textContent = frontDescRef.current.textContent?.trim() || '';
-      
-      // Check overflow for Read More button
-      if (frontDescRef.current.scrollHeight > frontDescRef.current.offsetHeight + 2) {
-        setShowReadMore(true);
-      } else {
-        setShowReadMore(false);
-      }
-    } else if (!isGlass) {
-      // For image cards, we always show View Details button
-      setShowReadMore(true);
-    }
-  }, [item.content, isGlass]);
-
-  // Handle document body class for blur effect
   useEffect(() => {
-    if (isFlipped) {
-      document.body.classList.add('is-focused');
+    // Check overflow to show the View Details button dynamically
+    const checkOverflow = () => {
+      const desc = frontDescRef.current;
+      const textContainer = textContentRef.current;
+      const wrapper = wrapperRef.current;
+      if (!desc || !textContainer || !wrapper) return;
       
-      const handleOutsideClick = (e: MouseEvent | TouchEvent) => {
-        if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
-          // It's an outside click, simulate handleClose
-          setIsFlipped(false);
-          if (wrapperRef.current) {
-            wrapperRef.current.style.height = `${defaultHeight}px`;
-          }
-          document.body.classList.remove('is-focused');
-        }
-      };
+      const overlay = wrapper.querySelector('.glass-overlay') as HTMLElement;
+      const profileHeader = wrapper.querySelector('.profile-header') as HTMLElement;
       
-      document.addEventListener('click', handleOutsideClick);
-      document.addEventListener('touchstart', handleOutsideClick, { passive: true });
+      if (!overlay || !profileHeader) return;
       
-      return () => {
-        document.removeEventListener('click', handleOutsideClick);
-        document.removeEventListener('touchstart', handleOutsideClick);
-        document.body.classList.remove('is-focused');
-      };
-    }
-  }, [isFlipped]);
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (isFlipped || !wrapperRef.current || isGlass) return; 
-
-    const rect = wrapperRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
-    
-    const rotateX = ((y - centerY) / centerY) * -10;
-    const rotateY = ((x - centerX) / centerX) * 10;
-    
-    wrapperRef.current.style.transform = `rotateX(\${rotateX}deg) rotateY(\${rotateY}deg)`;
-  };
-
-  const handleMouseLeave = () => {
-    if (!isFlipped && wrapperRef.current && !isGlass) {
-      wrapperRef.current.style.transform = "rotateX(0deg) rotateY(0deg)";
-    }
-  };
-
-  const handleOpen = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setIsFlipped(true);
-    
-    if (wrapperRef.current) {
-      wrapperRef.current.style.transform = "rotateX(0deg) rotateY(0deg)";
+      // Reset
+      desc.classList.remove('clamped');
+      desc.style.webkitLineClamp = '';
+      setShowButton(false);
       
-      // Calculate dynamic height
-      let calculatedHeight = defaultHeight;
-      if (isGlass) {
-        const header = wrapperRef.current.querySelector(".glass-back-header") as HTMLElement;
-        const scrollArea = wrapperRef.current.querySelector(".glass-back-scroll-area") as HTMLElement;
-        if (header && scrollArea) {
-          const neededHeight = header.offsetHeight + scrollArea.scrollHeight + 56;
-          calculatedHeight = Math.min(620, Math.max(defaultHeight, neededHeight));
-        }
-      } else {
-        const backContent = wrapperRef.current.querySelector(".back-content-section") as HTMLElement;
-        const imageSectionHeight = 150;
-        const contentHeight = backContent ? backContent.scrollHeight : 280;
-        calculatedHeight = Math.min(620, Math.max(defaultHeight, imageSectionHeight + contentHeight));
-      }
+      void desc.offsetHeight; // force reflow
       
-      wrapperRef.current.style.height = `\${calculatedHeight}px`;
-    }
-  };
-
-  const handleClose = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setIsFlipped(false);
-    if (wrapperRef.current) {
-      wrapperRef.current.style.height = `\${defaultHeight}px`;
-    }
-    document.body.classList.remove('is-focused');
-  };
-
-  if (isGlass) {
-    return (
-      <div 
-        ref={wrapperRef}
-        className={`card-wrapper glass-card-wrapper glass-no-meta \${isFlipped ? 'in-focus' : ''}`}
-        style={{ height: `${defaultHeight}px` }}
-      >
-        <div className={`card-flipper \${isFlipped ? 'flipped' : ''}`}>
+      const overlayStyle = window.getComputedStyle(overlay);
+      const paddingTop = parseFloat(overlayStyle.paddingTop) || 0;
+      const paddingBottom = parseFloat(overlayStyle.paddingBottom) || 0;
+      const availableHeight = overlay.clientHeight - paddingTop - paddingBottom;
+      const headerHeight = profileHeader.offsetHeight;
+      const textMarginTop = 14;
+      const fullDescriptionHeight = desc.scrollHeight;
+      const requiredHeight = headerHeight + textMarginTop + fullDescriptionHeight;
+      
+      if (requiredHeight > availableHeight) {
+        setShowButton(true);
+        // Let React render the button, then next frame we calculate clamp
+        requestAnimationFrame(() => {
+          const btn = wrapper.querySelector('.open-details-btn') as HTMLElement;
+          if (!btn) return;
+          const buttonHeight = btn.offsetHeight;
+          const buttonMarginTop = 16;
+          const descriptionAvailableHeight = availableHeight - headerHeight - textMarginTop - buttonHeight - buttonMarginTop;
           
-          <div className="card-face glass-face-front">
-            <span className="card-corner-tag">Post</span>
-            <div className="glass-front-content">
-              <div className="glass-header-area">
-                <span className="post-timestamp drop-shadow-md font-medium text-white/90">Posted: {formattedDate} • {formattedTime}</span>
-                <div className="flex justify-between items-start w-full">
-                  <h3 className="glass-title">{authorName}</h3>
-                  {(onEdit || onDelete) && (
-                    <div className="flex items-center gap-1 z-30">
-                      {onEdit && <button onClick={(e) => { e.stopPropagation(); onEdit(); }} className="p-1 text-white/70 hover:text-white transition-colors" title="Edit"><Edit2 className="w-4 h-4" /></button>}
-                      {onDelete && <button onClick={(e) => { e.stopPropagation(); onDelete(); }} className="p-1 text-white/70 hover:text-red-400 transition-colors" title="Delete"><Trash2 className="w-4 h-4" /></button>}
-                    </div>
-                  )}
-                </div>
-              </div>
-              
-              <p ref={frontDescRef} className="glass-description">
-                {item.content}
-              </p>
-            </div>
-            {showReadMore && (
-              <button type="button" onClick={handleOpen} className="details-btn open-details-btn">Read More</button>
-            )}
-          </div>
+          const descriptionStyle = window.getComputedStyle(desc);
+          const lineHeight = parseFloat(descriptionStyle.lineHeight) || 20;
+          const numberOfLines = Math.max(1, Math.floor(descriptionAvailableHeight / lineHeight));
+          
+          desc.style.webkitLineClamp = numberOfLines.toString();
+          desc.classList.add('clamped');
+        });
+      }
+    };
+    
+    checkOverflow();
+    window.addEventListener('resize', checkOverflow);
+    return () => window.removeEventListener('resize', checkOverflow);
+  }, [item.content]);
 
-          <div className="card-face glass-face-back">
-            <div className="glass-back-header">
-              <div>
-                <span className="post-timestamp drop-shadow-md font-medium text-white/90">Posted: {formattedDate} • {formattedTime}</span>
-                <h4 className="glass-back-heading">{authorName}</h4>
-              </div>
-              <button type="button" onClick={handleClose} className="glass-close-btn" aria-label="Close details">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            
-            <div className="glass-back-scroll-area">
-              <p ref={backTextRef} className="glass-back-text"></p>
-            </div>
-          </div>
-
-        </div>
-      </div>
-    );
-  }
-
-  // IMAGE POST
   return (
     <div 
       ref={wrapperRef}
-      className={`card-wrapper event-card-wrapper \${isFlipped ? 'in-focus' : ''}`}
-      style={{ height: `${defaultHeight}px` }}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
+      className={`card-wrapper post-card-wrapper ${isActive ? 'in-focus' : ''}`}
+      data-card-id={item.id}
     >
-      <div className={`card-flipper \${isFlipped ? 'flipped' : ''}`}>
+      <div className={`card-flipper ${isActive ? 'flipped' : ''}`}>
         
+        {/* FRONT FACE */}
         <div className="card-face card-front">
-          <span className="card-corner-tag">Post</span>
-          <img src={coverImage} alt="Post Cover" className="card-image" />
-          
-          <div className="card-overlay">
+          <div className="glass-card-bg"></div>
+
+          <div className="card-top-bar">
+            <div className="menu-container">
+              {/* Optional: Add 3-dots menu here if needed */}
+            </div>
+            <span className="card-tag">Post</span>
+          </div>
+
+          <div className="glass-overlay">
             <div className="user-profile">
-              <div className="profile-header w-full flex justify-between items-start">
-                <div className="flex items-center gap-3">
-                  <img src={logoImage} alt={authorName} className="avatar" onError={(e) => { e.currentTarget.src = '/default-society.jpg'; }} />
-                  <div className="author-name-group">
-                    <span className="author-name">{authorName}</span>
-                    <span className="post-timestamp drop-shadow-md font-medium text-white/90">Posted: {formattedDate} • {formattedTime}</span>
-                  </div>
+              <div className="profile-header">
+                <img 
+                  src={logoImage} 
+                  alt={authorName} 
+                  className="avatar" 
+                  onError={(e) => { e.currentTarget.src = '/default-society.jpg'; }} 
+                />
+                <div className="author-name-group">
+                  <span className="author-name">{authorName}</span>
+                  <span className="post-timestamp">Posted: {formattedDate} • {formattedTime}</span>
                 </div>
-                
-                {(onEdit || onDelete) && (
-                  <div className="flex items-center gap-1 z-30 mr-12">
-                    {onEdit && <button onClick={(e) => { e.stopPropagation(); onEdit(); }} className="p-1 text-white/70 hover:text-white transition-colors" title="Edit"><Edit2 className="w-4 h-4" /></button>}
-                    {onDelete && <button onClick={(e) => { e.stopPropagation(); onDelete(); }} className="p-1 text-white/70 hover:text-red-400 transition-colors" title="Delete"><Trash2 className="w-4 h-4" /></button>}
-                  </div>
-                )}
+              </div>
+
+              <div className="front-text-content" ref={textContentRef}>
+                {item.title && <h3 className="card-title">{item.title}</h3>}
+                <p className="front-description" ref={frontDescRef}>{item.content}</p>
               </div>
             </div>
 
-            <button type="button" onClick={handleOpen} className="details-btn open-details-btn">View Details</button>
+            {showButton && (
+              <button 
+                type="button" 
+                className="card-button open-details-btn visible"
+                onClick={(e) => { e.stopPropagation(); openCard(false); }}
+              >
+                View Details
+              </button>
+            )}
           </div>
         </div>
 
+        {/* BACK FACE */}
         <div className="card-face card-back">
-          <div className="back-image-section">
-            <img src={coverImage} alt="Post Cover" />
-            <button type="button" onClick={handleClose} className="close-btn" aria-label="Close details">
-              <X className="w-5 h-5" />
-            </button>
-          </div>
+          <button 
+            type="button" 
+            className="close-btn" 
+            style={{ background: 'rgba(255, 255, 255, 0.1)' }} 
+            aria-label="Close details"
+            onClick={(e) => { e.stopPropagation(); closeCard(); }}
+          >
+            <X className="w-5 h-5" />
+          </button>
 
-          <div className="back-content-section">
-            <div className="society-header">
-              <img src={logoImage} alt={authorName} className="society-avatar" onError={(e) => { e.currentTarget.src = '/default-society.jpg'; }} />
-              <div className="society-text">
-                <h3>{authorName}</h3>
-                <p className="drop-shadow-md font-medium text-white/90">Posted: {formattedDate} • {formattedTime}</p>
+          <div className="back-content-section" style={{ paddingTop: '24px', marginTop: '48px' }}>
+            <div className="profile-header pb-4 mb-5 border-b border-gray-700">
+              <img 
+                src={logoImage} 
+                alt={authorName} 
+                className="avatar" 
+                style={{ width: '48px', height: '48px' }}
+                onError={(e) => { e.currentTarget.src = '/default-society.jpg'; }} 
+              />
+              <div className="author-name-group">
+                <span className="author-name" style={{ fontSize: '1.05rem' }}>{authorName}</span>
+                <span className="post-timestamp">Posted: {formattedDate} • {formattedTime}</span>
               </div>
             </div>
 
-            <div className="event-back-scroll-area">
-              <div className="about-event">
-                <h4>About Post</h4>
-                <p>{item.content}</p>
+            <div className="scroll-area">
+              <div className="flex flex-col gap-3 mb-6">
+                {item.title && <h4 className="card-title back-title">{item.title}</h4>}
+                <p className="card-description back-description">{item.content}</p>
               </div>
             </div>
-
-            <Link to={`/posts/${item.id}`} className="register-btn" style={{marginTop: 'auto'}}>
-              <span>Read Full Details</span>
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-                <polyline points="12 5 19 12 12 19"></polyline>
-              </svg>
-            </Link>
           </div>
         </div>
 
@@ -273,7 +178,3 @@ export const PostCard: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) =>
     </div>
   );
 };
-
-
-
-

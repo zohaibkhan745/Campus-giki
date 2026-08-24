@@ -262,7 +262,7 @@ export const AdminPostsPage: React.FC = () => {
           )}
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 justify-items-center w-full mx-auto">
           {posts.map((post: any) => {
             const isAdmin = post.author.role === 'DSA_ADMIN';
             const isOwnPost = isAdmin; // Since we are viewing as Admin

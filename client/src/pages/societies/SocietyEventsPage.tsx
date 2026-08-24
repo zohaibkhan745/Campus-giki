@@ -239,7 +239,7 @@ export const SocietyEventsPage: React.FC = () => {
       )}
 
       {isLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 justify-items-center w-full mx-auto">
           {[1, 2, 3].map((i) => (
             <div key={i} className="animate-pulse bg-transparent rounded-cards border border-vast-ink/20 h-72 w-full"></div>
           ))}
@@ -269,7 +269,7 @@ export const SocietyEventsPage: React.FC = () => {
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 justify-items-center w-full mx-auto">
                 {filteredEvents.map((event: EventItem) => (
                   <EventCard key={event.id} item={{ ...event, type: 'event' } as any} />
                 ))}
