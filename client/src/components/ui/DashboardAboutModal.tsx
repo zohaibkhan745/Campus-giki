@@ -20,7 +20,7 @@ interface DashboardAboutModalProps {
 
 export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ profile, onClose }) => {
   const { user } = useAuth();
-  const isCurrentUserSociety = user?.id === profile.user.id;
+  const isCurrentUserSociety = user && profile && (user.id === profile?.user?.id || user.id === profile?.userId);
   useEffect(() => {
     document.body.classList.add('modal-open');
     return () => document.body.classList.remove('modal-open');
