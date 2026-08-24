@@ -156,7 +156,7 @@ export const AdminDashboardPage: React.FC = () => {
               <Clock className="w-5 h-5 text-white" />
               <h3>Pending Review ({pendingEvents.length})</h3>
             </div>
-            <Link to="/admin/events/pending" className="text-sm font-bold text-white hover:text-forest-ink transition-colors underline underline-offset-2">
+            <Link to="/admin/events/pending" className="px-4 py-2 bg-white text-gray-900 border border-transparent rounded-xl text-sm font-bold shadow-md hover:bg-gray-100 transition-all">
               View All
             </Link>
           </div>
@@ -190,7 +190,7 @@ export const AdminDashboardPage: React.FC = () => {
               <UpcomingEventIcon className="w-5 h-5 text-white" />
               <h3>Upcoming Events ({upcomingEvents.length})</h3>
             </div>
-            <Link to="/admin/events" className="text-sm font-bold text-white hover:text-forest-ink transition-colors underline underline-offset-2">
+            <Link to="/admin/events" className="px-4 py-2 bg-white text-gray-900 border border-transparent rounded-xl text-sm font-bold shadow-md hover:bg-gray-100 transition-all">
               View All
             </Link>
           </div>

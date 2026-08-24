@@ -5,6 +5,9 @@ import { getSocietyLogo } from '@/lib/utils';
 import type { PostFeedItem } from '@/types/feed.types';
 import { useCardFlip } from '@/hooks/useCardFlip';
 import { useAuth } from '@/context/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { postService } from '@/services/post.service';
+import { globalNotification } from '@/contexts/NotificationContext';
 
 interface PostCardProps {
   item: PostFeedItem;
@@ -20,6 +23,7 @@ export const PostCard: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) =>
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0 });
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const navigate = useNavigate();
 
   const toggleDropdown = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -126,37 +130,7 @@ export const PostCard: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) =>
           <div className="glass-card-bg"></div>
 
           <div className="card-top-bar">
-            {canEditOrDelete && (
-            <div className="menu-container">
-              
-              <button 
-                type="button" 
-                className="three-dots-btn" 
-                aria-label="Options"
-                ref={buttonRef}
-                onClick={toggleDropdown}
-              >
-
-                <svg viewBox="0 0 24 24">
-                  <circle cx="5" cy="12" r="2.5"></circle>
-                  <circle cx="12" cy="12" r="2.5"></circle>
-                  <circle cx="19" cy="12" r="2.5"></circle>
-                </svg>
-              </button>
-            </div>
-            )}
             <span className="card-tag">Post</span>
-            {dropdownOpen && createPortal(
-              <div 
-                className="dropdown-menu active" 
-                style={{ position: 'fixed', top: dropdownPos.top, left: dropdownPos.left, zIndex: 9999, margin: 0 }}
-                onClick={(e) => e.stopPropagation()}
-              >
-                <button className="dropdown-item" onClick={() => { if(onEdit) onEdit(); setDropdownOpen(false); }}>Edit Post</button>
-                <button className="dropdown-item delete" onClick={() => { if(onDelete) onDelete(); setDropdownOpen(false); }}>Delete Post</button>
-              </div>,
-              document.body
-            )}
           </div>
 
           <div className="glass-overlay">

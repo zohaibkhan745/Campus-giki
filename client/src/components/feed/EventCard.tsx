@@ -1,11 +1,13 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Calendar, MapPin, X } from 'lucide-react';
 import { getSocietyLogo } from '@/lib/utils';
 import type { EventFeedItem } from '@/types/feed.types';
 import { useCardFlip } from '@/hooks/useCardFlip';
 import { useAuth } from '@/context/AuthContext';
+import { eventService } from '@/services/event.service';
+import { globalNotification } from '@/contexts/NotificationContext';
 
 interface EventCardProps {
   item: EventFeedItem;
@@ -23,6 +25,7 @@ export const EventCard: React.FC<EventCardProps> = ({ item, onEdit, onDelete }) 
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0 });
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const navigate = useNavigate();
 
   const toggleDropdown = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -74,33 +77,7 @@ export const EventCard: React.FC<EventCardProps> = ({ item, onEdit, onDelete }) 
           <img src={coverImage} alt="Event Cover" className="card-image" />
 
           <div className="card-top-bar">
-            {canEditOrDelete && (
-            <div className="menu-container">
-              
-              <button 
-                type="button" 
-                className="three-dots-btn" 
-                aria-label="Options"
-                ref={buttonRef}
-                onClick={toggleDropdown}
-              >
-
-                <svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="2.5"></circle><circle cx="12" cy="12" r="2.5"></circle><circle cx="19" cy="12" r="2.5"></circle></svg>
-              </button>
-            </div>
-            )}
             <span className="card-tag">Event</span>
-            {dropdownOpen && createPortal(
-              <div 
-                className="dropdown-menu active" 
-                style={{ position: 'fixed', top: dropdownPos.top, left: dropdownPos.left, zIndex: 9999, margin: 0 }}
-                onClick={(e) => e.stopPropagation()}
-              >
-                <button className="dropdown-item" onClick={(e) => { e.stopPropagation(); setDropdownOpen(false); if(onEdit) onEdit(); }}>Edit Event</button>
-  <button className="dropdown-item delete" onClick={(e) => { e.stopPropagation(); setDropdownOpen(false); if(onDelete) onDelete(); }}>Delete Event</button>
-              </div>,
-              document.body
-            )}
           </div>
 
           <div className="card-overlay">
@@ -136,13 +113,55 @@ export const EventCard: React.FC<EventCardProps> = ({ item, onEdit, onDelete }) 
               </div>
             </div>
 
-            <button 
-              type="button" 
-              className="card-button open-details-btn"
-              onClick={(e) => { e.stopPropagation(); openCard(true); }}
-            >
-              View Details
-            </button>
+            <div className="flex items-center gap-2 mt-auto w-full">
+              {canEditOrDelete && (
+                <div className="menu-container shrink-0 h-full flex items-center">
+                  <button 
+                    type="button" 
+                    className="three-dots-btn" 
+                    aria-label="Options"
+                    ref={buttonRef}
+                    onClick={toggleDropdown}
+                    style={{ height: '42px', width: '42px', borderRadius: '12px' }}
+                  >
+                    <svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="2.5"></circle><circle cx="12" cy="12" r="2.5"></circle><circle cx="19" cy="12" r="2.5"></circle></svg>
+                  </button>
+                  {dropdownOpen && createPortal(
+                    <div 
+                      className="dropdown-menu active" 
+                      style={{ position: 'fixed', bottom: window.innerHeight - dropdownPos.top + 50, left: dropdownPos.left, zIndex: 9999, margin: 0 }}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <button className="dropdown-item" onClick={(e) => { 
+                        e.stopPropagation(); setDropdownOpen(false); 
+                        if(onEdit) onEdit(); else navigate(`/events/${item.id}/edit`);
+                      }}>Edit Event</button>
+                      <button className="dropdown-item delete" onClick={async (e) => { 
+                        e.stopPropagation(); setDropdownOpen(false); 
+                        if(onDelete) onDelete(); 
+                        else if (window.confirm('Are you sure you want to delete this event?')) {
+                          try {
+                            await eventService.deleteEvent(item.id);
+                            globalNotification.success('Event deleted successfully');
+                            window.location.reload();
+                          } catch (err) {
+                            globalNotification.error('Failed to delete event');
+                          }
+                        }
+                      }}>Delete Event</button>
+                    </div>,
+                    document.body
+                  )}
+                </div>
+              )}
+              <button 
+                type="button" 
+                className="card-button open-details-btn flex-1"
+                onClick={(e) => { e.stopPropagation(); openCard(true); }}
+              >
+                View Details
+              </button>
+            </div>
           </div>
         </div>
 

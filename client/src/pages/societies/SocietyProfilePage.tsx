@@ -381,7 +381,7 @@ export const SocietyProfilePage: React.FC = () => {
                   </p>
                 </div>
               ) : (
-                <div className="flex flex-wrap justify-center gap-8">
+                <div className="cards-container">
                   {upcomingEvents.map((event) => (
                     <EventCard
                       key={event.id}
@@ -415,7 +415,7 @@ export const SocietyProfilePage: React.FC = () => {
                   </p>
                 </div>
               ) : (
-                <div className="flex flex-wrap justify-center gap-8">
+                <div className="cards-container">
                   {postsData.map((post) => (
                     <PostCard key={post.id} item={post} />
                   ))}
@@ -431,7 +431,7 @@ export const SocietyProfilePage: React.FC = () => {
                   No past events recorded for this society.
                 </div>
               ) : (
-                <div className="flex flex-wrap justify-center gap-8 opacity-80">
+                <div className="cards-container">
                   {pastEvents.map((event) => (
                     <EventCard
                       key={event.id}

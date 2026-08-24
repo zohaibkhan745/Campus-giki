@@ -764,7 +764,7 @@ body.is-focused .cards-container {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: blur(1px) brightness(0.4);
+  filter: blur(8px) brightness(0.9);
   transform: scale(1.05);
   z-index: 0;
 }
@@ -842,4 +842,51 @@ body.is-focused .reparented-item {
   pointer-events: none !important;
   transform: translateY(100px) !important;
   transition: opacity 0.3s ease, transform 0.3s ease !important;
+}
+
+.dropdown-menu {
+  display: flex;
+  flex-direction: column;
+  background: rgba(25, 27, 34, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 6px;
+  min-width: 140px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  transform-origin: bottom left;
+  animation: dropdownIn 0.2s ease;
+}
+
+@keyframes dropdownIn {
+  from { opacity: 0; transform: scale(0.95) translateY(5px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.dropdown-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 10px 14px;
+  background: transparent;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.dropdown-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.dropdown-item.delete {
+  color: #ff4d4f;
+}
+
+.dropdown-item.delete:hover {
+  background: rgba(255, 77, 79, 0.15);
 }

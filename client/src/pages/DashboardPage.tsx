@@ -226,7 +226,7 @@ export const DashboardPage: React.FC = () => {
                   <h3>Next Upcoming ({upcomingEvents.length})</h3>
                 </div>
                 {/* Fallback to calendar if there's no general events page for societies */}
-                <Link to="/society/calendar" className="text-sm font-bold text-white hover:text-forest-ink transition-colors underline underline-offset-2">
+                <Link to="/society/calendar" className="px-4 py-2 bg-white text-gray-900 border border-transparent rounded-xl text-sm font-bold shadow-md hover:bg-gray-100 transition-all">
                   View Calendar
                 </Link>
               </div>
