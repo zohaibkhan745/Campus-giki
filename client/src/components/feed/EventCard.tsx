@@ -34,10 +34,10 @@ export const EventCard: React.FC<EventCardProps> = ({ item }) => {
   return (
     <div 
       ref={wrapperRef}
-      className={`card-wrapper event-card-wrapper ${isActive ? 'in-focus' : ''}`}
+      className="card-wrapper event-card-wrapper"
       data-card-id={item.id}
     >
-      <div className={`card-flipper ${isActive ? 'flipped' : ''}`}>
+      <div className="card-flipper">
         
         {/* FRONT FACE */}
         <div className="card-face card-front">
@@ -45,7 +45,9 @@ export const EventCard: React.FC<EventCardProps> = ({ item }) => {
 
           <div className="card-top-bar">
             <div className="menu-container">
-              {/* Optional: Add 3-dots menu here if needed */}
+              <button type="button" className="three-dots-btn" aria-label="Options">
+                <svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="2.5"></circle><circle cx="12" cy="12" r="2.5"></circle><circle cx="19" cy="12" r="2.5"></circle></svg>
+              </button>
             </div>
             <span className="card-tag">Event</span>
           </div>

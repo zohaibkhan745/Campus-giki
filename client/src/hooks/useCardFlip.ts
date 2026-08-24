@@ -109,12 +109,17 @@ export function useCardFlip(wrapperRef: RefObject<HTMLDivElement>) {
         if (isMobile) {
           const padding = 20; 
           targetWidth = screenWidth - (padding * 2); 
-          targetHeight = isEvent ? targetWidth : targetWidth;
+          targetHeight = targetWidth;
           targetTop = (screenHeight - targetHeight) / 2;
           targetLeft = padding;
         } else {
-          targetWidth = 560; 
-          targetHeight = 560;
+          if (isEvent) {
+            targetWidth = 560; 
+            targetHeight = 560;
+          } else {
+            targetWidth = rect.width;
+            targetHeight = rect.height;
+          }
           targetTop = (screenHeight - targetHeight) / 2;
           targetLeft = (screenWidth - targetWidth) / 2;
         }
