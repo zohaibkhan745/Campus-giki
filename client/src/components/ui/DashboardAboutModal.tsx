@@ -116,129 +116,128 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ profil
     }
   } catch (e) {}
 
-  return createPortal(
-    <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 sm:p-6 overflow-hidden">
+    return createPortal(
+    <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 sm:p-6">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
       
-      {/* Outer Modal Container: Strict overflow-hidden so it acts as a window */}
+      {/* Outer Modal Container */}
       <div className="relative w-full max-w-[1000px] h-full max-h-[90vh] bg-[#0d0d0d] border border-white/10 rounded-3xl shadow-2xl flex flex-col z-10 overflow-hidden">
         
-        {/* Banner Section - Matches User HTML */}
-        <div className="relative w-full h-[280px] md:h-[320px] bg-[#1e3c72] shrink-0 z-20">
-          <img src={getSocietyBanner(profile.bannerUrl)} alt="Banner" className="w-full h-full object-cover block" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0d0d0d]/80 via-transparent to-transparent" />
+        {/* Inner Scrollable Container */}
+        <div className="w-full h-full overflow-y-auto custom-scrollbar relative flex-1">
           
-          <button 
-            onClick={onClose}
-            className="absolute top-4 right-4 p-2 bg-black/50 hover:bg-black/80 text-white rounded-full backdrop-blur-sm transition-all border border-white/20 z-[30]"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          {/* Banner Section */}
+          <div className="relative w-full h-[280px] md:h-[320px] bg-[#1e3c72] shrink-0">
+            <img src={getSocietyBanner(profile.bannerUrl)} alt="Banner" className="w-full h-full object-cover block" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0d0d0d]/80 via-transparent to-transparent pointer-events-none" />
+            
+            <button 
+              onClick={onClose}
+              className="absolute top-4 right-4 p-2 bg-black/50 hover:bg-black/80 text-white rounded-full backdrop-blur-sm transition-all border border-white/20 z-[30]"
+            >
+              <X className="w-5 h-5" />
+            </button>
+  
+            {/* Socials */}
+            <div className="absolute top-4 left-4 flex gap-2 z-[30]">
+              {profile.instagram && <a href={profile.instagram.startsWith('http') ? profile.instagram : `https://${profile.instagram}`} target="_blank" rel="noopener noreferrer" className="p-2 bg-black/50 hover:bg-black/80 text-white hover:text-blue-400 rounded-full backdrop-blur-sm transition-all border border-white/20"><Instagram className="w-4 h-4" /></a>}
+              {profile.facebook && <a href={profile.facebook.startsWith('http') ? profile.facebook : `https://${profile.facebook}`} target="_blank" rel="noopener noreferrer" className="p-2 bg-black/50 hover:bg-black/80 text-white hover:text-blue-400 rounded-full backdrop-blur-sm transition-all border border-white/20"><svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a>}
+              {profile.linkedin && <a href={profile.linkedin.startsWith('http') ? profile.linkedin : `https://${profile.linkedin}`} target="_blank" rel="noopener noreferrer" className="p-2 bg-black/50 hover:bg-black/80 text-white hover:text-blue-400 rounded-full backdrop-blur-sm transition-all border border-white/20"><svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg></a>}
+              {profile.website && <a href={profile.website.startsWith('http') ? profile.website : `https://${profile.website}`} target="_blank" rel="noopener noreferrer" className="p-2 bg-black/50 hover:bg-black/80 text-white hover:text-blue-400 rounded-full backdrop-blur-sm transition-all border border-white/20"><Globe className="w-4 h-4" /></a>}
+            </div>
 
-          {/* Socials */}
-          <div className="absolute top-4 left-4 flex gap-2 z-[30]">
-            {profile.instagram && <a href={profile.instagram.startsWith('http') ? profile.instagram : `https://${profile.instagram}`} target="_blank" rel="noopener noreferrer" className="p-2 bg-black/50 hover:bg-black/80 text-white hover:text-blue-400 rounded-full backdrop-blur-sm transition-all border border-white/20"><Instagram className="w-4 h-4" /></a>}
-            {profile.facebook && <a href={profile.facebook.startsWith('http') ? profile.facebook : `https://${profile.facebook}`} target="_blank" rel="noopener noreferrer" className="p-2 bg-black/50 hover:bg-black/80 text-white hover:text-blue-400 rounded-full backdrop-blur-sm transition-all border border-white/20"><Facebook className="w-4 h-4" /></a>}
-            {profile.linkedin && <a href={profile.linkedin.startsWith('http') ? profile.linkedin : `https://${profile.linkedin}`} target="_blank" rel="noopener noreferrer" className="p-2 bg-black/50 hover:bg-black/80 text-white hover:text-blue-400 rounded-full backdrop-blur-sm transition-all border border-white/20"><Linkedin className="w-4 h-4" /></a>}
-            {profile.website && <a href={profile.website.startsWith('http') ? profile.website : `https://${profile.website}`} target="_blank" rel="noopener noreferrer" className="p-2 bg-black/50 hover:bg-black/80 text-white hover:text-blue-400 rounded-full backdrop-blur-sm transition-all border border-white/20"><Globe className="w-4 h-4" /></a>}
-          </div>
+            {/* Manage Info */}
+            {isCurrentUserSociety && (
+              <div className="absolute bottom-4 right-4 z-20">
+                <button onClick={handleEdit} className="flex items-center justify-center gap-1.5 px-5 py-2 md:py-2.5 bg-white text-gray-900 hover:bg-gray-200 rounded-xl text-sm font-bold transition-all shadow-lg">
+                  <Edit className="w-4 h-4" /> Manage Info
+                </button>
+              </div>
+            )}
 
-          {/* Profile Container */}
-          <div className="absolute left-1/2 bottom-[65px] -translate-x-1/2 md:left-[48px] md:bottom-[-90px] md:transform-none z-[25]">
-            <img 
-              src={getSocietyLogo(profile.logoUrl)} 
-              alt="Society Logo" 
-              className="w-[110px] h-[110px] border-[3px] md:w-[180px] md:h-[180px] md:border-[5px] rounded-full border-white object-cover bg-white shadow-[0_4px_10px_rgba(0,0,0,0.15)] block" 
-            />
-          </div>
+            {/* Profile Logo */}
+            <div className="absolute bottom-[-65px] left-[50%] -translate-x-[50%] md:bottom-[-90px] md:left-[48px] md:translate-x-0 z-[10]">
+              <img src={getSocietyLogo(profile.logoUrl)} alt="Society Logo" className="w-[110px] h-[110px] md:w-[180px] md:h-[180px] rounded-full border-[3px] md:border-[5px] border-[#0d0d0d] object-cover bg-[#0d0d0d] shadow-[0_4px_10px_rgba(0,0,0,0.15)] block" />
+            </div>
 
-          {/* Society Name (and tags/button since they need a place to live) */}
-          <div className="absolute left-[5%] right-[5%] bottom-[16px] md:left-[260px] md:right-[48px] md:bottom-[20px] flex flex-col md:flex-row md:justify-between items-center md:items-end gap-3 z-[25]">
-            <div className="flex flex-col items-center md:items-start text-center md:text-left w-full">
-              <div className="text-[20px] md:text-[30px] font-bold text-white leading-[1.2] break-words [text-shadow:0_2px_8px_rgba(0,0,0,0.7)]">
+            {/* Society Name and Tags */}
+            <div 
+              className="absolute bottom-[16px] md:bottom-[20px] left-[50%] -translate-x-[50%] w-max max-w-[90%] md:max-w-[calc(100%-496px)] z-[5] flex flex-col items-center pointer-events-none"
+            >
+              <div className="text-center break-words text-[20px] md:text-[30px] leading-[1.2] font-bold text-white drop-shadow-lg" style={{ textShadow: '0 2px 8px rgba(0, 0, 0, 0.7)' }}>
                 {profile.name}
               </div>
-              <div className="flex items-center gap-2 mt-2 md:mt-3 justify-center md:justify-start">
-                <span className="px-3 py-1 bg-blue-500/80 text-white text-xs font-bold uppercase tracking-wider rounded-lg shadow-sm">
-                  {profile.type}
-                </span>
-                <span className="text-sm font-medium text-gray-200 [text-shadow:0_1px_4px_rgba(0,0,0,0.5)]">
-                  {profile.category?.name}
-                </span>
+              <div className="flex items-center justify-center gap-2 mt-2" style={{ textShadow: '0 2px 8px rgba(0, 0, 0, 0.7)' }}>
+                <span className="px-3 py-1 bg-white/20 backdrop-blur-sm border border-white/20 rounded-full text-[10px] md:text-xs font-bold text-white uppercase tracking-wider">{profile.type}</span>
+                <span className="text-gray-200 text-sm font-medium">{profile.category?.name}</span>
               </div>
             </div>
-            {isCurrentUserSociety && (
-              <button onClick={handleEdit} className="shrink-0 flex items-center justify-center gap-1.5 px-5 py-2 md:py-2.5 bg-white text-gray-900 hover:bg-gray-200 rounded-xl text-sm font-bold transition-all shadow-lg">
-                <Edit className="w-4 h-4" /> Manage Info
-              </button>
-            )}
           </div>
-        </div>
-
-        {/* Content Section - Scrolls independently */}
-        <div className="flex-1 overflow-y-auto custom-scrollbar relative z-10 pt-[24px] px-[20px] md:pt-[110px] md:pl-[138px] md:pr-[48px] pb-10 w-full max-w-full">
-          
-          <div className="w-full">
-            <h2 className="text-[18px] md:text-[22px] font-bold text-white mb-[12px] uppercase tracking-wider">ABOUT US</h2>
-            <p className="text-[14px] md:text-[16px] leading-[1.6] text-gray-300">
-              {profile.longDescription || "No description provided."}
-            </p>
-          </div>
-
-          <div className="mt-12 w-full">
-            <h2 className="text-[18px] md:text-[22px] font-bold text-white mb-[16px] uppercase tracking-wider">EXECUTIVE COUNCIL</h2>
-            {council.length > 0 ? (
-              <div className="bg-white/[0.02] border border-white/5 rounded-2xl overflow-x-auto w-full">
-                <table className="w-full text-left border-collapse min-w-[600px]">
-                  <thead>
-                    <tr className="border-b border-white/10">
-                      <th className="py-4 px-5 text-[11px] font-black text-gray-400 uppercase tracking-widest">Position</th>
-                      <th className="py-4 px-5 text-[11px] font-black text-gray-400 uppercase tracking-widest">Name</th>
-                      <th className="py-4 px-5 text-[11px] font-black text-gray-400 uppercase tracking-widest">Email</th>
-                      <th className="py-4 px-5 text-[11px] font-black text-gray-400 uppercase tracking-widest text-right">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-white/5">
-                    {profile.presidentName && (
-                      <tr className="hover:bg-white/5 transition-colors">
-                        <td className="py-4 px-5 text-[15px] font-semibold text-white">President</td>
-                        <td className="py-4 px-5 text-[15px] font-semibold text-white">{profile.presidentName}</td>
-                        <td className="py-4 px-5 text-[14px] text-gray-400">{profile.presidentEmail}</td>
-                        <td className="py-4 px-5 text-right">
-                          {isCurrentUserSociety && (
-                            <button onClick={() => setEditingMember({ original: { role: 'President' }, current: { name: profile.presidentName, email: profile.presidentEmail }, confirmDelete: false })} className="p-2 text-gray-500 hover:text-white hover:bg-white/10 rounded-lg transition-colors inline-flex" title="Edit"><Edit className="w-4 h-4"/></button>
-                          )}
-                        </td>
+  
+          {/* Content Section */}
+          <div className="relative z-10 pt-[24px] px-[20px] md:pt-[110px] md:pl-[138px] md:pr-[48px] pb-10 w-full max-w-[1000px] mx-auto">
+            
+            <div className="w-full">
+              <h2 className="text-[18px] md:text-[22px] font-bold text-white mb-[12px] uppercase tracking-wider">ABOUT US</h2>
+              <p className="text-[14px] md:text-[16px] leading-[1.6] text-gray-300">
+                {profile.longDescription || "No description provided."}
+              </p>
+            </div>
+  
+            <div className="mt-12 w-full">
+              <h2 className="text-[18px] md:text-[22px] font-bold text-white mb-[16px] uppercase tracking-wider">EXECUTIVE COUNCIL</h2>
+              {council.length > 0 ? (
+                <div className="bg-white/[0.02] border border-white/5 rounded-2xl overflow-x-auto w-full">
+                  <table className="w-full text-left border-collapse min-w-[600px]">
+                    <thead>
+                      <tr className="border-b border-white/10">
+                        <th className="py-4 px-5 text-[11px] font-black text-gray-400 uppercase tracking-widest">Position</th>
+                        <th className="py-4 px-5 text-[11px] font-black text-gray-400 uppercase tracking-widest">Name</th>
+                        <th className="py-4 px-5 text-[11px] font-black text-gray-400 uppercase tracking-widest">Email</th>
+                        <th className="py-4 px-5 text-[11px] font-black text-gray-400 uppercase tracking-widest text-right">Actions</th>
                       </tr>
-                    )}
-                    {council.map((member: any, i: number) => {
-                      const isUneditable = UNEDITABLE_ROLES.includes(member.role);
-                      return (
-                        <tr key={i} className="hover:bg-white/5 transition-colors">
-                          <td className="py-4 px-5 text-[15px] font-semibold text-white">{member.role}</td>
-                          <td className="py-4 px-5 text-[15px] font-semibold text-white">{member.name}</td>
-                          <td className="py-4 px-5 text-[14px] text-gray-400">{member.email}</td>
+                    </thead>
+                    <tbody className="divide-y divide-white/5">
+                      {profile.presidentName && (
+                        <tr className="hover:bg-white/5 transition-colors">
+                          <td className="py-4 px-5 text-[15px] font-semibold text-white">President</td>
+                          <td className="py-4 px-5 text-[15px] font-semibold text-white">{profile.presidentName}</td>
+                          <td className="py-4 px-5 text-[14px] text-gray-400">{profile.presidentEmail}</td>
                           <td className="py-4 px-5 text-right">
-                            {isCurrentUserSociety && !isUneditable && (
-                              <button onClick={() => setEditingMember({ original: member, current: member, confirmDelete: false })} className="p-2 text-gray-500 hover:text-white hover:bg-white/10 rounded-lg transition-colors inline-flex" title="Edit"><Edit className="w-4 h-4"/></button>
+                            {isCurrentUserSociety && (
+                              <button onClick={() => setEditingMember({ original: { role: 'President' }, current: { name: profile.presidentName, email: profile.presidentEmail }, confirmDelete: false })} className="p-2 text-gray-500 hover:text-white hover:bg-white/10 rounded-lg transition-colors inline-flex" title="Edit"><Edit className="w-4 h-4"/></button>
                             )}
                           </td>
                         </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            ) : (
-              <div className="bg-white/5 border border-white/10 rounded-2xl p-8 text-center">
-                <p className="text-gray-400">No executive council members have been added yet.</p>
-              </div>
-            )}
+                      )}
+                      {council.map((member: any, i: number) => {
+                        const isUneditable = UNEDITABLE_ROLES.includes(member.role);
+                        return (
+                          <tr key={i} className="hover:bg-white/5 transition-colors">
+                            <td className="py-4 px-5 text-[15px] font-semibold text-white">{member.role}</td>
+                            <td className="py-4 px-5 text-[15px] font-semibold text-white">{member.name}</td>
+                            <td className="py-4 px-5 text-[14px] text-gray-400">{member.email}</td>
+                            <td className="py-4 px-5 text-right">
+                              {isCurrentUserSociety && !isUneditable && (
+                                <button onClick={() => setEditingMember({ original: member, current: member, confirmDelete: false })} className="p-2 text-gray-500 hover:text-white hover:bg-white/10 rounded-lg transition-colors inline-flex" title="Edit"><Edit className="w-4 h-4"/></button>
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <div className="bg-white/5 border border-white/10 rounded-2xl p-8 text-center">
+                  <p className="text-gray-400">No executive council members have been added yet.</p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
-
       </div>
-
+  
       {/* Editing Modal Overlay */}
       {editingMember && (
         <div className="absolute inset-0 bg-black/80 backdrop-blur-sm z-[999999] flex items-center justify-center p-4">
