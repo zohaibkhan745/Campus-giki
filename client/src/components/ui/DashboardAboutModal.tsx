@@ -8,7 +8,8 @@ const Linkedin = ({className}: {className?: string}) => <svg className={classNam
 import { useNavigate } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { societyService } from '@/services/society.service';
-import { createPortal } from 'react-dom';\nimport { useAuth } from '@/contexts/AuthContext';
+import { createPortal } from 'react-dom';
+import { useAuth } from '@/contexts/AuthContext';
 import { globalNotification } from '@/contexts/NotificationContext';
 
 interface DashboardAboutModalProps {
