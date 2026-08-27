@@ -427,8 +427,12 @@ export const SocietyProfilePage: React.FC = () => {
           {activeTab === 'past' && (
             <div className="space-y-4">
               {pastEvents.length === 0 ? (
-                <div className="bg-white/5 p-6 rounded-2xl border border-white/10 text-center text-xs text-gray-400">
-                  No past events recorded for this society.
+                <div className="bg-white/5 p-8 rounded-2xl border border-white/10 text-center space-y-2">
+                  <History className="w-10 h-10 text-gray-500 mx-auto" />
+                  <h3 className="font-semibold text-white text-sm">No Past Events</h3>
+                  <p className="text-xs text-gray-400">
+                    No past events recorded for this society.
+                  </p>
                 </div>
               ) : (
                 <div className="cards-container">
