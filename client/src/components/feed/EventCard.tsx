@@ -15,7 +15,7 @@ interface EventCardProps {
   onDelete?: () => void;
 }
 
-export const EventCard: React.FC<EventCardProps> = ({ item, onEdit, onDelete }) => {
+const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete }) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const { isActive, openCard, closeCard } = useCardFlip(wrapperRef);
   const { user } = useAuth();
@@ -239,3 +239,7 @@ export const EventCard: React.FC<EventCardProps> = ({ item, onEdit, onDelete }) 
     </div>
   );
 };
+
+export const EventCard = React.memo(EventCardComponent, (prevProps, nextProps) => {
+  return prevProps.item.id === nextProps.item.id;
+});

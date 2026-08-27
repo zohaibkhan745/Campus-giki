@@ -20,7 +20,7 @@ export const App: React.FC = () => {
             <BrowserRouter>
               <ScrollToTop />
               <AppRoutes />
-              <div className="focus-backdrop" id="focusBackdrop"></div>
+              
             </BrowserRouter>
           </ErrorBoundary>
         </NotificationProvider>

@@ -10,6 +10,7 @@ export const DashboardLayout: React.FC = () => {
       
       <main className="relative z-20 flex-1 min-w-0 min-h-[100vh] pb-28 md:pb-32 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full pt-8">
         <Outlet />
+        <div className="focus-backdrop" id="focusBackdrop"></div>
       </main>
 
       <div className="relative z-10 w-full mt-auto">

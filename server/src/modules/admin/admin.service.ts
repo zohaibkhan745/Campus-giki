@@ -194,6 +194,7 @@ export class AdminService {
       endTime: evt.endTime,
       venue: evt.venue,
       society: evt.society,
+      createdAt: evt.createdAt,
     }));
 
     const pendingEventsPreview = pendingEventsRaw.map((evt) => ({
@@ -204,6 +205,7 @@ export class AdminService {
       endTime: evt.endTime,
       venue: evt.venue,
       society: evt.society,
+      createdAt: evt.createdAt,
     }));
 
     const recentlyApprovedEventsPreview = recentlyApprovedEventsRaw.map((evt) => ({
@@ -214,6 +216,7 @@ export class AdminService {
       endTime: evt.endTime,
       venue: evt.venue,
       society: evt.society,
+      createdAt: evt.createdAt,
       dsaApprovedAt: evt.dsaApprovedAt,
     }));
 
