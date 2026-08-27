@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -43,8 +43,21 @@ export const OnboardSocietyModal: React.FC<OnboardSocietyModalProps> = ({ isOpen
     formState: { errors },
   } = useForm<OnboardSocietyFormData>({
     resolver: zodResolver(onboardSocietySchema),
-    defaultValues: { name: '', categoryId: '', presidentEmail: '', advisorId: '' },
+    mode: 'onTouched',
+    defaultValues: { name: '',
+      shortform: '',
+      presidentName: '', categoryId: '', presidentEmail: '', advisorId: '' },
   });
+
+  
+  const [sameAsFullName, setSameAsFullName] = useState(false);
+  const watchName = watch('name');
+
+  useEffect(() => {
+    if (sameAsFullName) {
+      setValue('shortform', watchName || '', { shouldValidate: true });
+    }
+  }, [watchName, sameAsFullName, setValue]);
 
   const categoryId = watch('categoryId');
   const advisorId = watch('advisorId');
@@ -105,6 +118,30 @@ export const OnboardSocietyModal: React.FC<OnboardSocietyModalProps> = ({ isOpen
                     error={errors.name?.message}
                     {...register('name')}
                   />
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Input
+                    label="Short Form *"
+                    placeholder="e.g. ACM"
+                    error={errors.shortform?.message}
+                    disabled={sameAsFullName}
+                    {...register('shortform')}
+                  />
+                  <label className="flex items-center gap-2 cursor-pointer ml-1 text-sm text-gray-400">
+                    <input type="checkbox" className="rounded border-gray-600 bg-gray-800" checked={sameAsFullName} onChange={(e) => setSameAsFullName(e.target.checked)} />
+                    Same as full name
+                  </label>
+                </div>
+
+                <Input
+                  label="President Name *"
+                  placeholder="e.g. John Doe"
+                  error={errors.presidentName?.message}
+                  {...register('presidentName')}
+                />
+              </div>
+
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2 relative z-50 mb-2">

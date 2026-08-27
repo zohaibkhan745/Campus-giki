@@ -102,6 +102,7 @@ model Advisor {
 model Society {
   id               String  @id @default(uuid())
   name             String  @unique
+  shortform        String? @default("NA")
   shortDescription String?
   longDescription  String?
   logoUrl          String?

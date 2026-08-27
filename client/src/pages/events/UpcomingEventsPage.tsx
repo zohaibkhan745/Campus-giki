@@ -19,7 +19,7 @@ export const UpcomingEventsPage: React.FC = () => {
 
   return (
     <div className="min-h-screen text-white flex justify-center py-6 px-8 sm:px-10 font-sans relative">
-      <div className="w-full max-w-full flex flex-col gap-6 mt-10 pb-20">
+      <div className="w-full max-w-full flex flex-col gap-6 pb-20">
         
         {/* Page Header */}
         <div className="flex flex-col gap-2 mb-4">

@@ -4,7 +4,17 @@ export const onboardSocietySchema = z.object({
   name: z
     .string()
     .min(3, 'Society name must be at least 3 characters')
-    .max(100, 'Society name cannot exceed 100 characters'),
+    .max(100, 'Society name cannot exceed 100 characters')
+    .regex(/^[a-zA-Z\s\-\.,]+$/, 'Society name can only contain letters, spaces, dashes, commas, and dots'),
+  shortform: z
+    .string()
+    .min(2, 'Short form must be at least 2 characters')
+    .max(20, 'Short form cannot exceed 20 characters'),
+  presidentName: z
+    .string()
+    .min(2, 'President name must be at least 2 characters')
+    .max(100, 'President name cannot exceed 100 characters')
+    .regex(/^[a-zA-Z\s\-\.,]+$/, 'President name can only contain letters, spaces, dashes, commas, and dots'),
   categoryId: z.string().min(1, 'Please select a society category'),
   presidentEmail: z
     .string()

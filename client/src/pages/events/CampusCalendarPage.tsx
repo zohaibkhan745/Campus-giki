@@ -297,7 +297,7 @@ export const CampusCalendarPage: React.FC = () => {
         }
       `}</style>
 
-      <div className="w-full max-w-full flex flex-col gap-6 mt-10 pb-20">
+      <div className="w-full max-w-full flex flex-col gap-6 pb-20">
         
         {/* Page Header */}
         <h1 className="font-extrabold text-5xl sm:text-6xl text-white tracking-tight leading-tight pb-4">

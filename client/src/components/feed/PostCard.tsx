@@ -37,11 +37,15 @@ const PostCardComponent: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) 
   };
 
   useEffect(() => {
-    const handleClickOutside = () => setDropdownOpen(false);
+    const handleClickOutside = (e: MouseEvent) => {
+      if (buttonRef.current && !buttonRef.current.contains(e.target as Node)) {
+        setDropdownOpen(false);
+      }
+    };
     if (dropdownOpen) {
-      setTimeout(() => window.addEventListener('click', handleClickOutside), 10);
+      document.addEventListener('click', handleClickOutside, true);
     }
-    return () => window.removeEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside, true);
   }, [dropdownOpen]);
 
   

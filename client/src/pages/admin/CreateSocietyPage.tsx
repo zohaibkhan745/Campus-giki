@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery, useMutation } from '@tanstack/react-query';
@@ -49,8 +49,11 @@ export const CreateSocietyPage: React.FC = () => {
     register, handleSubmit, reset, setValue, watch, formState: { errors },
   } = useForm<OnboardSocietyFormData>({
     resolver: zodResolver(onboardSocietySchema),
+    mode: 'onTouched',
     defaultValues: {
       name: '',
+      shortform: '',
+      presidentName: '',
       categoryId: '',
       presidentEmail: '',
       advisorId: '',
@@ -77,6 +80,16 @@ export const CreateSocietyPage: React.FC = () => {
   });
 
   
+  
+  const [sameAsFullName, setSameAsFullName] = useState(false);
+  const watchName = watch('name');
+
+  useEffect(() => {
+    if (sameAsFullName) {
+      setValue('shortform', watchName || '', { shouldValidate: true });
+    }
+  }, [watchName, sameAsFullName, setValue]);
+
   const categoryId = watch('categoryId');
   const advisorId = watch('advisorId');
   
