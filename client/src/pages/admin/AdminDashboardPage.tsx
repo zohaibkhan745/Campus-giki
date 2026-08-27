@@ -51,7 +51,7 @@ export const AdminDashboardPage: React.FC = () => {
   return (
     <div className="w-full">
       <BannerHeader title={user?.fullName || "Dean Student Affairs"} logoUrl={user?.avatarUrl ? resolveImageUrl(user.avatarUrl) : "/default-dsa.png"} fallbackImage="/default-dsa.png" />
-      <div className="max-w-6xl mx-auto space-y-6 text-left py-4 px-4">
+      <div className="w-full max-w-[1440px] mx-auto space-y-6 text-left py-4 px-4">
         {/* Actions Row */}
         <div className="flex justify-end mb-4">
           <div className="grid grid-cols-2 md:flex md:flex-wrap lg:flex-nowrap md:justify-end gap-2 md:gap-3 w-full md:w-auto shrink-0 mt-4 md:mt-0">

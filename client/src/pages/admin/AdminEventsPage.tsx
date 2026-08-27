@@ -129,7 +129,7 @@ export const AdminEventsPage: React.FC = () => {
   const pastEvents = events.filter((e: any) => !e.isUpcoming);
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6 text-left py-4">
+    <div className="w-full max-w-[1440px] mx-auto space-y-6 text-left py-4">
       <div className="flex items-center justify-between">
         <button
           onClick={() => navigate(-1)}
