@@ -149,7 +149,7 @@ export const SocietyProfilePage: React.FC = () => {
           padding-top: 110px;
           padding-left: 48px;
           padding-right: 48px;
-          max-width: 1000px;
+          max-width: 1440px;
           margin: 0 auto;
         }
 

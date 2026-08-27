@@ -179,42 +179,9 @@ export const AdminDashboardPage: React.FC = () => {
           )}
         </div>
 
-        <hr className="border-white/10" />
-
-
-        {/* Upcoming Events */}
-        <div className="space-y-4">
-          <div className="flex items-center justify-between border-b-2 border-white/10 pb-3">
-            <div className="flex items-center gap-2 font-extrabold text-lg text-white">
-              <UpcomingEventIcon className="w-5 h-5 text-white" />
-              <h3>Upcoming Events ({upcomingEvents.length})</h3>
-            </div>
-            <Link to="/admin/events" className="px-4 py-2 bg-white text-gray-900 border border-transparent rounded-xl text-sm font-bold shadow-md hover:bg-gray-100 transition-all">
-              View All
-            </Link>
-          </div>
-
-          {isLoading ? (
-            <div className="space-y-3">
-              {[1, 2].map((i) => (
-                <div key={i} className="bg-white/[0.05] hover:bg-white/[0.08] backdrop-blur-[12px] p-5 rounded-[18px] border border-white/10 hover:border-white/25 transition-all shadow-sm animate-pulse space-y-2">
-                  <div className="h-5 bg-white/10 rounded w-1/3" />
-                  <div className="h-4 bg-white/10 rounded w-1/2" />
-                </div>
-              ))}
-            </div>
-          ) : upcomingEvents.length === 0 ? (
-            <div className="bg-transparent p-10 rounded-[18px] border border-white/20 text-center text-gray-400 space-y-3 flex flex-col items-center">
-              <UpcomingEventIcon className="w-12 h-12 text-gray-400 opacity-30" />
-              <p className="font-bold text-sm">No upcoming events scheduled.</p>
-            </div>
-          ) : (
-            <EventGrid events={upcomingEvents.slice(0, 4)} />
-          )}
         </div>
-      </div>
 
-      <MakeAnnouncementDialog
+        <MakeAnnouncementDialog
         isOpen={isAnnouncementDialogOpen}
         onClose={() => setIsAnnouncementDialogOpen(false)}
       />

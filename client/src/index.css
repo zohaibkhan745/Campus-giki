@@ -258,11 +258,6 @@ body {
 @media (min-width: 1024px) {
   .cards-container {
     grid-template-columns: repeat(3, 1fr) !important;
-  }
-}
-@media (min-width: 1280px) {
-  .cards-container {
-    grid-template-columns: repeat(4, 1fr) !important;
     padding: 60px 40px !important;
   }
 }

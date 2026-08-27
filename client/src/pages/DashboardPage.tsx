@@ -189,7 +189,7 @@ export const DashboardPage: React.FC = () => {
             </div>
 
             {/* 3. Focused Events Overview */}
-          <div className="bg-white/[0.08] backdrop-blur-[20px] p-6 rounded-[18px] border border-white/20 shadow-[0_12px_40px_rgba(0,0,0,0.4)] flex flex-col gap-6">
+          <div className="flex flex-col gap-6 mt-8">
             
             {/* Under Review & Revisions Column */}
             <div className="space-y-4">
@@ -205,7 +205,7 @@ export const DashboardPage: React.FC = () => {
               </div>
 
               {pendingEvents.length === 0 ? (
-                <div className="bg-white/[0.08] backdrop-blur-[20px] shadow-[0_12px_40px_rgba(0,0,0,0.4)] p-10 rounded-[18px] text-center text-gray-400 space-y-3 flex flex-col items-center border border-white/20">
+                <div className="bg-transparent p-10 rounded-[18px] border border-white/20 text-center text-gray-400 space-y-3 flex flex-col items-center">
                   <Shield className="w-12 h-12 text-gray-400 opacity-30" />
                   <p className="font-bold text-sm">You're all caught up! No events pending approval or revisions.</p>
                 </div>
@@ -233,7 +233,7 @@ export const DashboardPage: React.FC = () => {
               </div>
 
               {upcomingEvents.length === 0 ? (
-                <div className="bg-white/[0.08] backdrop-blur-[20px] shadow-[0_12px_40px_rgba(0,0,0,0.4)] p-10 rounded-[18px] text-center text-gray-400 space-y-3 flex flex-col items-center border border-white/20">
+                <div className="bg-transparent p-10 rounded-[18px] border border-white/20 text-center text-gray-400 space-y-3 flex flex-col items-center">
                   <UpcomingEventIcon className="w-12 h-12 text-gray-400 opacity-30" />
                   <p className="font-bold text-sm">No upcoming events scheduled right now.</p>
                 </div>
