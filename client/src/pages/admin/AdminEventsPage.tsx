@@ -212,7 +212,7 @@ export const AdminEventsPage: React.FC = () => {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4 items-start">
-          <div className="space-y-4" style={{ perspective: '1200px' }}>
+          <div className="space-y-4">
             <h2 className="text-2xl font-bold text-white border-b-2 border-white/10 pb-3">Upcoming Events ({upcomingEvents.length})</h2>
             {upcomingEvents.length === 0 ? (
               <p className="text-sm text-gray-400 italic">No upcoming events match the filters.</p>
@@ -220,7 +220,7 @@ export const AdminEventsPage: React.FC = () => {
               <EventGrid events={upcomingEvents} />
             )}
           </div>
-          <div className="space-y-4" style={{ perspective: '1200px' }}>
+          <div className="space-y-4">
             <h2 className="text-2xl font-bold text-white border-b-2 border-white/10 pb-3">Past Events ({pastEvents.length})</h2>
             {pastEvents.length === 0 ? (
               <p className="text-sm text-gray-400 italic">No past events match the filters.</p>

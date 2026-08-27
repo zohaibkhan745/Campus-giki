@@ -147,8 +147,7 @@ export const AdminDashboardPage: React.FC = () => {
 
       
 
-      {/* 4. Activity Section — 2-column */}
-      <div className="bg-white/[0.08] backdrop-blur-[20px] p-6 rounded-[18px] border border-white/20 shadow-[0_12px_40px_rgba(0,0,0,0.4)] flex flex-col gap-6">
+      <div className="flex flex-col gap-6 mt-8">
         {/* Pending Events */}
         <div className="space-y-4">
           <div className="flex items-center justify-between border-b-2 border-white/10 pb-3">

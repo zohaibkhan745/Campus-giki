@@ -227,10 +227,10 @@ body {
   background: transparent;
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  z-index: 10;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.4s ease;
+  z-index: 9990;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
 }
 
 .focus-backdrop.active {
@@ -267,8 +267,8 @@ body.is-focused #smokey-canvas {
   transform: scale(1.06) !important;
 }
 
-body.is-focused .cards-container {
-  z-index: 40 !important;
+body.is-focused .cards-container:has(.in-focus) {
+  z-index: 9998 !important;
 }
 
 .card-wrapper {
@@ -290,7 +290,7 @@ body.is-focused .cards-container {
 }
 
 .card-wrapper.in-focus {
-  z-index: 50 !important;
+  z-index: 9999 !important;
   filter: none !important;
   opacity: 1 !important;
   pointer-events: auto !important;
