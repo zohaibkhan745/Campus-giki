@@ -306,13 +306,13 @@ export const AdminSocietiesPage: React.FC = () => {
                       </td>
                       <td className="py-[18px] px-[15px] text-[15px] border-b border-white/5 text-center group-last:border-b-0" onClick={e => e.stopPropagation()}>
                         <div className="flex items-center justify-center gap-1.5 flex-wrap">
-{society.status === 'INACTIVE' ? (
+                          {society.status === 'INACTIVE' ? (
                             <button
                               onClick={() => setReactivatingSociety(society)}
-                              className="cursor-pointer px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all flex items-center gap-1 bg-green-500 text-white hover:bg-green-600 shadow-md"
+                              className="cursor-pointer px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 bg-green-500 text-white hover:bg-green-600 shadow-md"
                               title="Reactivate Society"
                             >
-                              <CheckCircle2 className="w-3.5 h-3.5" />
+                              <CheckCircle2 className="w-4 h-4" />
                               Reactivate
                             </button>
                           ) : (
