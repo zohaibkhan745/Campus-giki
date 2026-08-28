@@ -166,7 +166,7 @@ export const AdminPostsPage: React.FC = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto text-left relative">
+    <div className="w-full max-w-[1440px] mx-auto text-left relative">
       <div className="flex items-center justify-between">
         <button
           onClick={() => navigate(-1)}
@@ -262,7 +262,7 @@ export const AdminPostsPage: React.FC = () => {
           )}
         </div>
       ) : (
-        <div className="cards-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 w-full mx-auto">
+        <div className="cards-container">
           {posts.map((post: any) => {
             const isAdmin = post.author.role === 'DSA_ADMIN';
             const isOwnPost = isAdmin; // Since we are viewing as Admin
