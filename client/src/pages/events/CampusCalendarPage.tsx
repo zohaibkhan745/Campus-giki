@@ -12,7 +12,7 @@ import { CalendarEventModal } from '@/components/calendar/CalendarEventModal';
 export const CampusCalendarPage: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [selectedEvent, setSelectedEvent] = useState<{event: any, rect: DOMRect} | null>(null);
+  const [selectedEvent, setSelectedEvent] = useState<{event: any, rect: DOMRect, bg: string, color: string} | null>(null);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedSociety, setSelectedSociety] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -376,9 +376,12 @@ export const CampusCalendarPage: React.FC = () => {
                       key={ev.id} 
                       onClick={(e) => {
                         const rect = e.currentTarget.getBoundingClientRect();
-                        setSelectedEvent({ event: ev, rect });
+                        const computedStyle = window.getComputedStyle(e.currentTarget);
+                        const bg = computedStyle.backgroundColor;
+                        const color = computedStyle.color;
+                        setSelectedEvent({ event: ev, rect, bg, color });
                       }}
-                      className={`event-tag ${getEventColorClass(ev.society?.name || 'A')}`}
+                      className={`event-tag ${getEventColorClass(ev.society?.name || 'A')} ${selectedEvent?.event.id === ev.id ? 'opacity-0 pointer-events-none' : ''}`}
                       title={ev.title}
                     >
                       {ev.title}
@@ -448,6 +451,8 @@ export const CampusCalendarPage: React.FC = () => {
         <CalendarEventModal 
           event={selectedEvent.event} 
           sourceRect={selectedEvent.rect} 
+          bg={selectedEvent.bg}
+          color={selectedEvent.color}
           onClose={() => setSelectedEvent(null)} 
         />
       )}
