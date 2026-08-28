@@ -35,6 +35,7 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete }
       setDropdownOpen(false);
       return;
     }
+    window.dispatchEvent(new CustomEvent('close-all-dropdowns'));
     const rect = e.currentTarget.getBoundingClientRect();
     setDropdownPos({ top: rect.bottom + 8, left: rect.left });
     setDropdownOpen(true);
@@ -42,10 +43,15 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete }
 
   useEffect(() => {
     const handleClickOutside = () => setDropdownOpen(false);
+    window.addEventListener('close-all-dropdowns', handleClickOutside);
+    
     if (dropdownOpen) {
       setTimeout(() => window.addEventListener('click', handleClickOutside), 10);
     }
-    return () => window.removeEventListener('click', handleClickOutside);
+    return () => {
+      window.removeEventListener('click', handleClickOutside);
+      window.removeEventListener('close-all-dropdowns', handleClickOutside);
+    };
   }, [dropdownOpen]);
 
   const coverImage = item.coverImageUrl || 'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?auto=format&fit=crop&w=800&q=80';

@@ -31,6 +31,7 @@ const PostCardComponent: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) 
       setDropdownOpen(false);
       return;
     }
+    window.dispatchEvent(new CustomEvent('close-all-dropdowns'));
     const rect = e.currentTarget.getBoundingClientRect();
     setDropdownPos({ top: rect.bottom + 8, left: rect.left });
     setDropdownOpen(true);
@@ -38,10 +39,15 @@ const PostCardComponent: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) 
 
   useEffect(() => {
     const handleClickOutside = () => setDropdownOpen(false);
+    window.addEventListener('close-all-dropdowns', handleClickOutside);
+    
     if (dropdownOpen) {
       setTimeout(() => window.addEventListener('click', handleClickOutside), 10);
     }
-    return () => window.removeEventListener('click', handleClickOutside);
+    return () => {
+      window.removeEventListener('click', handleClickOutside);
+      window.removeEventListener('close-all-dropdowns', handleClickOutside);
+    };
   }, [dropdownOpen]);
 
   
