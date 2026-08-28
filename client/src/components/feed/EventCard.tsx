@@ -72,6 +72,12 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete }
     hour: '2-digit', minute: '2-digit'
   });
 
+  useEffect(() => {
+    if (isActive && dropdownOpen) {
+      setDropdownOpen(false);
+    }
+  }, [isActive, dropdownOpen]);
+
   return (
     <div 
       ref={wrapperRef}

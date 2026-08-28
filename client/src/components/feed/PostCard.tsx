@@ -126,6 +126,12 @@ const PostCardComponent: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) 
     return () => window.removeEventListener('resize', checkOverflow);
   }, [item.content]);
 
+  useEffect(() => {
+    if (isActive && dropdownOpen) {
+      setDropdownOpen(false);
+    }
+  }, [isActive, dropdownOpen]);
+
   return (
     <div 
       ref={wrapperRef}
