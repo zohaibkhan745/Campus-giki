@@ -8,11 +8,20 @@ export function ScrollToTop() {
   useEffect(() => {
     // Only scroll to top on explicit navigation, not when pressing back button (POP)
     if (action !== 'POP') {
-      window.scrollTo({
-        top: 0,
-        left: 0,
-        behavior: 'instant',
-      });
+      const root = document.getElementById('root');
+      if (root) {
+        root.scrollTo({
+          top: 0,
+          left: 0,
+          behavior: 'instant',
+        });
+      } else {
+        window.scrollTo({
+          top: 0,
+          left: 0,
+          behavior: 'instant',
+        });
+      }
     }
   }, [pathname, action]);
 
