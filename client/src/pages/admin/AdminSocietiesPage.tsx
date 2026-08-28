@@ -318,7 +318,7 @@ export const AdminSocietiesPage: React.FC = () => {
                           ) : (
                             <button
                                 onClick={() => setDeactivatingSociety(society)}
-                                className="cursor-pointer px-3 py-1.5 rounded-[12px] text-[11px] font-bold transition-all flex items-center gap-1.5 bg-red-600 text-white hover:bg-red-700 shadow-md"
+                                className="cursor-pointer px-3 py-1.5 rounded-[12px] text-[11px] font-bold transition-all flex items-center gap-1.5 bg-white text-red-600 hover:bg-red-50 shadow-md"
                                 title="Ban Society"
                               >
                                 <Ban className="w-3.5 h-3.5" />
@@ -376,7 +376,7 @@ export const AdminSocietiesPage: React.FC = () => {
               </div>
             </div>
 
-            <div className="modal-actions">
+            <div className="flex justify-end gap-3 mt-6">
               <Button
                 type="button"
                 variant="outline"
@@ -399,33 +399,20 @@ export const AdminSocietiesPage: React.FC = () => {
 
       {/* 2. Delete Confirmation Dialog */}
       {deletingSociety && (<div className="fixed inset-0 z-50 flex items-center justify-center bg-lumen-cream/80 backdrop-blur-sm p-4">
-          <div className="bg-lumen-cream p-6 sm:p-8 rounded-cards border border-red-500/30 max-w-md w-full space-y-4 bg-lumen-stone text-left">
-            <h3 className="font-extrabold text-vast-ink text-lg text-red-500 flex items-center gap-2">
+          <div className="bg-[rgba(25,27,34,0.85)] backdrop-blur-[25px] p-6 sm:p-8 rounded-cards border border-white/15 max-w-md w-full space-y-6 text-left shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)]">
+            <h3 className="font-bold text-white text-xl flex items-center gap-2">
               <Trash2 className="w-5 h-5" />
               <span>Delete Society Account?</span>
             </h3>
 
-            <p className="text-xs text-vast-ink font-medium leading-relaxed">
-              Are you sure you want to completely delete <strong className="text-vast-ink">{deletingSociety.name}</strong>?
+            <p className="text-sm text-slate-200 font-medium leading-relaxed">
+              Are you sure you want to completely delete <strong className="text-white">{deletingSociety.name}</strong>?
               This will permanently delete the society, all associated events, posts, and yearly plans. This action cannot be undone.
             </p>
 
             <div className="flex justify-end gap-3 pt-3">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setDeletingSociety(null)}
-              >
-                Cancel
-              </Button>
-              <Button
-                type="button"
-                variant="destructive"
-                isLoading={deleteMutation.isPending}
-                onClick={() => deleteMutation.mutate(deletingSociety.id)}
-              >
-                Confirm Delete
-              </Button>
+              <button type="button" onClick={() => setDeletingSociety(null)} className="px-5 py-2.5 rounded-[12px] text-sm font-semibold border border-white/20 bg-white text-black hover:bg-white/90 transition-colors">Cancel</button>
+              <button type="button" disabled={deleteMutation.isPending} onClick={() => deleteMutation.mutate(deletingSociety.id)} className="px-5 py-2.5 rounded-[12px] text-sm font-semibold bg-red-600 text-white hover:bg-red-700 transition-colors">{deleteMutation.isPending ? "Processing..." : "Confirm Delete"}</button>
             </div>
           </div>
         </div>
@@ -445,7 +432,7 @@ export const AdminSocietiesPage: React.FC = () => {
               This will suspend login access for the society president. Historical events and yearly plans will remain intact.
             </p>
 
-            <div className="modal-actions">
+            <div className="flex justify-end gap-3 mt-6">
               <button
                 type="button"
                 className="btn-cancel"
@@ -456,10 +443,7 @@ export const AdminSocietiesPage: React.FC = () => {
               </button>
               <button
                 type="button"
-                className="btn-confirm danger"
-                disabled={deactivateMutation.isPending}
-                onClick={() => deactivateMutation.mutate(deactivatingSociety.id)}
-                style={{width:"auto"}}
+                className="px-5 py-2.5 rounded-[12px] text-sm font-semibold bg-red-600 text-white hover:bg-red-700 transition-colors" disabled={deactivateMutation.isPending} onClick={() => deactivateMutation.mutate(deactivatingSociety.id)}
               >
                 {deactivateMutation.isPending ? 'Processing...' : 'Confirm Deactivation'}
               </button>
@@ -482,7 +466,7 @@ export const AdminSocietiesPage: React.FC = () => {
               This will restore login access and all privileges for the society president.
             </p>
 
-            <div className="modal-actions">
+            <div className="flex justify-end gap-3 mt-6">
               <button
                 type="button"
                 className="btn-cancel"

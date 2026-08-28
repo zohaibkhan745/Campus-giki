@@ -163,9 +163,9 @@ const PostCardComponent: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) 
                 <div className="menu-container shrink-0 h-full flex items-center">
                   <button 
                     type="button" 
-                    className="card-button flex items-center justify-center p-0" aria-label="Options" ref={buttonRef} onClick={toggleDropdown} style={{ height: '48px', width: '48px', borderRadius: '12px' }}
+                    className="card-button flex items-center justify-center p-0" aria-label="Options" ref={buttonRef} onClick={toggleDropdown} style={{ height: '48px', width: '48px', borderRadius: '9999px' }}
                   >
-                    <svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="2.5"></circle><circle cx="12" cy="12" r="2.5"></circle><circle cx="19" cy="12" r="2.5"></circle></svg>
+                    <svg viewBox="0 0 24 24" fill="white"><circle cx="5" cy="12" r="2.5"></circle><circle cx="12" cy="12" r="2.5"></circle><circle cx="19" cy="12" r="2.5"></circle></svg>
                   </button>
                   {dropdownOpen && createPortal(
                     <div 
@@ -208,7 +208,7 @@ const PostCardComponent: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) 
               )}
               <button 
                 type="button" 
-                className="card-button open-details-btn visible flex-1" style={{ height: '48px' }}
+                className="card-button open-details-btn visible flex-1" style={{ height: "48px", borderRadius: "9999px" }}
                 onClick={(e) => { e.stopPropagation(); openCard(false); }}
               >
                 View Details
