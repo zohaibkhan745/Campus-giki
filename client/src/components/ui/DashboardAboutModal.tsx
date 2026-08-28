@@ -149,7 +149,7 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ profil
             <div className="absolute inset-0 bg-gradient-to-t from-[#0d0d0d]/80 via-transparent to-transparent pointer-events-none" />
             
             {/* Top Right Controls (Close + Tags) */}
-            <div className="absolute top-4 right-4 flex flex-col items-end z-[30]">
+            <div className="absolute top-4 right-8 flex flex-col items-end z-[30]">
               <button 
                 onClick={onClose}
                 className="p-2 bg-black/50 hover:bg-black/80 text-white rounded-full backdrop-blur-sm transition-all border border-white/20 shadow-lg mb-3"
@@ -173,15 +173,6 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ profil
               {profile.website && <a href={profile.website.startsWith('http') ? profile.website : `https://${profile.website}`} target="_blank" rel="noopener noreferrer" className="p-2 bg-black/50 hover:bg-black/80 text-white hover:text-blue-400 rounded-full backdrop-blur-sm transition-all border border-white/20"><Globe className="w-4 h-4" /></a>}
             </div>
 
-            {/* Manage Info */}
-            {isCurrentUserSociety && (
-              <div className="absolute bottom-4 right-4 z-20">
-                <button onClick={handleEdit} className="flex items-center justify-center gap-1.5 px-5 py-2 md:py-2.5 bg-white text-gray-900 hover:bg-gray-200 rounded-xl text-sm font-bold transition-all shadow-lg">
-                  <Edit className="w-4 h-4" /> Manage Info
-                </button>
-              </div>
-            )}
-
             {/* Profile Logo */}
             <div className="absolute top-[45%] left-[50%] -translate-y-[50%] -translate-x-[50%] md:top-auto md:bottom-[-90px] md:left-[48px] md:translate-x-0 md:translate-y-0 z-[10]">
               <img src={getSocietyLogo(profile.logoUrl)} alt="Society Logo" className="w-[110px] h-[110px] md:w-[180px] md:h-[180px] rounded-full border-[3px] md:border-[5px] border-[#0d0d0d] object-cover bg-[#0d0d0d] shadow-[0_4px_10px_rgba(0,0,0,0.15)] block" />
@@ -204,7 +195,14 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ profil
             <div className="relative z-10 pt-[24px] px-[20px] md:pt-[110px] md:pl-[138px] md:pr-[48px] pb-10 w-full max-w-[1000px] mx-auto">
             
             <div className="w-full">
-              <h2 className="text-[18px] md:text-[22px] font-bold text-white mb-[12px] uppercase tracking-wider">ABOUT US</h2>
+              <div className="flex items-center justify-between mb-[12px]">
+              <h2 className="text-[18px] md:text-[22px] font-bold text-white uppercase tracking-wider mb-0">ABOUT US</h2>
+              {isCurrentUserSociety && (
+                <button onClick={handleEdit} className="flex items-center justify-center gap-1.5 px-4 py-2 bg-white text-gray-900 hover:bg-gray-200 rounded-xl text-sm font-bold transition-all shadow-lg shrink-0">
+                  <Edit className="w-4 h-4" /> Manage Info
+                </button>
+              )}
+            </div>
               <p className="text-[14px] md:text-[16px] leading-[1.6] text-gray-300 whitespace-pre-wrap">
                 {profile.longDescription || "No description provided."}
               </p>
