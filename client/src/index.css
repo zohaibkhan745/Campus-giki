@@ -923,6 +923,9 @@ body.is-focused button.fixed.z-\[100\] {
   display: flex;
   align-items: center;
   gap: 12px;
+  min-width: 0;
+  flex: 1;
+  padding-right: 6px;
 }
 
 .avatar {
@@ -997,19 +1000,25 @@ body.is-focused button.fixed.z-\[100\] {
   overflow-y: auto;
   padding-right: 6px;
   margin-right: -2px;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
 }
 
 .scroll-area::-webkit-scrollbar {
-  width: 4px;
+  width: 6px;
 }
 
 .scroll-area::-webkit-scrollbar-track {
-  background: transparent;
+  background: rgba(30, 41, 59, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 10px;
+  margin: 2px;
 }
 
 .scroll-area::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 10px;
 }
 
 .card-title {
@@ -1102,4 +1111,8 @@ body.is-focused button.fixed.z-\[100\] {
 }
 ::-webkit-scrollbar-corner {
   display: none;
+}
+
+.scroll-area::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.8);
 }
