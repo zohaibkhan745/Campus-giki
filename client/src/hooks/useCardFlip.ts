@@ -59,6 +59,7 @@ export function useCardFlip(wrapperRef: RefObject<HTMLDivElement>) {
   }, [isActive]);
 
   const openCard = (isEvent: boolean) => {
+    window.dispatchEvent(new CustomEvent('close-all-dropdowns'));
     const wrapper = wrapperRef.current;
     if (!wrapper) return;
     

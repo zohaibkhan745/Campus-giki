@@ -261,23 +261,23 @@ export const SocietyProfilePage: React.FC = () => {
           {/* Social Links */}
           <div className="flex gap-2">
             {society.instagram && (
-              <a href={society.instagram.startsWith('http') ? society.instagram : `https://${society.instagram}`} target="_blank" rel="noopener noreferrer" className="p-2.5 bg-black/50 hover:bg-black/80 hover:scale-110 hover:text-blue-400 hover:border-blue-400/50 text-white rounded-full backdrop-blur-sm transition-all border border-white/20">
-                <Instagram className="w-5 h-5" />
+              <a href={society.instagram.startsWith('http') ? society.instagram : `https://${society.instagram}`} target="_blank" rel="noopener noreferrer" className="p-1.5 md:p-2.5 bg-black/50 hover:bg-black/80 hover:scale-110 hover:text-blue-400 hover:border-blue-400/50 text-white rounded-full backdrop-blur-sm transition-all border border-white/20">
+                <Instagram className="w-3.5 h-3.5 md:w-5 md:h-5" />
               </a>
             )}
             {society.facebook && (
-              <a href={society.facebook.startsWith('http') ? society.facebook : `https://${society.facebook}`} target="_blank" rel="noopener noreferrer" className="p-2.5 bg-black/50 hover:bg-black/80 hover:scale-110 hover:text-blue-400 hover:border-blue-400/50 text-white rounded-full backdrop-blur-sm transition-all border border-white/20">
-                <Facebook className="w-5 h-5" />
+              <a href={society.facebook.startsWith('http') ? society.facebook : `https://${society.facebook}`} target="_blank" rel="noopener noreferrer" className="p-1.5 md:p-2.5 bg-black/50 hover:bg-black/80 hover:scale-110 hover:text-blue-400 hover:border-blue-400/50 text-white rounded-full backdrop-blur-sm transition-all border border-white/20">
+                <Facebook className="w-3.5 h-3.5 md:w-5 md:h-5" />
               </a>
             )}
             {society.linkedin && (
-              <a href={society.linkedin.startsWith('http') ? society.linkedin : `https://${society.linkedin}`} target="_blank" rel="noopener noreferrer" className="p-2.5 bg-black/50 hover:bg-black/80 hover:scale-110 hover:text-blue-400 hover:border-blue-400/50 text-white rounded-full backdrop-blur-sm transition-all border border-white/20">
-                <Linkedin className="w-5 h-5" />
+              <a href={society.linkedin.startsWith('http') ? society.linkedin : `https://${society.linkedin}`} target="_blank" rel="noopener noreferrer" className="p-1.5 md:p-2.5 bg-black/50 hover:bg-black/80 hover:scale-110 hover:text-blue-400 hover:border-blue-400/50 text-white rounded-full backdrop-blur-sm transition-all border border-white/20">
+                <Linkedin className="w-3.5 h-3.5 md:w-5 md:h-5" />
               </a>
             )}
             {society.website && (
-              <a href={society.website.startsWith('http') ? society.website : `https://${society.website}`} target="_blank" rel="noopener noreferrer" className="p-2.5 bg-black/50 hover:bg-black/80 hover:scale-110 hover:text-blue-400 hover:border-blue-400/50 text-white rounded-full backdrop-blur-sm transition-all border border-white/20">
-                <Globe className="w-5 h-5" />
+              <a href={society.website.startsWith('http') ? society.website : `https://${society.website}`} target="_blank" rel="noopener noreferrer" className="p-1.5 md:p-2.5 bg-black/50 hover:bg-black/80 hover:scale-110 hover:text-blue-400 hover:border-blue-400/50 text-white rounded-full backdrop-blur-sm transition-all border border-white/20">
+                <Globe className="w-3.5 h-3.5 md:w-5 md:h-5" />
               </a>
             )}
           </div>
