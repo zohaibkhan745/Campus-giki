@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom';
 
 export const CalendarEventModal = ({ event, sourceRect, onClose }: { event: any, sourceRect: DOMRect, onClose: () => void }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -18,7 +19,7 @@ export const CalendarEventModal = ({ event, sourceRect, onClose }: { event: any,
   }, []);
 
   const handleClose = () => {
-    setIsOpen(false);
+    setIsClosing(true);
     setTimeout(() => {
       onClose();
     }, 400); 
@@ -37,18 +38,21 @@ export const CalendarEventModal = ({ event, sourceRect, onClose }: { event: any,
   return createPortal(
     <>
       <div 
-        className={`fixed inset-0 bg-black/40 backdrop-blur-md z-[1000] transition-opacity duration-400 ease-in-out ${isOpen ? 'opacity-100' : 'opacity-0'}`} 
+        className={`fixed inset-0 bg-black/40 backdrop-blur-md z-[1000] transition-opacity duration-400 ease-in-out ${(!isClosing && isOpen) ? 'opacity-100' : 'opacity-0'}`} 
         onClick={handleClose}
       />
       <div 
         ref={modalRef}
         className="fixed z-[1001] rounded-[20px] overflow-hidden flex flex-col border border-white/20 text-white shadow-[0_16px_40px_rgba(0,0,0,0.5)] event-card-wrapper"
         style={{
-          top: isOpen ? '50%' : sourceRect.top + 'px',
-          left: isOpen ? '50%' : sourceRect.left + 'px',
-          width: isOpen ? '560px' : sourceRect.width + 'px',
-          height: isOpen ? '560px' : sourceRect.height + 'px',
-          transform: isOpen ? 'translate(-50%, -50%)' : 'none',
+          top: (isOpen || isClosing) ? '50%' : sourceRect.top + 'px',
+          left: (isOpen || isClosing) ? '50%' : sourceRect.left + 'px',
+          width: (isOpen || isClosing) ? '560px' : sourceRect.width + 'px',
+          height: (isOpen || isClosing) ? '560px' : sourceRect.height + 'px',
+          transform: isClosing 
+            ? 'translate(-50%, -50%) scale(0.95)' 
+            : (isOpen ? 'translate(-50%, -50%)' : 'none'),
+          opacity: isClosing ? 0 : 1,
           maxWidth: '90vw',
           maxHeight: '90vh',
           background: 'rgba(25, 27, 34, 0.95)',
@@ -56,7 +60,7 @@ export const CalendarEventModal = ({ event, sourceRect, onClose }: { event: any,
           transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)'
         }}
       >
-        <div className="card-face card-back !shadow-none !w-full !h-full relative" style={{ transform: 'none', transition: 'opacity 0.2s', opacity: isOpen ? 1 : 0, transitionDelay: isOpen ? '0.2s' : '0s' }}>
+        <div className="card-face card-back !shadow-none !w-full !h-full relative" style={{ transform: 'none', transition: 'opacity 0.2s', opacity: (!isClosing && isOpen) ? 1 : 0, transitionDelay: (!isClosing && isOpen) ? '0.2s' : '0s' }}>
           <img src={coverImage} alt="Event Cover" className="back-bg-image" />
           <div className="card-back-inner !top-0 !left-0 !w-full !h-full" style={{ transform: 'none' }}>
             <button 
