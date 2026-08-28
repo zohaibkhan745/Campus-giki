@@ -183,13 +183,13 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ profil
             )}
 
             {/* Profile Logo */}
-            <div className="absolute bottom-[-65px] left-[50%] -translate-x-[50%] md:bottom-[-90px] md:left-[48px] md:translate-x-0 z-[10]">
+            <div className="absolute top-[45%] left-[50%] -translate-y-[50%] -translate-x-[50%] md:top-auto md:bottom-[-90px] md:left-[48px] md:translate-x-0 md:translate-y-0 z-[10]">
               <img src={getSocietyLogo(profile.logoUrl)} alt="Society Logo" className="w-[110px] h-[110px] md:w-[180px] md:h-[180px] rounded-full border-[3px] md:border-[5px] border-[#0d0d0d] object-cover bg-[#0d0d0d] shadow-[0_4px_10px_rgba(0,0,0,0.15)] block" />
             </div>
 
             {/* Society Name */}
             <div 
-              className="absolute bottom-[16px] md:bottom-[20px] left-[50%] -translate-x-[50%] w-max max-w-[90%] md:max-w-[calc(100%-496px)] z-[5] flex flex-col items-center pointer-events-none"
+              className="absolute top-[calc(45%+65px)] md:top-auto md:bottom-[20px] left-[50%] -translate-x-[50%] w-max max-w-[90%] md:max-w-[calc(100%-496px)] z-[5] flex flex-col items-center pointer-events-none"
             >
               <div className="text-center break-words text-[20px] md:text-[30px] leading-[1.2] font-bold text-white drop-shadow-lg" style={{ textShadow: '0 2px 8px rgba(0, 0, 0, 0.7)' }}>
                 {profile.name}
@@ -216,7 +216,7 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ profil
                 
               </div>
               <div className="bg-white/[0.02] border border-white/5 rounded-2xl overflow-x-auto w-full">
-                <table className="w-full text-left border-collapse min-w-[600px]">
+                <table className="w-full text-left border-collapse min-w-[700px] whitespace-nowrap">
                   <thead>
                     <tr className="border-b border-white/10 bg-white/5">
                       <th className="py-4 px-5 text-[11px] font-black text-gray-400 uppercase tracking-widest w-16">Sr. No</th>

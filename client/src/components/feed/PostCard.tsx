@@ -127,10 +127,11 @@ const PostCardComponent: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) 
   }, [item.content]);
 
   useEffect(() => {
-    if (isActive && dropdownOpen) {
-      setDropdownOpen(false);
+    if (isActive) {
+      if (dropdownOpen) setDropdownOpen(false);
+      if (showDeleteConfirm) setShowDeleteConfirm(false);
     }
-  }, [isActive, dropdownOpen]);
+  }, [isActive, dropdownOpen, showDeleteConfirm]);
 
   return (
     <div 

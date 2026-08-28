@@ -455,8 +455,8 @@ export const SocietyProfilePage: React.FC = () => {
           {activeTab === 'council' && (
               <div className="space-y-4 max-w-5xl mx-auto pb-10">
 
-                <div className="bg-[#1e2025]/50 border border-white/10 rounded-2xl overflow-hidden shadow-2xl overflow-x-auto">
-                  <table className="w-full text-left border-collapse">
+                <div className="bg-[#1e2025]/50 border border-white/10 rounded-2xl overflow-hidden shadow-2xl overflow-x-auto custom-scrollbar">
+                  <table className="w-full text-left border-collapse min-w-[800px] whitespace-nowrap">
                     <thead>
                       <tr className="bg-white/5 border-b border-white/10">
                         <th className="py-4 px-5 text-xs font-bold text-gray-400 uppercase tracking-wider">Sr. No</th>
