@@ -998,14 +998,15 @@ body.is-focused button.fixed.z-\[100\] {
   flex: 1 1 auto;
   min-height: 0;
   overflow-y: auto;
-  padding-right: 6px;
-  margin-right: -2px;
+  padding-right: 8px;
   scroll-behavior: smooth;
-  
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.4) rgba(30, 41, 59, 0.6);
 }
 
 .scroll-area::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
+  -webkit-appearance: none;
 }
 
 .scroll-area::-webkit-scrollbar-track {
