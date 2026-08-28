@@ -7,10 +7,12 @@ import { CustomDropdown } from '@/components/ui/CustomDropdown';
 import { eventService } from '@/services/event.service';
 import { societyService } from '@/services/society.service';
 import { EventCard } from '@/components/feed/EventCard';
+import { CalendarEventModal } from '@/components/calendar/CalendarEventModal';
 
 export const CampusCalendarPage: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const [selectedEvent, setSelectedEvent] = useState<{event: any, rect: DOMRect} | null>(null);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedSociety, setSelectedSociety] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -372,7 +374,10 @@ export const CampusCalendarPage: React.FC = () => {
                   {dayEvents.map(ev => (
                     <div 
                       key={ev.id} 
-                      onClick={() => navigate(`/events/${ev.id}`)}
+                      onClick={(e) => {
+                        const rect = e.currentTarget.getBoundingClientRect();
+                        setSelectedEvent({ event: ev, rect });
+                      }}
                       className={`event-tag ${getEventColorClass(ev.society?.name || 'A')}`}
                       title={ev.title}
                     >
@@ -438,6 +443,14 @@ export const CampusCalendarPage: React.FC = () => {
           )}
         </div>
       </div>
+      
+      {selectedEvent && (
+        <CalendarEventModal 
+          event={selectedEvent.event} 
+          sourceRect={selectedEvent.rect} 
+          onClose={() => setSelectedEvent(null)} 
+        />
+      )}
     </div>
   );
 };
