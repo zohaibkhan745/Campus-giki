@@ -626,7 +626,7 @@ body.is-focused .reparented-item {
 
 .dropdown-list {
   max-height: 300px;
-  overflow-y: auto;
+  overflow-y: scroll;
   overflow-x: hidden;
   padding-right: 4px;
   scrollbar-width: thin;
@@ -997,11 +997,11 @@ body.is-focused button.fixed.z-\[100\] {
   gap: 12px;
   flex: 1 1 auto;
   min-height: 0;
-  overflow-y: auto;
+  overflow-y: scroll;
   padding-right: 6px;
   margin-right: -2px;
   scroll-behavior: smooth;
-  -webkit-overflow-scrolling: touch;
+  
 }
 
 .scroll-area::-webkit-scrollbar {
