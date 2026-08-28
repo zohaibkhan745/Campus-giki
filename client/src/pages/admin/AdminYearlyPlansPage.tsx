@@ -116,19 +116,19 @@ export const AdminYearlyPlansPage: React.FC = () => {
       <div className="flex flex-col sm:flex-row gap-2.5 mb-6">
         {/* Search Input */}
         <div className="relative w-full flex-1 flex items-center">
-          <div className="absolute left-3 text-gray-400 pointer-events-none flex items-center justify-center">
-            <Search className="w-4 h-4" />
-          </div>
-          <input
-            type="text"
-            placeholder="Search by society name..."
-            value={searchQuery}
-            onChange={(e) => {
-              setSearchQuery(e.target.value);
-              setPage(1);
-            }}
-            className="search-input w-full pl-10 h-[44px]"
-          />
+            <div className="absolute left-4 text-gray-400 pointer-events-none flex items-center justify-center z-10">
+              <Search className="w-5 h-5 text-white" />
+            </div>
+            <input
+              type="text"
+              placeholder="Search by society name..."
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setPage(1);
+              }}
+              className="w-full bg-white/[0.08] backdrop-blur-[20px] text-white placeholder:text-gray-300 text-sm rounded-xl border border-white/20 px-4 py-[12px] pl-12 h-[48px] transition-all outline-none focus:ring-2 focus:ring-white/40 shadow-[0_12px_40px_rgba(0,0,0,0.4)]"
+            />
         </div>
 
         {/* Dropdown Filters & Clear */}
