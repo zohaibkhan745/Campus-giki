@@ -41,15 +41,11 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete }
   };
 
   useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (buttonRef.current && !buttonRef.current.contains(e.target as Node)) {
-        setDropdownOpen(false);
-      }
-    };
+    const handleClickOutside = () => setDropdownOpen(false);
     if (dropdownOpen) {
-      document.addEventListener('click', handleClickOutside, true);
+      setTimeout(() => window.addEventListener('click', handleClickOutside), 10);
     }
-    return () => document.removeEventListener('click', handleClickOutside, true);
+    return () => window.removeEventListener('click', handleClickOutside);
   }, [dropdownOpen]);
 
   const coverImage = item.coverImageUrl || 'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?auto=format&fit=crop&w=800&q=80';
@@ -124,9 +120,9 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete }
                 <div className="menu-container shrink-0 h-full flex items-center">
                   <button 
                     type="button" 
-                    className="card-button flex items-center justify-center p-0" aria-label="Options" ref={buttonRef} onClick={toggleDropdown} style={{ height: '48px', width: '48px', borderRadius: '9999px' }}
+                    className="card-button flex items-center justify-center p-0" aria-label="Options" ref={buttonRef} onClick={toggleDropdown} style={{ height: '48px', width: '48px', borderRadius: '12px' }}
                   >
-                    <svg viewBox="0 0 24 24" fill="white"><circle cx="5" cy="12" r="2.5"></circle><circle cx="12" cy="12" r="2.5"></circle><circle cx="19" cy="12" r="2.5"></circle></svg>
+                    <svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="2.5"></circle><circle cx="12" cy="12" r="2.5"></circle><circle cx="19" cy="12" r="2.5"></circle></svg>
                   </button>
                   {dropdownOpen && createPortal(
                     <div 
@@ -169,7 +165,7 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete }
               )}
               <button 
                 type="button" 
-                className="card-button open-details-btn flex-1" style={{ height: '48px', borderRadius: '9999px' }}
+                className="card-button open-details-btn flex-1" style={{ height: '48px' }}
                 onClick={(e) => { e.stopPropagation(); openCard(true); }}
               >
                 View Details
