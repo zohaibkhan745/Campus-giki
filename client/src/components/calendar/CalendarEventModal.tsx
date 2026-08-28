@@ -40,7 +40,7 @@ export const CalendarEventModal = ({ event, sourceRect, bg, color, onClose }: { 
     setIsOpen(false);
     setTimeout(() => {
       onClose();
-    }, 500); // 0.5s close animation
+    }, 300); // 0.3s close animation
   };
 
   if (!event || !sourceRect) return null;
@@ -54,14 +54,14 @@ export const CalendarEventModal = ({ event, sourceRect, bg, color, onClose }: { 
   const formattedDate = event.createdAt ? format(new Date(event.createdAt), 'MMM d, yyyy') : '';
 
   // Spring timings from the reference code
-  const openTiming = 'transform 0.55s cubic-bezier(0.32, 0.72, 0, 1), width 0.55s cubic-bezier(0.32, 0.72, 0, 1), height 0.55s cubic-bezier(0.32, 0.72, 0, 1), background-color 0.45s ease';
-  const closeTiming = 'transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), width 0.5s cubic-bezier(0.25, 1, 0.5, 1), height 0.5s cubic-bezier(0.25, 1, 0.5, 1), background-color 0.4s ease';
+  const openTiming = 'transform 0.35s cubic-bezier(0.32, 0.72, 0, 1), width 0.35s cubic-bezier(0.32, 0.72, 0, 1), height 0.35s cubic-bezier(0.32, 0.72, 0, 1), background-color 0.3s ease';
+  const closeTiming = 'transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), width 0.3s cubic-bezier(0.25, 1, 0.5, 1), height 0.3s cubic-bezier(0.25, 1, 0.5, 1), background-color 0.2s ease';
 
   return createPortal(
     <>
       <div 
         className={`fixed inset-0 bg-black/40 backdrop-blur-md z-[1000] ease-in-out ${isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`} 
-        style={{ transition: 'opacity 0.5s cubic-bezier(0.25, 1, 0.5, 1)' }}
+        style={{ transition: 'opacity 0.3s cubic-bezier(0.25, 1, 0.5, 1)' }}
         onClick={handleClose}
       />
       <div 
@@ -87,8 +87,8 @@ export const CalendarEventModal = ({ event, sourceRect, bg, color, onClose }: { 
             fontWeight: 600,
             opacity: isOpen ? 0 : 1,
             transform: isOpen ? 'scale(0.9)' : 'scale(1)',
-            transition: 'opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
-            transitionDelay: isOpen ? '0s' : '0.2s', // Delay appearing until it shrinks back
+            transition: 'opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1), transform 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
+            transitionDelay: isOpen ? '0s' : '0.12s', // Delay appearing until it shrinks back
             pointerEvents: 'none'
           }}
         >
@@ -103,8 +103,8 @@ export const CalendarEventModal = ({ event, sourceRect, bg, color, onClose }: { 
             className="back-bg-image" 
             style={{
               opacity: isOpen ? 1 : 0,
-              transition: 'opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
-              transitionDelay: isOpen ? '0.1s' : '0s'
+              transition: 'opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
+              transitionDelay: isOpen ? '0.05s' : '0s'
             }}
           />
           
@@ -117,8 +117,8 @@ export const CalendarEventModal = ({ event, sourceRect, bg, color, onClose }: { 
               style={{
                 opacity: isOpen ? 1 : 0,
                 transform: `translateY(${isOpen ? '0' : '12px'})`,
-                transition: 'opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
-                transitionDelay: isOpen ? '0.22s' : '0s'
+                transition: 'opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1), transform 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
+                transitionDelay: isOpen ? '0.12s' : '0s'
               }}
             >
               <X className="w-5 h-5" />
@@ -130,8 +130,8 @@ export const CalendarEventModal = ({ event, sourceRect, bg, color, onClose }: { 
                 style={{
                   opacity: isOpen ? 1 : 0,
                   transform: `translateY(${isOpen ? '0' : '12px'})`,
-                  transition: 'opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
-                  transitionDelay: isOpen ? '0.22s' : '0s'
+                  transition: 'opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1), transform 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
+                  transitionDelay: isOpen ? '0.12s' : '0s'
                 }}
               >
                 <img 
@@ -152,8 +152,8 @@ export const CalendarEventModal = ({ event, sourceRect, bg, color, onClose }: { 
                 style={{
                   opacity: isOpen ? 1 : 0,
                   transform: `translateY(${isOpen ? '0' : '12px'})`,
-                  transition: 'opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
-                  transitionDelay: isOpen ? '0.28s' : '0s'
+                  transition: 'opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1), transform 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
+                  transitionDelay: isOpen ? '0.16s' : '0s'
                 }}
               >
                 <div className="event-meta mb-6 flex flex-col gap-2">
@@ -180,8 +180,8 @@ export const CalendarEventModal = ({ event, sourceRect, bg, color, onClose }: { 
                 style={{
                   opacity: isOpen ? 1 : 0,
                   transform: `translateY(${isOpen ? '0' : '12px'})`,
-                  transition: 'opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
-                  transitionDelay: isOpen ? '0.34s' : '0s'
+                  transition: 'opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1), transform 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
+                  transitionDelay: isOpen ? '0.2s' : '0s'
                 }}
               >
                 {event.registrationLink ? (
