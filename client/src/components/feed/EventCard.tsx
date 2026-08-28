@@ -63,6 +63,11 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete }
     day: 'numeric',
     year: 'numeric',
   });
+  const formattedTime = new Date(item.createdAt).toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true
+  });
   
   const eventDateObj = new Date(item.eventDate || item.createdAt);
   const eventDate = eventDateObj.toLocaleDateString('en-US', {
@@ -101,7 +106,7 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete }
                 />
                 <div className="author-name-group">
                   <span className="author-name">{authorName}</span>
-                  <span className="post-timestamp">{formattedDate}</span>
+                  <span className="post-timestamp">{formattedDate} • {formattedTime}</span>
                 </div>
               </div>
               <span className="card-tag">Event</span>
@@ -211,7 +216,7 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete }
                 />
                 <div className="author-name-group">
                   <span className="author-name" style={{ fontSize: '1.05rem' }}>{authorName}</span>
-                  <span className="post-timestamp">{formattedDate}</span>
+                  <span className="post-timestamp">{formattedDate} • {formattedTime}</span>
                 </div>
               </div>
 

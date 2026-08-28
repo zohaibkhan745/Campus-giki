@@ -776,6 +776,10 @@ body.is-focused .reparented-item {
   display: flex;
   flex-direction: column;
   height: 100%;
+  width: 100%;
+  top: auto;
+  left: auto;
+  transform: none;
 }
 
 body.is-focused .society-profile-container,
@@ -1079,8 +1083,11 @@ body.is-focused button.fixed.z-\[100\] {
   height: 10px;
 }
 ::-webkit-scrollbar-track {
-  background: transparent;
-  margin: 6px;
+  background: rgba(30, 41, 59, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 10px;
+  margin: 4px;
 }
 ::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.4);
