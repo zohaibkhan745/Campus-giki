@@ -318,20 +318,20 @@ export const AdminSocietiesPage: React.FC = () => {
                           ) : (
                             <button
                                 onClick={() => setDeactivatingSociety(society)}
-                                className="cursor-pointer px-3 py-1.5 rounded-[12px] text-[11px] font-bold transition-all flex items-center gap-1.5 bg-white text-red-600 hover:bg-red-50 shadow-md"
+                                className="cursor-pointer px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 bg-white text-red-600 hover:bg-red-50 shadow-md"
                                 title="Ban Society"
                               >
-                                <Ban className="w-3.5 h-3.5" />
+                                <Ban className="w-4 h-4" />
                                 Ban
                               </button>
                           )}
 
                           <button
                               onClick={() => setDeletingSociety(society)}
-                              className="cursor-pointer px-3 py-1.5 rounded-[12px] text-[11px] font-bold transition-all flex items-center gap-1.5 bg-red-900 text-white hover:bg-red-950 shadow-md"
+                              className="cursor-pointer px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 bg-red-600 text-white hover:bg-red-700 shadow-md"
                               title="Delete Society"
                             >
-                              <Trash2 className="w-3.5 h-3.5" />
+                              <Trash2 className="w-4 h-4" />
                               Delete
                           </button>
                         </div>
