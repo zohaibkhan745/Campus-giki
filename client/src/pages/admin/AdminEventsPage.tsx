@@ -28,7 +28,7 @@ export const AdminEventsPage: React.FC = () => {
   const navigate = useNavigate();
   const rawType = searchParams.get('type');
 
-  let defaultType: 'all' | 'this_week' | 'this_month' | 'upcoming' | 'past' = 'all';
+  let defaultType: 'all' | 'this_week' | 'this_month' | 'upcoming' | 'past' = 'upcoming';
   let defaultFrom = '';
   let defaultTo = '';
 
@@ -57,7 +57,7 @@ export const AdminEventsPage: React.FC = () => {
   const [societyFilter, setSocietyFilter] = useState<string>('');
   const [fromDate, setFromDate] = useState<string>(defaultFrom);
   const [toDate, setToDate] = useState<string>(defaultTo);
-  const [typeToggle, setTypeToggle] = useState(defaultType);
+  const [typeToggle, setTypeToggle] = useState<string>(defaultType);
 
   const setAllFilter = () => { setFromDate(''); setToDate(''); setTypeToggle('all'); /* reset handled by queryKey */ };
   const setUpcomingFilter = () => { setFromDate(''); setToDate(''); setTypeToggle('upcoming'); /* reset handled by queryKey */ };
@@ -129,7 +129,7 @@ export const AdminEventsPage: React.FC = () => {
   const pastEvents = events.filter((e: any) => !e.isUpcoming);
 
   return (
-    <div className="w-full max-w-[1440px] mx-auto space-y-6 text-left py-4">
+    <div className="w-full max-w-[1440px] mx-auto text-left relative">
       <div className="flex items-center justify-between">
         <button
           onClick={() => navigate(-1)}
@@ -139,8 +139,8 @@ export const AdminEventsPage: React.FC = () => {
         </button>
       </div>
 
-      <div className="space-y-1 py-6 text-left">
-        <h1 className="font-extrabold text-5xl sm:text-6xl text-white tracking-tight leading-tight mb-8">Campus Events Overview</h1>
+      <div className="text-left mb-6">
+        <h1 className="font-extrabold text-5xl sm:text-6xl text-white tracking-tight leading-tight">Campus Events Overview</h1>
       </div>
 
       {/* Filter Toolbar */}
@@ -156,24 +156,16 @@ export const AdminEventsPage: React.FC = () => {
               className="w-full bg-transparent text-white text-sm rounded-xl border border-white/20 px-3.5 py-2 pl-10 outline-none focus:border-white/40"
             />
           </div>
-          <div className="flex flex-wrap items-center bg-white/5 p-1 rounded-xl border border-white/10 w-full md:w-auto gap-1">
-            {['all', 'this_week', 'this_month', 'upcoming', 'past'].map(filterType => (
-              <button key={filterType} onClick={() => {
-                if (filterType === 'all') setAllFilter();
-                else if (filterType === 'this_week') setThisWeekFilter();
-                else if (filterType === 'this_month') setThisMonthFilter();
-                else if (filterType === 'upcoming') setUpcomingFilter();
-                else setPastFilter();
-              }}
-                className={`px-3 py-1.5 rounded-[10px] text-xs font-bold transition-all ${typeToggle === filterType ? 'bg-white text-black shadow-sm' : 'text-gray-400 hover:text-white'}`}
-              >
-                {filterType === 'this_week' ? 'This Week' : filterType === 'this_month' ? 'This Month' : filterType.charAt(0).toUpperCase() + filterType.slice(1)}
-              </button>
-            ))}
-          </div>
+          
         </div>
 
         <div className="flex flex-col md:flex-row flex-wrap items-center gap-4 pt-4 border-t border-white/10 mt-2">
+          
+          <CustomDropdown className="w-full md:flex-1 shrink-0" icon={<Calendar className="w-4 h-4" />} options={[{ value: 'upcoming', label: 'Upcoming Events' }, { value: 'past', label: 'Past Events' }, { value: 'all', label: 'All Event Timings' }]}
+            value={typeToggle}
+            onChange={(e: any) => { setTypeToggle(e.target.value); setFromDate(''); setToDate(''); }}
+            placeholder="Event Timeline"
+          />
           <CustomDropdown className="w-full md:flex-1 shrink-0" icon={<Filter className="w-4 h-4" />} options={[{ value: "", label: "All Statuses" },
               { value: 'PENDING_ADMIN', label: 'Pending Review' },
               { value: 'PUBLISHED', label: 'Published / Approved' },
@@ -211,24 +203,9 @@ export const AdminEventsPage: React.FC = () => {
           <h3 className="font-bold text-white text-base">No Campus Events Found</h3>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4 items-start">
-          <div className="space-y-4">
-            <h2 className="text-2xl font-bold text-white border-b-2 border-white/10 pb-3">Upcoming Events ({upcomingEvents.length})</h2>
-            {upcomingEvents.length === 0 ? (
-              <p className="text-sm text-gray-400 italic">No upcoming events match the filters.</p>
-            ) : (
-              <EventGrid events={upcomingEvents} />
-            )}
+        <div className="pt-4">
+            <EventGrid events={events} />
           </div>
-          <div className="space-y-4">
-            <h2 className="text-2xl font-bold text-white border-b-2 border-white/10 pb-3">Past Events ({pastEvents.length})</h2>
-            {pastEvents.length === 0 ? (
-              <p className="text-sm text-gray-400 italic">No past events match the filters.</p>
-            ) : (
-              <EventGrid events={pastEvents} />
-            )}
-          </div>
-        </div>
       )}
 
       

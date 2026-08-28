@@ -166,7 +166,7 @@ export const AdminPostsPage: React.FC = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6 text-left py-4 relative">
+    <div className="max-w-6xl mx-auto text-left relative">
       <div className="flex items-center justify-between">
         <button
           onClick={() => navigate(-1)}
@@ -177,8 +177,8 @@ export const AdminPostsPage: React.FC = () => {
         </button>
       </div>
 
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 py-6">
-        <h1 className="font-extrabold text-5xl sm:text-6xl text-white tracking-tight leading-tight mb-8 drop-shadow-md">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <h1 className="font-extrabold text-5xl sm:text-6xl text-white tracking-tight leading-tight drop-shadow-md">
           Campus Posts
         </h1>
         <Button
