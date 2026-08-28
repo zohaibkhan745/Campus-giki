@@ -177,7 +177,7 @@ export const AdminPostsPage: React.FC = () => {
         </button>
       </div>
 
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
         <h1 className="font-extrabold text-5xl sm:text-6xl text-white tracking-tight leading-tight drop-shadow-md">
           Campus Posts
         </h1>
