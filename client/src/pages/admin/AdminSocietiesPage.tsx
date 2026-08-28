@@ -469,21 +469,19 @@ export const AdminSocietiesPage: React.FC = () => {
             <div className="flex justify-end gap-3 mt-6">
               <button
                 type="button"
-                className="btn-cancel"
+                className="px-5 py-2.5 rounded-[12px] text-sm font-semibold border border-white/20 bg-white text-black hover:bg-white/90 transition-colors"
                 onClick={() => setReactivatingSociety(null)}
-                style={{width:"auto"}}
               >
                 Cancel
               </button>
               <button
                 type="button"
-                className="btn-confirm success"
+                className="px-5 py-2.5 rounded-[12px] text-sm font-semibold bg-emerald-600 text-white hover:bg-emerald-700 transition-colors"
                 disabled={reactivateMutation.isPending}
                 onClick={() => {
                   reactivateMutation.mutate(reactivatingSociety.id);
                   setReactivatingSociety(null);
                 }}
-                style={{width:"auto"}}
               >
                 {reactivateMutation.isPending ? 'Processing...' : 'Confirm Reactivation'}
               </button>
