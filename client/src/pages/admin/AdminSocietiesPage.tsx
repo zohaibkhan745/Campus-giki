@@ -241,8 +241,11 @@ export const AdminSocietiesPage: React.FC = () => {
       </div>
 
       <div className="w-full bg-white/[0.08] backdrop-blur-[20px] rounded-[24px] p-6 shadow-[0_12px_40px_rgba(0,0,0,0.4)] border border-white/20 overflow-x-auto">
-        <div className="mb-[25px]">
-          <h2 className="text-lg font-bold text-white m-0 border-b border-white/10 pb-3">Societies</h2>
+        <div className="mb-[25px] flex justify-between items-center border-b border-white/10 pb-3">
+          <h2 className="text-lg font-bold text-white m-0">Societies</h2>
+          <div className="relative">
+            <input type="text" placeholder="Search by name..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="bg-black/20 border border-white/10 rounded-lg py-1.5 px-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-white/30" />
+          </div>
         </div>
 
         
@@ -322,6 +325,15 @@ export const AdminSocietiesPage: React.FC = () => {
                                 Ban
                               </button>
                           )}
+
+                          <button
+                              onClick={() => setDeletingSociety(society)}
+                              className="cursor-pointer px-3 py-1.5 rounded-[12px] text-[11px] font-bold transition-all flex items-center gap-1.5 bg-red-900 text-white hover:bg-red-950 shadow-md"
+                              title="Delete Society"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                              Delete
+                          </button>
                         </div>
                       </td>
                     </tr>

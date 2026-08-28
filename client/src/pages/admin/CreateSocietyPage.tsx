@@ -80,7 +80,6 @@ export const CreateSocietyPage: React.FC = () => {
   });
 
   
-  
   const [sameAsFullName, setSameAsFullName] = useState(false);
   const watchName = watch('name');
 
@@ -89,7 +88,6 @@ export const CreateSocietyPage: React.FC = () => {
       setValue('shortform', watchName || '', { shouldValidate: true });
     }
   }, [watchName, sameAsFullName, setValue]);
-
   const categoryId = watch('categoryId');
   const advisorId = watch('advisorId');
   
@@ -138,6 +136,29 @@ export const CreateSocietyPage: React.FC = () => {
             error={errors.name?.message}
             {...register('name')}
           />
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Input
+                  label="Short Form *"
+                  placeholder="e.g. ACM"
+                  error={errors.shortform?.message}
+                  disabled={sameAsFullName}
+                  {...register('shortform')}
+                />
+                <label className="flex items-center gap-2 cursor-pointer ml-1 text-sm text-gray-400">
+                  <input type="checkbox" className="rounded border-gray-600 bg-gray-800" checked={sameAsFullName} onChange={(e) => setSameAsFullName(e.target.checked)} />
+                  Same as full name
+                </label>
+              </div>
+
+              <Input
+                label="President Name *"
+                placeholder="e.g. John Doe"
+                error={errors.presidentName?.message}
+                {...register('presidentName')}
+              />
+            </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-1">
