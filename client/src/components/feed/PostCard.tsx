@@ -155,7 +155,7 @@ const PostCardComponent: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) 
                 />
                 <div className="author-name-group">
                   <span className="author-name">{authorName}</span>
-                  <span className="post-timestamp">Posted: {formattedDate} • {formattedTime}</span>
+                  <span className="post-timestamp">{formattedDate} • {formattedTime}</span>
                 </div>
               </div>
               <span className="card-tag">Post</span>
@@ -256,7 +256,7 @@ const PostCardComponent: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) 
                 />
                 <div className="author-name-group">
                   <span className="author-name" style={{ fontSize: '1.05rem' }}>{authorName}</span>
-                  <span className="post-timestamp">Posted: {formattedDate} • {formattedTime}</span>
+                  <span className="post-timestamp">{formattedDate} • {formattedTime}</span>
                 </div>
               </div>
 

@@ -934,6 +934,7 @@ body.is-focused button.fixed.z-\[100\] {
   display: flex;
   flex-direction: column;
   gap: 2px;
+  min-width: 0;
 }
 
 .author-name {
@@ -943,6 +944,9 @@ body.is-focused button.fixed.z-\[100\] {
   letter-spacing: -0.2px;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8), 0 1px 3px rgba(0, 0, 0, 0.9);
   line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .card-button {

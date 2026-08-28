@@ -101,7 +101,7 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete }
                 />
                 <div className="author-name-group">
                   <span className="author-name">{authorName}</span>
-                  <span className="post-timestamp">Posted: {formattedDate}</span>
+                  <span className="post-timestamp">{formattedDate}</span>
                 </div>
               </div>
               <span className="card-tag">Event</span>
@@ -211,7 +211,7 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete }
                 />
                 <div className="author-name-group">
                   <span className="author-name" style={{ fontSize: '1.05rem' }}>{authorName}</span>
-                  <span className="post-timestamp">Posted: {formattedDate}</span>
+                  <span className="post-timestamp">{formattedDate}</span>
                 </div>
               </div>
 
