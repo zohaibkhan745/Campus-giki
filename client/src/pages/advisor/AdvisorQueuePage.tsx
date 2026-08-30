@@ -21,6 +21,7 @@ import {
   Settings,
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { EventGrid } from '@/components/admin/FlippableAdminEventCard';
 import { advisorService } from '@/services/advisor.service';
 import type { PlanStatus } from '@/types/yearly-plan.types';
 import { Alert } from '@/components/ui/Alert';
@@ -32,7 +33,7 @@ export const AdvisorQueuePage: React.FC = () => {
   const { user, logout } = useAuth();
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
-  const [statusFilter, setStatusFilter] = useState<string>('');
+  const [statusFilter, setStatusFilter] = useState<string>('ALL');
   const [activeTab, setActiveTab] = useState<'plans' | 'events'>('events');
   const { pendingEventsCount, pendingPlansCount } = usePendingCounts();
 
@@ -155,7 +156,7 @@ export const AdvisorQueuePage: React.FC = () => {
 
           <div className="grid grid-cols-2 gap-3">
             <button
-              onClick={() => { setActiveTab('events'); setPage(1); setStatusFilter(''); }}
+              onClick={() => { setActiveTab('events'); setPage(1); setStatusFilter('ALL'); }}
               className={`flex flex-col items-center justify-center gap-2 p-4 rounded-xl font-bold transition-all relative ${
                 activeTab === 'events'
                   ? 'bg-white text-gray-900 shadow-sm'
@@ -171,7 +172,7 @@ export const AdvisorQueuePage: React.FC = () => {
               <span>Events</span>
             </button>
             <button
-              onClick={() => { setActiveTab('plans'); setPage(1); setStatusFilter(''); }}
+              onClick={() => { setActiveTab('plans'); setPage(1); setStatusFilter('ALL'); }}
               className={`flex flex-col items-center justify-center gap-2 p-4 rounded-xl font-bold transition-all relative ${
                 activeTab === 'plans'
                   ? 'bg-white text-gray-900 shadow-sm'
@@ -201,7 +202,26 @@ export const AdvisorQueuePage: React.FC = () => {
           {/* Status Filter */}
           <div className="relative z-10">
             
-            <CustomDropdown value={statusFilter} onChange={handleStatusChange} options={[{value:"ALL",label:"All Statuses"},{value:"PENDING_ADVISOR",label:"Pending Advisor"},{value:"CHANGES_REQUESTED",label:"Changes Requested"},{value:"PENDING_ADMIN",label:"Pending DSA"},{value:"APPROVED",label:"Approved"},{value:"REJECTED",label:"Rejected"},{value:"PUBLISHED",label:"Published"},{value:"CANCELLED",label:"Cancelled"}]} />
+            <CustomDropdown 
+              value={statusFilter} 
+              onChange={handleStatusChange} 
+              options={activeTab === 'events' ? [
+                {value:"ALL",label:"All Statuses"},
+                {value:"PENDING_ADVISOR",label:"Pending Advisor"},
+                {value:"CHANGES_REQUESTED",label:"Changes Requested"},
+                {value:"PENDING_ADMIN",label:"Pending DSA"},
+                {value:"APPROVED",label:"Approved"},
+                {value:"REJECTED",label:"Rejected"},
+                {value:"PUBLISHED",label:"Published"},
+                {value:"CANCELLED",label:"Cancelled"}
+              ] : [
+                {value:"ALL",label:"All Statuses"},
+                {value:"PENDING",label:"Pending Advisor"},
+                {value:"CHANGES_REQUESTED",label:"Changes Requested"},
+                {value:"APPROVED",label:"Approved"},
+                {value:"DRAFT",label:"Draft"}
+              ]} 
+            />
           </div>
 
           {/* Decorative background */}
@@ -314,59 +334,7 @@ export const AdvisorQueuePage: React.FC = () => {
               </Link>
             ))
           ) : (
-            events.map((event: any) => (
-              <Link
-                key={event.id}
-                to={`/advisor/events/${event.id}`}
-                className="bg-white/[0.05] hover:bg-white/[0.08] backdrop-blur-[12px] p-5 rounded-[18px] border border-white/10 hover:border-white/25 transition-all shadow-sm hover:bg-lavender-whisper transition-all flex flex-col md:flex-row items-start md:items-center justify-between gap-4 group cursor-pointer"
-              >
-                <div className="flex items-center gap-4">
-                  {event.society?.logoUrl ? (
-                    <img
-                      src={getSocietyLogo(event.society.logoUrl)}
-                      alt={event.society.name}
-                      className="w-12 h-12 rounded-xl object-cover border border-white/20 shrink-0"
-                    onError={(e) => { e.currentTarget.src = '/default-society.jpg'; }} />
-                  ) : (
-                    <div className="p-3 bg-white/10 border border-white/20 text-white rounded-xl shrink-0">
-                      <Building2 className="w-6 h-6" />
-                    </div>
-                  )}
-
-                  <div className="space-y-1">
-                    <h3 className="font-bold text-white text-base group-hover:text-ember-glow transition-colors">
-                      {event.title}
-                    </h3>
-
-                    <div className="flex flex-wrap items-center gap-4 text-xs text-gray-400">
-                      <div className="flex items-center gap-1.5">
-                        <Calendar className="w-3.5 h-3.5 text-white" />
-                        <span>{new Date(event.eventDate).toLocaleDateString()}</span>
-                      </div>
-
-                      <div className="flex items-center gap-1.5">
-                        <Clock className="w-3.5 h-3.5 text-white" />
-                        <span>{event.startTime} - {event.endTime}</span>
-                      </div>
-
-                      <div className="flex items-center gap-1.5">
-                        <MapPin className="w-3.5 h-3.5 text-white" />
-                        <span>{event.venue}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between md:justify-end w-full md:w-auto gap-4 pt-3 md:pt-0 border-t md:border-t-0 border-white/10">
-                  {renderStatusBadge(event.approvalStatus)}
-
-                  <span className="inline-flex items-center gap-1 text-xs font-semibold text-ember-glow group-hover:translate-x-1 transition-transform">
-                    <span>{event.approvalStatus === 'PENDING_ADVISOR' ? 'Review Event' : 'View Details'}</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </span>
-                </div>
-              </Link>
-            ))
+            <EventGrid events={events} reviewUrlBase="/advisor/events" />
           )}
         </div>
       )}

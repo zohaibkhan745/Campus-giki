@@ -30,6 +30,18 @@ import { Button } from '@/components/ui/Button';
 import { Alert } from '@/components/ui/Alert';
 import type { AxiosError } from 'axios';
 
+const getBadgeStyles = (status: string) => {
+  switch (status) {
+    case 'PUBLISHED':
+    case 'APPROVED': return 'bg-green-600 text-white border-green-700';
+    case 'PENDING_ADVISOR': return 'bg-orange-500 text-white border-orange-600';
+    case 'PENDING_ADMIN': return 'bg-white text-black border-gray-200';
+    case 'CHANGES_REQUESTED': return 'bg-red-500 text-white border-red-600';
+    default: return 'bg-white/10 text-white border-white/20';
+  }
+}
+const formatStatus = (s: string) => s.replace('_', ' ');
+
 export const AdvisorEventReviewPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -153,24 +165,22 @@ export const AdvisorEventReviewPage: React.FC = () => {
   return (
     <div className="max-w-4xl mx-auto space-y-6 text-left py-4 px-4 pb-32">
       {/* Top Heading */}
-      <div className="flex items-center gap-4 mb-6">
-        <button
-          onClick={() => navigate(-1)}
-          className="inline-flex items-center justify-center w-10 h-10 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white rounded-full transition-all cursor-pointer shadow-[0_4px_12px_rgba(0,0,0,0.2)]"
-          title="Go Back"
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </button>
-        <div>
-          <h1 className="text-2xl font-extrabold text-white leading-tight">
-            Event Details: {eventData.title}
-          </h1>
-          <div className="flex items-center gap-3 mt-1">
-            <span className="px-3 py-1 bg-white/10 text-white border border-white/20 backdrop-blur-md font-medium rounded-inputs text-xs uppercase tracking-wider font-semibold">
-              {eventData.approvalStatus}
-            </span>
-            <span className="text-sm text-gray-400">Society: {eventData.society?.name}</span>
-          </div>
+      <button
+        onClick={() => navigate(-1)}
+        className="fixed top-4 left-4 sm:top-6 sm:left-6 z-[100] inline-flex items-center justify-center w-10 h-10 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white rounded-full transition-all cursor-pointer shadow-lg"
+        title="Go Back"
+      >
+        <ArrowLeft className="w-5 h-5" />
+      </button>
+      <div className="mb-6 mt-12 sm:mt-8">
+        <h1 className="text-4xl font-extrabold text-white leading-tight">
+          Event Details: {eventData.title}
+        </h1>
+        <div className="flex items-center gap-3 mt-3">
+          <span className={`px-3 py-1 border backdrop-blur-md rounded-inputs text-xs uppercase tracking-wider font-bold ${getBadgeStyles(eventData.approvalStatus || '')}`}>
+            {formatStatus(eventData.approvalStatus || '')}
+          </span>
+          <span className="text-sm text-gray-400 font-medium">Society: {eventData.society?.name}</span>
         </div>
       </div>
 
@@ -205,20 +215,20 @@ export const AdvisorEventReviewPage: React.FC = () => {
               value={advisorComment}
               onChange={(e) => setAdvisorComment(e.target.value)}
               placeholder="Provide feedback or reasons for requesting changes..."
-              disabled={updateEventStatusMutation.isPending}
+              disabled={!isPending || updateEventStatusMutation.isPending}
               className="w-full text-sm transition-all outline-none bg-transparent text-white placeholder:text-gray-500 rounded-inputs px-3.5 py-2.5 border border-white/20 focus:border-white/40 focus:ring-2 focus:ring-white/10 resize-y disabled:opacity-50"
             />
           </div>
 
           {isPending ? (
-            <div className="flex flex-wrap items-center gap-3 pt-2">
+            <div className="flex flex-col sm:flex-row gap-3 pt-2">
               <Button
                 type="button"
                 variant="primary"
                 onClick={() => updateEventStatusMutation.mutate({ status: 'PENDING_ADMIN' })}
                 isLoading={updateEventStatusMutation.isPending}
-                leftIcon={<CheckCircle2 className="w-4 h-4" />}
-                className="bg-white text-black hover:bg-gray-200"
+                leftIcon={<CheckCircle2 className="w-4 h-4 text-white" />}
+                className="bg-green-600 text-white hover:bg-green-700 w-full sm:flex-1"
               >
                 Approve (Send to DSA)
               </Button>
@@ -227,8 +237,8 @@ export const AdvisorEventReviewPage: React.FC = () => {
                 variant="outline"
                 onClick={() => updateEventStatusMutation.mutate({ status: 'CHANGES_REQUESTED' })}
                 isLoading={updateEventStatusMutation.isPending}
-                leftIcon={<AlertCircle className="w-4 h-4" />}
-                className="border-white/20 hover:bg-white/10 text-white"
+                leftIcon={<AlertCircle className="w-4 h-4 text-black" />}
+                className="bg-white text-black hover:bg-gray-200 w-full sm:flex-1"
               >
                 Request Changes
               </Button>

@@ -30,16 +30,25 @@ import { Button } from '@/components/ui/Button';
 import { Alert } from '@/components/ui/Alert';
 import type { AxiosError } from 'axios';
 
+const getBadgeStyles = (status: string) => {
+  switch (status) {
+    case 'PUBLISHED':
+    case 'APPROVED': return 'bg-green-600 text-white border-green-700';
+    case 'PENDING_ADVISOR': return 'bg-orange-500 text-white border-orange-600';
+    case 'PENDING_ADMIN': return 'bg-white text-black border-gray-200';
+    case 'CHANGES_REQUESTED': return 'bg-red-500 text-white border-red-600';
+    default: return 'bg-white/10 text-white border-white/20';
+  }
+}
+const formatStatus = (s: string) => s.replace('_', ' ');
+
 export const AdminEventReviewPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [serverError, setServerError] = useState<string | null>(null);
   const [dsaComment, setDsaComment] = useState('');
-  const [rules, setRules] = useState('');
-  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
 
-  // Query existing event data
   const {
     data: eventData,
     isLoading: isLoadingEvent,
@@ -59,7 +68,6 @@ export const AdminEventReviewPage: React.FC = () => {
     resolver: zodResolver(eventFormSchema),
   });
 
-  // Pre-fill form when event data is loaded
   useEffect(() => {
     if (eventData) {
       const formattedDate = eventData.eventDate
@@ -67,7 +75,6 @@ export const AdminEventReviewPage: React.FC = () => {
         : '';
 
       setDsaComment(eventData.dsaComments || '');
-      setRules(eventData.rules || '');
 
       reset({
         title: eventData.title,
@@ -100,14 +107,14 @@ export const AdminEventReviewPage: React.FC = () => {
       let errText = 'Failed to update event. Please verify your inputs.';
       if (Array.isArray(respMessage)) errText = respMessage.join(', ');
       else if (typeof respMessage === 'string') errText = respMessage;
-      setServerError('');
+      setServerError(errText);
     },
   });
 
   const updateEventStatusMutation = useMutation({
     meta: { notify: true },
-    mutationFn: (data: { status: 'PUBLISHED' | 'CHANGES_REQUESTED' }) =>
-      adminService.updateEventStatus(id!, { status: data.status, comments: dsaComment.trim() || undefined, rules: rules.trim() || undefined }),
+    mutationFn: (data: { status: 'APPROVED' | 'CHANGES_REQUESTED' | 'PENDING_ADVISOR' }) =>
+      adminService.updateEventStatus(id!, { status: data.status, comments: dsaComment.trim() || undefined }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['event', id] });
       queryClient.invalidateQueries({ queryKey: ['adminDashboard'] });
@@ -118,18 +125,21 @@ export const AdminEventReviewPage: React.FC = () => {
       error: AxiosError<{ message?: string | string[]; error?: string }>,
     ) => {
       const respMessage = error.response?.data?.message;
-      setServerError('');
+      let errText = 'Failed to update event status.';
+      if (Array.isArray(respMessage)) errText = respMessage.join(', ');
+      else if (typeof respMessage === 'string') errText = respMessage;
+      setServerError(errText);
     },
   });
 
   const onSaveDetails = (data: EventFormData) => {
-    setServerError('');
+    setServerError(null);
     updateMutation.mutate(data);
   };
 
   if (isLoadingEvent) {
     return (
-      <div className="min-h-[50vh] flex flex-col justify-center items-center text-fog gap-3">
+      <div className="min-h-[50vh] flex flex-col justify-center items-center text-gray-400 gap-3">
         <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
         <p className="text-sm font-medium">Loading event details...</p>
       </div>
@@ -139,7 +149,6 @@ export const AdminEventReviewPage: React.FC = () => {
   if (isError || !eventData) {
     return (
       <div className="max-w-md mx-auto py-12 space-y-4 text-center">
-        null /* Removed error alert */
         <Link
           to="/dashboard"
           className="fixed top-4 left-4 sm:top-6 sm:left-6 z-[100] inline-flex items-center justify-center w-10 h-10 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white rounded-full transition-all cursor-pointer shadow-lg"
@@ -154,291 +163,217 @@ export const AdminEventReviewPage: React.FC = () => {
   const isPending = eventData.approvalStatus === 'PENDING_ADMIN';
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6 text-left py-4">
-      <div className="flex items-center justify-between">
-        <Link
-          to="/dashboard"
-          className="inline-flex items-center gap-2 text-xs font-semibold text-fog hover:text-vast-ink transition-colors"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          <span>Back to Queue</span>
-        </Link>
-      </div>
-
-      <div className="space-y-1 bg-transparent p-6 rounded-cards border border-vast-ink/20">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-extrabold text-vast-ink">
-            {eventData.approvalStatus === 'PENDING_ADMIN' ? 'Review Event' : 'Event Details'}: {eventData.title}
-          </h1>
-          <span className="px-3 py-1 bg-lumen-stone text-vast-ink font-medium rounded-inputs text-xs font-semibold">
-            {eventData.approvalStatus}
+    <div className="max-w-4xl mx-auto space-y-6 text-left py-4 px-4 pb-32">
+      {/* Top Heading */}
+      <button
+        onClick={() => navigate(-1)}
+        className="fixed top-4 left-4 sm:top-6 sm:left-6 z-[100] inline-flex items-center justify-center w-10 h-10 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white rounded-full transition-all cursor-pointer shadow-lg"
+        title="Go Back"
+      >
+        <ArrowLeft className="w-5 h-5" />
+      </button>
+      <div className="mb-6 mt-12 sm:mt-8">
+        <h1 className="text-4xl font-extrabold text-white leading-tight">
+          Event Details: {eventData.title}
+        </h1>
+        <div className="flex items-center gap-3 mt-3">
+          <span className={`px-3 py-1 border backdrop-blur-md rounded-inputs text-xs uppercase tracking-wider font-bold ${getBadgeStyles(eventData.approvalStatus || '')}`}>
+            {formatStatus(eventData.approvalStatus || '')}
           </span>
+          <span className="text-sm text-gray-400 font-medium">Society: {eventData.society?.name}</span>
         </div>
-        <p className="text-sm text-fog">
-          Society: {eventData.society?.name}
-        </p>
       </div>
 
-      {eventData.advisorComments && (
-        <Alert
-          variant="info"
-          title="Comment by Advisor"
-          message={eventData.advisorComments}
-        />
-      )}
-
-      {null}
-      {updateMutation.isSuccess && (
-        null /* Removed success alert */
-      )}
-
-      <div className="bg-lumen-cream p-6 md:p-8 rounded-cards border border-vast-ink/20 space-y-8">
-        {/* Review Actions */}
-        <div className="space-y-4">
-          <h2 className="text-base font-bold text-vast-ink border-b border-vast-ink/20 pb-2">
-            DSA Admin Review & Comments
-          </h2>
-        
-        <div className="space-y-1.5 text-left">
-          <label className="block text-xs font-semibold text-vast-ink font-medium uppercase tracking-wider">
-            Feedback / Comments
-          </label>
-          <textarea
-            rows={3}
-            value={dsaComment}
-            onChange={(e) => setDsaComment(e.target.value)}
-            placeholder="Provide feedback or reasons for requesting changes..."
-            disabled={updateEventStatusMutation.isPending}
-            className="w-full bg-transparent text-vast-ink placeholder:text-fog text-sm rounded-inputs border border-vast-ink/20 px-3.5 py-2.5 transition-all outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50 resize-y"
-          />
-        </div>
-
-        <div className="space-y-1.5 text-left pt-2">
-          <label className="block text-xs font-extrabold text-vast-ink uppercase tracking-wider flex items-center gap-1.5">
-            <ShieldCheck className="w-4 h-4 text-forest-ink" />
+      {eventData.rules && (
+        <div className="p-4 bg-amber-500/10 border border-amber-500/30 backdrop-blur-md rounded-cards space-y-1">
+          <div className="flex items-center gap-2 text-amber-400 font-extrabold text-xs uppercase tracking-wider">
+            <ShieldCheck className="w-4 h-4 shrink-0" />
             <span>Official DSA Directives &amp; Event Rules</span>
-          </label>
-          <textarea
-            rows={3}
-            value={rules}
-            onChange={(e) => setRules(e.target.value)}
-            placeholder="Add official DSA security guidelines, time curfews, speaker rules, or administrative directives..."
-            disabled={updateEventStatusMutation.isPending}
-            className="w-full bg-transparent text-vast-ink placeholder:text-fog text-sm rounded-inputs border border-vast-ink/20 px-3.5 py-2.5 transition-all outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50 resize-y"
-          />
-        </div>
-
-        {isPending ? (
-          <div className="flex flex-wrap items-center gap-3 pt-2">
-            <Button
-              type="button"
-              variant="primary"
-              onClick={() => updateEventStatusMutation.mutate({ status: 'PUBLISHED' })}
-              isLoading={updateEventStatusMutation.isPending}
-              leftIcon={<CheckCircle2 className="w-4 h-4" />}
-            >
-              Accept
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => updateEventStatusMutation.mutate({ status: 'CHANGES_REQUESTED' })}
-              isLoading={updateEventStatusMutation.isPending}
-              leftIcon={<AlertCircle className="w-4 h-4" />}
-            >
-              Request Changes
-            </Button>
           </div>
-        ) : (
-          <p className="text-xs text-fog font-medium pt-2">
-            This event is currently in {eventData.approvalStatus} status and cannot be approved/rejected at this time.
+          <p className="text-xs text-amber-200/80 font-medium whitespace-pre-line leading-relaxed pl-6">
+            {eventData.rules}
           </p>
-        )}
+        </div>
+      )}
+
+      {/* Main Glassmorphic Card */}
+      <div className="relative z-1 w-full p-8 rounded-[18px] bg-white/[0.08] backdrop-blur-[20px] border border-white/20 shadow-[0_12px_40px_rgba(0,0,0,0.4)] text-white space-y-8">
+        
+        {/* Advisor Review & Comments Section */}
+        <div className="space-y-4">
+          <h2 className="text-lg font-extrabold flex items-center gap-2">
+            <ShieldCheck className="w-5 h-5" />
+            DSA Admin Review & Feedback
+          </h2>
+          
+          <div className="space-y-1.5 text-left">
+            <label className="block text-xs uppercase tracking-wider text-gray-400 font-semibold mb-1">
+              Feedback / Comments
+            </label>
+            <textarea
+              rows={3}
+              value={dsaComment}
+              onChange={(e) => setDsaComment(e.target.value)}
+              placeholder="Provide feedback or reasons for requesting changes..."
+              disabled={!isPending || updateEventStatusMutation.isPending}
+              className="w-full text-sm transition-all outline-none bg-transparent text-white placeholder:text-gray-500 rounded-inputs px-3.5 py-2.5 border border-white/20 focus:border-white/40 focus:ring-2 focus:ring-white/10 resize-y disabled:opacity-50"
+            />
+          </div>
+
+          {isPending ? (
+            <div className="flex flex-col sm:flex-row gap-3 pt-2">
+              <Button
+                type="button"
+                variant="primary"
+                onClick={() => updateEventStatusMutation.mutate({ status: 'APPROVED' })}
+                isLoading={updateEventStatusMutation.isPending}
+                leftIcon={<CheckCircle2 className="w-4 h-4 text-white" />}
+                className="bg-green-600 text-white hover:bg-green-700 w-full sm:flex-1"
+              >
+                Approve (Publish)
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => updateEventStatusMutation.mutate({ status: 'CHANGES_REQUESTED' })}
+                isLoading={updateEventStatusMutation.isPending}
+                leftIcon={<AlertCircle className="w-4 h-4 text-black" />}
+                className="bg-white text-black hover:bg-gray-200 w-full sm:flex-1"
+              >
+                Request Changes
+              </Button>
+            </div>
+          ) : (
+            <p className="text-xs text-gray-400 font-medium pt-2">
+              This event is currently in {eventData.approvalStatus} status and cannot be approved/rejected at this time.
+            </p>
+          )}
         </div>
 
-        <form onSubmit={(e) => e.preventDefault()} className="space-y-8 pt-6 border-t border-vast-ink/20" noValidate>
+        {/* Separator Line */}
+        <div className="w-full h-px bg-white/10 my-6"></div>
+
+        {/* Event Overview Section */}
+        <form onSubmit={handleSubmit(onSaveDetails)} className="space-y-6" noValidate>
           <div className="space-y-4">
-            <div className="flex items-center justify-between border-b border-vast-ink/20 pb-2">
-              <h2 className="text-base font-bold text-vast-ink">
-                Event Overview
-              </h2>
-          </div>
-
-          <Input
-            label="Event Title *"
-            placeholder="e.g. GIKI SoftDesk Hackathon 2026"
-            leftIcon={<Calendar className="w-4 h-4" />}
-            disabled={true}
-            error={errors.title?.message}
-            {...register('title')}
-          />
-
-          <div className="space-y-1.5 text-left">
-            <label className="block text-xs font-semibold text-vast-ink font-medium uppercase tracking-wider">
-              Event Description *
-            </label>
-            <div className="relative flex items-start">
-              <div className="absolute left-3 top-3 text-fog pointer-events-none flex items-center justify-center">
-                <FileText className="w-4 h-4" />
-              </div>
-              <textarea
-                rows={4}
-                placeholder="Describe your event agenda, prerequisites, target audience, and guidelines..."
-                disabled={true}
-                className="w-full bg-transparent text-vast-ink placeholder:text-fog text-sm rounded-inputs border border-vast-ink/20 px-3.5 py-2.5 pl-10 transition-all outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50 resize-y"
-                {...register('description')}
-              />
-            </div>
-            {errors.description?.message && (
-              <p className="text-xs text-red-400 font-medium">
-                {errors.description.message}
-              </p>
-            )}
-          </div>
-
-          </div>
-
-          <div className="space-y-4 pt-4 border-t border-vast-ink/20">
-            <h2 className="text-base font-bold text-vast-ink pb-2">
-              Event Type & In-Charge Details
+            <h2 className="text-lg font-extrabold flex items-center gap-2">
+              <Calendar className="w-5 h-5" />
+              Event Overview
             </h2>
+
+            <Input
+              label="Event Title *"
+              placeholder="e.g. GIKI SoftDesk Hackathon 2026"
+              leftIcon={<Calendar className="w-4 h-4" />}
+              disabled={true}
+              error={errors.title?.message}
+              {...register('title')}
+            />
 
             <div className="space-y-1.5 text-left">
-              <label className="block text-xs font-semibold text-vast-ink font-medium uppercase tracking-wider">
-                Event Type
+              <label className="block text-xs uppercase tracking-wider text-gray-400 font-semibold mb-1">
+                Event Description *
               </label>
-            <CustomDropdown placeholder="Select Type" disabled={true} options={[{value:"Workshop",label:"Workshop"},{value:"Seminar",label:"Seminar"},{value:"Hackathon",label:"Hackathon"},{value:"Competition",label:"Competition"},{value:"Social",label:"Social"},{value:"Other",label:"Other"}]} {...register('eventType')} />
+              <div className="relative flex items-start">
+                <div className="absolute left-3 top-3 text-gray-400 pointer-events-none flex items-center justify-center">
+                  <FileText className="w-4 h-4" />
+                </div>
+                <textarea
+                  rows={4}
+                  placeholder="Describe your event agenda, prerequisites, target audience, and guidelines..."
+                  disabled={true}
+                  className="w-full text-sm transition-all outline-none bg-transparent text-white placeholder:text-gray-500 rounded-inputs px-3.5 py-2.5 pl-10 border border-white/20 disabled:opacity-50 resize-y"
+                  {...register('description')}
+                />
+              </div>
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Input
-              label="In-Charge Name"
-              placeholder="e.g. Full Name"
-              disabled={true}
-              error={errors.inChargeName?.message}
-              {...register('inChargeName')}
-            />
-            <Input
-              label="In-Charge Reg. No"
-              placeholder="e.g. 2023787"
-              disabled={true}
-              error={errors.inChargeRegNum?.message}
-              {...register('inChargeRegNum')}
-            />
-          </div>
+          {/* Separator Line */}
+          <div className="w-full h-px bg-white/10 my-6"></div>
 
-          <Input
-            label="In-Charge Contact Number"
-            placeholder="e.g. +923001234567"
-            disabled={true}
-            error={errors.inChargeContact?.message}
-            {...register('inChargeContact')}
-          />
-        </div>
-
-        <div className="space-y-4">
-          <h2 className="text-base font-bold text-vast-ink">
-            Date, Time & Venue
-          </h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Input
-              label="Event Date *"
-              type="date"
-              disabled={true}
-              error={errors.eventDate?.message}
-              {...register('eventDate')}
-            />
-
-            <Input
-              label="Start Time (24h) *"
-              type="time"
-              leftIcon={<Clock className="w-4 h-4" />}
-              disabled={true}
-              error={errors.startTime?.message}
-              {...register('startTime')}
-            />
-
-            <Input
-              label="End Time (24h) *"
-              type="time"
-              leftIcon={<Clock className="w-4 h-4" />}
-              disabled={true}
-              error={errors.endTime?.message}
-              {...register('endTime')}
-            />
-          </div>
-
-          <Input
-            label="Venue Location *"
-            placeholder="e.g. Agha Hasan Abedi Auditorium / FCSE Lab 1"
-            leftIcon={<MapPin className="w-4 h-4" />}
-            disabled={true}
-            error={errors.venue?.message}
-            {...register('venue')}
-          />
-
-          <div className="space-y-4 pt-4 border-t-2 border-vast-ink/20">
-            <h2 className="text-base font-bold text-vast-ink pb-2">
-              Media & External Registration (Optional)
+          {/* Event Type & Logistics */}
+          <div className="space-y-4">
+            <h2 className="text-lg font-extrabold flex items-center gap-2">
+              <MapPin className="w-5 h-5" />
+              Logistics & Details
             </h2>
 
-            <div className="space-y-2">
-              <label className="block text-sm font-bold text-vast-ink">Cover Image</label>
-              {eventData?.coverImageUrl ? (
-                <div 
-                  className="relative rounded-cards overflow-hidden border border-vast-ink/20 bg-lumen-stone shadow-sm w-full max-h-64 flex items-center justify-center cursor-pointer group"
-                  onClick={() => setIsImageModalOpen(true)}
-                >
-                  <img
-                    src={eventData.coverImageUrl}
-                    alt="Event Cover"
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-vast-ink/0 group-hover:bg-vast-ink/20 transition-colors flex items-center justify-center">
-                    <span className="opacity-0 group-hover:opacity-100 bg-vast-ink text-pure-white text-xs font-bold px-3 py-1.5 rounded-full shadow-md transition-opacity">
-                      View Full Image
-                    </span>
-                  </div>
-                </div>
-              ) : (
-                <div className="text-sm text-fog p-4 bg-lumen-stone/50 border border-vast-ink/20 rounded-inputs text-center">
-                  No cover image provided.
-                </div>
-              )}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-1.5 text-left">
+                <label className="block text-xs uppercase tracking-wider text-gray-400 font-semibold mb-1">
+                  Event Type
+                </label>
+                <CustomDropdown placeholder="Select Type" disabled={true} options={[{value:"Workshop",label:"Workshop"},{value:"Seminar",label:"Seminar"},{value:"Hackathon",label:"Hackathon"},{value:"Competition",label:"Competition"},{value:"Social",label:"Social"},{value:"Other",label:"Other"}]} {...register('eventType')} />
+              </div>
+              <Input
+                type="date"
+                label="Event Date *"
+                leftIcon={<Calendar className="w-4 h-4" />}
+                disabled={true}
+                {...register('eventDate')}
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Input
+                type="time"
+                label="Start Time *"
+                leftIcon={<Clock className="w-4 h-4" />}
+                disabled={true}
+                {...register('startTime')}
+              />
+              <Input
+                type="time"
+                label="End Time *"
+                leftIcon={<Clock className="w-4 h-4" />}
+                disabled={true}
+                {...register('endTime')}
+              />
             </div>
 
             <Input
-              label="Registration Form Link (Optional)"
-              placeholder="e.g. https://forms.gle/your-event-form"
-              leftIcon={<ExternalLink className="w-4 h-4" />}
+              label="Venue / Location *"
+              placeholder="e.g. AHA Auditorium"
+              leftIcon={<MapPin className="w-4 h-4" />}
               disabled={true}
-              error={errors.registrationLink?.message}
-              {...register('registrationLink')}
+              {...register('venue')}
             />
           </div>
-        </div>
-      </form>
-      </div>
 
-      {/* Image Modal */}
-      {isImageModalOpen && eventData?.coverImageUrl && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-charcoal/80 p-4 backdrop-blur-sm" onClick={() => setIsImageModalOpen(false)}>
-          <div className="relative max-w-5xl w-full max-h-screen flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
-            <button 
-              onClick={() => setIsImageModalOpen(false)}
-              className="absolute -top-12 right-0 p-2 text-pure-white hover:text-red-400 transition-colors"
-            >
-              <X className="w-8 h-8" />
-            </button>
-            <img 
-              src={eventData.coverImageUrl} 
-              alt="Event Cover Full" 
-              className="w-auto h-auto max-w-full max-h-[85vh] object-contain rounded-cards shadow-2xl border-2 border-pure-white/20"
-            />
+          {/* Separator Line */}
+          <div className="w-full h-px bg-white/10 my-6"></div>
+
+          {/* In-Charge Details */}
+          <div className="space-y-4">
+            <h2 className="text-lg font-extrabold flex items-center gap-2">
+              <ShieldCheck className="w-5 h-5" />
+              In-Charge Details
+            </h2>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Input
+                label="In-Charge Name *"
+                placeholder="e.g. John Doe"
+                disabled={true}
+                {...register('inChargeName')}
+              />
+              <Input
+                label="Registration Number *"
+                placeholder="e.g. 2023123"
+                disabled={true}
+                {...register('inChargeRegNum')}
+              />
+              <Input
+                label="Contact Number *"
+                placeholder="e.g. 03001234567"
+                disabled={true}
+                {...register('inChargeContact')}
+              />
+            </div>
           </div>
-        </div>
-      )}
+        </form>
+      </div>
     </div>
   );
 };

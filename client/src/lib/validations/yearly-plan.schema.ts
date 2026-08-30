@@ -2,12 +2,19 @@ import { z } from 'zod';
 
 export const plannedEventSchema = z.object({
     eventName: z.string().min(2, 'Event name must be at least 2 characters'),
-    startDate: z.string().min(1, 'Start date is required'),
+    startDate: z.string().min(1, 'Start date is required').refine((val) => {
+      const date = new Date(val);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      return date >= today;
+    }, { message: 'Date cannot be in the past' }),
     endDate: z.string().min(1, 'End date is required'),
     description: z.string().min(10, 'Description must be at least 10 characters'),
     venue: z.string().min(2, "Venue is required").max(150, "Venue too long"),
     rules: z.string().optional(),
     societyRules: z.string().optional(),
+    eventType: z.string().optional(),
+    duration: z.string().optional(),
   });
 
 export const yearlyPlanFormSchema = z.object({
@@ -27,5 +34,7 @@ export interface YearlyPlanFormData {
     venue: string;
     rules?: string;
     societyRules?: string;
+    eventType?: string;
+    duration?: string;
   }[];
 }

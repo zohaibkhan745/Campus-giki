@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useForm, useFieldArray } from 'react-hook-form';
+import { useForm, useFieldArray, Controller } from 'react-hook-form';
 import { FeedbackHistory } from '@/components/shared/FeedbackHistory';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -11,25 +11,20 @@ import {
   Send,
   Save,
   ArrowLeft,
-  MessageSquare,
   AlertCircle,
   CheckCircle2,
   Clock,
   Lock,
-  Shield,
-  ShieldAlert,
-  ShieldCheck,
 } from 'lucide-react';
 import { yearlyPlanService } from '@/services/yearly-plan.service';
-import { societyService } from '@/services/society.service';
 import {
   yearlyPlanFormSchema,
   type YearlyPlanFormData,
 } from '@/lib/validations/yearly-plan.schema';
 import type { PlanStatus } from '@/types/yearly-plan.types';
-import { Input } from '@/components/ui/Input';
-import { Button } from '@/components/ui/Button';
-import { Alert } from '@/components/ui/Alert';
+import { CustomDatePicker } from '@/components/ui/CustomDatePicker';
+import { GlassDropdown } from '@/components/ui/GlassDropdown';
+import { cn } from '@/lib/utils';
 import type { AxiosError } from 'axios';
 
 export const YearlyCalendarPage: React.FC = () => {
@@ -38,7 +33,9 @@ export const YearlyCalendarPage: React.FC = () => {
   const [serverError, setServerError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  // Query existing yearly plans for society
+  // For custom venue input tracking
+  const [customVenueRows, setCustomVenueRows] = useState<Record<number, boolean>>({});
+
   const { data: plans = [] } = useQuery({
     queryKey: ['myYearlyPlans'],
     queryFn: yearlyPlanService.getMyPlans,
@@ -47,8 +44,7 @@ export const YearlyCalendarPage: React.FC = () => {
   const currentYear = new Date().getFullYear();
   const existingPlan = plans.find((p) => p.year === currentYear) || plans[0];
 
-  const isReadOnly =
-    existingPlan?.status === 'PENDING' || existingPlan?.status === 'APPROVED';
+  const isReadOnly = existingPlan?.status === 'PENDING' || existingPlan?.status === 'APPROVED';
   const isChangesRequested = existingPlan?.status === 'CHANGES_REQUESTED';
 
   const {
@@ -56,8 +52,8 @@ export const YearlyCalendarPage: React.FC = () => {
     control,
     handleSubmit,
     reset,
-    getValues,
     setValue,
+    getValues,
     watch,
     formState: { errors },
   } = useForm<YearlyPlanFormData>({
@@ -73,7 +69,6 @@ export const YearlyCalendarPage: React.FC = () => {
     name: 'events',
   });
 
-  // Pre-fill form when plan data is loaded
   useEffect(() => {
     if (existingPlan) {
       reset({
@@ -91,7 +86,6 @@ export const YearlyCalendarPage: React.FC = () => {
     }
   }, [existingPlan, reset]);
 
-  // Create plan mutation
   const createMutation = useMutation({
     meta: { notify: true },
     mutationFn: (data: { payload: YearlyPlanFormData; status: PlanStatus }) =>
@@ -110,18 +104,9 @@ export const YearlyCalendarPage: React.FC = () => {
         setSuccessMessage('Draft saved successfully.');
       }
     },
-    onError: (
-      error: AxiosError<{ message?: string | string[]; error?: string }>,
-    ) => {
-      const respMessage = error.response?.data?.message;
-      let errText = 'Failed to save yearly calendar plan.';
-      if (Array.isArray(respMessage)) errText = respMessage.join(', ');
-      else if (typeof respMessage === 'string') errText = respMessage;
-      setServerError('');
-    },
+    onError: () => setServerError('Failed to save yearly calendar plan.'),
   });
 
-  // Update plan mutation
   const updateMutation = useMutation({
     meta: { notify: true },
     mutationFn: (data: { payload: YearlyPlanFormData; status?: PlanStatus }) =>
@@ -139,278 +124,316 @@ export const YearlyCalendarPage: React.FC = () => {
         setSuccessMessage('Draft updated successfully.');
       }
     },
-    onError: (
-      error: AxiosError<{ message?: string | string[]; error?: string }>,
-    ) => {
-      const respMessage = error.response?.data?.message;
-      let errText = 'Failed to update yearly calendar plan.';
-      if (Array.isArray(respMessage)) errText = respMessage.join(', ');
-      else if (typeof respMessage === 'string') errText = respMessage;
-      setServerError('');
-    },
+    onError: () => setServerError('Failed to update yearly calendar plan.'),
   });
 
+
+  const cleanData = (data: YearlyPlanFormData) => {
+    return {
+      ...data,
+      events: data.events.map(({ eventType, duration, ...rest }) => rest)
+    };
+  };
+
   const handleSaveDraft = (data: YearlyPlanFormData) => {
+
     setServerError('');
     setSuccessMessage(null);
-    if (existingPlan) {
-      updateMutation.mutate({ payload: data, status: 'DRAFT' });
-    } else {
-      createMutation.mutate({ payload: data, status: 'DRAFT' });
-    }
+    if (existingPlan) updateMutation.mutate({ payload: cleanData(data), status: 'DRAFT' });
+    else createMutation.mutate({ payload: cleanData(data), status: 'DRAFT' });
   };
 
   const handleSubmitForReview = (data: YearlyPlanFormData) => {
     setServerError('');
     setSuccessMessage(null);
-    if (existingPlan) {
-      updateMutation.mutate({ payload: data, status: 'PENDING' });
-    } else {
-      createMutation.mutate({ payload: data, status: 'PENDING' });
-    }
-  };
-
-  const handleInvalid = (errors: any) => {
-    setServerError('');
-  };
-
-  const renderStatusBadge = (status?: PlanStatus) => {
-    switch (status) {
-      case 'APPROVED':
-        return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-transparent border border-forest-ink border border-emerald-500/20 text-forest-ink rounded-inputs text-xs font-semibold">
-            <CheckCircle2 className="w-3.5 h-3.5" />
-            <span>APPROVED</span>
-          </span>
-        );
-      case 'PENDING':
-        return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-transparent border border-ember-glow border border-amber-500/20 text-ember-glow rounded-inputs text-xs font-semibold">
-            <Clock className="w-3.5 h-3.5" />
-            <span>UNDER REVIEW (PENDING)</span>
-          </span>
-        );
-      case 'CHANGES_REQUESTED':
-        return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-transparent border border-vast-ink border border-red-500/20 text-red-400 rounded-inputs text-xs font-semibold">
-            <AlertCircle className="w-3.5 h-3.5" />
-            <span>CHANGES REQUESTED</span>
-          </span>
-        );
-      default:
-        return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-lumen-stone text-vast-ink font-medium rounded-inputs text-xs font-semibold">
-            <span>DRAFT</span>
-          </span>
-        );
-    }
+    if (existingPlan) updateMutation.mutate({ payload: cleanData(data), status: 'PENDING' });
+    else createMutation.mutate({ payload: cleanData(data), status: 'PENDING' });
   };
 
   const isSaving = createMutation.isPending || updateMutation.isPending;
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6 text-left py-4">
-      <div className="flex items-center justify-between">
-        <button
-          onClick={() => navigate(-1)}
-          className="fixed top-4 left-4 sm:top-6 sm:left-6 z-[100] inline-flex items-center justify-center w-10 h-10 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white rounded-full transition-all cursor-pointer shadow-lg"
-          title="Go Back"
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </button>
-
-        {existingPlan && renderStatusBadge(existingPlan.status)}
-      </div>
-
-      <div className="space-y-1 bg-transparent p-6 rounded-cards border border-vast-ink/20 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <div className="max-w-5xl mx-auto space-y-6 animate-fade-in p-4 sm:p-6 lg:p-8">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2 text-vast-ink text-xs font-semibold uppercase tracking-wider mb-1">
-            <CalendarDays className="w-4 h-4" />
-            <span>Internal Planning Portal</span>
-          </div>
-          <h1 className="text-2xl font-extrabold text-vast-ink">
-            Society Annual Calendar ({currentYear})
+          <button
+            onClick={() => navigate(-1)}
+            className="fixed top-4 left-4 sm:top-6 sm:left-6 z-[100] inline-flex items-center justify-center w-10 h-10 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white rounded-full transition-all cursor-pointer shadow-lg"
+            title="Go Back"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </button>
+          <h1 className="text-3xl font-extrabold text-white tracking-tight">
+            Society Annual Calendar ({currentYear}-{currentYear + 1})
           </h1>
-          <p className="text-sm text-fog">
-            Draft and submit your society&apos;s annual event calendar for faculty advisor approval.
-          </p>
         </div>
-
-        {isReadOnly && (
-          <div className="flex items-center gap-2 px-3 py-1.5 bg-lumen-stone/80 rounded-inputs border border-vast-ink/20 text-vast-ink font-medium text-xs font-semibold">
-            <Lock className="w-3.5 h-3.5 text-ember-glow" />
-            <span>Read-Only Mode</span>
+        
+        {existingPlan && (
+          <div className="flex flex-col items-end gap-2">
+            <span className={cn(
+              "inline-flex items-center gap-1.5 px-3 py-1 bg-white/10 backdrop-blur-md border rounded-inputs text-xs font-semibold",
+              existingPlan.status === 'APPROVED' ? "border-emerald-500/50 text-emerald-400" :
+              existingPlan.status === 'PENDING' ? "border-amber-500/50 text-amber-400" :
+              existingPlan.status === 'CHANGES_REQUESTED' ? "border-red-500/50 text-red-400" :
+              "border-white/20 text-white"
+            )}>
+              {existingPlan.status === 'APPROVED' && <CheckCircle2 className="w-3.5 h-3.5" />}
+              {existingPlan.status === 'PENDING' && <Clock className="w-3.5 h-3.5" />}
+              {existingPlan.status === 'CHANGES_REQUESTED' && <AlertCircle className="w-3.5 h-3.5" />}
+              <span>{existingPlan.status}</span>
+            </span>
+            
+            {isReadOnly && (
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-white/5 border border-white/10 rounded-inputs text-white/80 font-medium text-xs font-semibold">
+                <Lock className="w-3.5 h-3.5 text-red-400" />
+                <span>Read-Only Mode</span>
+              </div>
+            )}
           </div>
         )}
       </div>
 
-      {/* Success Notification Alert */}
-      null /* Removed success alert */
+      {serverError && (
+        <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-cards text-red-400 text-sm">
+          {serverError}
+        </div>
+      )}
 
-      {/* Advisor Feedback Callout Box if Changes Requested or Comments Available */}
+      {successMessage && (
+        <div className="p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-cards text-emerald-400 text-sm">
+          {successMessage}
+        </div>
+      )}
+
       {existingPlan?.advisorComments && (
-        <div className="bg-lumen-cream p-5 rounded-cards border border-vast-ink/20 shadow-sm space-y-2">
+        <div className="glass-form-card !p-5">
           <FeedbackHistory rawComments={existingPlan.advisorComments} />
           {isChangesRequested && (
-            <div className="p-3 bg-ember-glow text-pure-white rounded-inputs border border-amber-600/30 text-xs font-semibold shadow-sm animate-pulse flex items-center gap-2 mt-4">
+            <div className="p-3 bg-red-500/10 border border-red-500/30 text-red-400 rounded-inputs text-xs font-semibold shadow-sm flex items-center gap-2 mt-4">
               <AlertCircle className="w-4 h-4 shrink-0" />
-              <span>Please adjust your planned event dates or notes as requested above and click &quot;Resubmit for Approval&quot;.</span>
+              <span>Please adjust your planned event dates or notes as requested above and click "Resubmit for Approval".</span>
             </div>
           )}
         </div>
       )}
 
-      {null}
-
-      <form className="space-y-6" noValidate>
-        {/* Planned Events Dynamic Table Section */}
-        <div className="bg-lumen-cream p-6 rounded-cards border border-vast-ink/20 space-y-4">
-          <div className="flex items-center justify-between border-b-2 border-vast-ink pb-3">
-            <h2 className="text-base font-bold text-vast-ink">
-              Planned Calendar Events ({fields.length})
-            </h2>
+      <form className="glass-form-card" noValidate>
+        <div className="form-section">
+          <div className="section-header" style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+            <h2 className="section-title">Planned Calendar Events ({fields.length})</h2>
             {!isReadOnly && (
-              <Button
+              <button
                 type="button"
-                variant="outline"
-                size="sm"
+                className="btn-change"
                 onClick={() => append({ eventName: '', startDate: '', endDate: '', description: '', venue: '', rules: '', societyRules: '' })}
-                leftIcon={<Plus className="w-4 h-4" />}
               >
-                Add Event Row
-              </Button>
+                + Add Event Row
+              </button>
             )}
           </div>
+          <div className="section-divider"></div>
 
           {errors.events?.root?.message && (
-            <p className="text-xs text-red-400 font-medium">{errors.events.root.message}</p>
+            <p className="error-text !block mb-4">{errors.events.root.message}</p>
           )}
 
-          <div className="space-y-4">
+          <div className="flex flex-col gap-6">
             {fields.map((field, index) => (
-              <div
-                key={field.id}
-                className="bg-transparent p-4 rounded-inputs border border-vast-ink/20 space-y-3 relative group"
-              >
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  <Input
-                    label={`Event Name #${index + 1} *`}
-                    placeholder="e.g. SoftDesk Annual Hackathon"
-                    disabled={isReadOnly || isSaving}
-                    error={errors.events?.[index]?.eventName?.message}
-                    {...register(`events.${index}.eventName`)}
-                  />
-
-                  <Input
-                    label="Start Date *"
-                    type="date"
-                    disabled={isReadOnly || isSaving}
-                    error={errors.events?.[index]?.startDate?.message}
-                    {...register(`events.${index}.startDate`, {
-                      onChange: (e) => {
-                        const newStart = e.target.value;
-                        const currentEnd = getValues(`events.${index}.endDate`);
-                        if (!currentEnd || newStart > currentEnd) {
-                          setValue(`events.${index}.endDate`, newStart, { shouldValidate: true });
-                        }
-                      },
-                    })}
-                  />
-
-                  <Input
-                    label="End Date *"
-                    type="date"
-                    min={watch(`events.${index}.startDate`)}
-                    disabled={isReadOnly || isSaving}
-                    error={errors.events?.[index]?.endDate?.message}
-                    {...register(`events.${index}.endDate`)}
-                  />
-
-                  <Input
-                    label="Venue *"
-                    placeholder="e.g. AHA Auditorium"
-                    disabled={isReadOnly || isSaving}
-                    error={errors.events?.[index]?.venue?.message}
-                    {...register(`events.${index}.venue`)}
-                  />
-
-                  <div className="col-span-1 md:col-span-2 lg:col-span-3 space-y-4">
-                    <div className="flex flex-col space-y-1.5">
-                      <label className="text-xs font-semibold text-vast-ink uppercase tracking-wider block">
-                        Description *
-                      </label>
-                      <textarea
-                        disabled={isReadOnly || isSaving}
-                        rows={3}
-                        className="w-full px-3.5 py-2.5 text-sm bg-transparent border border-vast-ink/20 rounded-inputs placeholder:text-fog focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                        placeholder="Event description..."
-                        {...register(`events.${index}.description`)}
-                      />
-                      {errors.events?.[index]?.description?.message && (
-                        <p className="text-xs text-red-500 mt-1">{errors.events?.[index]?.description?.message}</p>
-                      )}
+              <div key={field.id} className="relative space-y-4">
+                {index > 0 && <hr className="border-t border-white/10 my-8" />}
+                
+                <div className="field-grid-3">
+                  <div className="field-group">
+                    <label className="field-label">EVENT NAME #{index + 1} *</label>
+                    <div className={cn("input-box", errors.events?.[index]?.eventName && "error")}>
+                      <input type="text" placeholder="e.g. Annual Hackathon" disabled={isReadOnly || isSaving} {...register(`events.${index}.eventName`)} />
                     </div>
+                    {errors.events?.[index]?.eventName?.message && <span className="error-text !block">{errors.events[index]?.eventName?.message}</span>}
+                  </div>
 
-                    {/* Official DSA / Admin Directives Display (Read-Only to Society) */}
-                    {watch(`events.${index}.rules`) && (
-                      <div className="p-4 bg-amber-50 border-2 border-amber-500/40 rounded-cards space-y-1 mt-2">
-                        <div className="flex items-center gap-2 text-amber-900 font-extrabold text-xs uppercase tracking-wider">
-                          <ShieldAlert className="w-4 h-4 text-amber-600 shrink-0" />
-                          <span>Official DSA / Admin Directives &amp; Regulations</span>
-                        </div>
-                        <p className="text-xs text-amber-950 font-semibold whitespace-pre-line leading-relaxed pl-6">
-                          {watch(`events.${index}.rules`)}
-                        </p>
+                  <div className="field-group">
+                    <label className="field-label">NUMBER OF DAYS</label>
+                    <Controller
+                      name={`events.${index}.duration`}
+                      control={control}
+                      defaultValue="One Day Event"
+                      render={({ field: dField }) => (
+                        <GlassDropdown
+                          value={dField.value || "One Day Event"}
+                          onChange={(val) => {
+                            dField.onChange(val);
+                            const start = getValues(`events.${index}.startDate`);
+                            if (start) {
+                              const date = new Date(start);
+                              if (val === 'Two Day Event') date.setDate(date.getDate() + 1);
+                              else if (val === 'Three Day Event') date.setDate(date.getDate() + 2);
+                              else if (val === 'Weekly Event') date.setDate(date.getDate() + 7);
+                              setValue(`events.${index}.endDate`, date.toISOString(), { shouldValidate: true });
+                            } else {
+                              setValue(`events.${index}.endDate`, '', { shouldValidate: true });
+                            }
+                          }}
+                          options={[
+                            {label: "One Day Event", value: "One Day Event"},
+                            {label: "Two Day Event", value: "Two Day Event"},
+                            {label: "Three Day Event", value: "Three Day Event"},
+                            {label: "Weekly Event", value: "Weekly Event"},
+                          ]}
+                          disabled={isReadOnly || isSaving}
+                        />
+                      )}
+                    />
+                  </div>
+
+                  <div className="field-group">
+                    <label className="field-label">DATE *</label>
+                    <Controller
+                      name={`events.${index}.startDate`}
+                      control={control}
+                      render={({ field: rField }) => (
+                        <CustomDatePicker 
+                          value={rField.value} 
+                          onChange={(val) => {
+                            rField.onChange(val);
+                            const dur = getValues(`events.${index}.duration`) || 'One Day Event';
+                            const date = new Date(val);
+                            if (dur === 'Two Day Event') date.setDate(date.getDate() + 1);
+                            else if (dur === 'Three Day Event') date.setDate(date.getDate() + 2);
+                            else if (dur === 'Weekly Event') date.setDate(date.getDate() + 7);
+                            setValue(`events.${index}.endDate`, date.toISOString(), { shouldValidate: true });
+                          }} 
+                          placeholder="mm/dd/yyyy"
+                          disabled={isReadOnly || isSaving}
+                        />
+                      )}
+                    />
+                    {errors.events?.[index]?.startDate?.message && <span className="error-text !block">{errors.events[index]?.startDate?.message}</span>}
+                  </div>
+                </div>
+
+                <div className="field-grid-2">
+                  <div className="field-group">
+                    <label className="field-label">EVENT TYPE</label>
+                    <Controller
+                      name={`events.${index}.eventType`}
+                      control={control}
+                      defaultValue=""
+                      render={({ field: tField }) => (
+                        <GlassDropdown
+                          value={tField.value || ""}
+                          onChange={tField.onChange}
+                          options={[
+                            {label: "Select Type", value: ""},
+                            {label: "Technical", value: "Technical"},
+                            {label: "Non-Technical", value: "Non-Technical"},
+                            {label: "Entertainment", value: "Entertainment"},
+                            {label: "Sports", value: "Sports"},
+                            {label: "Workshop", value: "Workshop"},
+                          ]}
+                          disabled={isReadOnly || isSaving}
+                        />
+                      )}
+                    />
+                  </div>
+
+                  <div className="field-group">
+                    <label className="field-label">VENUE</label>
+                    <Controller
+                      name={`events.${index}.venue`}
+                      control={control}
+                      render={({ field: rField }) => (
+                        <GlassDropdown
+                          value={customVenueRows[index] ? 'Custom (Add)' : rField.value}
+                          onChange={(val) => {
+                            if (val === 'Custom (Add)') {
+                              setCustomVenueRows(prev => ({...prev, [index]: true}));
+                              rField.onChange('');
+                            } else {
+                              setCustomVenueRows(prev => ({...prev, [index]: false}));
+                              rField.onChange(val);
+                            }
+                          }}
+                          options={[
+                            {label: "Auditorium", value: "Auditorium"},
+                            {label: "Faculty Club (Inside)", value: "Faculty Club (Inside)"},
+                            {label: "Faculty Club (Outside)", value: "Faculty Club (Outside)"},
+                            {label: "Faculty Club (Inside + Outside)", value: "Faculty Club (Inside + Outside)"},
+                            {label: "Guest House (Inside)", value: "Guest House (Inside)"},
+                            {label: "Guest House (Outside)", value: "Guest House (Outside)"},
+                            {label: "Guest House (Inside + Outside)", value: "Guest House (Inside + Outside)"},
+                            {label: "Sports Complex", value: "Sports Complex"},
+                            {label: "Basket Ball Court", value: "Basket Ball Court"},
+                            {label: "Main Ground", value: "Main Ground"},
+                            {label: "Cafe Lawn", value: "Cafe Lawn"},
+                            {label: "Custom (Add)", value: "Custom (Add)"},
+                          ]}
+                          disabled={isReadOnly || isSaving}
+                        />
+                      )}
+                    />
+                    {customVenueRows[index] && (
+                      <div className="input-box mt-2">
+                        <input type="text" placeholder="Enter custom venue" disabled={isReadOnly || isSaving} {...register(`events.${index}.venue`)} />
                       </div>
                     )}
+                    {errors.events?.[index]?.venue?.message && <span className="error-text !block">{errors.events[index]?.venue?.message}</span>}
+                  </div>
+                </div>
+
+                <div className="field-group">
+                  <label className="field-label">DESCRIPTION</label>
+                  <div className={cn("input-box", errors.events?.[index]?.description && "error")} style={{alignItems:"flex-start", height: "auto"}}>
+                    <textarea 
+                      placeholder="Enter description..." 
+                      disabled={isReadOnly || isSaving} 
+                      {...register(`events.${index}.description`)} 
+                      rows={2}
+                      style={{height: "60px"}}
+                    ></textarea>
                   </div>
                 </div>
 
                 {!isReadOnly && fields.length > 1 && (
-                  <button
-                    type="button"
-                    onClick={() => remove(index)}
-                    className="absolute top-3 right-3 text-fog hover:text-red-400 p-1 transition-colors"
-                    title="Remove event row"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+                  <div className="flex justify-end pt-2">
+                    <button
+                      type="button"
+                      onClick={() => remove(index)}
+                      className="flex items-center gap-2 px-4 py-2 bg-red-500/90 hover:bg-red-500 text-white font-bold rounded-lg transition-all shadow-md text-sm"
+                    >
+                      <Trash2 className="w-4 h-4" /> Delete Event
+                    </button>
+                  </div>
                 )}
               </div>
             ))}
+
           </div>
         </div>
 
-        {/* Workflow Submission Controls */}
         {!isReadOnly && (
-          <div className="flex flex-col sm:flex-row items-center gap-3 pt-2">
-            <Button
+          <div className="flex flex-col sm:flex-row gap-4 pt-4 border-t border-white/10">
+            <button
               type="button"
-              variant="outline"
-              size="lg"
-              className="w-full sm:w-1/2"
-              isLoading={isSaving}
-              onClick={handleSubmit(handleSaveDraft, handleInvalid)}
-              leftIcon={<Save className="w-5 h-5" />}
+              className="flex-1 btn-submit-review !bg-white/10 !border !border-white/20 hover:!bg-white/20 !shadow-none"
+              onClick={handleSubmit(handleSaveDraft)}
+              disabled={isSaving}
             >
-              Save as Draft
-            </Button>
-
-            <Button
+              <Save className="w-5 h-5 mr-2" />
+              Save Draft
+            </button>
+            <button
               type="button"
-              variant="primary"
-              size="lg"
-              className="w-full sm:w-1/2"
-              isLoading={isSaving}
-              onClick={handleSubmit(handleSubmitForReview, handleInvalid)}
-              leftIcon={<Send className="w-5 h-5" />}
+              className="flex-1 btn-submit-review"
+              onClick={handleSubmit(handleSubmitForReview)}
+              disabled={isSaving}
             >
-              {isChangesRequested ? 'Resubmit for Advisor Approval' : 'Submit for Advisor Approval'}
-            </Button>
+              <Send className="w-5 h-5 mr-2" />
+              {isChangesRequested ? 'Resubmit for Approval' : 'Submit for Advisor Approval'}
+            </button>
           </div>
         )}
       </form>
     </div>
   );
 };
-

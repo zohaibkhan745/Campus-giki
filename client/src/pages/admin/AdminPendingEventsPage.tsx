@@ -208,7 +208,7 @@ export const AdminPendingEventsPage: React.FC = () => {
           {events.length === 0 ? (
             <p className="text-sm text-gray-400 italic">No pending events match the filters.</p>
           ) : (
-            <EventGrid events={events} />
+            <EventGrid events={events} reviewUrlBase="/admin/events" />
           )}
         </div>
       )}

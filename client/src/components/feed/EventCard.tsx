@@ -13,9 +13,10 @@ interface EventCardProps {
   item: EventFeedItem;
   onEdit?: () => void;
   onDelete?: () => void;
+  reviewUrl?: string;
 }
 
-const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete }) => {
+const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, reviewUrl }) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const { isActive, openCard, closeCard } = useCardFlip(wrapperRef);
   const { user } = useAuth();
@@ -183,10 +184,17 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete }
               )}
               <button 
                 type="button" 
-                className="card-button open-details-btn flex-1" style={{ height: "48px", borderRadius: "9999px" }}
-                onClick={(e) => { e.stopPropagation(); openCard(true); }}
+                className="card-button open-details-btn flex-1" style={{ height: "48px", borderRadius: "9999px", background: "#fff", color: "#000", fontWeight: 600 }}
+                onClick={(e) => { 
+                  e.stopPropagation(); 
+                  if (reviewUrl) {
+                    navigate(reviewUrl);
+                  } else {
+                    openCard(true);
+                  }
+                }}
               >
-                View Details
+                {reviewUrl ? 'Review Event' : 'View Details'}
               </button>
             </div>
           </div>

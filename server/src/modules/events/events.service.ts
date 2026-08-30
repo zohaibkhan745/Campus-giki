@@ -44,6 +44,9 @@ export class EventsService {
 
     const whereClause: Prisma.EventWhereInput = {
       isPublished: true,
+      approvalStatus: {
+        in: ['APPROVED', 'PUBLISHED']
+      }
     };
 
     if (query.from || query.to) {

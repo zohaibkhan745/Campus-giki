@@ -165,7 +165,6 @@ const PostCardComponent: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) 
               <div className="user-profile">
 
               <div className="front-text-content" ref={textContentRef}>
-                {item.title && <h3 className="card-title">{item.title}</h3>}
                 <p className="front-description" ref={frontDescRef}>{item.content}</p>
               </div>
             </div>
@@ -262,7 +261,6 @@ const PostCardComponent: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) 
 
               <div className="scroll-area">
                 <div className="flex flex-col gap-3 mb-6">
-                  {item.title && <h4 className="card-title back-title">{item.title}</h4>}
                   <p className="card-description back-description whitespace-pre-wrap">{item.content}</p>
                 </div>
               </div>

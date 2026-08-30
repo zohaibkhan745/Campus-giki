@@ -6,7 +6,7 @@ export const FlippableAdminEventCard = ({ evt }: { evt: any }) => {
   return <EventCard item={item} />;
 };
 
-export const EventGrid = ({ events, maxItems = 4 }: { events: any[], maxItems?: number }) => {
+export const EventGrid = ({ events, maxItems = 4, reviewUrlBase }: { events: any[], maxItems?: number, reviewUrlBase?: string }) => {
   const [visible, setVisible] = useState(maxItems);
 
   const memoizedShown = useMemo(() => {
@@ -16,7 +16,7 @@ export const EventGrid = ({ events, maxItems = 4 }: { events: any[], maxItems?: 
   return (
     <div className="space-y-6">
       <div className="cards-container">
-        {memoizedShown.map((item: any) => <EventCard key={item.id} item={item} />)}
+        {memoizedShown.map((item: any) => <EventCard key={item.id} item={item} reviewUrl={reviewUrlBase ? `${reviewUrlBase}/${item.id}` : undefined} />)}
       </div>
       {visible < events.length && (
         <button

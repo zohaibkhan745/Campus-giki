@@ -1,34 +1,21 @@
-import { CustomDropdown } from '@/components/ui/CustomDropdown';
-import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import React, { useState, useEffect, useMemo } from 'react';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate, Link } from 'react-router-dom';
-import {
-  Calendar,
-  Clock,
-  MapPin,
-  FileText,
-  Image,
-  ExternalLink,
-  ArrowLeft,
-  CheckCircle2,
-  ShieldCheck,
-  Sparkles,
-} from 'lucide-react';
+import { ArrowLeft, CheckCircle2, ShieldCheck, Sparkles } from 'lucide-react';
 import { eventService } from '@/services/event.service';
 import { societyService } from '@/services/society.service';
 import { yearlyPlanService } from '@/services/yearly-plan.service';
 import type { PlannedEventItem } from '@/types/yearly-plan.types';
-import {
-  eventFormSchema,
-  type EventFormData,
-} from '@/lib/validations/event.schema';
-import { Input } from '@/components/ui/Input';
-import { Button } from '@/components/ui/Button';
+import { eventFormSchema, type EventFormData } from '@/lib/validations/event.schema';
 import { CouncilNoticeModal } from '@/components/ui/CouncilNoticeModal';
 import { Alert } from '@/components/ui/Alert';
 import { EventMediaUploader } from '@/components/common/EventMediaUploader';
+import { CustomDatePicker } from '@/components/ui/CustomDatePicker';
+import { CustomTimePicker } from '@/components/ui/CustomTimePicker';
+import { GlassDropdown } from '@/components/ui/GlassDropdown';
+import { cn } from '@/lib/utils';
 import type { AxiosError } from 'axios';
 
 export const CreateEventPage: React.FC = () => {
@@ -38,12 +25,16 @@ export const CreateEventPage: React.FC = () => {
   const [showNoticeModal, setShowNoticeModal] = useState(false);
 
   const [selectedEventKey, setSelectedEventKey] = useState<string>('');
+  const [isMultiDay, setIsMultiDay] = useState(false);
+  const [isCustomVenue, setIsCustomVenue] = useState(false);
+  const [isCustomIncharge, setIsCustomIncharge] = useState(false);
 
   const {
     register,
     handleSubmit,
     setValue,
     watch,
+    control,
     formState: { errors },
   } = useForm<EventFormData>({
     resolver: zodResolver(eventFormSchema),
@@ -71,7 +62,7 @@ export const CreateEventPage: React.FC = () => {
     queryFn: societyService.getDashboard,
   });
 
-  React.useEffect(() => {
+  useEffect(() => {
     if ((dashboardData as any)?.profile) {
       const profile = (dashboardData as any)?.profile;
       let hasFullCouncil = false;
@@ -87,12 +78,31 @@ export const CreateEventPage: React.FC = () => {
     }
   }, [dashboardData, navigate]);
 
+  // Handle In-Charge Auto-fill
+  useEffect(() => {
+    if (!isCustomIncharge && (dashboardData as any)?.profile) {
+      try {
+        const council = JSON.parse((dashboardData as any).profile.executiveCouncil || '[]');
+        const ec = council.find((m: any) => m.role === 'Event Coordinator');
+        if (ec) {
+          setValue('inChargeName', ec.name || '', { shouldValidate: true });
+          setValue('inChargeRegNum', ec.regNum || '', { shouldValidate: true });
+          setValue('inChargeContact', ec.contact || '', { shouldValidate: true });
+        }
+      } catch (e) {}
+    } else if (isCustomIncharge) {
+      setValue('inChargeName', '', { shouldValidate: false });
+      setValue('inChargeRegNum', '', { shouldValidate: false });
+      setValue('inChargeContact', '', { shouldValidate: false });
+    }
+  }, [isCustomIncharge, dashboardData, setValue]);
+
   const { data: myPlans } = useQuery({
     queryKey: ['myYearlyPlans'],
     queryFn: () => yearlyPlanService.getMyPlans(),
   });
 
-  const plannedEvents = React.useMemo(() => {
+  const plannedEvents = useMemo(() => {
     if (!myPlans) return [];
     const list: { key: string; planYear: number; planStatus: string; event: PlannedEventItem }[] = [];
     myPlans.forEach((plan) => {
@@ -146,237 +156,321 @@ export const CreateEventPage: React.FC = () => {
     ) => {
       const respMessage = error.response?.data?.message;
       let errText = 'Failed to create event. Please verify your inputs.';
-
       if (Array.isArray(respMessage)) {
-        errText = respMessage.join(', ');
+        errText = respMessage[0];
       } else if (typeof respMessage === 'string') {
         errText = respMessage;
       }
-
-      setServerError('');
+      setServerError(errText);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     },
   });
 
-  const handlePublish = (data: EventFormData, submitForApproval: boolean) => {
-    setServerError('');
-    createMutation.mutate({ ...data, submitForApproval });
+  const handlePublish = (data: EventFormData, requireReview: boolean) => {
+    setServerError(null);
+    createMutation.mutate({ ...data, submitForApproval: requireReview });
   };
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6 text-left py-4">
-      <div className="flex items-center justify-between">
-        <button
-          onClick={() => navigate(-1)}
-          className="fixed top-4 left-4 sm:top-6 sm:left-6 z-[100] inline-flex items-center justify-center w-10 h-10 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white rounded-full transition-all cursor-pointer shadow-lg"
-          title="Go Back"
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </button>
+    <div className="max-w-4xl mx-auto space-y-8 animate-fade-in p-4 sm:p-6 lg:p-8">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <button
+            type="button"
+            onClick={() => navigate('/dashboard')}
+            className="fixed top-4 left-4 sm:top-6 sm:left-6 z-[100] inline-flex items-center justify-center w-10 h-10 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white rounded-full transition-all cursor-pointer shadow-lg"
+            title="Go Back"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </button>
+          <h1 className="text-3xl font-extrabold text-white tracking-tight">
+            Create New Campus Event
+          </h1>
+          <p className="text-sm font-medium text-white/60 mt-1">
+            Fill in the details below to list a new event on the campus feed.
+          </p>
+        </div>
       </div>
 
-      <div className="space-y-1 bg-transparent p-6 rounded-cards border border-vast-ink/20">
-        <h1 className="text-2xl font-extrabold text-vast-ink">
-          Create New Campus Event
-        </h1>
-        <p className="text-sm text-fog">
-          Publish a new workshop, hackathon, competition, or seminar for your society.
-        </p>
-      </div>
+      {serverError && (
+        <Alert variant="error" message={serverError} className="animate-in fade-in slide-in-from-top-2" />
+      )}
 
-      {/* Annual Calendar Import Selector Card */}
-      {plannedEvents.length > 0 && (
-        <div className="p-5 bg-lumen-cream border border-vast-ink/20 rounded-cards space-y-3">
-          <div className="flex items-center justify-between">
-            <h3 className="text-vast-ink font-bold text-sm">
+      {plannedEvents && plannedEvents.length > 0 && (
+        <div className="glass-form-card !py-4">
+          <div className="flex items-center gap-2 mb-2">
+            <Sparkles className="w-5 h-5 text-blue-400" />
+            <h3 className="text-white font-bold text-sm">
               Import Event Details from Annual Calendar Plan
             </h3>
-            <span className="text-[10px] font-extrabold text-vast-ink uppercase tracking-wider bg-transparent px-2.5 py-1 rounded-inputs border border-vast-ink/20">
+            <span className="text-[10px] font-extrabold text-white uppercase tracking-wider bg-white/10 px-2.5 py-1 rounded-inputs border border-white/20">
               Optional Auto-Fill
             </span>
           </div>
-
-          <p className="text-xs text-fog font-medium">
+          <p className="text-xs text-white/60 font-medium mb-3">
             Select a planned event from your annual calendar to automatically pre-fill title, date, venue, and description:
           </p>
-
-          <CustomDropdown value={selectedEventKey} onChange={(e: any) => handleSelectPlannedEvent(e.target.value)} options={[{value:"", label:"-- Select Planned Event --"}, ...(plannedEvents || []).map((ev: any) => ({value: ev.id + "|" + ev.title + "|" + (ev.tentativeDate||"") + "|" + (ev.tentativeVenue||"") + "|" + (ev.description||""), label: ev.title}))]} />
+          <GlassDropdown 
+            value={selectedEventKey} 
+            onChange={(val) => handleSelectPlannedEvent(val)} 
+            options={[
+              {value:"", label:"-- Select Planned Event --"}, 
+              ...plannedEvents.map((ev) => ({
+                value: ev.key, 
+                label: ev.event.eventName || 'Unnamed Event'
+              }))
+            ]} 
+          />
         </div>
       )}
 
-      {null}
-
-      <form onSubmit={(e) => e.preventDefault()} className="bg-lumen-cream p-6 md:p-8 rounded-cards border border-vast-ink/20 space-y-8" noValidate>
-        <div className="space-y-4">
-          <h2 className="text-base font-bold text-vast-ink border-b-2 border-vast-ink pb-2">
-            Event Overview
-          </h2>
-
-          <Input
-            label="Event Title *"
-            placeholder="e.g. GIKI SoftDesk Hackathon 2026"
-            leftIcon={<Calendar className="w-4 h-4" />}
-            disabled={createMutation.isPending}
-            error={errors.title?.message}
-            {...register('title')}
-          />
-
-          <div className="space-y-1.5 text-left">
-            <label className="block text-xs font-semibold text-vast-ink font-medium uppercase tracking-wider">
-              Event Description *
-            </label>
-            <div className="relative flex items-start">
-              <div className="absolute left-3 top-3 text-fog pointer-events-none flex items-center justify-center">
-                <FileText className="w-4 h-4" />
-              </div>
-              <textarea
-                rows={4}
-                placeholder="Describe your event agenda, prerequisites, target audience, and guidelines..."
-                disabled={createMutation.isPending}
-                className="w-full bg-transparent text-vast-ink placeholder:text-fog text-sm rounded-inputs border border-vast-ink/20 px-3.5 py-2.5 pl-10 transition-all outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50 resize-y"
-                {...register('description')}
-              />
+      <form onSubmit={(e) => e.preventDefault()} className="glass-form-card" noValidate>
+        
+        <div className="form-section">
+          <div className="section-header">
+            <h2 className="section-title">Event Overview</h2>
+            <div className="section-divider"></div>
+          </div>
+          
+          <div className="field-group">
+            <label className="field-label">Event Title *</label>
+            <div className={cn("input-box", errors.title && "error")}>
+              <svg className="input-icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+              <input type="text" placeholder="e.g. GIKI SoftDesk Hackathon 2026" disabled={createMutation.isPending} {...register('title')} />
             </div>
-            {errors.description?.message && (
-              <p className="text-xs text-red-400 font-medium">
-                {errors.description.message}
-              </p>
+            {errors.title?.message && <span className="error-text !block">{errors.title.message}</span>}
+          </div>
+
+          <div className="field-group">
+            <label className="field-label">Event Description *</label>
+            <div className={cn("input-box", errors.description && "error")} style={{alignItems:"flex-start"}}>
+              <svg className="input-icon" style={{marginTop:"2px"}} viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+              <textarea placeholder="Describe your event agenda, prerequisites, target audience, and guidelines..." disabled={createMutation.isPending} {...register('description')}></textarea>
+            </div>
+            {errors.description?.message && <span className="error-text !block">{errors.description.message}</span>}
+          </div>
+        </div>
+
+        <div className="form-section">
+          <div className="section-header">
+            <div className="inline-header">
+              <h2 className="section-title">Date, Time & Venue</h2>
+              <div className="event-duration-toggle">
+                  <label className="toggle-option">
+                      <input type="radio" name="eventDuration" value="one" checked={!isMultiDay} onChange={() => setIsMultiDay(false)} hidden />
+                      <span className="toggle-btn">One Day Event</span>
+                  </label>
+                  <label className="toggle-option">
+                      <input type="radio" name="eventDuration" value="multi" checked={isMultiDay} onChange={() => setIsMultiDay(true)} hidden />
+                      <span className="toggle-btn">Multi Day Event</span>
+                  </label>
+              </div>
+            </div>
+            <div className="section-divider"></div>
+          </div>
+
+          <div id="dateGrid" className={cn(isMultiDay && "multi-day")}>
+            <div className="field-group">
+              <label className="field-label">{isMultiDay ? 'Event Start Date *' : 'Date *'}</label>
+              <Controller
+                name="eventDate"
+                control={control}
+                render={({ field }) => (
+                  <CustomDatePicker value={field.value} onChange={field.onChange} placeholder={isMultiDay ? 'From Date' : 'Select Date'} disabled={createMutation.isPending} />
+                )}
+              />
+              {errors.eventDate?.message && <span className="error-text !block">{errors.eventDate.message}</span>}
+            </div>
+
+            {isMultiDay && (
+              <div className="field-group">
+                <label className="field-label">Event End Date *</label>
+                <CustomDatePicker placeholder="To Date" disabled={createMutation.isPending} />
+              </div>
             )}
           </div>
-        </div>
 
-        <div className="space-y-4">
-          <h2 className="text-base font-bold text-vast-ink border-b-2 border-vast-ink pb-2">
-            Event Type & In-Charge Details
-          </h2>
-
-          <div className="space-y-1.5 text-left">
-            <label className="block text-xs font-semibold text-vast-ink font-medium uppercase tracking-wider">
-              Event Type
-            </label>
-            <CustomDropdown disabled={createMutation.isPending} placeholder="Select Type" options={[{value:"Workshop",label:"Workshop"},{value:"Seminar",label:"Seminar"},{value:"Hackathon",label:"Hackathon"},{value:"Competition",label:"Competition"},{value:"Social",label:"Social"},{value:"Other",label:"Other"}]} {...register('eventType')} />
+          <div className="field-grid-2">
+            <div className="field-group">
+              <label className="field-label">Start Time *</label>
+              <Controller
+                name="startTime"
+                control={control}
+                render={({ field }) => (
+                  <CustomTimePicker value={field.value} onChange={field.onChange} placeholder="From Time" disabled={createMutation.isPending} />
+                )}
+              />
+              {errors.startTime?.message && <span className="error-text !block">{errors.startTime.message}</span>}
+            </div>
+            <div className="field-group">
+              <label className="field-label">End Time *</label>
+              <Controller
+                name="endTime"
+                control={control}
+                render={({ field }) => (
+                  <CustomTimePicker value={field.value} onChange={field.onChange} placeholder="To Time" disabled={createMutation.isPending} />
+                )}
+              />
+              {errors.endTime?.message && <span className="error-text !block">{errors.endTime.message}</span>}
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Input
-              label="In-Charge Name"
-              placeholder="e.g. Full Name"
-              disabled={createMutation.isPending}
-              error={errors.inChargeName?.message}
-              {...register('inChargeName')}
+          <div className="field-group">
+            <label className="field-label">Venue Location *</label>
+            <Controller
+              name="venue"
+              control={control}
+              render={({ field }) => (
+                <GlassDropdown 
+                  value={isCustomVenue ? 'Custom (Add)' : field.value} 
+                  onChange={(val) => {
+                    if (val === 'Custom (Add)') {
+                      setIsCustomVenue(true);
+                      field.onChange('');
+                    } else {
+                      setIsCustomVenue(false);
+                      field.onChange(val);
+                    }
+                  }} 
+                  options={[
+                    {label: "Auditorium", value: "Auditorium"},
+                    {label: "Faculty Club (Inside)", value: "Faculty Club (Inside)"},
+                    {label: "Faculty Club (Outside)", value: "Faculty Club (Outside)"},
+                    {label: "Faculty Club (Inside + Outside)", value: "Faculty Club (Inside + Outside)"},
+                    {label: "Guest House (Inside)", value: "Guest House (Inside)"},
+                    {label: "Guest House (Outside)", value: "Guest House (Outside)"},
+                    {label: "Guest House (Inside + Outside)", value: "Guest House (Inside + Outside)"},
+                    {label: "Sports Complex", value: "Sports Complex"},
+                    {label: "Basket Ball Court", value: "Basket Ball Court"},
+                    {label: "Main Ground", value: "Main Ground"},
+                    {label: "Custom (Add)", value: "Custom (Add)"},
+                  ]} 
+                  disabled={createMutation.isPending} 
+                  placeholder="Select Venue"
+                />
+              )}
             />
-            <Input
-              label="In-Charge Reg. No"
-              placeholder="e.g. 2023787"
+            
+            {isCustomVenue && (
+              <div className={cn("input-box", errors.venue && "error")} style={{ marginTop: '10px' }}>
+                <input type="text" placeholder="Enter custom venue" disabled={createMutation.isPending} {...register('venue')} />
+              </div>
+            )}
+            {errors.venue?.message && <span className="error-text !block">{errors.venue.message}</span>}
+          </div>
+        </div>
+
+        <div className="form-section">
+          <div className="section-header">
+            <h2 className="section-title">Event Type & In-Charge Details</h2>
+            <div className="section-divider"></div>
+          </div>
+
+          <div className="field-grid-2 items-end">
+            <div className="field-group">
+              <label className="field-label">Event Type *</label>
+              <Controller
+                name="eventType"
+                control={control}
+                render={({ field }) => (
+                  <GlassDropdown 
+                    value={field.value} 
+                    onChange={field.onChange} 
+                    options={[
+                      {value:"Workshop",label:"Workshop / Bootcamp"},
+                      {value:"Seminar",label:"Technical Seminar"},
+                      {value:"Hackathon",label:"Hackathon"},
+                      {value:"Competition",label:"Coding Competition"},
+                      {value:"Social",label:"Society Welcome / Dinner"},
+                      {value:"Other",label:"All Pak"}
+                    ]} 
+                    disabled={createMutation.isPending} 
+                    placeholder="Select Type"
+                  />
+                )}
+              />
+              {errors.eventType?.message && <span className="error-text !block">{errors.eventType.message}</span>}
+            </div>
+
+            <div className="field-group">
+              <div className="inline-header">
+                <label className="field-label">In-Charge Designation *</label>
+                <button type="button" className="btn-change" onClick={() => setIsCustomIncharge(!isCustomIncharge)}>
+                  {isCustomIncharge ? 'Default' : 'Change'}
+                </button>
+              </div>
+              
+              {!isCustomIncharge ? (
+                <div className="input-box disabled">
+                  <input type="text" value="Event Coordinator" disabled />
+                </div>
+              ) : (
+                <div className="input-box">
+                  <input type="text" placeholder="Enter designation" />
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="field-grid-3">
+            <div className="field-group">
+              <label className="field-label">In-Charge Name *</label>
+              <div className={cn("input-box", !isCustomIncharge && "disabled", errors.inChargeName && "error")}>
+                <input type="text" disabled={!isCustomIncharge} {...register('inChargeName')} />
+              </div>
+              {errors.inChargeName?.message && <span className="error-text !block">{errors.inChargeName.message}</span>}
+            </div>
+            <div className="field-group">
+              <label className="field-label">In-Charge Reg. No *</label>
+              <div className={cn("input-box", !isCustomIncharge && "disabled", errors.inChargeRegNum && "error")}>
+                <input type="text" maxLength={7} disabled={!isCustomIncharge} {...register('inChargeRegNum')} />
+              </div>
+              {errors.inChargeRegNum?.message && <span className="error-text !block">{errors.inChargeRegNum.message}</span>}
+            </div>
+            <div className="field-group">
+              <label className="field-label">In-Charge Contact *</label>
+              <div className={cn("input-box", !isCustomIncharge && "disabled", errors.inChargeContact && "error")}>
+                <input type="text" maxLength={11} disabled={!isCustomIncharge} {...register('inChargeContact')} />
+              </div>
+              {errors.inChargeContact?.message && <span className="error-text !block">{errors.inChargeContact.message}</span>}
+            </div>
+          </div>
+        </div>
+
+        <div className="form-section">
+          <div className="section-header">
+            <h2 className="section-title">Media & Registration (Optional)</h2>
+            <div className="section-divider"></div>
+          </div>
+
+          <div className="field-group">
+            <EventMediaUploader
+              coverImageUrl={coverImageUrl}
+              videoUrl={videoUrl}
+              theme="dark"
+              onImageChange={(url) => setValue('coverImageUrl', url, { shouldValidate: true })}
+              onVideoChange={(url) => setValue('videoUrl', url, { shouldValidate: true })}
+              folder="events"
               disabled={createMutation.isPending}
-              error={errors.inChargeRegNum?.message}
-              {...register('inChargeRegNum')}
             />
           </div>
 
-          <Input
-            label="In-Charge Contact Number"
-            placeholder="e.g. +923001234567"
-            disabled={createMutation.isPending}
-            error={errors.inChargeContact?.message}
-            {...register('inChargeContact')}
-          />
-        </div>
-
-        <div className="space-y-4">
-          <h2 className="text-base font-bold text-vast-ink border-b-2 border-vast-ink pb-2">
-            Date, Time & Venue
-          </h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Input
-              label="Event Date *"
-              type="date"
-              disabled={createMutation.isPending}
-              error={errors.eventDate?.message}
-              {...register('eventDate')}
-            />
-
-            <Input
-              label="Start Time (24h) *"
-              type="time"
-              leftIcon={<Clock className="w-4 h-4" />}
-              disabled={createMutation.isPending}
-              error={errors.startTime?.message}
-              {...register('startTime')}
-            />
-
-            <Input
-              label="End Time (24h) *"
-              type="time"
-              leftIcon={<Clock className="w-4 h-4" />}
-              disabled={createMutation.isPending}
-              error={errors.endTime?.message}
-              {...register('endTime')}
-            />
+          <div className="field-group">
+            <label className="field-label">Registration Form Link (Optional)</label>
+            <div className={cn("input-box", errors.registrationLink && "error")}>
+              <svg className="input-icon" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+              <input type="url" placeholder="e.g. https://forms.gle/your-event-form" disabled={createMutation.isPending} {...register('registrationLink')} />
+            </div>
+            {errors.registrationLink?.message && <span className="error-text !block">{errors.registrationLink.message}</span>}
           </div>
-
-          <Input
-            label="Venue Location *"
-            placeholder="e.g. Agha Hasan Abedi Auditorium / FCSE Lab 1"
-            leftIcon={<MapPin className="w-4 h-4" />}
-            disabled={createMutation.isPending}
-            error={errors.venue?.message}
-            {...register('venue')}
-          />
         </div>
 
-        <div className="space-y-4">
-          <h2 className="text-base font-bold text-vast-ink border-b-2 border-vast-ink pb-2">
-            Media & Registration (Optional)
-          </h2>
-
-          <EventMediaUploader
-            coverImageUrl={coverImageUrl}
-            videoUrl={videoUrl}
-            onImageChange={(url) => setValue('coverImageUrl', url, { shouldValidate: true })}
-            onVideoChange={(url) => setValue('videoUrl', url, { shouldValidate: true })}
-            folder="events"
-            disabled={createMutation.isPending}
-          />
-
-          <Input
-            label="Registration Form Link (Optional)"
-            placeholder="e.g. https://forms.gle/your-event-form"
-            leftIcon={<ExternalLink className="w-4 h-4" />}
-            disabled={createMutation.isPending}
-            error={errors.registrationLink?.message}
-            {...register('registrationLink')}
-          />
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-6 border-t-2 border-vast-ink mt-4">
-          <Button
-            type="button"
-            variant="primary"
-            size="lg"
-            className="w-full"
-            isLoading={createMutation.isPending}
-            onClick={handleSubmit((data) => handlePublish(data, false))}
-            leftIcon={<CheckCircle2 className="w-5 h-5" />}
-          >
-            Directly Publish Event
-          </Button>
-
-          <Button
-            type="button"
-            variant="outline"
-            size="lg"
-            className="w-full bg-transparent border border-vast-ink/20 hover:bg-lavender-whisper"
-            isLoading={createMutation.isPending}
-            onClick={handleSubmit((data) => handlePublish(data, true))}
-            leftIcon={<ShieldCheck className="w-5 h-5 text-forest-ink" />}
-          >
-            Submit for Advisor &amp; DSA Review
-          </Button>
-        </div>
+        <button type="button" className="btn-submit-review" disabled={createMutation.isPending} onClick={handleSubmit((data) => handlePublish(data, true))}>
+          <span>Submit for Advisor & DSA Review</span>
+        </button>
       </form>
       <CouncilNoticeModal isOpen={showNoticeModal} onClose={() => navigate('/society/setup?tab=council')} />
     </div>
   );
 };
-

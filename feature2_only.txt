@@ -1,0 +1,1514 @@
+ 
+A) Prompt: Create a single-page HTML, CSS, and JavaScript file for a Society Annual Calendar planning form. Use a dark theme with a glassmorphism main card and a dynamic WebGL animated smokey background. Implement custom modern scrollbars matching the dark theme for the main window and all popover menus.
+
+
+
+Set the main page header to Society Annual Calendar (2026-2027) aligned to the left above the card. Create one main glassmorphism card to contain the form elements. Place a section header inside the card titled Planned Calendar Events (1). Add a button next to this section header titled Add Event Row with a white background and dark text.
+
+
+
+Create an event block containing a three-column grid for the first row. Add a text input field labeled EVENT NAME #1. Add a custom dropdown picker labeled NUMBER OF DAYS with options for One Day Event, Two Day Event, Three Day Event, and Weekly Event. Set the default value for the days picker to One Day Event. Add a custom calendar date picker labeled DATE with a mm/dd/yyyy placeholder.
+
+
+
+Create a second row with a custom dropdown picker labeled VENUE. Include the following venue options: Auditorium, Faculty Club (Inside), Faculty Club (Outside), Faculty Club (Inside + Outside), Guest House (Inside), Guest House (Outside), Guest House (Inside + Outside), Sports Complex, Basket Ball Court, Main Ground, Cafe Lawn, and Custom (Add). Reveal a hidden text input field when Custom (Add) is selected.
+
+
+
+Create a third row with a textarea labeled DESCRIPTION.
+
+
+
+Create an action row at the bottom with two buttons. Style the Save as Draft button with a white background and dark text. Style the Submit for Advisor Approval button with a solid green background and white text. Include appropriate SVG icons in all buttons. Ensure all form elements have modern styling, focus states, and smooth transitions without using nested cards for the event block.
+
+B) Refernce Code: <!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Society Annual Calendar</title>
+
+<style>
+
+* {
+
+  box-sizing: border-box;
+
+  margin: 0;
+
+  padding: 0;
+
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+}
+
+
+
+body {
+
+  background-color: #0f172a; 
+
+  color: #f8fafc;
+
+  overflow: hidden; 
+
+}
+
+
+
+#bg-container {
+
+  position: fixed;
+
+  top: 0;
+
+  left: 0;
+
+  width: 100vw;
+
+  height: 100vh;
+
+  z-index: 0;
+
+  pointer-events: none;
+
+}
+
+
+
+.backdrop-blur-sm {
+
+  position: absolute;
+
+  inset: 0;
+
+  backdrop-filter: blur(4px);
+
+  -webkit-backdrop-filter: blur(4px);
+
+}
+
+
+
+.scroll-container {
+
+  position: relative;
+
+  z-index: 10;
+
+  display: flex;
+
+  flex-direction: column;
+
+  overflow-y: auto;
+
+  overflow-x: hidden;
+
+  height: 100vh;
+
+  scroll-behavior: smooth;
+
+  padding: 60px 20px 120px;
+
+  align-items: center;
+
+}
+
+
+
+.scroll-container::-webkit-scrollbar {
+
+  width: 8px; 
+
+}
+
+.scroll-container::-webkit-scrollbar-track {
+
+  background: rgba(30, 41, 59, 0.6); 
+
+  backdrop-filter: blur(8px);
+
+  -webkit-backdrop-filter: blur(8px);
+
+  border-radius: 10px;
+
+  margin: 4px;
+
+}
+
+.scroll-container::-webkit-scrollbar-thumb {
+
+  background: rgba(255, 255, 255, 0.4); 
+
+  border-radius: 10px;
+
+  border: 2px solid transparent;
+
+  background-clip: padding-box;
+
+}
+
+.scroll-container::-webkit-scrollbar-thumb:hover {
+
+  background: rgba(255, 255, 255, 0.8); 
+
+  border: 2px solid transparent;
+
+  background-clip: padding-box;
+
+}
+
+
+
+.picker-list::-webkit-scrollbar,
+
+.mini-list::-webkit-scrollbar {
+
+  width: 6px;
+
+}
+
+.picker-list::-webkit-scrollbar-track,
+
+.mini-list::-webkit-scrollbar-track {
+
+  background: rgba(30, 41, 59, 0.6); 
+
+  border-radius: 10px;
+
+  margin: 2px;
+
+}
+
+.picker-list::-webkit-scrollbar-thumb,
+
+.mini-list::-webkit-scrollbar-thumb {
+
+  background: rgba(255, 255, 255, 0.4); 
+
+  border-radius: 10px;
+
+}
+
+.picker-list::-webkit-scrollbar-thumb:hover,
+
+.mini-list::-webkit-scrollbar-thumb:hover {
+
+  background: rgba(255, 255, 255, 0.8); 
+
+}
+
+
+
+.page-container {
+
+  position: relative;
+
+  width: 100%;
+
+  max-width: 900px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 20px;
+
+  margin: 0 auto;
+
+}
+
+
+
+.header-section {
+
+  width: 100%;
+
+  text-align: left;
+
+  padding: 0 10px;
+
+}
+
+
+
+.header-title {
+
+  font-size: 2.2rem;
+
+  font-weight: 800;
+
+  color: #ffffff; 
+
+  letter-spacing: -0.02em;
+
+}
+
+
+
+.glass-form-card {
+
+  width: 100%;
+
+  background: rgba(15, 23, 42, 0.4);
+
+  backdrop-filter: blur(24px);
+
+  -webkit-backdrop-filter: blur(24px);
+
+  border: 1px solid rgba(255, 255, 255, 0.1);
+
+  border-radius: 16px;
+
+  padding: 32px;
+
+  box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 24px;
+
+}
+
+
+
+.inline-header {
+
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  width: 100%;
+
+}
+
+
+
+.section-title { font-size: 1.15rem; font-weight: 700; color: #fff; letter-spacing: 0.01em; }
+
+.section-divider { height: 1px; background: rgba(255,255,255,0.1); border: 0; margin-top: 8px; margin-bottom: 24px; }
+
+
+
+.btn-add-row {
+
+  background: #ffffff;
+
+  border: none;
+
+  color: #0f172a;
+
+  padding: 8px 16px;
+
+  border-radius: 8px;
+
+  font-size: 0.85rem;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 6px;
+
+  transition: background 0.2s ease;
+
+}
+
+
+
+.btn-add-row:hover {
+
+  background: #e2e8f0;
+
+}
+
+
+
+.event-block {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 20px;
+
+}
+
+
+
+.field-group { display: flex; flex-direction: column; gap: 8px; position: relative; }
+
+.field-label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: rgba(255,255,255,0.85); }
+
+.field-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+
+
+.input-box {
+
+  width: 100%;
+
+  min-height: 44px;
+
+  background: rgba(255, 255, 255, 0.04);
+
+  border: 1px solid rgba(255, 255, 255, 0.15);
+
+  border-radius: 8px;
+
+  padding: 10px 14px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+
+  color: #fff;
+
+  font-size: 0.9rem;
+
+  outline: none;
+
+  transition: all 0.2s ease;
+
+}
+
+.input-box:focus-within, .input-box:hover { border-color: rgba(255, 255, 255, 0.3); background: rgba(255, 255, 255, 0.08); }
+
+.input-box input, .input-box textarea { width: 100%; background: transparent; border: none; outline: none; color: #fff; font-size: 0.9rem; font-family: inherit; }
+
+.input-box textarea { resize: none; height: 100px; line-height: 1.5; padding: 4px 0; }
+
+.input-box input::placeholder, .input-box textarea::placeholder { color: rgba(255, 255, 255, 0.4); }
+
+
+
+.custom-picker, .simple-picker { position: relative; width: 100%; z-index: 1000; }
+
+.picker-trigger {
+
+  width: 100%;
+
+  min-height: 44px;
+
+  padding: 10px 14px;
+
+  background: rgba(255, 255, 255, 0.04);
+
+  border: 1px solid rgba(255, 255, 255, 0.15);
+
+  border-radius: 8px;
+
+  color: rgba(255, 255, 255, 0.85);
+
+  font-size: 0.9rem;
+
+  user-select: none;
+
+  cursor: pointer;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 10px;
+
+  outline: none;
+
+  transition: all 0.2s ease;
+
+}
+
+.picker-trigger:hover { background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.3); }
+
+.picker-trigger .left { display: flex; align-items: center; gap: 10px; min-width: 0; color: rgba(255, 255, 255, 0.4); }
+
+.picker-trigger.has-value .left { color: #fff; }
+
+.picker-trigger .label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.picker-arrow { width: 16px; height: 16px; stroke: rgba(255, 255, 255, 0.4); stroke-width: 2; fill: none; transition: transform 0.2s ease; flex-shrink: 0; }
+
+.custom-picker.open .picker-arrow, .simple-picker.open .picker-arrow { transform: rotate(180deg); }
+
+
+
+.picker-menu, .calendar-popover {
+
+  position: absolute;
+
+  top: 0; left: 0;
+
+  background: rgba(30, 41, 59, 0.95);
+
+  backdrop-filter: blur(16px);
+
+  -webkit-backdrop-filter: blur(16px);
+
+  border: 1px solid rgba(255, 255, 255, 0.15);
+
+  border-radius: 8px;
+
+  display: none;
+
+  z-index: 99999;
+
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+
+  color: #fff;
+
+}
+
+.picker-menu { padding: 6px; }
+
+.picker-menu.show { display: block; }
+
+.picker-list { max-height: 220px; overflow-y: auto; padding-right: 4px; }
+
+.picker-option {
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  padding: 10px 12px;
+
+  border-radius: 6px;
+
+  color: #e2e8f0;
+
+  cursor: pointer;
+
+  font-size: 0.86rem;
+
+  transition: background 0.15s;
+
+}
+
+.picker-option:hover { background: rgba(255, 255, 255, 0.1); color: #fff; }
+
+.picker-option.active { background: rgba(255, 255, 255, 0.15); color: #fff; font-weight: 600; }
+
+
+
+.calendar-popover { padding: 16px; border-radius: 12px; flex-direction: column; gap: 12px; }
+
+.calendar-popover.show { display: flex; }
+
+.calendar-top { display: flex; gap: 8px; position: relative; z-index: 10; }
+
+.mini-dropdown { position: relative; flex: 1; }
+
+.mini-btn { width: 100%; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 6px; padding: 6px 10px; display: flex; align-items: center; justify-content: space-between; color: #fff; cursor: pointer; font-size: 0.8rem; }
+
+.mini-menu { position: absolute; top: calc(100% + 4px); left: 0; width: 100%; background: #1e293b; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 6px; display: none; z-index: 20000; padding: 4px; }
+
+.mini-dropdown.open .mini-menu { display: block; }
+
+.mini-list { max-height: 150px; overflow-y: auto; }
+
+.mini-option { padding: 6px 8px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; }
+
+.mini-option:hover { background: rgba(255, 255, 255, 0.1); }
+
+.calendar-nav { display: flex; justify-content: space-between; padding: 0 4px; align-items: center; }
+
+.nav-arrow { background: none; border: none; color: #cbd5e1; cursor: pointer; font-size: 1.2rem; }
+
+.nav-arrow:hover { color: #fff; }
+
+.nav-title { font-size: 0.85rem; font-weight: 600; }
+
+.day-labels, .calendar-days { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; gap: 2px; }
+
+.day-label { font-size: 0.65rem; color: #94a3b8; font-weight: 600; margin-bottom: 4px; }
+
+.day-number { font-size: 0.8rem; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 6px; color: #e2e8f0; }
+
+.day-number:hover { background: rgba(255, 255, 255, 0.1); }
+
+.day-number.inactive { color: rgba(255, 255, 255, 0.2); cursor: default; }
+
+.day-number.selected { border: 1px solid rgba(255, 255, 255, 0.4); background: rgba(255, 255, 255, 0.15); color: #fff; }
+
+
+
+.action-row {
+
+  display: grid;
+
+  grid-template-columns: 1fr 1fr;
+
+  gap: 16px;
+
+  width: 100%;
+
+}
+
+
+
+.btn-action {
+
+  width: 100%;
+
+  padding: 14px 20px;
+
+  border-radius: 10px;
+
+  font-size: 0.95rem;
+
+  font-weight: 600;
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+  gap: 10px;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+
+  outline: none;
+
+}
+
+
+
+.btn-action svg {
+
+  width: 18px;
+
+  height: 18px;
+
+  stroke: currentColor;
+
+  fill: none;
+
+  stroke-width: 2;
+
+  stroke-linecap: round;
+
+  stroke-linejoin: round;
+
+}
+
+
+
+.btn-draft {
+
+  background: #ffffff;
+
+  border: none;
+
+  color: #0f172a;
+
+}
+
+.btn-draft:hover {
+
+  background: #e2e8f0;
+
+  transform: translateY(-1px);
+
+}
+
+
+
+.btn-submit {
+
+  background: #16a34a;
+
+  border: none;
+
+  color: #ffffff;
+
+}
+
+.btn-submit:hover {
+
+  background: #15803d;
+
+  transform: translateY(-1px);
+
+}
+
+
+
+@media(max-width:768px) { 
+
+  .field-grid-3 { grid-template-columns: 1fr; } 
+
+  .action-row { grid-template-columns: 1fr; }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+
+
+<div id="bg-container">
+
+    <canvas id="smokey-canvas" style="width: 100%; height: 100%;"></canvas>
+
+    <div class="backdrop-blur-sm"></div>
+
+</div>
+
+
+
+<div class="scroll-container">
+
+    <div class="page-container">
+
+        
+
+        <div class="header-section">
+
+            <h1 class="header-title">Society Annual Calendar (2026-2027)</h1>
+
+        </div>
+
+
+
+        <div class="glass-form-card">
+
+            <div>
+
+                <div class="inline-header">
+
+                    <h2 class="section-title">Planned Calendar Events (1)</h2>
+
+                    <button class="btn-add-row"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg> Add Event Row</button>
+
+                </div>
+
+                <div class="section-divider"></div>
+
+                
+
+                <div class="event-block">
+
+                    <div class="field-grid-3">
+
+                        <div class="field-group">
+
+                            <label class="field-label">EVENT NAME #1 *</label>
+
+                            <div class="input-box">
+
+                                <input type="text" placeholder="e.g. SoftDesk Annual Hackathon">
+
+                            </div>
+
+                        </div>
+
+
+
+                        <div class="field-group">
+
+                            <label class="field-label">NUMBER OF DAYS *</label>
+
+                            <div class="simple-picker" id="daysPicker">
+
+                                <button type="button" class="picker-trigger has-value">
+
+                                    <span class="left"><span class="label">One Day Event</span></span>
+
+                                    <svg class="picker-arrow" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+
+                                </button>
+
+                                <div class="picker-menu"><div class="picker-list">
+
+                                    <div class="picker-option active" data-value="One Day Event">One Day Event</div>
+
+                                    <div class="picker-option" data-value="Two Day Event">Two Day Event</div>
+
+                                    <div class="picker-option" data-value="Three Day Event">Three Day Event</div>
+
+                                    <div class="picker-option" data-value="Weekly Event">Weekly Event</div>
+
+                                </div></div>
+
+                            </div>
+
+                        </div>
+
+                        
+
+                        <div class="field-group">
+
+                            <label class="field-label">DATE *</label>
+
+                            <div class="custom-picker" id="startDatePicker">
+
+                                <button type="button" class="picker-trigger">
+
+                                    <span class="left"><span class="label">mm/dd/yyyy</span></span>
+
+                                    <svg class="picker-arrow" viewBox="0 0 24 24" width="16" height="16"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+
+                                </button>
+
+                                <div class="calendar-popover">
+
+                                    <div class="calendar-top">
+
+                                        <div class="mini-dropdown" data-part="month">
+
+                                            <button type="button" class="mini-btn"><span class="mini-label"></span><svg class="picker-arrow" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
+
+                                            <div class="mini-menu"><div class="mini-list"></div></div>
+
+                                        </div>
+
+                                        <div class="mini-dropdown" data-part="year">
+
+                                            <button type="button" class="mini-btn"><span class="mini-label"></span><svg class="picker-arrow" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
+
+                                            <div class="mini-menu"><div class="mini-list"></div></div>
+
+                                        </div>
+
+                                    </div>
+
+                                    <div class="calendar-nav">
+
+                                        <button type="button" class="nav-arrow prev">‹</button>
+
+                                        <span class="nav-title"></span>
+
+                                        <button type="button" class="nav-arrow next">›</button>
+
+                                    </div>
+
+                                    <div class="day-labels">
+
+                                        <div class="day-label">Su</div><div class="day-label">Mo</div><div class="day-label">Tu</div><div class="day-label">We</div><div class="day-label">Th</div><div class="day-label">Fr</div><div class="day-label">Sa</div>
+
+                                    </div>
+
+                                    <div class="calendar-days"></div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="field-group">
+
+                        <label class="field-label">VENUE *</label>
+
+                        <div class="simple-picker" id="venuePicker">
+
+                            <button type="button" class="picker-trigger">
+
+                                <span class="left"><span class="label">e.g. AHA Auditorium</span></span>
+
+                                <svg class="picker-arrow" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+
+                            </button>
+
+                            <div class="picker-menu"><div class="picker-list">
+
+                                <div class="picker-option" data-value="Auditorium">Auditorium</div>
+
+                                <div class="picker-option" data-value="Faculty Club (Inside)">Faculty Club (Inside)</div>
+
+                                <div class="picker-option" data-value="Faculty Club (Outside)">Faculty Club (Outside)</div>
+
+                                <div class="picker-option" data-value="Faculty Club (Inside + Outside)">Faculty Club (Inside + Outside)</div>
+
+                                <div class="picker-option" data-value="Guest House (Inside)">Guest House (Inside)</div>
+
+                                <div class="picker-option" data-value="Guest House (Outside)">Guest House (Outside)</div>
+
+                                <div class="picker-option" data-value="Guest House (Inside + Outside)">Guest House (Inside + Outside)</div>
+
+                                <div class="picker-option" data-value="Sports Complex">Sports Complex</div>
+
+                                <div class="picker-option" data-value="Basket Ball Court">Basket Ball Court</div>
+
+                                <div class="picker-option" data-value="Main Ground">Main Ground</div>
+
+                                <div class="picker-option" data-value="Cafe Lawn">Cafe Lawn</div>
+
+                                <div class="picker-option" data-value="Custom (Add)">Custom (Add)</div>
+
+                            </div></div>
+
+                        </div>
+
+                        <div class="input-box" id="customVenueBox" style="display: none; margin-top: 8px;">
+
+                            <input type="text" id="customVenueInput" placeholder="Enter custom venue">
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="field-group">
+
+                        <label class="field-label">DESCRIPTION *</label>
+
+                        <div class="input-box" style="align-items:flex-start">
+
+                            <textarea placeholder="Event description..."></textarea>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="action-row">
+
+                <button class="btn-action btn-draft">
+
+                    <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+
+                    Save as Draft
+
+                </button>
+
+                <button class="btn-action btn-submit">
+
+                    <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+
+                    Submit for Advisor Approval
+
+                </button>
+
+            </div>
+
+            
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<script>
+
+const canvas = document.getElementById("smokey-canvas");
+
+const gl = canvas.getContext("webgl");
+
+
+
+const vertexSource = `
+
+    attribute vec4 a_position;
+
+    void main() { gl_Position = a_position; }
+
+`;
+
+
+
+const fragmentSource = `
+
+    precision mediump float;
+
+    uniform vec2 iResolution;
+
+    uniform float iTime;
+
+    uniform vec2 iMouse;
+
+    uniform vec3 u_color;
+
+
+
+    void mainImage(out vec4 fragColor, in vec2 fragCoord){
+
+        vec2 uv = fragCoord / iResolution;
+
+        vec2 centeredUV = (2.0 * fragCoord - iResolution.xy) / min(iResolution.x, iResolution.y);
+
+
+
+        float time = iTime * 0.5;
+
+        vec2 mouse = iMouse / iResolution;
+
+        vec2 rippleCenter = 2.0 * mouse - 1.0;
+
+
+
+        vec2 distortion = centeredUV;
+
+        for (float i = 1.0; i < 8.0; i++) {
+
+            distortion.x += 0.5 / i * cos(i * 2.0 * distortion.y + time + rippleCenter.x * 3.1415);
+
+            distortion.y += 0.5 / i * cos(i * 2.0 * distortion.x + time + rippleCenter.y * 3.1415);
+
+        }
+
+
+
+        float wave = abs(sin(distortion.x + distortion.y + time));
+
+        float glow = smoothstep(0.9, 0.2, wave);
+
+
+
+        fragColor = vec4(u_color * glow, 1.0);
+
+    }
+
+
+
+    void main() { mainImage(gl_FragColor, gl_FragCoord.xy); }
+
+`;
+
+
+
+const compileShader = (type, source) => {
+
+    const shader = gl.createShader(type);
+
+    gl.shaderSource(shader, source);
+
+    gl.compileShader(shader);
+
+    return shader;
+
+};
+
+
+
+const vertexShader = compileShader(gl.VERTEX_SHADER, vertexSource);
+
+const fragmentShader = compileShader(gl.FRAGMENT_SHADER, fragmentSource);
+
+
+
+const program = gl.createProgram();
+
+gl.attachShader(program, vertexShader);
+
+gl.attachShader(program, fragmentShader);
+
+gl.linkProgram(program);
+
+gl.useProgram(program);
+
+
+
+const positionBuffer = gl.createBuffer();
+
+gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+
+gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1]), gl.STATIC_DRAW);
+
+
+
+const positionLocation = gl.getAttribLocation(program, "a_position");
+
+gl.enableVertexAttribArray(positionLocation);
+
+gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
+
+
+
+const iResolutionLocation = gl.getUniformLocation(program, "iResolution");
+
+const iTimeLocation = gl.getUniformLocation(program, "iTime");
+
+const iMouseLocation = gl.getUniformLocation(program, "iMouse");
+
+const uColorLocation = gl.getUniformLocation(program, "u_color");
+
+
+
+gl.uniform3f(uColorLocation, 0.1176, 0.251, 0.6863);
+
+
+
+let startTime = Date.now();
+
+
+
+function render() {
+
+    const width = window.innerWidth;
+
+    const height = window.innerHeight;
+
+    
+
+    if (canvas.width !== width || canvas.height !== height) {
+
+        canvas.width = width;
+
+        canvas.height = height;
+
+        gl.viewport(0, 0, width, height);
+
+    }
+
+
+
+    const currentTime = (Date.now() - startTime) / 1000;
+
+    gl.uniform2f(iResolutionLocation, width, height);
+
+    gl.uniform1f(iTimeLocation, currentTime);
+
+    gl.uniform2f(iMouseLocation, width / 2, height / 2);
+
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
+
+    requestAnimationFrame(render);
+
+}
+
+render();
+
+
+
+const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+
+let activeTrigger = null;
+
+let activePopover = null;
+
+const scrollContainer = document.querySelector('.scroll-container');
+
+
+
+function positionPopover(triggerEl, popoverEl) {
+
+  const rect = triggerEl.getBoundingClientRect();
+
+  popoverEl.style.top = `${rect.bottom + scrollContainer.scrollTop + 8}px`;
+
+  popoverEl.style.left = `${rect.left}px`;
+
+  popoverEl.style.width = `${rect.width}px`;
+
+}
+
+
+
+function closeAllPickers(exceptPopover = null) {
+
+  document.querySelectorAll('.picker-menu.show, .calendar-popover.show, .time-popover.show').forEach(p => {
+
+    if (p !== exceptPopover) p.classList.remove('show');
+
+  });
+
+  document.querySelectorAll('.custom-picker.open, .simple-picker.open').forEach(p => p.classList.remove('open'));
+
+  document.querySelectorAll(".mini-dropdown.open").forEach(d => d.classList.remove("open"));
+
+}
+
+
+
+window.addEventListener("resize", () => {
+
+  if (activeTrigger && activePopover && activePopover.classList.contains('show')) {
+
+    positionPopover(activeTrigger, activePopover);
+
+  }
+
+});
+
+
+
+scrollContainer.addEventListener("scroll", () => {
+
+  if (activeTrigger && activePopover && activePopover.classList.contains('show')) {
+
+    positionPopover(activeTrigger, activePopover);
+
+  }
+
+});
+
+
+
+document.addEventListener("click", () => {
+
+  closeAllPickers();
+
+  activeTrigger = null;
+
+  activePopover = null;
+
+});
+
+
+
+document.querySelectorAll(".simple-picker").forEach(p => {
+
+  const btn = p.querySelector(".picker-trigger");
+
+  const label = p.querySelector(".label"); 
+
+  const menu = p.querySelector(".picker-menu");
+
+  const options = menu.querySelectorAll(".picker-option");
+
+
+
+  scrollContainer.appendChild(menu);
+
+  menu.addEventListener("click", e => e.stopPropagation());
+
+
+
+  btn.addEventListener("click", e => {
+
+    e.stopPropagation();
+
+    const isOpen = menu.classList.contains("show");
+
+    closeAllPickers();
+
+    if (!isOpen) {
+
+      menu.classList.add("show");
+
+      p.classList.add("open");
+
+      positionPopover(btn, menu);
+
+      activeTrigger = btn;
+
+      activePopover = menu;
+
+    }
+
+  });
+
+
+
+  options.forEach(o => o.addEventListener("click", e => {
+
+    e.stopPropagation();
+
+    options.forEach(x => x.classList.remove("active"));
+
+    o.classList.add("active");
+
+    label.textContent = o.dataset.value;
+
+    btn.classList.add("has-value");
+
+    
+
+    if (p.id === 'venuePicker') {
+
+        const customBox = document.getElementById("customVenueBox");
+
+        if (o.dataset.value === 'Custom (Add)') {
+
+            customBox.style.display = 'flex';
+
+        } else {
+
+            customBox.style.display = 'none';
+
+        }
+
+    }
+
+    
+
+    closeAllPickers();
+
+  }));
+
+});
+
+
+
+function setupCalendar(id, initial){
+
+  const root = document.getElementById(id);
+
+  if(!root) return;
+
+  const trigger = root.querySelector(".picker-trigger"); 
+
+  const label = root.querySelector(".label");
+
+  const popover = root.querySelector(".calendar-popover");
+
+ 
+
+  scrollContainer.appendChild(popover);
+
+  popover.addEventListener("click", e => e.stopPropagation());
+
+
+
+  const yearDD = popover.querySelector('[data-part="year"]');
+
+  const monthDD = popover.querySelector('[data-part="month"]');
+
+  const yearList = yearDD.querySelector(".mini-list");
+
+  const monthList = monthDD.querySelector(".mini-list");
+
+  const navTitle = popover.querySelector(".nav-title"); 
+
+  const days = popover.querySelector(".calendar-days");
+
+  let view = new Date(initial.year, initial.month, 1), selected = null;
+
+
+
+  trigger.addEventListener("click", e => {
+
+    e.stopPropagation();
+
+    const isOpen = popover.classList.contains("show");
+
+    closeAllPickers();
+
+    if (!isOpen) {
+
+      popover.classList.add("show");
+
+      root.classList.add("open");
+
+      positionPopover(trigger, popover);
+
+      activeTrigger = trigger;
+
+      activePopover = popover;
+
+    }
+
+  });
+
+
+
+  function populateMini(){
+
+    yearList.innerHTML = "";
+
+    for (let y = 2026; y <= 2035; y++) {
+
+      let x = document.createElement("div");
+
+      x.className = "mini-option" + (y === view.getFullYear() ? " active" : "");
+
+      x.innerHTML = `<span>${y}</span>`;
+
+      x.onclick = e => { e.stopPropagation(); view.setFullYear(y); yearDD.classList.remove("open"); render(); };
+
+      yearList.appendChild(x);
+
+    }
+
+    monthList.innerHTML = "";
+
+    months.forEach((m, i) => {
+
+      let x = document.createElement("div");
+
+      x.className = "mini-option" + (i === view.getMonth() ? " active" : "");
+
+      x.innerHTML = `<span>${m.substring(0,3)}</span>`;
+
+      x.onclick = e => { e.stopPropagation(); view.setMonth(i); monthDD.classList.remove("open"); render(); };
+
+      monthList.appendChild(x);
+
+    });
+
+  }
+
+ 
+
+  function setupDD(dd){
+
+    dd.querySelector(".mini-btn").onclick = e => {
+
+      e.stopPropagation();
+
+      const open = dd.classList.contains("open");
+
+      popover.querySelectorAll(".mini-dropdown").forEach(x => x.classList.remove("open"));
+
+      if (!open) dd.classList.add("open");
+
+    }
+
+  }
+
+ 
+
+  setupDD(yearDD);
+
+  setupDD(monthDD);
+
+  
+
+  popover.querySelector(".prev").onclick = e => { e.stopPropagation(); view.setMonth(view.getMonth() - 1); render(); };
+
+  popover.querySelector(".next").onclick = e => { e.stopPropagation(); view.setMonth(view.getMonth() + 1); render(); };
+
+ 
+
+  function render(){
+
+    populateMini();
+
+    yearDD.querySelector(".mini-label").textContent = view.getFullYear();
+
+    monthDD.querySelector(".mini-label").textContent = months[view.getMonth()].substring(0,3);
+
+    navTitle.textContent = `${months[view.getMonth()]} ${view.getFullYear()}`;
+
+    days.innerHTML = "";
+
+    const first = new Date(view.getFullYear(), view.getMonth(), 1).getDay();
+
+    const last = new Date(view.getFullYear(), view.getMonth() + 1, 0).getDate();
+
+    const prevLast = new Date(view.getFullYear(), view.getMonth(), 0).getDate();
+
+    
+
+    for (let i = first; i > 0; i--) {
+
+      let d = document.createElement("div");
+
+      d.className = "day-number inactive";
+
+      d.textContent = prevLast - i + 1;
+
+      days.appendChild(d);
+
+    }
+
+    
+
+    for (let i = 1; i <= last; i++) {
+
+      let d = document.createElement("div");
+
+      d.className = "day-number";
+
+      d.textContent = i;
+
+      if (selected && selected.year === view.getFullYear() && selected.month === view.getMonth() && selected.day === i) {
+
+        d.classList.add("selected");
+
+      }
+
+      d.onclick = e => {
+
+        e.stopPropagation();
+
+        selected = { year: view.getFullYear(), month: view.getMonth(), day: i };
+
+        let formattedMonth = String(selected.month + 1).padStart(2, '0');
+
+        let formattedDay = String(i).padStart(2, '0');
+
+        label.textContent = `${formattedMonth}/${formattedDay}/${selected.year}`;
+
+        trigger.classList.add("has-value");
+
+        closeAllPickers();
+
+        render();
+
+      };
+
+      days.appendChild(d);
+
+    }
+
+    
+
+    while (days.children.length < 35) {
+
+      let d = document.createElement("div");
+
+      d.className = "day-number inactive";
+
+      d.textContent = days.children.length - first - last + 1;
+
+      days.appendChild(d);
+
+    }
+
+  }
+
+  render();
+
+}
+
+
+
+const today = new Date();
+
+const initial = { year: today.getFullYear(), month: today.getMonth(), day: today.getDate() };
+
+setupCalendar("startDatePicker", initial);
+
+
+
+</script>
+
+</body>
+
+</html>
+
+Push to branch
+</USER_REQUEST>
+<ADDITIONAL_METADATA>
+The current local time is: 2026-08-29T03:29:59+05:00.
+</ADDITIONAL_METADATA>

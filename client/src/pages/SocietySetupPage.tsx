@@ -101,8 +101,8 @@ export const SocietySetupPage: React.FC = () => {
       let others: any[] = [];
 
       try {
-        if (mySociety.executiveCouncil) {
-          const council = JSON.parse(mySociety.executiveCouncil as string);
+        if (mySociety?.executiveCouncil) {
+          const council = JSON.parse(mySociety?.executiveCouncil as string);
           council.forEach((m: any) => {
             if (m.role === 'Vice President') vp = m;
             else if (m.role === 'General Secretary') gs = m;
@@ -165,15 +165,15 @@ export const SocietySetupPage: React.FC = () => {
     
     // Assemble executive council JSON string
     const councilArray = [
-      { role: 'Vice President', ...data.vp },
-      { role: 'Event Coordinator', ...data.ec },
-      { role: 'General Secretary', ...data.gs },
-      { role: 'Treasurer', ...data.treasurer },
-      { role: 'Director Liaison', ...data.dl },
+      { ...data.vp, role: 'Vice President' },
+      { ...data.ec, role: 'Event Coordinator' },
+      { ...data.gs, role: 'General Secretary' },
+      { ...data.treasurer, role: 'Treasurer' },
+      { ...data.dl, role: 'Director Liaison' },
       // Preserve existing other members from database, and append any newly added ones from the form
-      ...(mySociety.executiveCouncil ? (() => {
+      ...(mySociety?.executiveCouncil ? (() => {
         try {
-          const c = JSON.parse(mySociety.executiveCouncil as string);
+          const c = JSON.parse(mySociety?.executiveCouncil as string);
           const coreRoles = ['Vice President', 'Event Coordinator', 'General Secretary', 'Treasurer', 'Director Liaison'];
           return c.filter((m: any) => !coreRoles.includes(m.role));
         } catch { return []; }
@@ -224,7 +224,7 @@ export const SocietySetupPage: React.FC = () => {
         </p>
       </div>
 
-      {serverError && <Alert type="error" message={serverError} />}
+      {serverError && <Alert variant="error" message={serverError} />}
 
       {/* Tabs */}
       <div className="flex flex-col sm:flex-row justify-center items-stretch sm:items-center bg-white/5 border border-white/10 rounded-2xl p-1 gap-1 mb-8 w-full shadow-2xl">
@@ -259,7 +259,7 @@ export const SocietySetupPage: React.FC = () => {
               <Input
                 label="Society Name"
                 placeholder="e.g. ACM GIKI Chapter"
-                icon={<Building2 className="w-4 h-4" />}
+                leftIcon={<Building2 className="w-4 h-4" />}
                 {...register('name')}
                 error={errors.name?.message}
                 required
@@ -294,7 +294,7 @@ export const SocietySetupPage: React.FC = () => {
                     value={watch('categoryId')}
                     onChange={(e: any) => setValue('categoryId', e.target.value)}
                     placeholder="Select Category"
-                    isLoading={isLoadingCategories}
+                    disabled={isLoadingCategories}
                   />
                   {errors.categoryId?.message && (
                     <p className="text-red-400 text-xs mt-1.5 font-medium">{errors.categoryId.message}</p>
@@ -322,15 +322,11 @@ export const SocietySetupPage: React.FC = () => {
                   label="Society Logo"
                   value={logoUrl}
                   onChange={(url) => setValue('logoUrl', url)}
-                  error={errors.logoUrl?.message}
-                  aspectRatio="square"
-                />
+                  />
                 <ImageUploader
                   label="Society Banner Image"
                   value={bannerUrl}
                   onChange={(url) => setValue('bannerUrl', url)}
-                  error={errors.bannerUrl?.message}
-                  aspectRatio="video"
                 />
               </div>
             </div>

@@ -1,6 +1,7 @@
-import { useEffect, useState, RefObject } from 'react';
+import { useEffect, useState } from 'react';
+import type { RefObject } from 'react';
 
-export function useCardFlip(wrapperRef: RefObject<HTMLDivElement>) {
+export function useCardFlip(wrapperRef: RefObject<HTMLDivElement | null>) {
   const [isFlipped, setIsFlipped] = useState(false);
   const [isActive, setIsActive] = useState(false); // represents 'in-focus'
 

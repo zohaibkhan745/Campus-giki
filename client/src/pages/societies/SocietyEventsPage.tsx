@@ -172,9 +172,7 @@ export const SocietyEventsPage: React.FC = () => {
       </div>
 
       {isError && (
-        <Alert variant="destructive" className="mb-6 bg-red-500/10 border-red-500/20 text-red-400">
-          Failed to load events. Please try again.
-        </Alert>
+        <Alert variant="error" message="Failed to load events. Please try again." className="mb-6 bg-red-500/10 border-red-500/20 text-red-400" />
       )}
 
       {isLoading ? (

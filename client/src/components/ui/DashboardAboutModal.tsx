@@ -42,11 +42,11 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ profil
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['societyDashboard'] });
       setEditingMember(null);
-      globalNotification.success('Executive member updated successfully');
+      globalNotification.triggerSuccess('Executive member updated successfully');
     },
     onError: (error: any) => {
       console.error('Update error:', error);
-      globalNotification.error(error.message || 'Failed to update member');
+      globalNotification.triggerFailed(error.message || 'Failed to update member');
     }
   });
 

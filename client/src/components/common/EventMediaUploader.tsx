@@ -10,6 +10,7 @@ interface EventMediaUploaderProps {
   folder?: 'events' | 'posts' | 'general';
   label?: string;
   disabled?: boolean;
+  theme?: 'light' | 'dark';
 }
 
 export const EventMediaUploader: React.FC<EventMediaUploaderProps> = ({
@@ -20,6 +21,7 @@ export const EventMediaUploader: React.FC<EventMediaUploaderProps> = ({
   folder = 'events',
   label = 'Event Cover Banner or Promotional Video (Optional)',
   disabled = false,
+  theme = 'light',
 }) => {
   const [isUploading, setIsUploading] = useState(false);
   const [dragActive, setDragActive] = useState(false);
@@ -208,42 +210,55 @@ export const EventMediaUploader: React.FC<EventMediaUploaderProps> = ({
           )}
         </div>
       ) : (
-        <div
-          onDragEnter={handleDrag}
-          onDragOver={handleDrag}
-          onDragLeave={handleDrag}
-          onDrop={handleDrop}
-          onClick={() => !disabled && !isUploading && fileInputRef.current?.click()}
-          className={`relative border-2 border-dashed rounded-cards p-6 text-center transition-all flex flex-col items-center justify-center gap-3 ${
-            disabled ? 'opacity-50 cursor-not-allowed border-fog' : 'cursor-pointer'
-          } ${
-            dragActive
-              ? 'border-forest-ink bg-forest-ink/5 scale-[0.99]'
-              : 'border-vast-ink bg-pure-white hover:bg-lumen-stone'
-          }`}
-        >
-          {isUploading ? (
-            <div className="flex flex-col items-center justify-center gap-2 py-4 text-vast-ink font-bold text-sm">
-              <Loader2 className="w-8 h-8 animate-spin text-forest-ink" />
-              <span>Uploading media file...</span>
-            </div>
-          ) : (
-            <>
-              <div className="p-3.5 bg-lumen-cream border-2 border-vast-ink rounded-full text-vast-ink shadow-sm">
-                <UploadCloud className="w-7 h-7" />
+          <div
+            onDragEnter={handleDrag}
+            onDragOver={handleDrag}
+            onDragLeave={handleDrag}
+            onDrop={handleDrop}
+            onClick={() => !disabled && !isUploading && fileInputRef.current?.click()}
+            className={
+              theme === 'dark'
+                ? `upload-zone ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${dragActive ? '!bg-white/20 !border-white/50 scale-[0.99]' : ''}`
+                : `relative border-2 border-dashed rounded-cards p-6 text-center transition-all flex flex-col items-center justify-center gap-3 ${
+                    disabled ? 'opacity-50 cursor-not-allowed border-fog' : 'cursor-pointer'
+                  } ${
+                    dragActive
+                      ? 'border-forest-ink bg-forest-ink/5 scale-[0.99]'
+                      : 'border-vast-ink bg-pure-white hover:bg-lumen-stone'
+                  }`
+            }
+          >
+            {isUploading ? (
+              <div className={`flex flex-col items-center justify-center gap-2 py-4 font-bold text-sm ${theme === 'dark' ? 'text-white' : 'text-vast-ink'}`}>
+                <Loader2 className={`w-8 h-8 animate-spin ${theme === 'dark' ? 'text-white' : 'text-forest-ink'}`} />
+                <span>Uploading media file...</span>
               </div>
-
-              <div>
-                <p className="font-extrabold text-sm text-vast-ink">
-                  Click to upload media or drag and drop
-                </p>
-                <p className="text-xs font-medium text-fog mt-1">
-                  Upload an <span className="font-bold text-vast-ink">Image</span> (PNG, JPG, WebP • Max 5MB) or <span className="font-bold text-vast-ink">Video</span> (MP4, WebM, MOV • Max 50MB)
-                </p>
-              </div>
-            </>
-          )}
-        </div>
+            ) : (
+              <>
+                {theme === 'dark' ? (
+                  <>
+                    <div className="upload-icon-circle">
+                      <UploadCloud />
+                    </div>
+                    <div>
+                      <div className="upload-title">Click to upload or drag & drop</div>
+                      <div className="upload-sub">Supports image and video (max 200MB)</div>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="p-3.5 bg-lumen-cream border-2 border-vast-ink rounded-full text-vast-ink shadow-sm">
+                      <UploadCloud className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <p className="font-extrabold text-vast-ink text-sm">Click to upload or drag and drop</p>
+                      <p className="text-xs text-fog mt-1 font-medium">JPEG, PNG, GIF, MP4, WebM (Max 50MB)</p>
+                    </div>
+                  </>
+                )}
+              </>
+            )}
+          </div>
       )}
 
       {/* Hidden File Input */}

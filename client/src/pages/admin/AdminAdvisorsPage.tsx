@@ -29,6 +29,7 @@ const deleteMutation = useMutation({
     },
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const [formError, setFormError] = useState<string | null>(null);
 
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -113,8 +114,17 @@ const deleteMutation = useMutation({
       </div>
 
       <div className="w-[95%] max-w-[1200px] bg-white/[0.08] backdrop-blur-[20px] rounded-[24px] p-[30px] shadow-[0_12px_40px_rgba(0,0,0,0.4)] border border-white/20">
-        <div className="mb-[25px]">
-          <h2 className="text-lg font-bold text-white m-0 border-b border-white/10 pb-3 text-left">Advisors List</h2>
+        <div className="mb-[25px] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-white/10 pb-3">
+          <h2 className="text-lg font-bold text-white m-0 text-left">Advisors List</h2>
+          <div className="w-full sm:w-72">
+            <input 
+              type="text"
+              placeholder="Search by name or email..." 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full text-sm transition-all outline-none bg-black/20 text-white placeholder:text-gray-500 rounded-inputs px-3.5 py-2.5 border border-white/20 focus:border-white/40 focus:ring-2 focus:ring-white/10"
+            />
+          </div>
         </div>
 
         {isLoading ? (
@@ -143,7 +153,7 @@ const deleteMutation = useMutation({
                 </tr>
               </thead>
               <tbody>
-                {advisors.map((advisor: AdvisorOption, index: number) => (
+                {advisors.filter((a: AdvisorOption) => ((a.user?.fullName || '').toLowerCase() + (a.user?.email || '').toLowerCase()).includes(searchQuery.toLowerCase())).map((advisor: AdvisorOption, index: number) => (
                   <tr key={advisor.id} className="hover:bg-white/[0.03] transition-colors group">
                     <td className="py-[18px] px-[15px] text-[15px] border-b border-white/5 text-slate-200 group-last:border-b-0">
                       {String(index + 1).padStart(2, '0')}
