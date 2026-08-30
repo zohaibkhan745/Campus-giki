@@ -1279,7 +1279,7 @@ body.is-focused button.fixed.z-\[100\] {
 .calendar-top { display: flex; gap: 8px; position: relative; z-index: 10; }
 .mini-dropdown { position: relative; flex: 1; }
 .mini-btn { width: 100%; background: rgba(255, 255, 255, .08); border: 1px solid rgba(255, 255, 255, .18); border-radius: 10px; padding: 7px 12px; display: flex; align-items: center; justify-content: space-between; color: #fff; cursor: pointer; font-size: .82rem; }
-.mini-menu { position: absolute; top: calc(100% + 6px); left: 0; width: 100%; background: rgba(20, 20, 24, 0.65) !important; backdrop-filter: blur(25px) !important; -webkit-backdrop-filter: blur(25px) !important; border: 1px solid rgba(255, 255, 255, .18); border-radius: 10px; display: none; z-index: 20000; padding: 4px; }
+.mini-menu { position: absolute; top: calc(100% + 6px); left: 0; min-width: 100%; width: max-content; overflow-x: hidden; background: rgba(20, 20, 24, 0.65) !important; backdrop-filter: blur(25px) !important; -webkit-backdrop-filter: blur(25px) !important; border: 1px solid rgba(255, 255, 255, .18); border-radius: 10px; display: none; z-index: 20000; padding: 4px; }
 .mini-dropdown.open .mini-menu { display: block; }
 .mini-list { max-height: 160px; overflow-y: auto; }
 .mini-option { padding: 7px 10px; border-radius: 6px; cursor: pointer; font-size: .8rem; }
@@ -1294,7 +1294,7 @@ body.is-focused button.fixed.z-\[100\] {
 .day-number.inactive { color: rgba(255, 255, 255, .25); cursor: default; }
 .day-number.selected { border: 1px solid rgba(255, 255, 255, .5); background: rgba(255, 255, 255, .1); }
 
-.time-popover { padding: 16px 14px; border-radius: 16px; flex-direction: column; gap: 14px; }
+.time-popover { padding: 16px 14px; border-radius: 16px; flex-direction: column; gap: 14px; min-width: 200px; }
 .time-popover.show { display: flex; }
 .digital-preview { display: flex; justify-content: center; gap: 4px; padding: 10px 0; background: rgba(255, 255, 255, .04); border-radius: 10px; }
 .digital-preview .digits { font-size: 1.6rem; font-weight: 700; color: #fff; }

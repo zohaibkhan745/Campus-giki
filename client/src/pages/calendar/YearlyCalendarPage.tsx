@@ -23,7 +23,7 @@ import {
 } from '@/lib/validations/yearly-plan.schema';
 import type { PlanStatus } from '@/types/yearly-plan.types';
 import { CustomDatePicker } from '@/components/ui/CustomDatePicker';
-import { GlassDropdown } from '@/components/ui/GlassDropdown';
+import { CustomDropdown } from '@/components/ui/CustomDropdown';
 import { cn } from '@/lib/utils';
 import type { AxiosError } from 'axios';
 
@@ -259,9 +259,9 @@ export const YearlyCalendarPage: React.FC = () => {
                       control={control}
                       defaultValue="One Day Event"
                       render={({ field: dField }) => (
-                        <GlassDropdown
+                        <CustomDropdown
                           value={dField.value || "One Day Event"}
-                          onChange={(val) => {
+                          onChange={(val: string) => {
                             dField.onChange(val);
                             const start = getValues(`events.${index}.startDate`);
                             if (start) {
@@ -294,7 +294,7 @@ export const YearlyCalendarPage: React.FC = () => {
                       render={({ field: rField }) => (
                         <CustomDatePicker 
                           value={rField.value} 
-                          onChange={(val) => {
+                          onChange={(val: string) => {
                             rField.onChange(val);
                             const dur = getValues(`events.${index}.duration`) || 'One Day Event';
                             const date = new Date(val);
@@ -320,7 +320,7 @@ export const YearlyCalendarPage: React.FC = () => {
                       control={control}
                       defaultValue=""
                       render={({ field: tField }) => (
-                        <GlassDropdown
+                        <CustomDropdown
                           value={tField.value || ""}
                           onChange={tField.onChange}
                           options={[
@@ -343,9 +343,9 @@ export const YearlyCalendarPage: React.FC = () => {
                       name={`events.${index}.venue`}
                       control={control}
                       render={({ field: rField }) => (
-                        <GlassDropdown
+                        <CustomDropdown
                           value={customVenueRows[index] ? 'Custom (Add)' : rField.value}
-                          onChange={(val) => {
+                          onChange={(val: string) => {
                             if (val === 'Custom (Add)') {
                               setCustomVenueRows(prev => ({...prev, [index]: true}));
                               rField.onChange('');

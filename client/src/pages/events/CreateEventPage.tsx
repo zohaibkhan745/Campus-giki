@@ -14,7 +14,7 @@ import { Alert } from '@/components/ui/Alert';
 import { EventMediaUploader } from '@/components/common/EventMediaUploader';
 import { CustomDatePicker } from '@/components/ui/CustomDatePicker';
 import { CustomTimePicker } from '@/components/ui/CustomTimePicker';
-import { GlassDropdown } from '@/components/ui/GlassDropdown';
+import { CustomDropdown } from '@/components/ui/CustomDropdown';
 import { cn } from '@/lib/utils';
 import type { AxiosError } from 'axios';
 
@@ -200,9 +200,8 @@ export const CreateEventPage: React.FC = () => {
       {plannedEvents && plannedEvents.length > 0 && (
         <div className="glass-form-card !py-4">
           <div className="flex items-center gap-2 mb-2">
-            <Sparkles className="w-5 h-5 text-blue-400" />
             <h3 className="text-white font-bold text-sm">
-              Import Event Details from Annual Calendar Plan
+              Import Event Details
             </h3>
             <span className="text-[10px] font-extrabold text-white uppercase tracking-wider bg-white/10 px-2.5 py-1 rounded-inputs border border-white/20">
               Optional Auto-Fill
@@ -211,11 +210,11 @@ export const CreateEventPage: React.FC = () => {
           <p className="text-xs text-white/60 font-medium mb-3">
             Select a planned event from your annual calendar to automatically pre-fill title, date, venue, and description:
           </p>
-          <GlassDropdown 
+          <CustomDropdown 
             value={selectedEventKey} 
-            onChange={(val) => handleSelectPlannedEvent(val)} 
+            onChange={(val: string) => handleSelectPlannedEvent(val)} 
             options={[
-              {value:"", label:"-- Select Planned Event --"}, 
+              {value:"", label:"Select Planned Event"}, 
               ...plannedEvents.map((ev) => ({
                 value: ev.key, 
                 label: ev.event.eventName || 'Unnamed Event'
@@ -322,9 +321,9 @@ export const CreateEventPage: React.FC = () => {
               name="venue"
               control={control}
               render={({ field }) => (
-                <GlassDropdown 
+                <CustomDropdown 
                   value={isCustomVenue ? 'Custom (Add)' : field.value} 
-                  onChange={(val) => {
+                  onChange={(val: string) => {
                     if (val === 'Custom (Add)') {
                       setIsCustomVenue(true);
                       field.onChange('');
@@ -374,7 +373,7 @@ export const CreateEventPage: React.FC = () => {
                 name="eventType"
                 control={control}
                 render={({ field }) => (
-                  <GlassDropdown 
+                  <CustomDropdown 
                     value={field.value} 
                     onChange={field.onChange} 
                     options={[
@@ -417,21 +416,21 @@ export const CreateEventPage: React.FC = () => {
             <div className="field-group">
               <label className="field-label">In-Charge Name *</label>
               <div className={cn("input-box", !isCustomIncharge && "disabled", errors.inChargeName && "error")}>
-                <input type="text" disabled={!isCustomIncharge} {...register('inChargeName')} />
+                <input type="text" readOnly={!isCustomIncharge} {...register('inChargeName')} />
               </div>
               {errors.inChargeName?.message && <span className="error-text !block">{errors.inChargeName.message}</span>}
             </div>
             <div className="field-group">
               <label className="field-label">In-Charge Reg. No *</label>
               <div className={cn("input-box", !isCustomIncharge && "disabled", errors.inChargeRegNum && "error")}>
-                <input type="text" maxLength={7} disabled={!isCustomIncharge} {...register('inChargeRegNum')} />
+                <input type="text" maxLength={7} readOnly={!isCustomIncharge} {...register('inChargeRegNum')} />
               </div>
               {errors.inChargeRegNum?.message && <span className="error-text !block">{errors.inChargeRegNum.message}</span>}
             </div>
             <div className="field-group">
               <label className="field-label">In-Charge Contact *</label>
               <div className={cn("input-box", !isCustomIncharge && "disabled", errors.inChargeContact && "error")}>
-                <input type="text" maxLength={11} disabled={!isCustomIncharge} {...register('inChargeContact')} />
+                <input type="text" maxLength={11} readOnly={!isCustomIncharge} {...register('inChargeContact')} />
               </div>
               {errors.inChargeContact?.message && <span className="error-text !block">{errors.inChargeContact.message}</span>}
             </div>

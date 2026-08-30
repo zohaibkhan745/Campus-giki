@@ -175,7 +175,7 @@ export const AdminDashboardPage: React.FC = () => {
               <p className="font-bold text-sm">You're all caught up! No events pending review.</p>
             </div>
           ) : (
-            <EventGrid events={pendingEvents.slice(0, 4)} />
+            <EventGrid events={pendingEvents.slice(0, 4)} reviewUrlBase="/admin/events" />
           )}
         </div>
 

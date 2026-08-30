@@ -14,11 +14,12 @@ interface EventCardProps {
   onEdit?: () => void;
   onDelete?: () => void;
   reviewUrl?: string;
+  disableFlip?: boolean;
 }
 
-const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, reviewUrl }) => {
+const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, reviewUrl, disableFlip }) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const { isActive, openCard, closeCard } = useCardFlip(wrapperRef);
+  const { isActive, openCard, closeCard } = useCardFlip(wrapperRef, disableFlip);
   const { user } = useAuth();
   const canEditOrDelete = user?.role === 'DSA_ADMIN' || (user?.role === 'SOCIETY' && user.society?.id === item.society.id);
   const canEdit = user?.role === 'SOCIETY' && user.society?.id === item.society.id;
@@ -110,7 +111,14 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
                   <span className="post-timestamp">{formattedDate} • {formattedTime}</span>
                 </div>
               </div>
-              <span className="card-tag">Event</span>
+              <div className="flex items-center gap-2">
+                <span className="card-tag">Event</span>
+                {(item as any).approvalStatus && (item as any).approvalStatus !== 'PUBLISHED' && (
+                  <span className="card-tag" style={{ background: (item as any).approvalStatus.includes('PENDING') ? '#fff' : (item as any).approvalStatus === 'APPROVED' ? '#22c55e' : '#ef4444', color: (item as any).approvalStatus.includes('PENDING') ? '#000' : '#fff' }}>
+                    {(item as any).approvalStatus === 'PENDING_ADMIN' ? 'Pending DSA' : (item as any).approvalStatus === 'PENDING_ADVISOR' ? 'Pending Advisor' : (item as any).approvalStatus.replace('_', ' ')}
+                  </span>
+                )}
+              </div>
             </div>
 
           <div className="card-overlay">
@@ -182,20 +190,22 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
                   </div>
                 </div>, document.body
               )}
-              <button 
-                type="button" 
-                className="card-button open-details-btn flex-1" style={{ height: "48px", borderRadius: "9999px", background: "#fff", color: "#000", fontWeight: 600 }}
-                onClick={(e) => { 
-                  e.stopPropagation(); 
-                  if (reviewUrl) {
-                    navigate(reviewUrl);
-                  } else {
-                    openCard(true);
-                  }
-                }}
-              >
-                {reviewUrl ? 'Review Event' : 'View Details'}
-              </button>
+                <button 
+                  type="button" 
+                  className="card-button open-details-btn flex-1" style={{ height: "48px", borderRadius: "9999px" }}
+                  onClick={(e) => { 
+                    e.stopPropagation(); 
+                    if (reviewUrl) {
+                      navigate(reviewUrl);
+                    } else if (canEdit && ((item as any).approvalStatus === 'CHANGES_REQUESTED' || (item as any).approvalStatus?.includes('PENDING'))) {
+                      navigate(`/events/${item.id}/edit`);
+                    } else {
+                      openCard(true);
+                    }
+                  }}
+                >
+                  {reviewUrl ? 'Review Event' : (canEdit && ((item as any).approvalStatus === 'CHANGES_REQUESTED' || (item as any).approvalStatus?.includes('PENDING'))) ? 'Edit Event' : 'View Details'}
+                </button>
             </div>
           </div>
         </div>

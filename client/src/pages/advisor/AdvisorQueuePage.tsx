@@ -33,7 +33,7 @@ export const AdvisorQueuePage: React.FC = () => {
   const { user, logout } = useAuth();
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
-  const [statusFilter, setStatusFilter] = useState<string>('ALL');
+  const [statusFilter, setStatusFilter] = useState<string>('PENDING_ADVISOR');
   const [activeTab, setActiveTab] = useState<'plans' | 'events'>('events');
   const { pendingEventsCount, pendingPlansCount } = usePendingCounts();
 
@@ -156,7 +156,7 @@ export const AdvisorQueuePage: React.FC = () => {
 
           <div className="grid grid-cols-2 gap-3">
             <button
-              onClick={() => { setActiveTab('events'); setPage(1); setStatusFilter('ALL'); }}
+              onClick={() => { setActiveTab('events'); setPage(1); setStatusFilter('PENDING_ADVISOR'); }}
               className={`flex flex-col items-center justify-center gap-2 p-4 rounded-xl font-bold transition-all relative ${
                 activeTab === 'events'
                   ? 'bg-white text-gray-900 shadow-sm'
@@ -172,7 +172,7 @@ export const AdvisorQueuePage: React.FC = () => {
               <span>Events</span>
             </button>
             <button
-              onClick={() => { setActiveTab('plans'); setPage(1); setStatusFilter('ALL'); }}
+              onClick={() => { setActiveTab('plans'); setPage(1); setStatusFilter('PENDING'); }}
               className={`flex flex-col items-center justify-center gap-2 p-4 rounded-xl font-bold transition-all relative ${
                 activeTab === 'plans'
                   ? 'bg-white text-gray-900 shadow-sm'

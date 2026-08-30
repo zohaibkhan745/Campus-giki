@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
 import type { RefObject } from 'react';
 
-export function useCardFlip(wrapperRef: RefObject<HTMLDivElement | null>) {
+export function useCardFlip(wrapperRef: RefObject<HTMLDivElement | null>, disable?: boolean) {
   const [isFlipped, setIsFlipped] = useState(false);
   const [isActive, setIsActive] = useState(false); // represents 'in-focus'
 
   useEffect(() => {
     const wrapper = wrapperRef.current;
-    if (!wrapper) return;
+    if (!wrapper || disable) return;
 
     const handleMouseMove = (e: MouseEvent) => {
       if (wrapper.classList.contains('in-focus')) return;
@@ -62,7 +62,7 @@ export function useCardFlip(wrapperRef: RefObject<HTMLDivElement | null>) {
   const openCard = (isEvent: boolean) => {
     window.dispatchEvent(new CustomEvent('close-all-dropdowns'));
     const wrapper = wrapperRef.current;
-    if (!wrapper) return;
+    if (!wrapper || disable) return;
     
     const flipper = wrapper.querySelector('.card-flipper');
     const focusBackdrop = document.getElementById('focusBackdrop');
@@ -135,7 +135,7 @@ export function useCardFlip(wrapperRef: RefObject<HTMLDivElement | null>) {
 
   const closeCard = () => {
     const wrapper = wrapperRef.current;
-    if (!wrapper) return;
+    if (!wrapper || disable) return;
     
     const flipper = wrapper.querySelector('.card-flipper');
     const focusBackdrop = document.getElementById('focusBackdrop');

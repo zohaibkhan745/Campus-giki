@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { UploadCloud, Image as ImageIcon, Video, X, Loader2, AlertCircle, Film } from 'lucide-react';
+import { resolveImageUrl } from '@/lib/utils';
 import { uploadService } from '@/services/upload.service';
 
 interface EventMediaUploaderProps {
@@ -148,13 +149,13 @@ export const EventMediaUploader: React.FC<EventMediaUploaderProps> = ({
         <div className="relative rounded-cards border-2 border-vast-ink overflow-hidden bg-black/90 group shadow-sm">
           {activeType === 'video' ? (
             <video
-              src={previewUrl}
+              src={resolveImageUrl(previewUrl)}
               controls
               className="w-full max-h-[320px] object-contain mx-auto"
             />
           ) : (
             <img
-              src={previewUrl}
+              src={resolveImageUrl(previewUrl)}
               alt="Event Media Preview"
               className="w-full max-h-[320px] object-cover"
               onError={() => {

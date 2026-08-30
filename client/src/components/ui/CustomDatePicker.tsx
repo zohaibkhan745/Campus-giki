@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -32,18 +33,44 @@ export function CustomDatePicker({ value, onChange, label = 'Select Date', place
   const [yearOpen, setYearOpen] = useState(false);
   const [monthOpen, setMonthOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const [menuStyle, setMenuStyle] = useState<React.CSSProperties>({});
+
+  const updatePosition = () => {
+    if (containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect();
+      setMenuStyle({
+        position: 'absolute',
+        top: rect.bottom + window.scrollY + 8,
+        left: rect.left + window.scrollX,
+        width: 'max-content',
+        zIndex: 99999
+      });
+    }
+  };
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+      const isInsideContainer = containerRef.current && containerRef.current.contains(event.target as Node);
+      const isInsideMenu = menuRef.current && menuRef.current.contains(event.target as Node);
+      if (!isInsideContainer && !isInsideMenu) {
         setIsOpen(false);
         setYearOpen(false);
         setMonthOpen(false);
       }
     }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+      window.addEventListener('resize', updatePosition);
+      window.addEventListener('scroll', updatePosition, true);
+      updatePosition();
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      window.removeEventListener('resize', updatePosition);
+      window.removeEventListener('scroll', updatePosition, true);
+    }
+  }, [isOpen]);
 
   const handleSelectDate = (day: number) => {
     const d = new Date(viewDate.getFullYear(), viewDate.getMonth(), day);
@@ -95,8 +122,8 @@ export function CustomDatePicker({ value, onChange, label = 'Select Date', place
         </svg>
       </button>
 
-      {isOpen && (
-        <div className="calendar-popover show" style={{ position: 'absolute', top: '100%', left: 0, width: '100%', marginTop: 8 }}>
+      {isOpen && typeof document !== 'undefined' && createPortal(
+        <div className="calendar-popover show" style={{ ...menuStyle }} ref={menuRef}>
           <div className="calendar-top">
             <div className={cn("mini-dropdown", yearOpen && "open")}>
               <button type="button" className="mini-btn" onClick={() => { setYearOpen(!yearOpen); setMonthOpen(false); }}>
@@ -195,7 +222,7 @@ export function CustomDatePicker({ value, onChange, label = 'Select Date', place
             })}
           </div>
         </div>
-      )}
+      , document.body)}
     </div>
   );
 }
