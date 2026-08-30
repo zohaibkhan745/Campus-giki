@@ -1,4 +1,4 @@
-import { CustomDropdown } from '@/components/ui/CustomDropdown';
+
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -180,6 +180,15 @@ export const EditEventPage: React.FC = () => {
     );
   }
 
+  const onError = () => {
+    setTimeout(() => {
+      const firstError = document.querySelector('.error-text');
+      if (firstError) {
+        firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }, 100);
+  };
+
   return (
     <div className="max-w-3xl mx-auto space-y-6">
         <div className="flex items-center gap-4">
@@ -314,8 +323,9 @@ export const EditEventPage: React.FC = () => {
             <label className="field-label">Venue Location *</label>
             <CustomDropdown 
               value={isCustomVenue ? 'Custom (Add)' : watch('venue')} 
-              onChange={(val: string) => {
-                if (val === 'Custom (Add)') {
+              onChange={(e: any) => {
+                  const val = typeof e === "string" ? e : e?.target?.value || "";
+                  if (val === "Custom (Add)") {
                   setIsCustomVenue(true);
                   setValue('venue', '', { shouldValidate: true });
                 } else {
@@ -479,7 +489,7 @@ export const EditEventPage: React.FC = () => {
                   variant="primary"
                   className="w-full bg-white text-black hover:bg-gray-200"
                   isLoading={updateMutation.isPending}
-                  onClick={handleSubmit((data) => onSubmit(data, false))}
+                  onClick={handleSubmit((data) => onSubmit(data, false), onError)}
                   leftIcon={<Save className="w-5 h-5" />}
                 >
                   Save Changes
@@ -491,7 +501,7 @@ export const EditEventPage: React.FC = () => {
                     variant="primary"
                     className="w-full bg-green-600 border border-green-500 hover:bg-green-700 text-white"
                     isLoading={updateMutation.isPending}
-                    onClick={handleSubmit((data) => onSubmit(data, true))}
+                    onClick={handleSubmit((data) => onSubmit(data, true), onError)}
                     leftIcon={<ShieldCheck className="w-5 h-5" />}
                   >
                     Resubmit for Advisor Review

@@ -171,6 +171,15 @@ export const CreateEventPage: React.FC = () => {
     createMutation.mutate({ ...data, submitForApproval: requireReview });
   };
 
+  const onError = () => {
+    setTimeout(() => {
+      const firstError = document.querySelector('.error-text');
+      if (firstError) {
+        firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }, 100);
+  };
+
   return (
     <div className="max-w-4xl mx-auto space-y-8 animate-fade-in p-4 sm:p-6 lg:p-8">
       {/* Header */}
@@ -212,7 +221,7 @@ export const CreateEventPage: React.FC = () => {
           </p>
           <CustomDropdown 
             value={selectedEventKey} 
-            onChange={(val: string) => handleSelectPlannedEvent(val)} 
+            onChange={(e: any) => handleSelectPlannedEvent(typeof e === "string" ? e : e?.target?.value || "")} 
             options={[
               {value:"", label:"Select Planned Event"}, 
               ...plannedEvents.map((ev) => ({
@@ -319,8 +328,9 @@ export const CreateEventPage: React.FC = () => {
             <label className="field-label">Venue Location *</label>
             <CustomDropdown 
               value={isCustomVenue ? 'Custom (Add)' : watch('venue')} 
-              onChange={(val: string) => {
-                if (val === 'Custom (Add)') {
+              onChange={(e: any) => {
+                  const val = typeof e === "string" ? e : e?.target?.value || "";
+                  if (val === "Custom (Add)") {
                   setIsCustomVenue(true);
                   setValue('venue', '', { shouldValidate: true });
                 } else {
@@ -459,7 +469,7 @@ export const CreateEventPage: React.FC = () => {
           </div>
         </div>
 
-        <button type="button" className="btn-submit-review" disabled={createMutation.isPending} onClick={handleSubmit((data) => handlePublish(data, true))}>
+        <button type="button" className="btn-submit-review" disabled={createMutation.isPending} onClick={handleSubmit((data) => handlePublish(data, true), onError)}>
           <span>Submit for Advisor & DSA Review</span>
         </button>
       </form>

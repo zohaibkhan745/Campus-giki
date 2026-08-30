@@ -120,7 +120,7 @@ export const AppRoutes: React.FC = () => {
           <Route path="/admin/yearly-plans/:id" element={<AdminYearlyPlanDetailPage />} />
           <Route path="/admin/events" element={<AdminEventsPage />} />
           <Route path="/admin/events/pending" element={<AdminPendingEventsPage />} />
-          <Route path="/admin/events/:id/review" element={<AdminEventReviewPage />} />
+          <Route path="/admin/events/:id" element={<AdminEventReviewPage />} />
           <Route path="/admin/posts" element={<AdminPostsPage />} />
           <Route path="/admin/advisors" element={<AdminAdvisorsPage />} />
         </Route>

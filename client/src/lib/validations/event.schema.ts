@@ -57,6 +57,28 @@ export const eventFormSchema = z
   )
   .refine(
     (data) => {
+      if (!data.eventDate || !data.startTime) return true;
+      const today = new Date();
+      const selected = new Date(data.eventDate);
+      
+      // If it's today, check if start time is in the past
+      if (selected.toDateString() === today.toDateString()) {
+        const [startH, startM] = data.startTime.split(':').map(Number);
+        const currentH = today.getHours();
+        const currentM = today.getMinutes();
+        if (startH < currentH || (startH === currentH && startM < currentM)) {
+          return false;
+        }
+      }
+      return true;
+    },
+    {
+      message: 'Start time cannot be in the past for today',
+      path: ['startTime'],
+    },
+  )
+  .refine(
+    (data) => {
       if (!data.startTime || !data.endTime) return true;
       const [startH, startM] = data.startTime.split(':').map(Number);
       const [endH, endM] = data.endTime.split(':').map(Number);
