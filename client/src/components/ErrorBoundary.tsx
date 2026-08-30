@@ -38,23 +38,9 @@ export class ErrorBoundary extends Component<Props, State> {
           padding: '20px',
           position: 'relative',
           overflow: 'hidden',
-          backgroundColor: '#0d0d0d',
+          backgroundColor: 'transparent',
           fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
         }}>
-          <img 
-            style={{
-              position: 'fixed',
-              top: 0,
-              left: 0,
-              width: '100vw',
-              height: '100vh',
-              objectFit: 'cover',
-              zIndex: 0
-            }}
-            src="/Assets_Images/Template 1.avif" 
-            alt="Background" 
-          />
-
           <div style={{
             position: 'relative',
             zIndex: 1,

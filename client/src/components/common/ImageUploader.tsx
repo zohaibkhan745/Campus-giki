@@ -95,7 +95,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({ onChange, value, l
         {/* Background / Base Container */}
         <div className={`absolute inset-0 transition-all duration-300 border ${
           dragActive ? 'bg-white/[0.15] border-white/40' : 'bg-white/[0.08] border-white/20'
-        } backdrop-blur-[20px] rounded-[18px] shadow-[0_12px_40px_rgba(0,0,0,0.4)] flex flex-col items-center justify-center p-4`}
+        } backdrop-blur-[20px] ${shape === 'circle' ? 'rounded-full' : 'rounded-[18px]'} shadow-[0_12px_40px_rgba(0,0,0,0.4)] flex flex-col items-center justify-center p-4`}
         onClick={() => !previewUrl && fileInputRef.current?.click()}
         style={{ cursor: previewUrl ? 'default' : 'pointer' }}
         >
@@ -104,12 +104,12 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({ onChange, value, l
               <img
                 src={resolveImageUrl(previewUrl)}
                 alt="Uploaded preview"
-                className="w-full h-full object-cover rounded-[14px]"
+                className={`w-full h-full object-cover ${shape === 'circle' ? 'rounded-full' : 'rounded-[14px]'}`}
                 onError={() => {
                   setError('Failed to load image preview');
                 }}
               />
-              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-[18px]">
+              <div className={`absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center ${shape === 'circle' ? 'rounded-full' : 'rounded-[18px]'}`}>
                  <button
                    onClick={handleClear}
                    type="button"
@@ -146,7 +146,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({ onChange, value, l
         />
         
         {isUploading && (
-          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-20 rounded-[18px]">
+          <div className={`absolute inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-20 ${shape === 'circle' ? 'rounded-full' : 'rounded-[18px]'}`}>
             <div className="w-8 h-8 border-4 border-white/20 border-t-white rounded-full animate-spin"></div>
           </div>
         )}

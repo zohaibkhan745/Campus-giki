@@ -154,11 +154,11 @@ export const BannerHeader: React.FC<BannerHeaderProps> = ({
       `}</style>
 
       <div className="shared-banner">
-        <img src={getSocietyBanner(bannerUrl)} alt="Banner Image" className="shared-banner-img" onError={(e) => { e.currentTarget.src = '/default-banner.png'; }} />
+        <img src={getSocietyBanner(bannerUrl)} alt="Banner Image" className="shared-banner-img" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/default-banner.png'; }} />
 
         {/* Profile Circle */}
         <div className="shared-profile-container">
-          <img src={logoUrl || fallbackImage} alt="Logo" className="shared-profile-img" onError={(e) => { e.currentTarget.src = fallbackImage; }} />
+          <img src={logoUrl || fallbackImage} alt="Logo" className="shared-profile-img" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = fallbackImage; }} />
         </div>
 
         {/* Name */}
