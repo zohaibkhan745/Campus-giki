@@ -21,7 +21,11 @@ import {
   eventFormSchema,
   type EventFormData,
 } from '@/lib/validations/event.schema';
-import { Input } from '@/components/ui/Input';
+import { CustomDropdown } from '@/components/ui/CustomDropdown';
+import { CustomDatePicker } from '@/components/ui/CustomDatePicker';
+import { CustomTimePicker } from '@/components/ui/CustomTimePicker';
+import { Controller } from 'react-hook-form';
+import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/Button';
 import { Alert } from '@/components/ui/Alert';
 import { EventMediaUploader } from '@/components/common/EventMediaUploader';
@@ -44,6 +48,9 @@ export const EditEventPage: React.FC = () => {
     enabled: !!id,
   });
 
+    const [isMultiDay, setIsMultiDay] = useState(false);
+  const [isCustomVenue, setIsCustomVenue] = useState(false);
+  const [isCustomIncharge, setIsCustomIncharge] = useState(false);
   const {
     register,
     handleSubmit,
@@ -174,182 +181,280 @@ export const EditEventPage: React.FC = () => {
   }
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6 text-left py-4">
-      <div className="flex items-center justify-between">
-        <button
-          onClick={() => navigate(-1)}
-          className="fixed top-4 left-4 sm:top-6 sm:left-6 z-[100] inline-flex items-center justify-center w-10 h-10 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white rounded-full transition-all cursor-pointer shadow-lg"
-          title="Go Back"
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </button>
-      </div>
+    <div className="max-w-3xl mx-auto space-y-6">
+        <div className="flex items-center gap-4">
+          <Link to="/dashboard" className="p-2 hover:bg-white/10 rounded-full transition-colors text-white">
+            <ArrowLeft className="w-5 h-5" />
+          </Link>
+          <div>
+            <h1 className="text-2xl font-bold text-white mb-1">
+              Edit Event: {eventData.title}
+            </h1>
+            <p className="text-sm text-gray-400">
+              Update your event schedule, venue location, or media resources.
+            </p>
+          </div>
+        </div>
 
-      <div className="space-y-1 bg-transparent p-6 rounded-cards border border-white/20">
-        <h1 className="text-2xl font-extrabold text-white">
-          Edit Event: {eventData.title}
-        </h1>
-        <p className="text-sm text-gray-400">
-          Update your event schedule, venue location, or media resources.
-        </p>
-      </div>
-
-      {eventData.approvalStatus === 'CHANGES_REQUESTED' && eventData.advisorComments && (
-        null /* Removed error alert */
-      )}
-
-      {eventData.approvalStatus === 'CHANGES_REQUESTED' && eventData.dsaComments && (
-        null /* Removed error alert */
-      )}
-
-      {null}
-
-      <form onSubmit={(e) => e.preventDefault()} className="bg-white/[0.08] backdrop-blur-[20px] p-6 md:p-8 rounded-cards border border-white/20 space-y-8" noValidate>
-        <div className="space-y-4">
-          <h2 className="text-base font-bold text-white border-b border-white/20 pb-2">
-            Event Overview
-          </h2>
-
-          <Input
-            label="Event Title *"
-            placeholder="e.g. GIKI SoftDesk Hackathon 2026"
-            leftIcon={<Calendar className="w-4 h-4" />}
-            disabled={updateMutation.isPending || isEditLocked}
-            error={errors.title?.message}
-            {...register('title')}
-          />
-
-          <div className="space-y-1.5 text-left">
-            <label className="block text-xs font-semibold text-white font-medium uppercase tracking-wider">
-              Event Description *
-            </label>
-            <div className="relative flex items-start">
-              <div className="absolute left-3 top-3 text-gray-400 pointer-events-none flex items-center justify-center">
-                <FileText className="w-4 h-4" />
-              </div>
-              <textarea
-                rows={4}
-                placeholder="Describe your event agenda, prerequisites, target audience, and guidelines..."
-                disabled={updateMutation.isPending || isEditLocked}
-                className="w-full bg-transparent text-white placeholder:text-gray-400 text-sm rounded-inputs border border-white/20 px-3.5 py-2.5 pl-10 transition-all outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50 resize-y"
-                {...register('description')}
-              />
+        {eventData.approvalStatus === 'CHANGES_REQUESTED' && (eventData.advisorComments || eventData.dsaComments) && (
+          <div className="bg-red-500/10 backdrop-blur-md border border-red-500/30 p-5 rounded-[18px] shadow-lg mb-6">
+            <h3 className="text-red-400 font-bold mb-3 flex items-center gap-2">
+              <ShieldCheck className="w-5 h-5" />
+              Changes Requested by Reviewer
+            </h3>
+            <div className="space-y-4 text-sm text-red-200/90 leading-relaxed">
+              {eventData.advisorComments && (
+                <div>
+                  <span className="font-semibold text-red-300 block mb-1">Advisor Notes:</span>
+                  <p>{eventData.advisorComments}</p>
+                </div>
+              )}
+              {eventData.dsaComments && (
+                <div>
+                  <span className="font-semibold text-red-300 block mb-1">DSA / Admin Notes:</span>
+                  <p>{eventData.dsaComments}</p>
+                </div>
+              )}
             </div>
-            {errors.description?.message && (
-              <p className="text-xs text-red-400 font-medium">
-                {errors.description.message}
-              </p>
+            <p className="mt-4 text-xs font-medium text-red-300/80">Please address the feedback above and resubmit the event for review.</p>
+          </div>
+        )}
+
+        <form onSubmit={(e) => e.preventDefault()} className="bg-white/[0.08] backdrop-blur-[20px] p-6 md:p-8 rounded-cards border border-white/20 space-y-8" noValidate>
+<div className="form-section">
+          <div className="section-header">
+            <h2 className="section-title">Event Overview</h2>
+            <div className="section-divider"></div>
+          </div>
+          
+          <div className="field-group">
+            <label className="field-label">Event Title *</label>
+            <div className={cn("input-box", errors.title && "error")}>
+              <svg className="input-icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+              <input type="text" placeholder="e.g. GIKI SoftDesk Hackathon 2026" disabled={updateMutation.isPending || isEditLocked} {...register('title')} />
+            </div>
+            {errors.title?.message && <span className="error-text !block">{errors.title.message}</span>}
+          </div>
+
+          <div className="field-group">
+            <label className="field-label">Event Description *</label>
+            <div className={cn("input-box", errors.description && "error")} style={{alignItems:"flex-start"}}>
+              <svg className="input-icon" style={{marginTop:"2px"}} viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+              <textarea placeholder="Describe your event agenda, prerequisites, target audience, and guidelines..." disabled={updateMutation.isPending || isEditLocked} {...register('description')}></textarea>
+            </div>
+            {errors.description?.message && <span className="error-text !block">{errors.description.message}</span>}
+          </div>
+        </div>
+
+        <div className="form-section">
+          <div className="section-header">
+            <div className="inline-header">
+              <h2 className="section-title">Date, Time & Venue</h2>
+              <div className="event-duration-toggle">
+                  <label className="toggle-option">
+                      <input type="radio" name="eventDuration" value="one" checked={!isMultiDay} onChange={() => setIsMultiDay(false)} hidden />
+                      <span className="toggle-btn">One Day Event</span>
+                  </label>
+                  <label className="toggle-option">
+                      <input type="radio" name="eventDuration" value="multi" checked={isMultiDay} onChange={() => setIsMultiDay(true)} hidden />
+                      <span className="toggle-btn">Multi Day Event</span>
+                  </label>
+              </div>
+            </div>
+            <div className="section-divider"></div>
+          </div>
+
+          <div id="dateGrid" className={cn(isMultiDay && "multi-day")}>
+            <div className="field-group">
+              <label className="field-label">{isMultiDay ? 'Event Start Date *' : 'Date *'}</label>
+              <Controller
+                name="eventDate"
+                control={control}
+                render={({ field }) => (
+                  <CustomDatePicker value={field.value} onChange={field.onChange} placeholder={isMultiDay ? 'From Date' : 'Select Date'} disabled={updateMutation.isPending || isEditLocked} />
+                )}
+              />
+              {errors.eventDate?.message && <span className="error-text !block">{errors.eventDate.message}</span>}
+            </div>
+
+            {isMultiDay && (
+              <div className="field-group">
+                <label className="field-label">Event End Date *</label>
+                <CustomDatePicker placeholder="To Date" disabled={updateMutation.isPending || isEditLocked} />
+              </div>
             )}
           </div>
-        </div>
 
-        <div className="space-y-4">
-          <h2 className="text-base font-bold text-white border-b border-white/20 pb-2">
-            Event Type & In-Charge Details
-          </h2>
-
-          <div className="space-y-1.5 text-left">
-            <label className="block text-xs font-semibold text-white font-medium uppercase tracking-wider">
-              Event Type
-            </label>
-            <CustomDropdown placeholder="Select Type" disabled={true} options={[{value:"Workshop",label:"Workshop"},{value:"Seminar",label:"Seminar"},{value:"Hackathon",label:"Hackathon"},{value:"Competition",label:"Competition"},{value:"Social",label:"Social"},{value:"Other",label:"Other"}]} {...register('eventType')} />
+          <div className="field-grid-2">
+            <div className="field-group">
+              <label className="field-label">Start Time *</label>
+              <Controller
+                name="startTime"
+                control={control}
+                render={({ field }) => (
+                  <CustomTimePicker value={field.value} onChange={field.onChange} placeholder="From Time" disabled={updateMutation.isPending || isEditLocked} />
+                )}
+              />
+              {errors.startTime?.message && <span className="error-text !block">{errors.startTime.message}</span>}
+            </div>
+            <div className="field-group">
+              <label className="field-label">End Time *</label>
+              <Controller
+                name="endTime"
+                control={control}
+                render={({ field }) => (
+                  <CustomTimePicker value={field.value} onChange={field.onChange} placeholder="To Time" disabled={updateMutation.isPending || isEditLocked} />
+                )}
+              />
+              {errors.endTime?.message && <span className="error-text !block">{errors.endTime.message}</span>}
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Input
-              label="In-Charge Name"
-              placeholder="e.g. Zohaib Khan"
-              disabled={updateMutation.isPending || isEditLocked}
-              error={errors.inChargeName?.message}
-              {...register('inChargeName')}
+          <div className="field-group">
+            <label className="field-label">Venue Location *</label>
+            <CustomDropdown 
+              value={isCustomVenue ? 'Custom (Add)' : watch('venue')} 
+              onChange={(val: string) => {
+                if (val === 'Custom (Add)') {
+                  setIsCustomVenue(true);
+                  setValue('venue', '', { shouldValidate: true });
+                } else {
+                  setIsCustomVenue(false);
+                  setValue('venue', val, { shouldValidate: true });
+                }
+              }} 
+              options={[
+                {label: "Auditorium", value: "Auditorium"},
+                {label: "Faculty Club (Inside)", value: "Faculty Club (Inside)"},
+                {label: "Faculty Club (Outside)", value: "Faculty Club (Outside)"},
+                {label: "Faculty Club (Inside + Outside)", value: "Faculty Club (Inside + Outside)"},
+                {label: "Guest House (Inside)", value: "Guest House (Inside)"},
+                {label: "Guest House (Outside)", value: "Guest House (Outside)"},
+                {label: "Guest House (Inside + Outside)", value: "Guest House (Inside + Outside)"},
+                {label: "Sports Complex", value: "Sports Complex"},
+                {label: "Basket Ball Court", value: "Basket Ball Court"},
+                {label: "Main Ground", value: "Main Ground"},
+                {label: "Custom (Add)", value: "Custom (Add)"},
+              ]} 
+              disabled={updateMutation.isPending || isEditLocked} 
+              placeholder="Select Venue"
             />
-            <Input
-              label="In-Charge Reg. No"
-              placeholder="e.g. 2023787"
+            
+            {isCustomVenue && (
+              <div className={cn("input-box", errors.venue && "error")} style={{ marginTop: '10px' }}>
+                <input type="text" placeholder="Enter custom venue" disabled={updateMutation.isPending || isEditLocked} {...register('venue')} />
+              </div>
+            )}
+            {errors.venue?.message && <span className="error-text !block">{errors.venue.message}</span>}
+          </div>
+        </div>
+
+        <div className="form-section">
+          <div className="section-header">
+            <h2 className="section-title">Event Type & In-Charge Details</h2>
+            <div className="section-divider"></div>
+          </div>
+
+          <div className="field-grid-2 items-end">
+            <div className="field-group">
+              <label className="field-label">Event Type *</label>
+              <Controller
+                name="eventType"
+                control={control}
+                render={({ field }) => (
+                  <CustomDropdown 
+                    value={field.value} 
+                    onChange={field.onChange} 
+                    options={[
+                      {value:"Workshop",label:"Workshop / Bootcamp"},
+                      {value:"Seminar",label:"Technical Seminar"},
+                      {value:"Hackathon",label:"Hackathon"},
+                      {value:"Competition",label:"Coding Competition"},
+                      {value:"Social",label:"Society Welcome / Dinner"},
+                      {value:"Other",label:"All Pak"}
+                    ]} 
+                    disabled={updateMutation.isPending || isEditLocked} 
+                    placeholder="Select Type"
+                  />
+                )}
+              />
+              {errors.eventType?.message && <span className="error-text !block">{errors.eventType.message}</span>}
+            </div>
+
+            <div className="field-group">
+              <div className="inline-header">
+                <label className="field-label">In-Charge Designation *</label>
+                <button type="button" className="btn-change" onClick={() => setIsCustomIncharge(!isCustomIncharge)}>
+                  {isCustomIncharge ? 'Default' : 'Change'}
+                </button>
+              </div>
+              
+              {!isCustomIncharge ? (
+                <div className="input-box disabled">
+                  <input type="text" value="Event Coordinator" disabled />
+                </div>
+              ) : (
+                <div className="input-box">
+                  <input type="text" placeholder="Enter designation" />
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="field-grid-3">
+            <div className="field-group">
+              <label className="field-label">In-Charge Name *</label>
+              <div className={cn("input-box", !isCustomIncharge && "disabled", errors.inChargeName && "error")}>
+                <input type="text" readOnly={!isCustomIncharge} {...register('inChargeName')} />
+              </div>
+              {errors.inChargeName?.message && <span className="error-text !block">{errors.inChargeName.message}</span>}
+            </div>
+            <div className="field-group">
+              <label className="field-label">In-Charge Reg. No *</label>
+              <div className={cn("input-box", !isCustomIncharge && "disabled", errors.inChargeRegNum && "error")}>
+                <input type="text" maxLength={7} readOnly={!isCustomIncharge} {...register('inChargeRegNum')} />
+              </div>
+              {errors.inChargeRegNum?.message && <span className="error-text !block">{errors.inChargeRegNum.message}</span>}
+            </div>
+            <div className="field-group">
+              <label className="field-label">In-Charge Contact *</label>
+              <div className={cn("input-box", !isCustomIncharge && "disabled", errors.inChargeContact && "error")}>
+                <input type="text" maxLength={11} readOnly={!isCustomIncharge} {...register('inChargeContact')} />
+              </div>
+              {errors.inChargeContact?.message && <span className="error-text !block">{errors.inChargeContact.message}</span>}
+            </div>
+          </div>
+        </div>
+
+        <div className="form-section">
+          <div className="section-header">
+            <h2 className="section-title">Media & Registration (Optional)</h2>
+            <div className="section-divider"></div>
+          </div>
+
+          <div className="field-group">
+            <EventMediaUploader
+              coverImageUrl={coverImageUrl}
+              videoUrl={videoUrl}
+              theme="dark"
+              onImageChange={(url) => setValue('coverImageUrl', url, { shouldValidate: true })}
+              onVideoChange={(url) => setValue('videoUrl', url, { shouldValidate: true })}
+              folder="events"
               disabled={updateMutation.isPending || isEditLocked}
-              error={errors.inChargeRegNum?.message}
-              {...register('inChargeRegNum')}
             />
           </div>
 
-          <Input
-            label="In-Charge Contact Number"
-            placeholder="e.g. +923001234567"
-            disabled={updateMutation.isPending || isEditLocked}
-            error={errors.inChargeContact?.message}
-            {...register('inChargeContact')}
-          />
-        </div>
-
-        <div className="space-y-4">
-          <h2 className="text-base font-bold text-white border-b border-white/20 pb-2">
-            Date, Time & Venue
-          </h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Input
-              label="Event Date *"
-              type="date"
-              disabled={updateMutation.isPending || isEditLocked}
-              error={errors.eventDate?.message}
-              {...register('eventDate')}
-            />
-
-            <Input
-              label="Start Time (24h) *"
-              type="time"
-              leftIcon={<Clock className="w-4 h-4" />}
-              disabled={updateMutation.isPending || isEditLocked}
-              error={errors.startTime?.message}
-              {...register('startTime')}
-            />
-
-            <Input
-              label="End Time (24h) *"
-              type="time"
-              leftIcon={<Clock className="w-4 h-4" />}
-              disabled={updateMutation.isPending || isEditLocked}
-              error={errors.endTime?.message}
-              {...register('endTime')}
-            />
+          <div className="field-group">
+            <label className="field-label">Registration Form Link (Optional)</label>
+            <div className={cn("input-box", errors.registrationLink && "error")}>
+              <svg className="input-icon" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+              <input type="url" placeholder="e.g. https://forms.gle/your-event-form" disabled={updateMutation.isPending || isEditLocked} {...register('registrationLink')} />
+            </div>
+            {errors.registrationLink?.message && <span className="error-text !block">{errors.registrationLink.message}</span>}
           </div>
-
-          <Input
-            label="Venue Location *"
-            placeholder="e.g. Agha Hasan Abedi Auditorium / FCSE Lab 1"
-            leftIcon={<MapPin className="w-4 h-4" />}
-            disabled={updateMutation.isPending || isEditLocked}
-            error={errors.venue?.message}
-            {...register('venue')}
-          />
         </div>
 
-        <div className="space-y-4">
-          <h2 className="text-base font-bold text-white border-b border-white/20 pb-2">
-            Media & Registration (Optional)
-          </h2>
-
-          <EventMediaUploader
-            coverImageUrl={coverImageUrl}
-            videoUrl={videoUrl}
-            onImageChange={(url) => setValue('coverImageUrl', url, { shouldValidate: true })}
-            onVideoChange={(url) => setValue('videoUrl', url, { shouldValidate: true })}
-            folder="events"
-            disabled={updateMutation.isPending || isEditLocked}
-          />
-
-          <Input
-            label="Registration Form Link (Optional)"
-            placeholder="e.g. https://forms.gle/your-event-form"
-            leftIcon={<ExternalLink className="w-4 h-4" />}
-            disabled={updateMutation.isPending || isEditLocked}
-            error={errors.registrationLink?.message}
-            {...register('registrationLink')}
-          />
-        </div>
-
-        
-          <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-white/20 mt-4">
+        <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-white/20 mt-4">
             {isEditLocked ? (
               (eventData as any)?.editRequestStatus === 'PENDING' ? (
                 <Button type="button" variant="outline" disabled className="w-full text-gray-400 border-white/20">
@@ -364,7 +469,6 @@ export const EditEventPage: React.FC = () => {
                   onClick={() => requestEditMutation.mutate()}
                   isLoading={requestEditMutation.isPending}
                 >
-                  <ShieldCheck className="w-5 h-5 mr-2" />
                   Request Edit Access from DSA
                 </Button>
               )
@@ -384,11 +488,11 @@ export const EditEventPage: React.FC = () => {
                 {eventData?.approvalStatus === 'CHANGES_REQUESTED' && (
                   <Button
                     type="button"
-                    variant="outline"
-                    className="w-full bg-transparent border border-white/20 hover:bg-white/10 text-white"
+                    variant="primary"
+                    className="w-full bg-green-600 border border-green-500 hover:bg-green-700 text-white"
                     isLoading={updateMutation.isPending}
                     onClick={handleSubmit((data) => onSubmit(data, true))}
-                    leftIcon={<ShieldCheck className="w-5 h-5 text-green-400" />}
+                    leftIcon={<ShieldCheck className="w-5 h-5" />}
                   >
                     Resubmit for Advisor Review
                   </Button>

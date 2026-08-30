@@ -317,38 +317,32 @@ export const CreateEventPage: React.FC = () => {
 
           <div className="field-group">
             <label className="field-label">Venue Location *</label>
-            <Controller
-              name="venue"
-              control={control}
-              render={({ field }) => (
-                <CustomDropdown 
-                  value={isCustomVenue ? 'Custom (Add)' : field.value} 
-                  onChange={(val: string) => {
-                    if (val === 'Custom (Add)') {
-                      setIsCustomVenue(true);
-                      field.onChange('');
-                    } else {
-                      setIsCustomVenue(false);
-                      field.onChange(val);
-                    }
-                  }} 
-                  options={[
-                    {label: "Auditorium", value: "Auditorium"},
-                    {label: "Faculty Club (Inside)", value: "Faculty Club (Inside)"},
-                    {label: "Faculty Club (Outside)", value: "Faculty Club (Outside)"},
-                    {label: "Faculty Club (Inside + Outside)", value: "Faculty Club (Inside + Outside)"},
-                    {label: "Guest House (Inside)", value: "Guest House (Inside)"},
-                    {label: "Guest House (Outside)", value: "Guest House (Outside)"},
-                    {label: "Guest House (Inside + Outside)", value: "Guest House (Inside + Outside)"},
-                    {label: "Sports Complex", value: "Sports Complex"},
-                    {label: "Basket Ball Court", value: "Basket Ball Court"},
-                    {label: "Main Ground", value: "Main Ground"},
-                    {label: "Custom (Add)", value: "Custom (Add)"},
-                  ]} 
-                  disabled={createMutation.isPending} 
-                  placeholder="Select Venue"
-                />
-              )}
+            <CustomDropdown 
+              value={isCustomVenue ? 'Custom (Add)' : watch('venue')} 
+              onChange={(val: string) => {
+                if (val === 'Custom (Add)') {
+                  setIsCustomVenue(true);
+                  setValue('venue', '', { shouldValidate: true });
+                } else {
+                  setIsCustomVenue(false);
+                  setValue('venue', val, { shouldValidate: true });
+                }
+              }} 
+              options={[
+                {label: "Auditorium", value: "Auditorium"},
+                {label: "Faculty Club (Inside)", value: "Faculty Club (Inside)"},
+                {label: "Faculty Club (Outside)", value: "Faculty Club (Outside)"},
+                {label: "Faculty Club (Inside + Outside)", value: "Faculty Club (Inside + Outside)"},
+                {label: "Guest House (Inside)", value: "Guest House (Inside)"},
+                {label: "Guest House (Outside)", value: "Guest House (Outside)"},
+                {label: "Guest House (Inside + Outside)", value: "Guest House (Inside + Outside)"},
+                {label: "Sports Complex", value: "Sports Complex"},
+                {label: "Basket Ball Court", value: "Basket Ball Court"},
+                {label: "Main Ground", value: "Main Ground"},
+                {label: "Custom (Add)", value: "Custom (Add)"},
+              ]} 
+              disabled={createMutation.isPending} 
+              placeholder="Select Venue"
             />
             
             {isCustomVenue && (

@@ -146,18 +146,18 @@ export const EventMediaUploader: React.FC<EventMediaUploaderProps> = ({
       )}
 
       {previewUrl ? (
-        <div className="relative rounded-cards border-2 border-vast-ink overflow-hidden bg-black/90 group shadow-sm">
+        <div className="relative rounded-cards border-2 border-white/20 overflow-hidden bg-black/90 group shadow-sm aspect-square">
           {activeType === 'video' ? (
             <video
               src={resolveImageUrl(previewUrl)}
               controls
-              className="w-full max-h-[320px] object-contain mx-auto"
+              className="w-full h-full object-contain mx-auto"
             />
           ) : (
             <img
               src={resolveImageUrl(previewUrl)}
               alt="Event Media Preview"
-              className="w-full max-h-[320px] object-cover"
+              className="w-full h-full object-cover"
               onError={() => {
                 setError('Failed to display preview image');
               }}
@@ -166,7 +166,7 @@ export const EventMediaUploader: React.FC<EventMediaUploaderProps> = ({
 
           {/* Media Type Badge & Status */}
           <div className="absolute top-3 left-3 flex items-center gap-2 z-10">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-vast-ink/90 backdrop-blur text-pure-white rounded-full text-xs font-bold shadow-md border border-pure-white/20">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/10 backdrop-blur-md text-white rounded-full text-xs font-bold shadow-lg border border-white/20">
               {activeType === 'video' ? (
                 <>
                   <Film className="w-3.5 h-3.5 text-amber-400" />
@@ -175,7 +175,7 @@ export const EventMediaUploader: React.FC<EventMediaUploaderProps> = ({
               ) : (
                 <>
                   <ImageIcon className="w-3.5 h-3.5 text-blue-400" />
-                  Banner Image
+                  Poster Preview
                 </>
               )}
             </span>
@@ -187,14 +187,14 @@ export const EventMediaUploader: React.FC<EventMediaUploaderProps> = ({
             )}
           </div>
 
-          {/* Action buttons */}
+          {/* Action Buttons */}
           {!disabled && (
-            <div className="absolute top-3 right-3 flex items-center gap-2 z-10">
+            <div className="absolute top-3 right-3 flex items-center gap-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isUploading}
-                className="px-3 py-1.5 bg-pure-white/90 hover:bg-pure-white text-vast-ink rounded-inputs text-xs font-bold transition-all shadow-md backdrop-blur border border-vast-ink"
+                className="px-3 py-1.5 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white rounded-inputs text-xs font-bold transition-all shadow-lg"
               >
                 Replace
               </button>
@@ -202,7 +202,7 @@ export const EventMediaUploader: React.FC<EventMediaUploaderProps> = ({
                 type="button"
                 onClick={handleClear}
                 disabled={isUploading}
-                className="p-1.5 bg-red-500/90 hover:bg-red-600 text-pure-white rounded-inputs transition-all shadow-md backdrop-blur border border-pure-white/20"
+                className="p-1.5 bg-red-500/20 hover:bg-red-500/40 backdrop-blur-md border border-red-500/30 text-white rounded-inputs transition-all shadow-lg"
                 title="Remove Media"
               >
                 <X className="w-4 h-4" />
@@ -219,8 +219,8 @@ export const EventMediaUploader: React.FC<EventMediaUploaderProps> = ({
             onClick={() => !disabled && !isUploading && fileInputRef.current?.click()}
             className={
               theme === 'dark'
-                ? `upload-zone ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${dragActive ? '!bg-white/20 !border-white/50 scale-[0.99]' : ''}`
-                : `relative border-2 border-dashed rounded-cards p-6 text-center transition-all flex flex-col items-center justify-center gap-3 ${
+                ? `upload-zone aspect-square justify-center ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${dragActive ? '!bg-white/20 !border-white/50 scale-[0.99]' : ''}`
+                : `relative border-2 border-dashed rounded-cards p-6 text-center transition-all flex flex-col items-center justify-center gap-3 aspect-square ${
                     disabled ? 'opacity-50 cursor-not-allowed border-fog' : 'cursor-pointer'
                   } ${
                     dragActive

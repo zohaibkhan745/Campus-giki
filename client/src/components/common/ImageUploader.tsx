@@ -8,9 +8,10 @@ interface ImageUploaderProps {
   value?: string;
   label?: string;
   folder?: 'posts' | 'events' | 'avatars' | 'societies' | 'general';
+  shape?: 'rectangle' | 'circle';
 }
 
-export const ImageUploader: React.FC<ImageUploaderProps> = ({ onChange, value, label, folder = 'general' }) => {
+export const ImageUploader: React.FC<ImageUploaderProps> = ({ onChange, value, label, folder = 'general', shape = 'rectangle' }) => {
   const [isUploading, setIsUploading] = useState(false);
   const [dragActive, setDragActive] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -88,7 +89,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({ onChange, value, l
         </div>
       )}
 
-      <div className="relative group w-full h-48 rounded-[18px] overflow-hidden" 
+      <div className={`relative group overflow-hidden flex-shrink-0 ${shape === 'circle' ? 'w-48 h-48 rounded-full mx-auto' : 'w-full h-48 rounded-[18px]'}`} 
         onDragEnter={handleDrag} onDragLeave={handleDrag} onDragOver={handleDrag} onDrop={handleDrop}>
         
         {/* Background / Base Container */}

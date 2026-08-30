@@ -317,18 +317,23 @@ export const SocietySetupPage: React.FC = () => {
                 )}
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4">
-                <ImageUploader
-                  label="Society Logo"
-                  value={logoUrl}
-                  onChange={(url) => setValue('logoUrl', url)}
-                  />
-                <ImageUploader
-                  label="Society Banner Image"
-                  value={bannerUrl}
-                  onChange={(url) => setValue('bannerUrl', url)}
-                />
-              </div>
+                <div className="flex flex-col sm:flex-row gap-6 pt-4 items-center">
+                  <div className="w-48 shrink-0">
+                    <ImageUploader
+                      label="Society Logo"
+                      value={logoUrl}
+                      onChange={(url) => setValue('logoUrl', url)}
+                      shape="circle"
+                    />
+                  </div>
+                  <div className="flex-1 w-full">
+                    <ImageUploader
+                      label="Society Banner Image"
+                      value={bannerUrl}
+                      onChange={(url) => setValue('bannerUrl', url)}
+                    />
+                  </div>
+                </div>
             </div>
           </div>
 

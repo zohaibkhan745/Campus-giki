@@ -204,8 +204,8 @@ export const AdminEventsPage: React.FC = () => {
         </div>
       ) : (
         <div className="pt-4">
-            <EventGrid events={events} />
-          </div>
+          <EventGrid events={events} reviewUrlBase="/admin/events" />
+        </div>
       )}
 
       

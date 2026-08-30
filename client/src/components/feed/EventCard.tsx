@@ -113,11 +113,6 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
               </div>
               <div className="flex items-center gap-2">
                 <span className="card-tag">Event</span>
-                {(item as any).approvalStatus && (item as any).approvalStatus !== 'PUBLISHED' && (
-                  <span className="card-tag" style={{ background: (item as any).approvalStatus.includes('PENDING') ? '#fff' : (item as any).approvalStatus === 'APPROVED' ? '#22c55e' : '#ef4444', color: (item as any).approvalStatus.includes('PENDING') ? '#000' : '#fff' }}>
-                    {(item as any).approvalStatus === 'PENDING_ADMIN' ? 'Pending DSA' : (item as any).approvalStatus === 'PENDING_ADVISOR' ? 'Pending Advisor' : (item as any).approvalStatus.replace('_', ' ')}
-                  </span>
-                )}
               </div>
             </div>
 
@@ -142,6 +137,18 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
               </div>
             </div>
 
+            {(item as any).approvalStatus && (item as any).approvalStatus !== 'PUBLISHED' && (
+              <div className="mt-3 mb-1">
+                <span className={cn(
+                  "inline-block px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider backdrop-blur-md shadow-lg border",
+                  (item as any).approvalStatus === 'PENDING_ADVISOR' ? "bg-orange-500/20 text-orange-400 border-orange-500/30" :
+                  (item as any).approvalStatus === 'PENDING_ADMIN' ? "bg-yellow-500/20 text-yellow-400 border-yellow-500/30" :
+                  "bg-red-500/20 text-red-400 border-red-500/30"
+                )}>
+                  {(item as any).approvalStatus === 'PENDING_ADMIN' ? 'Pending DSA' : (item as any).approvalStatus === 'PENDING_ADVISOR' ? 'Pending Advisor' : (item as any).approvalStatus.replace('_', ' ')}
+                </span>
+              </div>
+            )}
             <div className="flex items-center gap-2 mt-auto w-full">
               {canEditOrDelete && (
                 <div className="menu-container shrink-0 h-full flex items-center">
