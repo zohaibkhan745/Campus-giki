@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Link, useNavigate } from 'react-router-dom';
 import { Calendar, MapPin, X } from 'lucide-react';
-import { getSocietyLogo } from '@/lib/utils';
+import { getSocietyLogo, cn } from '@/lib/utils';
 import type { EventFeedItem } from '@/types/feed.types';
 import { useCardFlip } from '@/hooks/useCardFlip';
 import { useAuth } from '@/context/AuthContext';
