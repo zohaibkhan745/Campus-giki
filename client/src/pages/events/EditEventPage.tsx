@@ -57,6 +57,7 @@ export const EditEventPage: React.FC = () => {
     setValue,
     watch,
     reset,
+    control,
     formState: { errors },
   } = useForm<EventFormData>({
     resolver: zodResolver(eventFormSchema),
