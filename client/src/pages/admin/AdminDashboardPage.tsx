@@ -27,8 +27,8 @@ import { adminService } from '@/services/admin.service';
 import { Alert } from '@/components/ui/Alert';
 import { MakeAnnouncementDialog } from '@/components/feed/MakeAnnouncementDialog';
 import { usePendingCounts } from '@/hooks/usePendingCounts';
-import { BannerHeader }
-import { CustomDropdown } from '@/components/ui/CustomDropdown'; from '@/components/layout/BannerHeader';
+import { BannerHeader } from '@/components/layout/BannerHeader';
+import { CustomDropdown } from '@/components/ui/CustomDropdown';
 import { EventGrid } from '@/components/admin/FlippableAdminEventCard';
 
 export const AdminDashboardPage: React.FC = () => {
