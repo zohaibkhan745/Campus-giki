@@ -146,14 +146,14 @@ export const SocietyEventsPage: React.FC = () => {
             />
           </div>
 
-          <div className="flex flex-col md:flex-row flex-wrap items-center gap-4 w-full lg:w-auto">
-            <CustomDropdown className="w-full md:w-auto shrink-0" icon={<Calendar className="w-4 h-4" />} options={[{ value: 'all', label: 'All Event Timings' }, { value: 'this_week', label: 'This Week' }, { value: 'this_month', label: 'This Month' }, { value: 'upcoming', label: 'Upcoming' }, { value: 'past', label: 'Past Events' }]}
+          <div className="flex flex-row items-center gap-2 sm:gap-4 w-full lg:w-auto">
+            <CustomDropdown className="flex-1 min-w-0 w-auto shrink-0" icon={<Calendar className="w-4 h-4" />} options={[{ value: 'all', label: 'All Event Timings' }, { value: 'this_week', label: 'This Week' }, { value: 'this_month', label: 'This Month' }, { value: 'upcoming', label: 'Upcoming' }, { value: 'past', label: 'Past Events' }]}
               value={typeToggle}
               onChange={(e: any) => { setTypeToggle(e.target.value); }}
               placeholder="Event Timeline"
             />
             
-            <CustomDropdown className="w-full md:w-auto shrink-0" icon={<Filter className="w-4 h-4" />} options={[{ value: "", label: "All Statuses" }, { value: 'PENDING_ADMIN', label: 'Pending Review' }, { value: 'PUBLISHED', label: 'Published / Approved' }, { value: 'CHANGES_REQUESTED', label: 'Changes Requested' }, { value: 'DRAFT', label: 'Draft' }]}
+            <CustomDropdown className="flex-1 min-w-0 w-auto shrink-0" icon={<Filter className="w-4 h-4" />} options={[{ value: "", label: "All Statuses" }, { value: 'PENDING_ADMIN', label: 'Pending Review' }, { value: 'PUBLISHED', label: 'Published / Approved' }, { value: 'CHANGES_REQUESTED', label: 'Changes Requested' }, { value: 'DRAFT', label: 'Draft' }]}
               value={statusFilter}
               onChange={(e: any) => { setStatusFilter(e.target.value); }}
               placeholder="All Statuses"

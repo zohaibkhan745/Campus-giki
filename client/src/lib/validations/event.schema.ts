@@ -36,7 +36,7 @@ export const eventFormSchema = z
     coverImageUrl: optionalUrl,
     videoUrl: optionalUrl,
     registrationLink: optionalUrl,
-    eventType: z.string().optional(),
+    eventType: z.string().min(1, 'Event Type is required'),
     inChargeName: z.string().optional(),
     inChargeRegNum: z.string().optional(),
     inChargeContact: z.string().optional(),
@@ -85,7 +85,7 @@ export const eventFormSchema = z
       return endH * 60 + endM > startH * 60 + startM;
     },
     {
-      message: 'End time must be strictly after start time',
+      message: 'End time must be after start time',
       path: ['endTime'],
     },
   );

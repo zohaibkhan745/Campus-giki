@@ -165,7 +165,7 @@ const PostCardComponent: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) 
               <div className="user-profile">
 
               <div className="front-text-content" ref={textContentRef}>
-                <p className="front-description" ref={frontDescRef}>{item.content}</p>
+                <p className="front-description whitespace-pre-wrap" ref={frontDescRef}>{item.content}</p>
               </div>
             </div>
 

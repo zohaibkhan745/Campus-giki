@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Link, useNavigate } from 'react-router-dom';
 import { Calendar, MapPin, X } from 'lucide-react';
-import { getSocietyLogo, cn } from '@/lib/utils';
+import { getSocietyLogo, cn, resolveImageUrl } from '@/lib/utils';
 import type { EventFeedItem } from '@/types/feed.types';
 import { useCardFlip } from '@/hooks/useCardFlip';
 import { useAuth } from '@/context/AuthContext';
@@ -56,7 +56,7 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
     };
   }, [dropdownOpen]);
 
-  const coverImage = item.coverImageUrl || 'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?auto=format&fit=crop&w=800&q=80';
+  const coverImage = resolveImageUrl(item.coverImageUrl) || 'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?auto=format&fit=crop&w=800&q=80';
   const logoImage = getSocietyLogo(item.society.logoUrl);
   const authorName = item.society.name;
 

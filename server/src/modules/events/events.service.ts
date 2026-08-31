@@ -429,7 +429,7 @@ export class EventsService {
         ...(dto.inChargeName !== undefined && { inChargeName: dto.inChargeName || null }),
         ...(dto.inChargeRegNum !== undefined && { inChargeRegNum: dto.inChargeRegNum || null }),
         ...(dto.inChargeContact !== undefined && { inChargeContact: dto.inChargeContact || null }),
-        ...(dto.submitForApproval === true && { approvalStatus: 'PENDING_ADVISOR', isPublished: false, lastChangeRequestBy: null }),
+        ...(dto.submitForApproval === true && { approvalStatus: (event.approvalStatus === 'CHANGES_REQUESTED' && event.lastChangeRequestBy === 'DSA_ADMIN') ? 'PENDING_ADMIN' : 'PENDING_ADVISOR', isPublished: false, lastChangeRequestBy: null }),
       },
       include: {
         society: {

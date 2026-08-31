@@ -96,16 +96,15 @@ export const AdminPendingEventsPage: React.FC = () => {
     hasNextPage,
     isFetchingNextPage
   } = useInfiniteQuery({
-    queryKey: ['adminEventsList', 'PENDING_ADMIN', societyFilter, searchQuery, fromDate, toDate, typeToggle],
+    queryKey: ['adminEventsList', statusFilter, societyFilter, searchQuery, typeToggle],
     initialPageParam: 1,
     queryFn: ({ pageParam = 1 }) => adminService.getAllEvents({
       page: pageParam,
       limit: 9,
-      status: 'PENDING_ADMIN',
+      status: statusFilter,
       society: societyFilter || undefined,
       search: searchQuery || undefined,
-      from: fromDate || undefined,
-      to: toDate || undefined,
+      
       type: (typeToggle === 'upcoming' || typeToggle === 'past') ? typeToggle : undefined
     }),
     getNextPageParam: (lastPage) => {
@@ -180,9 +179,17 @@ export const AdminPendingEventsPage: React.FC = () => {
             onChange={(e: any) => { setSocietyFilter(e.target.value); /* reset handled by queryKey */ }}
             placeholder="All Societies"
           />
-          <div className="w-full md:flex-1 shrink-0"><CustomDatePicker value={fromDate} onChange={(val: string) => { setFromDate(val); setTypeToggle("all"); /* reset handled by queryKey */ }} placeholder="From Date" /></div>
-          <div className="w-full md:flex-1 shrink-0"><CustomDatePicker value={toDate} onChange={(val: string) => { setToDate(val); setTypeToggle("all"); /* reset handled by queryKey */ }} placeholder="To Date" /></div>
-            {(searchQuery || societyFilter || fromDate || toDate || typeToggle !== 'all') && (
+          <div className="w-full md:w-auto shrink-0 min-w-[200px]">
+          <CustomDropdown 
+            value={statusFilter} 
+            onChange={(e: any) => setStatusFilter(e.target.value)} 
+            options={[
+              { value: 'PENDING_ADMIN', label: 'Pending DSA Approval' },
+              { value: 'CHANGES_REQUESTED', label: 'Changes Requested' }
+            ]}
+          />
+        </div>
+            {(searchQuery || societyFilter || statusFilter !== 'PENDING_ADMIN' || typeToggle !== 'all') && (
               <button onClick={handleClearFilters} className="p-2 text-gray-400 hover:text-white bg-white/5 rounded-xl">
                 <FilterX className="w-4 h-4" />
               </button>

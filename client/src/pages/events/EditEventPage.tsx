@@ -87,6 +87,16 @@ export const EditEventPage: React.FC = () => {
       const formattedDate = eventData.eventDate
         ? new Date(eventData.eventDate).toISOString().split('T')[0]
         : '';
+        
+      const standardVenues = ["Auditorium", "Faculty Club (Inside)", "Faculty Club (Outside)", "Faculty Club (Inside + Outside)", "Guest House (Inside)", "Guest House (Outside)", "Guest House (Inside + Outside)", "Sports Complex", "Basket Ball Court", "Main Ground"];
+      if (eventData.venue && !standardVenues.includes(eventData.venue)) {
+        setIsCustomVenue(true);
+      }
+      
+      const standardIncharge = ["President", "Vice President", "General Secretary", "Joint Secretary"];
+      if (eventData.inChargeName && !standardIncharge.includes(eventData.inChargeName) && eventData.inChargeName !== "") {
+        setIsCustomIncharge(true);
+      }
 
       reset({
         title: eventData.title || '',
@@ -206,29 +216,32 @@ export const EditEventPage: React.FC = () => {
           </div>
         </div>
 
-        {eventData.approvalStatus === 'CHANGES_REQUESTED' && (eventData.advisorComments || eventData.dsaComments) && (
-          <div className="bg-red-500/10 backdrop-blur-md border border-red-500/30 p-5 rounded-[18px] shadow-lg mb-6">
-            <h3 className="text-red-400 font-bold mb-3 flex items-center gap-2">
-              <ShieldCheck className="w-5 h-5" />
-              Changes Requested by Reviewer
-            </h3>
-            <div className="space-y-4 text-sm text-red-200/90 leading-relaxed">
-              {eventData.advisorComments && (
-                <div>
-                  <span className="font-semibold text-red-300 block mb-1">Advisor Notes:</span>
-                  <p>{eventData.advisorComments}</p>
-                </div>
-              )}
-              {eventData.dsaComments && (
-                <div>
-                  <span className="font-semibold text-red-300 block mb-1">DSA / Admin Notes:</span>
-                  <p>{eventData.dsaComments}</p>
-                </div>
-              )}
+        {eventData.approvalStatus === 'CHANGES_REQUESTED' && (eventData.advisorComments || eventData.dsaComments) && (() => {
+          const isByAdmin = eventData.lastChangeRequestBy === 'DSA_ADMIN';
+          return (
+            <div className={ackdrop-blur-md p-5 rounded-[18px] shadow-lg mb-6 border }>
+              <h3 className={ont-bold mb-3 flex items-center gap-2 }>
+                <ShieldCheck className="w-5 h-5" />
+                Changes Requested by {isByAdmin ? 'Admin' : 'Advisor'}
+              </h3>
+              <div className={space-y-4 text-sm leading-relaxed }>
+                {eventData.advisorComments && (
+                  <div>
+                    <span className={ont-semibold block mb-1 }>Advisor Notes:</span>
+                    <p>{eventData.advisorComments}</p>
+                  </div>
+                )}
+                {eventData.dsaComments && (
+                  <div>
+                    <span className={ont-semibold block mb-1 }>DSA / Admin Notes:</span>
+                    <p>{eventData.dsaComments}</p>
+                  </div>
+                )}
+              </div>
+              <p className={mt-4 text-xs font-medium }>Please address the feedback above and resubmit the event for review.</p>
             </div>
-            <p className="mt-4 text-xs font-medium text-red-300/80">Please address the feedback above and resubmit the event for review.</p>
-          </div>
-        )}
+          );
+        })()}
 
         <form onSubmit={(e) => e.preventDefault()} className="bg-white/[0.08] backdrop-blur-[20px] p-6 md:p-8 rounded-cards border border-white/20 space-y-8" noValidate>
 <div className="form-section">
@@ -505,7 +518,7 @@ export const EditEventPage: React.FC = () => {
                     onClick={handleSubmit((data) => onSubmit(data, true), onError)}
                     leftIcon={<ShieldCheck className="w-5 h-5" />}
                   >
-                    Resubmit for Advisor Review
+                    {eventData.lastChangeRequestBy === "DSA_ADMIN" ? "Resubmit for Admin Review" : "Resubmit for Advisor Review"}
                   </Button>
                 )}
               </>

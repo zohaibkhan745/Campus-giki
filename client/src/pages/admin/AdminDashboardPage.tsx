@@ -27,7 +27,8 @@ import { adminService } from '@/services/admin.service';
 import { Alert } from '@/components/ui/Alert';
 import { MakeAnnouncementDialog } from '@/components/feed/MakeAnnouncementDialog';
 import { usePendingCounts } from '@/hooks/usePendingCounts';
-import { BannerHeader } from '@/components/layout/BannerHeader';
+import { BannerHeader }
+import { CustomDropdown } from '@/components/ui/CustomDropdown'; from '@/components/layout/BannerHeader';
 import { EventGrid } from '@/components/admin/FlippableAdminEventCard';
 
 export const AdminDashboardPage: React.FC = () => {
@@ -45,7 +46,16 @@ export const AdminDashboardPage: React.FC = () => {
   });
 
   const stats = data?.statistics;
-  const pendingEvents = data?.pendingEventsPreview || [];
+  
+  const [statusFilter, setStatusFilter] = useState<string>('PENDING_ADMIN');
+  const { data: eventsData, isLoading: eventsLoading } = useQuery({
+    queryKey: ['dashboardEvents', statusFilter],
+    queryFn: () => adminService.getAllEvents({ status: statusFilter as any, limit: 4 })
+  });
+  
+  const pendingEvents = eventsData?.items || [];
+  const isPendingLoading = isLoading || eventsLoading;
+
   const upcomingEvents = data?.upcomingEventsPreview || [];
 
   return (
@@ -151,16 +161,27 @@ export const AdminDashboardPage: React.FC = () => {
         {/* Pending Events */}
         <div className="space-y-4">
           <div className="flex items-center justify-between border-b-2 border-white/10 pb-3">
-            <div className="flex items-center gap-2 font-extrabold text-lg text-white">
-              <Clock className="w-5 h-5 text-white" />
-              <h3>Pending Review ({pendingEvents.length})</h3>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2 font-extrabold text-lg text-white">
+                <Clock className="w-5 h-5 text-white" />
+                <h3>Pending Review ({pendingEvents.length})</h3>
+              </div>
+              <CustomDropdown 
+                className="w-auto min-w-[200px]"
+                value={statusFilter}
+                onChange={(e: any) => setStatusFilter(e.target.value)}
+                options={[
+                  { value: 'PENDING_ADMIN', label: 'Pending DSA Approval' },
+                  { value: 'CHANGES_REQUESTED', label: 'Changes Requested' }
+                ]}
+              />
             </div>
             <Link to="/admin/events/pending" className="px-4 py-2 bg-white text-gray-900 border border-transparent rounded-xl text-sm font-bold shadow-md hover:bg-gray-100 transition-all">
               View All
             </Link>
           </div>
 
-          {isLoading ? (
+          {isPendingLoading ? (
             <div className="space-y-3">
               {[1, 2].map((i) => (
                 <div key={i} className="bg-white/[0.05] hover:bg-white/[0.08] backdrop-blur-[12px] p-5 rounded-[18px] border border-white/10 hover:border-white/25 transition-all shadow-sm animate-pulse space-y-2">
