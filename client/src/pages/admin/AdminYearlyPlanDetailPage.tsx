@@ -27,6 +27,11 @@ import {
   X,
 } from 'lucide-react';
 import { adminService } from '@/services/admin.service';
+import { yearlyPlanService, ReviewYearlyPlanPayload } from '@/services/yearly-plan.service';
+import type { PlanStatus } from '@/types/yearly-plan.types';
+import { FeedbackHistory } from '@/components/shared/FeedbackHistory';
+import { Alert } from '@/components/ui/Alert';
+import { yearlyPlanService, ReviewYearlyPlanPayload } from '@/services/yearly-plan.service';
 import type { PlanStatus } from '@/types/yearly-plan.types';
 import { FeedbackHistory } from '@/components/shared/FeedbackHistory';
 import { Alert } from '@/components/ui/Alert';
@@ -37,6 +42,7 @@ export const AdminYearlyPlanDetailPage: React.FC = () => {
   const queryClient = useQueryClient();
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [serverError, setServerError] = useState<string | null>(null);
+  const [comment, setComment] = useState('');
 
   const {
     data: plan,
@@ -97,6 +103,24 @@ export const AdminYearlyPlanDetailPage: React.FC = () => {
     },
   });
 
+  const reviewMutation = useMutation({
+    meta: { notify: true },
+    mutationFn: (payload: ReviewYearlyPlanPayload) => yearlyPlanService.reviewPlan(id!, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['adminYearlyPlanDetail', id] });
+      queryClient.invalidateQueries({ queryKey: ['adminDashboard'] });
+      setComment('');
+    }
+  });
+
+  const handleApprove = () => {
+    reviewMutation.mutate({ decision: 'APPROVED', comment });
+  };
+
+  const handleRequestChanges = () => {
+    reviewMutation.mutate({ decision: 'CHANGES_REQUESTED', comment });
+  };
+
   const handleSaveAll = (data: any) => {
     updateMutation.mutate(data.events);
   };
@@ -121,7 +145,7 @@ export const AdminYearlyPlanDetailPage: React.FC = () => {
   if (isError || !plan) {
     return (
       <div className="max-w-md mx-auto py-12 space-y-4 text-center">
-        null /* Removed error alert */
+        <p className="text-red-500 font-bold">Failed to load plan</p>
         <Link
           to="/admin/yearly-plans"
           className="fixed top-4 left-4 sm:top-6 sm:left-6 z-[100] inline-flex items-center justify-center w-10 h-10 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white rounded-full transition-all cursor-pointer shadow-lg"
@@ -167,7 +191,8 @@ export const AdminYearlyPlanDetailPage: React.FC = () => {
 
   const isApproved = plan.status === 'APPROVED';
   const isChangesRequested = plan.status === 'CHANGES_REQUESTED';
-  const isPending = plan.status === 'PENDING';
+  const isPending = plan.status === 'PENDING_ADVISOR';
+  const isPendingAdmin = plan.status === 'PENDING_ADMIN';
   const isDraft = plan.status === 'DRAFT';
 
   return (
@@ -279,9 +304,9 @@ export const AdminYearlyPlanDetailPage: React.FC = () => {
               ? 'bg-transparent border-forest-ink text-forest-ink font-bold'
               : 'bg-lumen-stone border-vast-ink text-fog'
           }`}>
-            <p className="text-xs font-bold">3. Official Record</p>
+            <p className="text-xs font-bold">3. Official Record / DSA Admin</p>
             <p className="text-[10px] opacity-80">
-              {isApproved ? 'Approved & Recorded' : 'Awaiting Final Record'}
+              {isApproved ? 'Approved & Recorded' : (plan.status === 'PENDING_ADMIN' ? 'Under DSA Admin Review' : 'Awaiting Final Record')}
             </p>
           </div>
         </div>
@@ -309,8 +334,6 @@ export const AdminYearlyPlanDetailPage: React.FC = () => {
             <span>Planned Calendar Events ({fields.length})</span>
           </h2>
         </div>
-
-        {null}
 
         {fields.length === 0 ? (
           <p className="text-xs text-fog py-4 text-center">No events in this annual plan.</p>
@@ -506,9 +529,64 @@ export const AdminYearlyPlanDetailPage: React.FC = () => {
           </form>
         )}
       </div>
+
+      {/* Review Comments & Decision Controls */}
+      <div className="bg-lumen-cream p-6 rounded-cards border border-vast-ink/20 space-y-4">
+        <h2 className="text-base font-bold text-vast-ink border-b border-vast-ink/20 pb-3 flex items-center gap-2">
+          <MessageSquare className="w-4 h-4 text-ember-glow" />
+          <span>DSA Admin Feedback &amp; Decision</span>
+        </h2>
+
+        {!isApproved ? (
+          <div className="space-y-4 pt-2">
+            <div className="space-y-1">
+              <label className="text-xs font-semibold text-vast-ink font-medium">
+                Admin Comments / Revision Instructions
+              </label>
+              <textarea
+                rows={4}
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                placeholder="Type revision comments or feedback notes for the society officers..."
+                className="w-full bg-transparent text-vast-ink placeholder:text-fog text-sm rounded-inputs border border-vast-ink/20 p-3.5 transition-all outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                disabled={!isPendingAdmin}
+              />
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-center gap-3 pt-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="lg"
+                className="w-full sm:w-1/2"
+                isLoading={reviewMutation.isPending}
+                onClick={handleRequestChanges}
+                leftIcon={<Send className="w-4 h-4" />}
+                disabled={!isPendingAdmin}
+              >
+                Request Changes
+              </Button>
+
+              <Button
+                type="button"
+                variant="primary"
+                size="lg"
+                className="w-full sm:w-1/2"
+                isLoading={reviewMutation.isPending}
+                onClick={handleApprove}
+                leftIcon={<CheckCircle2 className="w-5 h-5" />}
+                disabled={!isPendingAdmin}
+              >
+                Approve Plan
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <div className="p-4 bg-emerald-500/5 rounded-inputs border border-emerald-500/20 text-xs text-emerald-600 font-bold">
+            This plan was approved and locked. No further review modifications are required.
+          </div>
+        )}
+      </div>
     </div>
   );
 };
-
-
-

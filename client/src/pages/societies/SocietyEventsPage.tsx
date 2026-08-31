@@ -99,42 +99,28 @@ export const SocietyEventsPage: React.FC = () => {
 
   return (
     <div className="w-full max-w-[1440px] mx-auto text-left relative pb-20">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mb-4">
         <button
           onClick={() => navigate(-1)}
-          className="fixed top-4 left-4 sm:top-6 sm:left-6 z-[100] inline-flex items-center justify-center w-10 h-10 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white rounded-full transition-all cursor-pointer shadow-lg"
+          className="inline-flex items-center justify-center w-10 h-10 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white rounded-full transition-all cursor-pointer shadow-lg shrink-0"
           title="Go Back"
         >
           <ArrowLeft className="w-5 h-5" />
         </button>
-      </div>
-
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-        <div>
-          <h1 className="font-extrabold text-5xl sm:text-6xl text-white tracking-tight leading-tight drop-shadow-md">
-            Manage Events
-          </h1>
-          <p className="text-sm font-medium text-gray-400 mt-1">
-            View all your society events, track approvals, and update schedules.
-          </p>
-        </div>
-        
-        <div className="flex items-center shrink-0">
-          <Link
-            to="/events/create"
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-gray-900 hover:bg-gray-200 border border-white/20 rounded-xl text-sm font-bold transition-all shadow-lg"
-          >
-            <Plus className="w-4 h-4" />
-            <span>Create New Event</span>
-          </Link>
-        </div>
+        <Link
+          to="/events/create"
+          className="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-gray-900 hover:bg-gray-200 border border-white/20 rounded-xl text-sm font-bold transition-all shadow-lg shrink-0"
+        >
+          <Plus className="w-4 h-4" />
+          <span>Create New Event</span>
+        </Link>
       </div>
 
       {/* Filter Toolbar */}
-      <div className="relative z-[200] bg-white/[0.08] backdrop-blur-[20px] p-5 rounded-[18px] border border-white/20 space-y-4 shadow-[0_12px_40px_rgba(0,0,0,0.4)] w-full mb-8">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="relative w-full md:w-80 flex items-center shrink-0">
-            <div className="absolute left-3 text-gray-400 pointer-events-none flex items-center justify-center">
+      <div className="relative z-[200] bg-white/[0.08] backdrop-blur-[20px] p-3 rounded-[18px] border border-white/20 shadow-[0_12px_40px_rgba(0,0,0,0.4)] w-full mb-8">
+        <div className="flex flex-row items-center justify-between gap-3 overflow-x-auto custom-scrollbar">
+          <div className="relative w-64 shrink-0">
+            <div className="absolute left-3 text-gray-400 pointer-events-none flex items-center justify-center h-full">
               <Search className="w-4 h-4" />
             </div>
             <input
@@ -146,23 +132,28 @@ export const SocietyEventsPage: React.FC = () => {
             />
           </div>
 
-          <div className="flex flex-row items-center gap-2 sm:gap-4 w-full lg:w-auto">
-            <CustomDropdown className="flex-1 min-w-0 w-auto shrink-0" icon={<Calendar className="w-4 h-4" />} options={[{ value: 'all', label: 'All Event Timings' }, { value: 'this_week', label: 'This Week' }, { value: 'this_month', label: 'This Month' }, { value: 'upcoming', label: 'Upcoming' }, { value: 'past', label: 'Past Events' }]}
-              value={typeToggle}
-              onChange={(e: any) => { setTypeToggle(e.target.value); }}
-              placeholder="Event Timeline"
-            />
+          <div className="flex flex-row items-center gap-3 shrink-0">
+            <div className="w-44 shrink-0">
+              <CustomDropdown className="w-full" icon={<Calendar className="w-4 h-4" />} options={[{ value: 'all', label: 'All Event Timings' }, { value: 'this_week', label: 'This Week' }, { value: 'this_month', label: 'This Month' }, { value: 'upcoming', label: 'Upcoming' }, { value: 'past', label: 'Past Events' }]}
+                value={typeToggle}
+                onChange={(e: any) => { setTypeToggle(e.target.value); }}
+                placeholder="Event Timeline"
+              />
+            </div>
             
-            <CustomDropdown className="flex-1 min-w-0 w-auto shrink-0" icon={<Filter className="w-4 h-4" />} options={[{ value: "", label: "All Statuses" }, { value: 'PENDING_ADMIN', label: 'Pending Review' }, { value: 'PUBLISHED', label: 'Published / Approved' }, { value: 'CHANGES_REQUESTED', label: 'Changes Requested' }, { value: 'DRAFT', label: 'Draft' }]}
-              value={statusFilter}
-              onChange={(e: any) => { setStatusFilter(e.target.value); }}
-              placeholder="All Statuses"
-            />
+            <div className="w-44 shrink-0">
+              <CustomDropdown className="w-full" icon={<Filter className="w-4 h-4" />} options={[{ value: "", label: "All Statuses" }, { value: 'PENDING_ADMIN', label: 'Pending Review' }, { value: 'PUBLISHED', label: 'Published / Approved' }, { value: 'CHANGES_REQUESTED', label: 'Changes Requested' }, { value: 'DRAFT', label: 'Draft' }]}
+                value={statusFilter}
+                onChange={(e: any) => { setStatusFilter(e.target.value); }}
+                placeholder="All Statuses"
+              />
+            </div>
 
             {(searchQuery || statusFilter || typeToggle !== 'all') && (
               <button
                 onClick={handleClearFilters}
-                className="flex items-center justify-center gap-2 p-2 text-red-400 hover:text-white bg-red-500/10 hover:bg-red-500/30 rounded-xl transition-all ml-auto"
+                className="flex items-center justify-center p-2 text-red-400 hover:text-white bg-red-500/10 hover:bg-red-500/30 rounded-xl transition-all shrink-0"
+                title="Clear Filters"
               >
                 <FilterX className="w-4 h-4" />
               </button>

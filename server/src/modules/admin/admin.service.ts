@@ -70,7 +70,7 @@ export class AdminService {
       }),
       this.prisma.society.count({ where: { user: { isActive: false } } }),
       this.prisma.yearlyPlan.count({
-        where: { status: PlanStatus.PENDING },
+        where: { status: PlanStatus.PENDING_ADMIN },
       }),
       this.prisma.yearlyPlan.count({
         where: { status: PlanStatus.APPROVED },

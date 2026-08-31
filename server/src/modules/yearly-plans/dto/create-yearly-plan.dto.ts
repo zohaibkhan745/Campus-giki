@@ -22,7 +22,7 @@ import {
  */
 export enum SocietyAllowedPlanStatus {
   DRAFT = 'DRAFT',
-  PENDING = 'PENDING',
+  PENDING_ADVISOR = 'PENDING_ADVISOR',
 }
 
 export class PlannedEventItemDto {
@@ -73,7 +73,7 @@ export class CreateYearlyPlanDto {
 
   @ApiPropertyOptional({ enum: SocietyAllowedPlanStatus, default: SocietyAllowedPlanStatus.DRAFT })
   @IsOptional()
-  @IsEnum(SocietyAllowedPlanStatus, { message: 'Status must be DRAFT or PENDING' })
+  @IsEnum(SocietyAllowedPlanStatus, { message: 'Status must be DRAFT or PENDING_ADVISOR' })
   status?: SocietyAllowedPlanStatus;
 
   @ApiProperty({ type: [PlannedEventItemDto] })

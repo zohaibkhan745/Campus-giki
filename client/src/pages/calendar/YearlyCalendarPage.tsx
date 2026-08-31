@@ -97,7 +97,7 @@ export const YearlyCalendarPage: React.FC = () => {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['myYearlyPlans'] });
       queryClient.invalidateQueries({ queryKey: ['societyDashboard'] });
-      if (variables.status === 'PENDING') {
+      if (variables.status === 'PENDING_ADVISOR' as PlanStatus) {
         setSuccessMessage('Yearly calendar plan submitted for advisor review successfully!');
         setTimeout(() => navigate(-1), 1500);
       } else {
@@ -117,7 +117,7 @@ export const YearlyCalendarPage: React.FC = () => {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['myYearlyPlans'] });
       queryClient.invalidateQueries({ queryKey: ['societyDashboard'] });
-      if (variables.status === 'PENDING') {
+      if (variables.status === 'PENDING_ADVISOR' as PlanStatus) {
         setSuccessMessage('Revised yearly plan resubmitted for advisor review successfully!');
         setTimeout(() => navigate(-1), 1500);
       } else {
@@ -146,8 +146,8 @@ export const YearlyCalendarPage: React.FC = () => {
   const handleSubmitForReview = (data: YearlyPlanFormData) => {
     setServerError('');
     setSuccessMessage(null);
-    if (existingPlan) updateMutation.mutate({ payload: cleanData(data), status: 'PENDING' });
-    else createMutation.mutate({ payload: cleanData(data), status: 'PENDING' });
+    if (existingPlan) updateMutation.mutate({ payload: cleanData(data), status: 'PENDING_ADVISOR' as PlanStatus });
+    else createMutation.mutate({ payload: cleanData(data), status: 'PENDING_ADVISOR' as PlanStatus });
   };
 
   const isSaving = createMutation.isPending || updateMutation.isPending;
@@ -174,12 +174,12 @@ export const YearlyCalendarPage: React.FC = () => {
             <span className={cn(
               "inline-flex items-center gap-1.5 px-3 py-1 bg-white/10 backdrop-blur-md border rounded-inputs text-xs font-semibold",
               existingPlan.status === 'APPROVED' ? "border-emerald-500/50 text-emerald-400" :
-              existingPlan.status === 'PENDING' ? "border-amber-500/50 text-amber-400" :
+              (existingPlan.status === 'PENDING_ADVISOR' || existingPlan.status === 'PENDING_ADMIN') ? "border-amber-500/50 text-amber-400" :
               existingPlan.status === 'CHANGES_REQUESTED' ? "border-red-500/50 text-red-400" :
               "border-white/20 text-white"
             )}>
               {existingPlan.status === 'APPROVED' && <CheckCircle2 className="w-3.5 h-3.5" />}
-              {existingPlan.status === 'PENDING' && <Clock className="w-3.5 h-3.5" />}
+              {(existingPlan.status === 'PENDING_ADVISOR' || existingPlan.status === 'PENDING_ADMIN') && <Clock className="w-3.5 h-3.5" />}
               {existingPlan.status === 'CHANGES_REQUESTED' && <AlertCircle className="w-3.5 h-3.5" />}
               <span>{existingPlan.status}</span>
             </span>

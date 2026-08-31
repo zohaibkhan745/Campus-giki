@@ -109,7 +109,7 @@ export class YearlyPlansController {
   }
 
   @Patch(':id/review')
-  @Auth(Role.ADVISOR)
+  @Auth(Role.ADVISOR, Role.DSA_ADMIN)
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({
@@ -134,6 +134,6 @@ export class YearlyPlansController {
     @CurrentUser() user: UserProfileDto,
     @Body() dto: ReviewYearlyPlanDto,
   ): Promise<YearlyPlanResponseDto> {
-    return this.yearlyPlansService.reviewYearlyPlan(id, user.id, dto);
+    return this.yearlyPlansService.reviewYearlyPlan(id, user.id, user.role, dto);
   }
 }

@@ -19,7 +19,7 @@ export class AdvisorPlanItemDto {
   @ApiProperty({ example: 2026 })
   year: number;
 
-  @ApiProperty({ enum: PlanStatus, example: PlanStatus.PENDING })
+  @ApiProperty({ enum: PlanStatus, example: PlanStatus.PENDING_ADVISOR })
   status: PlanStatus;
 
   @ApiPropertyOptional({ example: 'Please revise event dates in November' })

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, GraduationCap, ArrowRight } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { loginSchema, type LoginFormData } from '@/lib/validations/auth.schema';
@@ -70,10 +70,10 @@ export const LoginPage: React.FC = () => {
     <main className="relative z-10 flex flex-col items-center justify-center w-full h-full p-4 space-y-6">
         
         <div className="text-center space-y-2">
-            <div className="flex items-center justify-center space-x-3">
+            <Link to="/" className="flex items-center justify-center space-x-3 hover:opacity-80 transition-opacity">
                 <GraduationCap className="w-8 h-8 text-white" />
                 <h1 className="text-3xl font-bold tracking-wide">Campus GIKI</h1>
-            </div>
+            </Link>
             <p className="text-gray-300 text-sm font-medium">Centralized Platform for GIKI Students & Societies</p>
         </div>
 

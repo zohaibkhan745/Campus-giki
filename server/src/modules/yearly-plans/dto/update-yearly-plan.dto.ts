@@ -7,7 +7,7 @@ import { PlannedEventItemDto } from './create-yearly-plan.dto';
 export class UpdateYearlyPlanDto {
   @ApiPropertyOptional({ enum: SocietyAllowedPlanStatus })
   @IsOptional()
-  @IsEnum(SocietyAllowedPlanStatus, { message: 'Status must be DRAFT or PENDING' })
+  @IsEnum(SocietyAllowedPlanStatus, { message: 'Status must be DRAFT or PENDING_ADVISOR' })
   status?: SocietyAllowedPlanStatus;
 
   @ApiPropertyOptional({ type: [PlannedEventItemDto] })

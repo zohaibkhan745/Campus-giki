@@ -10,7 +10,7 @@ import { CreateYearlyPlanDto } from './dto/create-yearly-plan.dto';
 import { UpdateYearlyPlanDto } from './dto/update-yearly-plan.dto';
 import { ReviewYearlyPlanDto, ReviewDecision } from './dto/review-yearly-plan.dto';
 import { YearlyPlanResponseDto } from './dto/yearly-plan-response.dto';
-import { PlanStatus, Society } from '@prisma/client';
+import { PlanStatus, Society, Role } from '@prisma/client';
 
 @Injectable()
 export class YearlyPlansService {
@@ -201,9 +201,9 @@ export class YearlyPlansService {
       );
     }
 
-    if (plan.status === PlanStatus.PENDING && !dto.status) {
+    if ((plan.status === PlanStatus.PENDING_ADVISOR || plan.status === PlanStatus.PENDING_ADMIN) && !dto.status) {
       throw new ForbiddenException(
-        'Cannot edit a plan that is currently PENDING review by your faculty advisor.',
+        'Cannot edit a plan that is currently pending review.',
       );
     }
 
@@ -266,6 +266,7 @@ export class YearlyPlansService {
   async reviewYearlyPlan(
     planId: string,
     userId: string,
+    role: Role,
     dto: ReviewYearlyPlanDto,
   ): Promise<YearlyPlanResponseDto> {
     const plan = await this.prisma.yearlyPlan.findUnique({
@@ -283,28 +284,33 @@ export class YearlyPlansService {
       throw new NotFoundException(`Yearly plan with ID '${planId}' was not found`);
     }
 
-    // Ownership Guard: Advisor must be assigned to this society
-    if (!plan.society.advisor || plan.society.advisor.userId !== userId) {
-      throw new ForbiddenException(
-        'Access denied: You are not the assigned faculty advisor for this society',
-      );
+    if (role === Role.ADVISOR) {
+      if (!plan.society.advisor || plan.society.advisor.userId !== userId) {
+        throw new ForbiddenException(
+          'Access denied: You are not the assigned faculty advisor for this society',
+        );
+      }
+      if (plan.status !== PlanStatus.PENDING_ADVISOR) {
+        throw new BadRequestException(
+          'Plan is not pending advisor review.',
+        );
+      }
+    } else if (role === Role.DSA_ADMIN) {
+      if (plan.status !== PlanStatus.PENDING_ADMIN) {
+        throw new BadRequestException(
+          'Plan is not pending DSA Admin review.',
+        );
+      }
+    } else {
+      throw new ForbiddenException('Invalid role for review');
     }
 
-    // Workflow State Guards
-    if (plan.status === PlanStatus.APPROVED) {
-      throw new BadRequestException(
-        'This yearly plan has already been approved and is locked against further review decisions.',
-      );
+    let newStatus: PlanStatus;
+    if (role === Role.ADVISOR) {
+      newStatus = dto.decision === ReviewDecision.APPROVED ? PlanStatus.PENDING_ADMIN : PlanStatus.CHANGES_REQUESTED;
+    } else {
+      newStatus = dto.decision === ReviewDecision.APPROVED ? PlanStatus.APPROVED : PlanStatus.CHANGES_REQUESTED;
     }
-
-    if (plan.status === PlanStatus.DRAFT) {
-      throw new BadRequestException(
-        'Cannot review a DRAFT plan until it is formally submitted by the society.',
-      );
-    }
-
-    const newStatus =
-      dto.decision === ReviewDecision.APPROVED ? PlanStatus.APPROVED : PlanStatus.CHANGES_REQUESTED;
 
     let newAdvisorComments = plan.advisorComments;
     if (dto.comment && dto.comment.trim() !== '') {

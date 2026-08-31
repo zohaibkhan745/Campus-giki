@@ -69,7 +69,7 @@ export const AdminYearlyPlansPage: React.FC = () => {
             <span>APPROVED</span>
           </span>
         );
-      case 'PENDING':
+      case 'PENDING_ADMIN':
         return (
           <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-transparent border border-ember-glow border border-amber-500/20 text-ember-glow rounded-inputs text-xs font-semibold">
             <Clock className="w-3.5 h-3.5" />
@@ -143,7 +143,7 @@ export const AdminYearlyPlansPage: React.FC = () => {
               placeholder="All Submitted Plans"
               options={[
                 { value: '', label: 'All Submitted Plans' },
-                { value: 'PENDING', label: 'Pending Review' },
+                { value: 'PENDING_ADMIN', label: 'Pending Review' },
                 { value: 'APPROVED', label: 'Approved' },
                 { value: 'CHANGES_REQUESTED', label: 'Changes Requested' }
               ]}
