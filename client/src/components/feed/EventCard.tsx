@@ -56,7 +56,7 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
     };
   }, [dropdownOpen]);
 
-  const coverImage = resolveImageUrl(item.coverImageUrl) || 'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?auto=format&fit=crop&w=800&q=80';
+  const coverImage = resolveImageUrl(item.coverImageUrl);
   const logoImage = getSocietyLogo(item.society.logoUrl);
   const authorName = item.society.name;
 
@@ -96,7 +96,11 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
         
         {/* FRONT FACE */}
         <div className="card-face card-front">
-          <img src={coverImage} alt="Event Cover" className="card-image" />
+          {coverImage ? (
+            <img src={coverImage} alt="Event Cover" className="card-image" />
+          ) : (
+            <div className="glass-card-bg"></div>
+          )}
 
           <div className="card-top-bar">
               <div className="profile-header">
@@ -219,7 +223,11 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
 
         {/* BACK FACE */}
         <div className="card-face card-back">
-          <img src={coverImage} alt="Event Cover Background" className="back-bg-image" />
+          {coverImage ? (
+            <img src={coverImage} alt="Event Cover Background" className="back-bg-image" />
+          ) : (
+            <div className="glass-card-bg"></div>
+          )}
           <div className="card-back-inner">
             <button 
               type="button" 
