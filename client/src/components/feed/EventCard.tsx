@@ -168,7 +168,7 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
                       style={{ position: 'fixed', bottom: window.innerHeight - dropdownPos.top + 50, left: dropdownPos.left, zIndex: 9999, margin: 0 }}
                       onClick={(e) => e.stopPropagation()}
                     >
-                      {canEdit && <button className="card-dropdown-item" onClick={(e) => { 
+                      {canEdit && !((item as any).approvalStatus === 'CHANGES_REQUESTED' || (item as any).approvalStatus?.includes('PENDING')) && <button className="card-dropdown-item" onClick={(e) => { 
                         e.stopPropagation(); setDropdownOpen(false); 
                         if(onEdit) onEdit(); else navigate(`/events/${item.id}/edit`);
                       }}>Edit Event</button>}
