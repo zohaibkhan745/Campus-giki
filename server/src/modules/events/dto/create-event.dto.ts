@@ -109,6 +109,7 @@ export class CreateEventDto {
   @Transform(({ value }: { value: unknown }) =>
     typeof value === 'string' ? value.trim() : (value as string),
   )
+  @Matches(/^[a-zA-Z\s.,-]+$/, { message: 'Name can only contain alphabets, spaces, dots, commas, and dashes' })
   inChargeName?: string;
 
   @ApiPropertyOptional({ example: '2022000' })
@@ -117,6 +118,7 @@ export class CreateEventDto {
   @Transform(({ value }: { value: unknown }) =>
     typeof value === 'string' ? value.trim() : (value as string),
   )
+  @Matches(/^\d{7}$/, { message: 'Registration number must be exactly 7 digits' })
   inChargeRegNum?: string;
 
   @ApiPropertyOptional({ example: '+923001234567' })
@@ -125,5 +127,6 @@ export class CreateEventDto {
   @Transform(({ value }: { value: unknown }) =>
     typeof value === 'string' ? value.trim() : (value as string),
   )
+  @Matches(/^\d{11}$/, { message: 'Contact number must be exactly 11 digits' })
   inChargeContact?: string;
 }

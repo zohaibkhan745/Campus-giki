@@ -55,8 +55,10 @@ export const AdminPendingEventsPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   
   const [societyFilter, setSocietyFilter] = useState<string>('');
-  const [fromDate, setFromDate] = useState<string>(defaultFrom);
-  const [toDate, setToDate] = useState<string>(defaultTo);
+  const [statusFilter, setStatusFilter] = useState<string>("PENDING_ADMIN");
+  const [fromDate, setFromDate] = useState<string>("");
+  const [toDate, setToDate] = useState<string>("");
+  
   const [typeToggle, setTypeToggle] = useState(defaultType);
 
   const setAllFilter = () => { setFromDate(''); setToDate(''); setTypeToggle('all'); /* reset handled by queryKey */ };
@@ -96,7 +98,7 @@ export const AdminPendingEventsPage: React.FC = () => {
     hasNextPage,
     isFetchingNextPage
   } = useInfiniteQuery({
-    queryKey: ['adminEventsList', statusFilter, societyFilter, searchQuery, typeToggle],
+    queryKey: ['adminEventsList', statusFilter, societyFilter, searchQuery, fromDate, toDate, typeToggle],
     initialPageParam: 1,
     queryFn: ({ pageParam = 1 }) => adminService.getAllEvents({
       page: pageParam,
@@ -104,6 +106,8 @@ export const AdminPendingEventsPage: React.FC = () => {
       status: statusFilter,
       society: societyFilter || undefined,
       search: searchQuery || undefined,
+        from: fromDate || undefined,
+        to: toDate || undefined,
       
       type: (typeToggle === 'upcoming' || typeToggle === 'past') ? typeToggle : undefined
     }),

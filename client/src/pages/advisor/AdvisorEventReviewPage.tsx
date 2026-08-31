@@ -304,7 +304,7 @@ export const AdvisorEventReviewPage: React.FC = () => {
                 <label className="block text-xs uppercase tracking-wider text-gray-400 font-semibold mb-1">
                   Event Type
                 </label>
-                <CustomDropdown placeholder="Select Type" disabled={true} options={[{value:"Workshop",label:"Workshop"},{value:"Seminar",label:"Seminar"},{value:"Hackathon",label:"Hackathon"},{value:"Competition",label:"Competition"},{value:"Social",label:"Social"},{value:"Other",label:"Other"}]} {...register('eventType')} />
+                <CustomDropdown placeholder="Select Type" disabled={true} options={[{value:"Workshop",label:"Workshop"},{value:"Seminar",label:"Seminar"},{value:"Hackathon",label:"Hackathon"},{value:"Competition",label:"Competition"},{value:"Social",label:"Social"},{value:"Other",label:"Other"}]} value={eventData.eventType} />
               </div>
               <Input
                 type="date"

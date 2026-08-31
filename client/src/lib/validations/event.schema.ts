@@ -37,9 +37,9 @@ export const eventFormSchema = z
     videoUrl: optionalUrl,
     registrationLink: optionalUrl,
     eventType: z.string().min(1, 'Event Type is required'),
-    inChargeName: z.string().optional(),
-    inChargeRegNum: z.string().optional(),
-    inChargeContact: z.string().optional(),
+    inChargeName: z.string().min(1, "Name is required").regex(/^[a-zA-Z\s.,-]+$/, "Name can only contain alphabets, spaces, dots, commas, and dashes"),
+    inChargeRegNum: z.string().min(1, "Reg. No is required").regex(/^\d{7}$/, "Registration number must be exactly 7 digits"),
+    inChargeContact: z.string().min(1, "Contact is required").regex(/^\d{11}$/, "Contact number must be exactly 11 digits"),
     submitForApproval: z.boolean().optional(),
   })
   .refine(

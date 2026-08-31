@@ -161,11 +161,12 @@ export const AdminDashboardPage: React.FC = () => {
         {/* Pending Events */}
         <div className="space-y-4">
           <div className="flex items-center justify-between border-b-2 border-white/10 pb-3">
+            <div className="flex items-center gap-2 font-extrabold text-lg text-white">
+              <Clock className="w-5 h-5 text-white" />
+              <h3>Pending Review ({pendingEvents.length})</h3>
+            </div>
+            
             <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2 font-extrabold text-lg text-white">
-                <Clock className="w-5 h-5 text-white" />
-                <h3>Pending Review ({pendingEvents.length})</h3>
-              </div>
               <CustomDropdown 
                 className="w-auto min-w-[200px]"
                 value={statusFilter}
@@ -175,10 +176,10 @@ export const AdminDashboardPage: React.FC = () => {
                   { value: 'CHANGES_REQUESTED', label: 'Changes Requested' }
                 ]}
               />
+              <Link to="/admin/events/pending" className="px-4 py-2 bg-white text-gray-900 border border-transparent rounded-xl text-sm font-bold shadow-md hover:bg-gray-100 transition-all">
+                View All
+              </Link>
             </div>
-            <Link to="/admin/events/pending" className="px-4 py-2 bg-white text-gray-900 border border-transparent rounded-xl text-sm font-bold shadow-md hover:bg-gray-100 transition-all">
-              View All
-            </Link>
           </div>
 
           {isPendingLoading ? (

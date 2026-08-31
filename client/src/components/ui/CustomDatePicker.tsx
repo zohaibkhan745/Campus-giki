@@ -34,6 +34,18 @@ export function CustomDatePicker({ value, onChange, label = 'Select Date', place
   const [monthOpen, setMonthOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+    useEffect(() => {
+    if (value) {
+      const d = new Date(value);
+      if (!isNaN(d.getTime())) {
+        setSelectedDate(d);
+        setViewDate(d);
+      }
+    } else {
+      setSelectedDate(null);
+    }
+  }, [value]);
+
   const [menuStyle, setMenuStyle] = useState<React.CSSProperties>({});
 
   const updatePosition = () => {

@@ -219,26 +219,25 @@ export const EditEventPage: React.FC = () => {
         {eventData.approvalStatus === 'CHANGES_REQUESTED' && (eventData.advisorComments || eventData.dsaComments) && (() => {
           const isByAdmin = eventData.lastChangeRequestBy === 'DSA_ADMIN';
           return (
-            <div className={ackdrop-blur-md p-5 rounded-[18px] shadow-lg mb-6 border }>
-              <h3 className={ont-bold mb-3 flex items-center gap-2 }>
-                <ShieldCheck className="w-5 h-5" />
+            <div className={`backdrop-blur-md p-5 rounded-[18px] shadow-lg mb-6 border ${isByAdmin ? 'bg-yellow-500/10 border-yellow-500/30' : 'bg-orange-500/10 border-orange-500/30'}`}>
+              <h3 className={`font-bold mb-3 flex items-center gap-2 ${isByAdmin ? 'text-yellow-400' : 'text-orange-400'}`}>
                 Changes Requested by {isByAdmin ? 'Admin' : 'Advisor'}
               </h3>
-              <div className={space-y-4 text-sm leading-relaxed }>
+              <div className={`space-y-4 text-sm leading-relaxed ${isByAdmin ? 'text-yellow-200/90' : 'text-orange-200/90'}`}>
                 {eventData.advisorComments && (
                   <div>
-                    <span className={ont-semibold block mb-1 }>Advisor Notes:</span>
+                    <span className={`font-semibold block mb-1 ${isByAdmin ? 'text-yellow-300' : 'text-orange-300'}`}>Advisor Notes:</span>
                     <p>{eventData.advisorComments}</p>
                   </div>
                 )}
                 {eventData.dsaComments && (
                   <div>
-                    <span className={ont-semibold block mb-1 }>DSA / Admin Notes:</span>
+                    <span className={`font-semibold block mb-1 ${isByAdmin ? 'text-yellow-300' : 'text-orange-300'}`}>DSA / Admin Notes:</span>
                     <p>{eventData.dsaComments}</p>
                   </div>
                 )}
               </div>
-              <p className={mt-4 text-xs font-medium }>Please address the feedback above and resubmit the event for review.</p>
+              <p className={`mt-4 text-xs font-medium ${isByAdmin ? 'text-yellow-300/80' : 'text-orange-300/80'}`}>Please address the feedback above and resubmit the event for review.</p>
             </div>
           );
         })()}
