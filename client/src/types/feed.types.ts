@@ -33,6 +33,7 @@ export interface PostFeedItem {
   id: string;
   createdAt: string;
   society: FeedSociety;
+  title?: string;
   content: string;
   imageUrl?: string | null;
   videoUrl?: string | null;

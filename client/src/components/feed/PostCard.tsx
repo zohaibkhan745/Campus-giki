@@ -59,7 +59,7 @@ const PostCardComponent: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) 
 
   const coverImage = item.imageUrl || 'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?auto=format&fit=crop&w=800&q=80';
   const logoImage = getSocietyLogo(item.society.logoUrl);
-  const authorName = item.society.name;
+  const authorName = item.isAdminPost ? 'Dean Student Affairs' : item.society.name;
 
   const formattedDate = new Date(item.createdAt).toLocaleDateString('en-US', {
     month: 'short',
@@ -142,8 +142,12 @@ const PostCardComponent: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) 
       <div className="card-flipper">
         
         {/* FRONT FACE */}
-        <div className="card-face card-front">
-          <div className="glass-card-bg"></div>
+        <div className="card-face card-front" style={{ background: item.imageUrl ? 'transparent' : undefined }}>
+          {item.imageUrl ? (
+            <img src={resolveImageUrl(item.imageUrl)} alt="Post Cover" className="card-image" />
+          ) : (
+            <div className="glass-card-bg"></div>
+          )}
 
           <div className="card-top-bar">
               <div className="profile-header">
@@ -165,6 +169,9 @@ const PostCardComponent: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) 
               <div className="user-profile">
 
               <div className="front-text-content" ref={textContentRef}>
+                {item.title && (
+                  <h3 className="card-title font-bold mb-2 text-white/90">{item.title}</h3>
+                )}
                 <p className="front-description whitespace-pre-wrap" ref={frontDescRef}>{item.content}</p>
               </div>
             </div>

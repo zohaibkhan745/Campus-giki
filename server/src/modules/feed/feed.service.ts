@@ -82,7 +82,7 @@ export class FeedService {
       const societyInfo = isAdminPost
         ? {
             id: 'giki-admin',
-            name: 'GIKI',
+            name: 'Dean Student Affairs',
             logoUrl: null,
             category: { id: 'admin', name: 'Administration', slug: 'administration' },
           }
@@ -93,6 +93,7 @@ export class FeedService {
         id: post.id,
         createdAt: post.createdAt,
         society: societyInfo,
+        title: post.title,
         content: post.content,
         imageUrl: post.imageUrl,
         videoUrl: post.videoUrl,

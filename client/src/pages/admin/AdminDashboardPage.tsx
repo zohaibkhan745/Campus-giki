@@ -176,7 +176,7 @@ export const AdminDashboardPage: React.FC = () => {
                   { value: 'CHANGES_REQUESTED', label: 'Changes Requested' }
                 ]}
               />
-              <Link to="/admin/events/pending" className="px-4 py-2 bg-white text-gray-900 border border-transparent rounded-xl text-sm font-bold shadow-md hover:bg-gray-100 transition-all">
+              <Link to="/admin/events/pending" className="whitespace-nowrap px-4 py-2 bg-white text-gray-900 border border-transparent rounded-xl text-sm font-bold shadow-md hover:bg-gray-100 transition-all">
                 View All
               </Link>
             </div>

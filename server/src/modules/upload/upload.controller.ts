@@ -7,7 +7,7 @@ import { randomUUID } from 'crypto';
 import * as fs from 'fs';
 
 const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const MAX_FILE_SIZE = 8 * 1024 * 1024; // 8MB
 
 @ApiTags('Uploads')
 @Controller('uploads')

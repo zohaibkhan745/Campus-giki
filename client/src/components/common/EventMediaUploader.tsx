@@ -53,20 +53,14 @@ export const EventMediaUploader: React.FC<EventMediaUploaderProps> = ({
     setError(null);
 
     const isImage = file.type.startsWith('image/');
-    const isVideo = file.type.startsWith('video/');
 
-    if (!isImage && !isVideo) {
-      setError('Please select a valid image (PNG, JPG, WebP, GIF) or video (MP4, WebM, MOV, MKV)');
+    if (!isImage) {
+      setError('Only image files (PNG, JPG, WebP, GIF) are allowed for events.');
       return;
     }
 
-    if (isImage && file.size > 5 * 1024 * 1024) {
-      setError('Image file size must be under 5MB');
-      return;
-    }
-
-    if (isVideo && file.size > 50 * 1024 * 1024) {
-      setError('Video file size must be under 50MB');
+    if (isImage && file.size > 8 * 1024 * 1024) {
+      setError('Image file size must be under 8MB');
       return;
     }
 
@@ -243,7 +237,7 @@ export const EventMediaUploader: React.FC<EventMediaUploaderProps> = ({
                     </div>
                     <div>
                       <div className="upload-title">Click to upload or drag & drop</div>
-                      <div className="upload-sub">Supports image and video (max 200MB)</div>
+                      <div className="upload-sub">Supports image only (max 8MB)</div>
                     </div>
                   </>
                 ) : (
@@ -253,7 +247,7 @@ export const EventMediaUploader: React.FC<EventMediaUploaderProps> = ({
                     </div>
                     <div>
                       <p className="font-extrabold text-vast-ink text-sm">Click to upload or drag and drop</p>
-                      <p className="text-xs text-fog mt-1 font-medium">JPEG, PNG, GIF, MP4, WebM (Max 50MB)</p>
+                      <p className="text-xs text-fog mt-1 font-medium">JPEG, PNG, GIF (Max 8MB)</p>
                     </div>
                   </>
                 )}
@@ -266,7 +260,7 @@ export const EventMediaUploader: React.FC<EventMediaUploaderProps> = ({
       <input
         ref={fileInputRef}
         type="file"
-        accept="image/*,video/*"
+        accept="image/*"
         disabled={disabled || isUploading}
         onChange={(e) => {
           if (e.target.files && e.target.files[0]) {

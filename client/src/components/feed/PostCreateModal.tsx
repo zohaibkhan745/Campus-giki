@@ -172,11 +172,11 @@ export const PostCreateModal: React.FC<PostCreateModalProps> = ({
             />
 
             {previewUrl && (
-              <div className="relative rounded-2xl overflow-hidden border border-vast-ink/20 bg-black group max-h-64 flex items-center justify-center my-2">
+              <div className="relative rounded-2xl overflow-hidden border border-vast-ink/20 bg-black group aspect-square flex items-center justify-center my-2">
                 <img
                     src={getMediaUrl(previewUrl)}
                   alt="Attachment preview"
-                  className="w-full h-auto max-h-64 object-cover"
+                  className="w-full h-full object-cover"
                 />
 
                 {isUploading && (
