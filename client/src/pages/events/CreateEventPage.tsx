@@ -656,7 +656,7 @@ export const CreateEventPage: React.FC = () => {
           </div>
 
           <div className="field-group">
-            <div className="max-w-md">
+            <div className="max-w-md mx-auto">
               <EventMediaUploader
                 coverImageUrl={coverImageUrl}
                 videoUrl={videoUrl}

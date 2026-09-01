@@ -164,7 +164,7 @@ export const YearlyCalendarPage: React.FC = () => {
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
-          <h1 className="text-3xl font-extrabold text-white tracking-tight">
+          <h1 className="text-4xl font-extrabold text-white tracking-tight">
             Society Annual Calendar ({currentYear}-{currentYear + 1})
           </h1>
         </div>
@@ -172,16 +172,23 @@ export const YearlyCalendarPage: React.FC = () => {
         {existingPlan && (
           <div className="flex flex-col items-end gap-2">
             <span className={cn(
-              "inline-flex items-center gap-1.5 px-3 py-1 bg-white/10 backdrop-blur-md border rounded-inputs text-xs font-semibold",
-              existingPlan.status === 'APPROVED' ? "border-emerald-500/50 text-emerald-400" :
-              (existingPlan.status === 'PENDING_ADVISOR' || existingPlan.status === 'PENDING_ADMIN') ? "border-amber-500/50 text-amber-400" :
-              existingPlan.status === 'CHANGES_REQUESTED' ? "border-red-500/50 text-red-400" :
-              "border-white/20 text-white"
+              "inline-flex items-center gap-1.5 px-3 py-1 backdrop-blur-md border rounded-inputs text-xs font-semibold",
+              existingPlan.status === 'APPROVED' ? "bg-emerald-500/10 border-emerald-500/50 text-emerald-400" :
+              existingPlan.status === 'PENDING_ADVISOR' ? "bg-amber-500/10 border-amber-500/50 text-amber-400" :
+              existingPlan.status === 'PENDING_ADMIN' ? "bg-amber-500/10 border-amber-500/50 text-amber-400" :
+              existingPlan.status === 'CHANGES_REQUESTED' ? "bg-red-500/10 border-red-500/50 text-red-400" :
+              "bg-white/10 border-white/20 text-white"
             )}>
               {existingPlan.status === 'APPROVED' && <CheckCircle2 className="w-3.5 h-3.5" />}
               {(existingPlan.status === 'PENDING_ADVISOR' || existingPlan.status === 'PENDING_ADMIN') && <Clock className="w-3.5 h-3.5" />}
               {existingPlan.status === 'CHANGES_REQUESTED' && <AlertCircle className="w-3.5 h-3.5" />}
-              <span>{existingPlan.status}</span>
+              <span>
+                {existingPlan.status === 'PENDING_ADVISOR' ? 'Pending Advisor' :
+                 existingPlan.status === 'PENDING_ADMIN' ? 'Pending DSA' :
+                 existingPlan.status === 'CHANGES_REQUESTED' ? 'Changes Requested' :
+                 existingPlan.status === 'APPROVED' ? 'Approved' :
+                 existingPlan.status}
+              </span>
             </span>
             
             {isReadOnly && (
@@ -245,7 +252,7 @@ export const YearlyCalendarPage: React.FC = () => {
                 
                 <div className="field-grid-3">
                   <div className="field-group">
-                    <label className="field-label">EVENT NAME #{index + 1} *</label>
+                    <label className="field-label">EVENT NAME #{index + 1}</label>
                     <div className={cn("input-box", errors.events?.[index]?.eventName && "error")}>
                       <input type="text" placeholder="e.g. Annual Hackathon" disabled={isReadOnly || isSaving} {...register(`events.${index}.eventName`)} />
                     </div>
@@ -287,7 +294,7 @@ export const YearlyCalendarPage: React.FC = () => {
                   </div>
 
                   <div className="field-group">
-                    <label className="field-label">DATE *</label>
+                    <label className="field-label">DATE (Tentative)</label>
                     <Controller
                       name={`events.${index}.startDate`}
                       control={control}
@@ -338,14 +345,15 @@ export const YearlyCalendarPage: React.FC = () => {
                   </div>
 
                   <div className="field-group">
-                    <label className="field-label">VENUE</label>
+                    <label className="field-label">VENUE (Tentative)</label>
                     <Controller
                       name={`events.${index}.venue`}
                       control={control}
                       render={({ field: rField }) => (
                         <CustomDropdown
                           value={customVenueRows[index] ? 'Custom (Add)' : rField.value}
-                          onChange={(val: string) => {
+                          onChange={(e: any) => {
+                            const val = typeof e === "string" ? e : e?.target?.value || "";
                             if (val === 'Custom (Add)') {
                               setCustomVenueRows(prev => ({...prev, [index]: true}));
                               rField.onChange('');
@@ -355,6 +363,7 @@ export const YearlyCalendarPage: React.FC = () => {
                             }
                           }}
                           options={[
+                            {label: "TBD", value: "TBD"},
                             {label: "Auditorium", value: "Auditorium"},
                             {label: "Faculty Club (Inside)", value: "Faculty Club (Inside)"},
                             {label: "Faculty Club (Outside)", value: "Faculty Club (Outside)"},

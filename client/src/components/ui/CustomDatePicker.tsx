@@ -55,7 +55,7 @@ export function CustomDatePicker({ value, onChange, label = 'Select Date', place
         position: 'absolute',
         top: rect.bottom + window.scrollY + 8,
         left: rect.left + window.scrollX,
-        width: 'max-content',
+        width: '300px',
         zIndex: 99999
       });
     }

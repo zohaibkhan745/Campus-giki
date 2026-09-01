@@ -53,8 +53,8 @@ const PostCardComponent: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) 
   
   const { isActive, openCard, closeCard } = useCardFlip(wrapperRef);
   const { user } = useAuth();
-  const canEditOrDelete = user?.role === 'DSA_ADMIN' || (user?.role === 'SOCIETY' && user.society?.id === item.society.id);
-  const canEdit = user?.role === 'SOCIETY' && user.society?.id === item.society.id;
+  const canEditOrDelete = user?.role === 'DSA_ADMIN' || (user?.role === 'SOCIETY' && user.society?.id === item.society?.id);
+  const canEdit = user?.role === 'SOCIETY' && user.society?.id === item.society?.id;
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const coverImage = item.imageUrl || 'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?auto=format&fit=crop&w=800&q=80';
@@ -176,7 +176,7 @@ const PostCardComponent: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) 
               </div>
             </div>
 
-            {showButton && (
+            {(showButton || canEditOrDelete) && (
               <div className="flex items-center gap-2 mt-auto w-full">
               {canEditOrDelete && (
                 <div className="menu-container shrink-0 h-full flex items-center">
@@ -225,13 +225,15 @@ const PostCardComponent: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) 
                   </div>
                 </div>, document.body
               )}
-              <button 
-                type="button" 
-                className="card-button open-details-btn visible flex-1" style={{ height: "48px", borderRadius: "9999px" }}
-                onClick={(e) => { e.stopPropagation(); openCard(false); }}
-              >
-                View Details
-              </button>
+              {showButton && (
+                <button 
+                  type="button" 
+                  className="card-button open-details-btn visible flex-1" style={{ height: "48px", borderRadius: "9999px" }}
+                  onClick={(e) => { e.stopPropagation(); openCard(false); }}
+                >
+                  View Details
+                </button>
+              )}
             </div>
             )}
           </div>

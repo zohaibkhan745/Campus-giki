@@ -27,7 +27,8 @@ import {
   X,
 } from 'lucide-react';
 import { adminService } from '@/services/admin.service';
-import { yearlyPlanService, ReviewYearlyPlanPayload } from '@/services/yearly-plan.service';
+import { yearlyPlanService } from '@/services/yearly-plan.service';
+import type { ReviewYearlyPlanPayload } from '@/services/yearly-plan.service';
 import type { PlanStatus } from '@/types/yearly-plan.types';
 import { FeedbackHistory } from '@/components/shared/FeedbackHistory';
 import { Alert } from '@/components/ui/Alert';
