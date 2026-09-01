@@ -31,10 +31,6 @@ import { yearlyPlanService, ReviewYearlyPlanPayload } from '@/services/yearly-pl
 import type { PlanStatus } from '@/types/yearly-plan.types';
 import { FeedbackHistory } from '@/components/shared/FeedbackHistory';
 import { Alert } from '@/components/ui/Alert';
-import { yearlyPlanService, ReviewYearlyPlanPayload } from '@/services/yearly-plan.service';
-import type { PlanStatus } from '@/types/yearly-plan.types';
-import { FeedbackHistory } from '@/components/shared/FeedbackHistory';
-import { Alert } from '@/components/ui/Alert';
 
 export const AdminYearlyPlanDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();

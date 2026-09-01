@@ -120,7 +120,7 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
               </div>
             </div>
 
-          <div className="card-overlay">
+          <div className={!coverImage ? 'glass-overlay' : 'card-overlay'}>
               <div className="user-profile">
 
               <div className="mt-2">

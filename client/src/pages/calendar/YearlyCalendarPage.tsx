@@ -44,7 +44,7 @@ export const YearlyCalendarPage: React.FC = () => {
   const currentYear = new Date().getFullYear();
   const existingPlan = plans.find((p) => p.year === currentYear) || plans[0];
 
-  const isReadOnly = existingPlan?.status === 'PENDING' || existingPlan?.status === 'APPROVED';
+  const isReadOnly = existingPlan?.status === 'PENDING_ADVISOR' || existingPlan?.status === 'PENDING_ADMIN';
   const isChangesRequested = existingPlan?.status === 'CHANGES_REQUESTED';
 
   const {

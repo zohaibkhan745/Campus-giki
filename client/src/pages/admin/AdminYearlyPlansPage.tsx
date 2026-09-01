@@ -222,7 +222,7 @@ export const AdminYearlyPlansPage: React.FC = () => {
             <Link
               key={plan.id}
               to={`/admin/yearly-plans/${plan.id}`}
-              className="bg-transparent p-5 rounded-cards border border-white/10 hover:border border-white/10 transition-all flex flex-col md:flex-row items-start md:items-center justify-between gap-4 group cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+              className="bg-white/[0.08] backdrop-blur-[20px] p-5 rounded-[18px] border border-white/20 shadow-[0_12px_40px_rgba(0,0,0,0.4)] hover:bg-white/[0.12] transition-all flex flex-col md:flex-row items-start md:items-center justify-between gap-4 group cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
               aria-label={`View ${plan.year} calendar plan for ${plan.society?.name}`}
             >
               <div className="flex items-start md:items-center gap-4">

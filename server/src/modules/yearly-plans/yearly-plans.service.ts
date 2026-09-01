@@ -194,13 +194,6 @@ export class YearlyPlansService {
       throw new ForbiddenException('Access denied: You do not own this yearly calendar plan');
     }
 
-    // State Machine Guards
-    if (plan.status === PlanStatus.APPROVED) {
-      throw new ForbiddenException(
-        'Cannot modify an APPROVED yearly plan. Approved plans are permanently read-only.',
-      );
-    }
-
     if ((plan.status === PlanStatus.PENDING_ADVISOR || plan.status === PlanStatus.PENDING_ADMIN) && !dto.status) {
       throw new ForbiddenException(
         'Cannot edit a plan that is currently pending review.',
