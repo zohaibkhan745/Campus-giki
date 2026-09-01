@@ -182,7 +182,7 @@ const PostCardComponent: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) 
                 <div className="menu-container shrink-0 h-full flex items-center">
                   <button 
                     type="button" 
-                    className="card-button flex items-center justify-center p-0" aria-label="Options" ref={buttonRef} onClick={toggleDropdown} style={{ height: '48px', width: '48px', borderRadius: '9999px' }}
+                    className="card-button visible flex items-center justify-center p-0" aria-label="Options" ref={buttonRef} onClick={toggleDropdown} style={{ height: '48px', width: '48px', borderRadius: '9999px' }}
                   >
                     <svg viewBox="0 0 24 24" fill="white"><circle cx="5" cy="12" r="2.5"></circle><circle cx="12" cy="12" r="2.5"></circle><circle cx="19" cy="12" r="2.5"></circle></svg>
                   </button>

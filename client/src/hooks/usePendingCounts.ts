@@ -36,8 +36,8 @@ export const usePendingCounts = () => {
   });
 
   const { data: advisorPlans } = useQuery({
-    queryKey: ['advisorPlans', 'PENDING'],
-    queryFn: () => advisorService.getMySocietyYearlyPlans({ status: 'PENDING', limit: 1 }),
+    queryKey: ['advisorPlans', 'PENDING_ADVISOR'],
+    queryFn: () => advisorService.getMySocietyYearlyPlans({ status: 'PENDING_ADVISOR' as any, limit: 1 }),
     enabled: isAdvisor,
     staleTime: 60000,
   });

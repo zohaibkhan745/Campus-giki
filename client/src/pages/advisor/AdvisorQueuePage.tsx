@@ -172,7 +172,7 @@ export const AdvisorQueuePage: React.FC = () => {
               <span>Events</span>
             </button>
             <button
-              onClick={() => { setActiveTab('plans'); setPage(1); setStatusFilter('PENDING'); }}
+              onClick={() => { setActiveTab('plans'); setPage(1); setStatusFilter('PENDING_ADVISOR'); }}
               className={`flex flex-col items-center justify-center gap-2 p-4 rounded-xl font-bold transition-all relative ${
                 activeTab === 'plans'
                   ? 'bg-white text-gray-900 shadow-sm'
@@ -216,7 +216,7 @@ export const AdvisorQueuePage: React.FC = () => {
                 {value:"CANCELLED",label:"Cancelled"}
               ] : [
                 {value:"ALL",label:"All Statuses"},
-                {value:"PENDING",label:"Pending Advisor"},
+                {value:"PENDING_ADVISOR",label:"Pending Advisor"},
                 {value:"CHANGES_REQUESTED",label:"Changes Requested"},
                 {value:"APPROVED",label:"Approved"},
                 {value:"DRAFT",label:"Draft"}
