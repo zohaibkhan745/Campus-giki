@@ -142,7 +142,7 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
               </div>
             </div>
 
-            {(item as any).approvalStatus && (item as any).approvalStatus !== 'PUBLISHED' && (
+            {(item as any).approvalStatus && (item as any).approvalStatus !== 'PUBLISHED' && (item as any).approvalStatus !== 'APPROVED' && (
               <div className="mt-3 mb-1">
                 <span className={cn(
                   "inline-block px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider backdrop-blur-md shadow-lg border",

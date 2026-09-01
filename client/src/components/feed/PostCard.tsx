@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
-import { getSocietyLogo } from '@/lib/utils';
+import { getSocietyLogo, resolveImageUrl } from '@/lib/utils';
 import type { PostFeedItem } from '@/types/feed.types';
 import { useCardFlip } from '@/hooks/useCardFlip';
 import { useAuth } from '@/context/AuthContext';

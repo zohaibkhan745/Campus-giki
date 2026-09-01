@@ -41,6 +41,7 @@ export const CreateEventPage: React.FC = () => {
     formState: { errors },
   } = useForm<EventFormData>({
     resolver: zodResolver(eventFormSchema),
+    mode: "onChange",
     defaultValues: {
       title: "",
       description: "",
@@ -655,19 +656,22 @@ export const CreateEventPage: React.FC = () => {
           </div>
 
           <div className="field-group">
-            <EventMediaUploader
-              coverImageUrl={coverImageUrl}
-              videoUrl={videoUrl}
-              theme="dark"
-              onImageChange={(url) =>
-                setValue("coverImageUrl", url, { shouldValidate: true })
-              }
-              onVideoChange={(url) =>
-                setValue("videoUrl", url, { shouldValidate: true })
-              }
-              folder="events"
-              disabled={createMutation.isPending}
-            />
+            <div className="max-w-md">
+              <EventMediaUploader
+                coverImageUrl={coverImageUrl}
+                videoUrl={videoUrl}
+                theme="dark"
+                onImageChange={(url) =>
+                  setValue("coverImageUrl", url, { shouldValidate: true })
+                }
+                onVideoChange={(url) =>
+                  setValue("videoUrl", url, { shouldValidate: true })
+                }
+                folder="events"
+                label="Event Cover Poster (Optional)"
+                disabled={createMutation.isPending}
+              />
+            </div>
           </div>
 
           <div className="field-group">
