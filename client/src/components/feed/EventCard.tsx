@@ -95,7 +95,7 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
       <div className="card-flipper">
         
         {/* FRONT FACE */}
-        <div className="card-face card-front">
+        <div className="card-face card-front" style={{ background: !coverImage ? 'transparent' : undefined }}>
           {coverImage ? (
             <img src={coverImage} alt="Event Cover" className="card-image" />
           ) : (
@@ -123,21 +123,22 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
           <div className={!coverImage ? 'glass-overlay' : 'card-overlay'}>
               <div className="user-profile">
 
-              <div className="mt-2">
-                <h3 className="card-title">{item.title}</h3>
-              </div>
-
-              <div className="event-meta mt-2">
-                <div className="meta-row">
-                  <Calendar className="w-4 h-4 shrink-0" />
-                  <span>{eventDate} • {eventTime}</span>
-                </div>
-                {item.venue && (
-                  <div className="meta-row">
-                    <MapPin className="w-4 h-4 shrink-0" />
-                    <span>{item.venue}</span>
+              <div className={!coverImage ? "front-text-content" : "mt-2"}>
+                <div className={!coverImage ? "front-description whitespace-pre-wrap" : ""}>
+                  <h3 className="card-title">{item.title}</h3>
+                  <div className="event-meta mt-2">
+                    <div className="meta-row">
+                      <Calendar className="w-4 h-4 shrink-0" />
+                      <span>{eventDate} • {eventTime}</span>
+                    </div>
+                    {item.venue && (
+                      <div className="meta-row">
+                        <MapPin className="w-4 h-4 shrink-0" />
+                        <span>{item.venue}</span>
+                      </div>
+                    )}
                   </div>
-                )}
+                </div>
               </div>
             </div>
 
