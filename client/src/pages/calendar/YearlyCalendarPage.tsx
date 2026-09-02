@@ -15,6 +15,7 @@ import {
   CheckCircle2,
   Clock,
   Lock,
+  Edit3,
 } from 'lucide-react';
 import { yearlyPlanService } from '@/services/yearly-plan.service';
 import {
@@ -44,7 +45,7 @@ export const YearlyCalendarPage: React.FC = () => {
   const currentYear = new Date().getFullYear();
   const existingPlan = plans.find((p) => p.year === currentYear) || plans[0];
 
-  const isReadOnly = existingPlan?.status === 'PENDING' || existingPlan?.status === 'APPROVED';
+  const isReadOnly = existingPlan?.status === 'PENDING_ADVISOR' || existingPlan?.status === 'PENDING_ADMIN' || existingPlan?.status === 'APPROVED';
   const isChangesRequested = existingPlan?.status === 'CHANGES_REQUESTED';
 
   const {
@@ -174,15 +175,17 @@ export const YearlyCalendarPage: React.FC = () => {
             <span className={cn(
               "inline-flex items-center gap-1.5 px-3 py-1 backdrop-blur-md border rounded-inputs text-xs font-semibold",
               existingPlan.status === 'APPROVED' ? "bg-emerald-500/10 border-emerald-500/50 text-emerald-400" :
-              existingPlan.status === 'PENDING' ? "bg-amber-500/10 border-amber-500/50 text-amber-400" :
+              existingPlan.status === 'PENDING_ADVISOR' ? "bg-yellow-500/10 border-yellow-500/50 text-yellow-400" :
+              existingPlan.status === 'PENDING_ADMIN' ? "bg-orange-500/10 border-orange-500/50 text-orange-400" :
               existingPlan.status === 'CHANGES_REQUESTED' ? "bg-red-500/10 border-red-500/50 text-red-400" :
               "bg-white/10 border-white/20 text-white"
             )}>
               {existingPlan.status === 'APPROVED' && <CheckCircle2 className="w-3.5 h-3.5" />}
-              {existingPlan.status === 'PENDING' && <Clock className="w-3.5 h-3.5" />}
+              {(existingPlan.status === 'PENDING_ADVISOR' || existingPlan.status === 'PENDING_ADMIN') && <Clock className="w-3.5 h-3.5" />}
               {existingPlan.status === 'CHANGES_REQUESTED' && <AlertCircle className="w-3.5 h-3.5" />}
               <span>
-                {existingPlan.status === 'PENDING' ? 'Pending Review' :
+                {existingPlan.status === 'PENDING_ADVISOR' ? 'Pending Advisor' :
+                 existingPlan.status === 'PENDING_ADMIN' ? 'Pending Admin' :
                  existingPlan.status === 'CHANGES_REQUESTED' ? 'Changes Requested' :
                  existingPlan.status === 'APPROVED' ? 'Approved' :
                  existingPlan.status}
@@ -418,7 +421,7 @@ export const YearlyCalendarPage: React.FC = () => {
           </div>
         </div>
 
-        {!isReadOnly && (
+        {!isReadOnly ? (
           <div className="flex flex-col sm:flex-row gap-4 pt-4 border-t border-white/10">
             <button
               type="button"
@@ -437,6 +440,17 @@ export const YearlyCalendarPage: React.FC = () => {
             >
               <Send className="w-5 h-5 mr-2" />
               {isChangesRequested ? 'Resubmit for Approval' : 'Submit for Advisor Approval'}
+            </button>
+          </div>
+        ) : existingPlan && (
+          <div className="flex flex-col sm:flex-row gap-4 pt-4 border-t border-white/10">
+            <button
+              type="button"
+              className={`flex-1 btn-submit-review !bg-white/10 !border !border-white/20 !shadow-none ${existingPlan.status !== 'APPROVED' ? 'opacity-50 cursor-not-allowed' : 'hover:!bg-white/20'}`}
+              disabled={existingPlan.status !== 'APPROVED' || isSaving}
+            >
+              <Edit3 className="w-5 h-5 mr-2" />
+              Request Edit Access
             </button>
           </div>
         )}

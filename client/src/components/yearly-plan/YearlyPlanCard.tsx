@@ -19,10 +19,17 @@ export const YearlyPlanCard: React.FC<YearlyPlanCardProps> = ({ plan, baseUrl })
 
   switch (plan.status) {
     case 'PENDING':
-      statusColorClass = 'bg-amber-400';
-      statusTextClass = 'text-amber-400';
-      statusBgClass = 'bg-amber-500/15 border-amber-500/30';
-      statusLabel = 'Pending Review';
+    case 'PENDING_ADVISOR':
+      statusColorClass = 'bg-yellow-400';
+      statusTextClass = 'text-yellow-400';
+      statusBgClass = 'bg-yellow-500/15 border-yellow-500/30';
+      statusLabel = 'Pending Advisor';
+      break;
+    case 'PENDING_ADMIN':
+      statusColorClass = 'bg-orange-400';
+      statusTextClass = 'text-orange-400';
+      statusBgClass = 'bg-orange-500/15 border-orange-500/30';
+      statusLabel = 'Pending Admin';
       break;
     case 'CHANGES_REQUESTED':
       statusColorClass = 'bg-rose-400';
@@ -42,8 +49,8 @@ export const YearlyPlanCard: React.FC<YearlyPlanCardProps> = ({ plan, baseUrl })
   }
 
   return (
-    <div className="relative z-10 w-full max-w-full sm:max-w-sm rounded-3xl overflow-hidden border border-white/10 bg-gray-950/40 backdrop-blur-md shadow-2xl transition-all duration-300 hover:border-white/20">
-      <div className="relative w-full aspect-square bg-gradient-to-b from-blue-600/20 via-transparent to-black/80 flex items-center justify-center p-4 sm:p-6">
+    <div className="relative z-10 w-full max-w-full sm:max-w-sm rounded-3xl overflow-hidden border border-white/10 bg-white/5 backdrop-blur-xl shadow-2xl transition-all duration-300 hover:border-white/20">
+      <div className="relative w-full aspect-square bg-gradient-to-b from-blue-600/10 via-transparent to-black/40 flex items-center justify-center p-4 sm:p-6">
         <div className="absolute top-4 left-4 sm:top-5 sm:left-5 flex flex-col gap-1.5 items-start z-10">
           <div className="flex items-baseline gap-1.5 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
             <span className="text-white text-lg sm:text-xl font-black tracking-tight">{society.name}</span>
@@ -72,7 +79,7 @@ export const YearlyPlanCard: React.FC<YearlyPlanCardProps> = ({ plan, baseUrl })
         </div>
       </div>
 
-      <div className="bg-gray-950/90 border-t border-white/5 p-3.5 sm:p-4 flex items-center justify-between gap-5">
+      <div className="bg-white/5 backdrop-blur-lg border-t border-white/10 p-3.5 sm:p-4 flex items-center justify-between gap-5">
         <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1">
           <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#007ebb] flex items-center justify-center border border-white/20 shrink-0 overflow-hidden">
             {society.logoUrl ? (

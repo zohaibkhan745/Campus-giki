@@ -70,9 +70,10 @@ export const AdminYearlyPlansPage: React.FC = () => {
             <span>APPROVED</span>
           </span>
         );
+      case 'PENDING_ADMIN':
       case 'PENDING':
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-transparent border border-ember-glow border border-amber-500/20 text-ember-glow rounded-inputs text-xs font-semibold">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-transparent border border-ember-glow border border-orange-500/20 text-orange-400 rounded-inputs text-xs font-semibold">
             <Clock className="w-3.5 h-3.5" />
             <span>PENDING REVIEW</span>
           </span>

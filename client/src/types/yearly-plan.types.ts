@@ -1,4 +1,4 @@
-export type PlanStatus = 'DRAFT' | 'PENDING' | 'CHANGES_REQUESTED' | 'APPROVED' | 'REJECTED' | 'CANCELLED';
+export type PlanStatus = 'DRAFT' | 'PENDING' | 'PENDING_ADVISOR' | 'PENDING_ADMIN' | 'CHANGES_REQUESTED' | 'APPROVED' | 'REJECTED' | 'CANCELLED';
 
 export interface PlannedEventPayload {
   eventName: string;
