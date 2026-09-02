@@ -64,6 +64,12 @@ export class EventResponseDto {
   @ApiProperty({ example: 'PUBLISHED' })
   approvalStatus: string;
 
+  @ApiPropertyOptional({ example: 'PENDING' })
+  editRequestStatus?: string | null;
+
+  @ApiPropertyOptional({ example: 'Society requested edit access' })
+  editRequestReason?: string | null;
+
   @ApiPropertyOptional({ example: 'Approved by Advisor' })
   advisorComments?: string | null;
 
