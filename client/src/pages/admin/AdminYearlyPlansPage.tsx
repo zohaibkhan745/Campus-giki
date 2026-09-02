@@ -19,6 +19,7 @@ import {
   FilterX,
   ArrowLeft,
 } from 'lucide-react';
+import { YearlyPlanCard } from '@/components/yearly-plan/YearlyPlanCard';
 import { adminService } from '@/services/admin.service';
 import type { PlanStatus } from '@/types/yearly-plan.types';
 import { Alert } from '@/components/ui/Alert';
@@ -69,7 +70,7 @@ export const AdminYearlyPlansPage: React.FC = () => {
             <span>APPROVED</span>
           </span>
         );
-      case 'PENDING_ADMIN':
+      case 'PENDING':
         return (
           <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-transparent border border-ember-glow border border-amber-500/20 text-ember-glow rounded-inputs text-xs font-semibold">
             <Clock className="w-3.5 h-3.5" />
@@ -217,64 +218,9 @@ export const AdminYearlyPlansPage: React.FC = () => {
           </p>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {plans.map((plan) => (
-            <Link
-              key={plan.id}
-              to={`/admin/yearly-plans/${plan.id}`}
-              className="bg-white/[0.08] backdrop-blur-[20px] p-5 rounded-[18px] border border-white/20 shadow-[0_12px_40px_rgba(0,0,0,0.4)] hover:bg-white/[0.12] transition-all flex flex-col md:flex-row items-start md:items-center justify-between gap-4 group cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
-              aria-label={`View ${plan.year} calendar plan for ${plan.society?.name}`}
-            >
-              <div className="flex items-start md:items-center gap-4">
-                {plan.society?.logoUrl ? (
-                  <img
-                    src={getSocietyLogo(plan.society.logoUrl)}
-                    alt={plan.society.name}
-                    className="w-12 h-12 rounded-inputs object-cover border border-white/10 shrink-0"
-                  onError={(e) => { e.currentTarget.src = '/default-society.jpg'; }} />
-                ) : (
-                  <div className="p-3 bg-white/10 border border-white/10 text-white rounded-inputs border border-indigo-500/20 shrink-0">
-                    <Building2 className="w-6 h-6" />
-                  </div>
-                )}
-
-                <div className="space-y-1">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <h3 className="font-bold text-white text-base group-hover:text-white transition-colors">
-                      {plan.society?.name || 'Society Record'}
-                    </h3>
-                    <span className="text-xs font-semibold text-gray-400">
-                      ({plan.year} Calendar)
-                    </span>
-                  </div>
-
-                  <div className="flex flex-wrap items-center gap-4 text-xs text-gray-400">
-                    {plan.society?.advisor && (
-                      <div className="flex items-center gap-1.5">
-                        <UserCheck className="w-3.5 h-3.5 text-white" />
-                        <span>
-                          Advisor: {plan.society.advisor.user.fullName} ({plan.society.advisor.department})
-                        </span>
-                      </div>
-                    )}
-
-                    <div className="flex items-center gap-1.5">
-                      <Calendar className="w-3.5 h-3.5 text-gray-400" />
-                      <span>{plan.totalPlannedEvents} Events Planned</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between md:justify-end w-full md:w-auto gap-4 pt-3 md:pt-0 border-t md:border-t-0 border-white/10">
-                {renderStatusBadge(plan.status)}
-
-                <span className="inline-flex items-center gap-1 text-xs font-semibold text-white group-hover:translate-x-1 transition-transform">
-                  <span>View Record Audit</span>
-                  <ArrowRight className="w-4 h-4" />
-                </span>
-              </div>
-            </Link>
+            <YearlyPlanCard key={plan.id} plan={plan as any} baseUrl="/admin/yearly-plans" />
           ))}
         </div>
       )}

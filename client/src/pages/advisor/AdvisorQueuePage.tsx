@@ -20,6 +20,7 @@ import {
   CalendarDays,
   Settings,
 } from 'lucide-react';
+import { YearlyPlanCard } from '@/components/yearly-plan/YearlyPlanCard';
 import { useAuth } from '@/hooks/useAuth';
 import { EventGrid } from '@/components/admin/FlippableAdminEventCard';
 import { advisorService } from '@/services/advisor.service';
@@ -277,62 +278,11 @@ export const AdvisorQueuePage: React.FC = () => {
       ) : (
         <div className="space-y-4">
           {activeTab === 'plans' ? (
-            plans.map((plan) => (
-              <Link
-                key={plan.id}
-                to={`/advisor/yearly-plans/${plan.id}`}
-                className="bg-white/[0.05] hover:bg-white/[0.08] backdrop-blur-[12px] p-5 rounded-[18px] border border-white/10 hover:border-white/25 transition-all shadow-sm hover:bg-lavender-whisper transition-all flex flex-col md:flex-row items-start md:items-center justify-between gap-4 group cursor-pointer"
-              >
-                <div className="flex items-center gap-4">
-                  {plan.society?.logoUrl ? (
-                    <img
-                      src={getSocietyLogo(plan.society.logoUrl)}
-                      alt={plan.society.name}
-                      className="w-12 h-12 rounded-xl object-cover border border-white/20 shrink-0"
-                    onError={(e) => { e.currentTarget.src = '/default-society.jpg'; }} />
-                  ) : (
-                    <div className="p-3 bg-white/10 border border-white/20 text-white rounded-xl shrink-0">
-                      <Building2 className="w-6 h-6" />
-                    </div>
-                  )}
-
-                  <div className="space-y-1">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <h3 className="font-bold text-white text-base group-hover:text-ember-glow transition-colors">
-                        {plan.society?.name || 'Assigned Society'}
-                      </h3>
-                      <span className="text-xs font-semibold text-gray-400">
-                        ({plan.year} Calendar)
-                      </span>
-                    </div>
-
-                    <div className="flex flex-wrap items-center gap-4 text-xs text-gray-400">
-                      <div className="flex items-center gap-1.5">
-                        <Calendar className="w-3.5 h-3.5 text-white" />
-                        <span>{plan.totalPlannedEvents} Planned Events</span>
-                      </div>
-
-                      <div className="flex items-center gap-1.5">
-                        <Clock className="w-3.5 h-3.5 text-gray-400" />
-                        <span>
-                          Updated:{' '}
-                          {new Date(plan.updatedAt).toLocaleDateString()}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between md:justify-end w-full md:w-auto gap-4 pt-3 md:pt-0 border-t md:border-t-0 border-white/10">
-                  {renderStatusBadge(plan.status as any)}
-
-                  <span className="inline-flex items-center gap-1 text-xs font-semibold text-ember-glow group-hover:translate-x-1 transition-transform">
-                    <span>{plan.status === 'PENDING' ? 'Review Plan' : 'View Details'}</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </span>
-                </div>
-              </Link>
-            ))
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {plans.map((plan) => (
+                <YearlyPlanCard key={plan.id} plan={plan as any} baseUrl="/advisor/yearly-plans" />
+              ))}
+            </div>
           ) : (
             <EventGrid events={events} reviewUrlBase="/advisor/events" />
           )}

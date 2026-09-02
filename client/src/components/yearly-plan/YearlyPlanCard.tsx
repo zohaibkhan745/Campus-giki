@@ -1,0 +1,111 @@
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { getSocietyLogo } from '@/lib/utils';
+import type { YearlyPlan, PlanStatus } from '@/types/yearly-plan.types';
+
+interface YearlyPlanCardProps {
+  plan: YearlyPlan;
+  baseUrl: string;
+}
+
+export const YearlyPlanCard: React.FC<YearlyPlanCardProps> = ({ plan, baseUrl }) => {
+  const society = plan.society || { name: 'Assigned Society', slug: 'society', logoUrl: '' };
+  const societyInitials = society.name.substring(0, 3).toLowerCase();
+
+  let statusColorClass = '';
+  let statusTextClass = '';
+  let statusBgClass = '';
+  let statusLabel = plan.status.replace('_', ' ');
+
+  switch (plan.status) {
+    case 'PENDING':
+      statusColorClass = 'bg-amber-400';
+      statusTextClass = 'text-amber-400';
+      statusBgClass = 'bg-amber-500/15 border-amber-500/30';
+      statusLabel = 'Pending Review';
+      break;
+    case 'CHANGES_REQUESTED':
+      statusColorClass = 'bg-rose-400';
+      statusTextClass = 'text-rose-400';
+      statusBgClass = 'bg-rose-500/15 border-rose-500/30';
+      statusLabel = 'Changes Requested';
+      break;
+    case 'APPROVED':
+      statusColorClass = 'bg-emerald-400';
+      statusTextClass = 'text-emerald-400';
+      statusBgClass = 'bg-emerald-500/15 border-emerald-500/30';
+      break;
+    default:
+      statusColorClass = 'bg-gray-400';
+      statusTextClass = 'text-gray-400';
+      statusBgClass = 'bg-gray-500/15 border-gray-500/30';
+  }
+
+  return (
+    <div className="relative z-10 w-full max-w-full sm:max-w-sm rounded-3xl overflow-hidden border border-white/10 bg-gray-950/40 backdrop-blur-md shadow-2xl transition-all duration-300 hover:border-white/20">
+      <div className="relative w-full aspect-square bg-gradient-to-b from-blue-600/20 via-transparent to-black/80 flex items-center justify-center p-4 sm:p-6">
+        <div className="absolute top-4 left-4 sm:top-5 sm:left-5 flex flex-col gap-1.5 items-start z-10">
+          <div className="flex items-baseline gap-1.5 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+            <span className="text-white text-lg sm:text-xl font-black tracking-tight">{society.name}</span>
+            <span className="text-white/70 text-xs font-semibold">({plan.year})</span>
+          </div>
+          <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border backdrop-blur-md shadow-inner ${statusTextClass} ${statusBgClass}`}>
+            <span className={`w-1.5 h-1.5 rounded-full animate-pulse ${statusColorClass}`}></span>
+            {statusLabel}
+          </span>
+        </div>
+
+        <div className="w-40 h-40 sm:w-48 sm:h-48 rounded-full bg-[#007ebb] p-3 flex items-center justify-center shadow-[0_0_40px_rgba(0,126,187,0.45)] border-4 border-white overflow-hidden">
+          {society.logoUrl ? (
+            <img 
+              src={getSocietyLogo(society.logoUrl)} 
+              alt={society.name}
+              className="w-full h-full rounded-full border-2 border-white/90 object-cover bg-[#007ebb]"
+              onError={(e) => { e.currentTarget.src = '/default-society.jpg'; }}
+            />
+          ) : (
+            <div className="w-full h-full rounded-full border-2 border-white/90 flex flex-col items-center justify-center select-none bg-[#007ebb]">
+              <span className="text-white text-3xl sm:text-4xl font-extrabold tracking-tight leading-none">{societyInitials}</span>
+              <span className="text-white text-[10px] sm:text-xs font-semibold tracking-wider uppercase mt-1">Chapter</span>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="bg-gray-950/90 border-t border-white/5 p-3.5 sm:p-4 flex items-center justify-between gap-5">
+        <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1">
+          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#007ebb] flex items-center justify-center border border-white/20 shrink-0 overflow-hidden">
+            {society.logoUrl ? (
+              <img 
+                src={getSocietyLogo(society.logoUrl)} 
+                alt={society.name}
+                className="w-full h-full object-cover"
+                onError={(e) => { e.currentTarget.src = '/default-society.jpg'; }}
+              />
+            ) : (
+              <span className="text-white text-[9px] font-bold tracking-tighter">{societyInitials}</span>
+            )}
+          </div>
+          <div className="flex flex-col min-w-0 flex-1">
+            <span className="text-gray-400 text-xs font-medium leading-none truncate">@{society.name.toLowerCase().replace(/\s+/g, '')}</span>
+            <div className="flex items-baseline gap-1.5 mt-1.5 min-w-0">
+              <span className="text-xl sm:text-2xl font-black text-white leading-none shrink-0">{(plan as any).totalPlannedEvents || plan.plannedEvents?.length || 0}</span>
+              <span className="text-[10px] sm:text-[11px] font-bold text-gray-300 uppercase tracking-wider truncate">Planned Events</span>
+            </div>
+          </div>
+        </div>
+
+        <Link 
+          to={`${baseUrl}/${plan.id}`}
+          className="flex justify-center items-center gap-1.5 px-3 sm:px-4 py-2 sm:py-2.5 bg-white hover:bg-gray-100 text-gray-900 rounded-xl text-xs sm:text-sm font-bold transition-colors shrink-0 shadow-sm"
+        >
+          <span className="whitespace-nowrap">View Details</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5 sm:w-4 sm:h-4">
+            <path d="M5 12h14"></path>
+            <path d="m12 5 7 7-7 7"></path>
+          </svg>
+        </Link>
+      </div>
+    </div>
+  );
+};

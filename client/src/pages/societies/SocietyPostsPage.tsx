@@ -184,10 +184,10 @@ export const SocietyPostsPage: React.FC = () => {
             const feedItem = {
               ...post,
               society: {
-                id: post.authorId,
-                name: 'Your Society',
-                logoUrl: '',
-                slug: 'your-society',
+                id: dashboardData?.profile?.id || post.author.society?.id || '',
+                name: dashboardData?.profile?.name || post.author.society?.name || 'Your Society',
+                logoUrl: dashboardData?.profile?.logoUrl || post.author.society?.logoUrl || '',
+                slug: dashboardData?.profile?.name?.toLowerCase().replace(/\s+/g, '') || post.author.society?.name.toLowerCase().replace(/\s+/g, '') || 'your-society',
               }
             };
             return (

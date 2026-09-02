@@ -25,7 +25,7 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
   const canEdit = user?.role === 'SOCIETY' && user.society?.id === item.society.id;
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
-  
+
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0 });
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -46,7 +46,7 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
   useEffect(() => {
     const handleClickOutside = () => setDropdownOpen(false);
     window.addEventListener('close-all-dropdowns', handleClickOutside);
-    
+
     if (dropdownOpen) {
       setTimeout(() => window.addEventListener('click', handleClickOutside), 10);
     }
@@ -70,7 +70,7 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
     minute: '2-digit',
     hour12: true
   });
-  
+
   const eventDateObj = new Date(item.eventDate || item.createdAt);
   const eventDate = eventDateObj.toLocaleDateString('en-US', {
     weekday: 'short', month: 'short', day: 'numeric', year: 'numeric'
@@ -87,13 +87,13 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
   }, [isActive, dropdownOpen, showDeleteConfirm]);
 
   return (
-    <div 
+    <div
       ref={wrapperRef}
       className="card-wrapper event-card-wrapper"
       data-card-id={item.id}
     >
       <div className="card-flipper">
-        
+
         {/* FRONT FACE */}
         <div className="card-face card-front" style={{ background: !coverImage ? 'transparent' : undefined }}>
           {coverImage ? (
@@ -103,25 +103,25 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
           )}
 
           <div className="card-top-bar">
-              <div className="profile-header">
-                <img 
-                  src={logoImage} 
-                  alt={authorName} 
-                  className="avatar" 
-                  onError={(e) => { e.currentTarget.src = '/default-society.jpg'; }} 
-                />
-                <div className="author-name-group">
-                  <span className="author-name">{authorName}</span>
-                  <span className="post-timestamp">{formattedDate} • {formattedTime}</span>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="card-tag">Event</span>
+            <div className="profile-header">
+              <img
+                src={logoImage}
+                alt={authorName}
+                className="avatar"
+                onError={(e) => { e.currentTarget.src = '/default-society.jpg'; }}
+              />
+              <div className="author-name-group">
+                <span className="author-name">{authorName}</span>
+                <span className="post-timestamp">{formattedDate} • {formattedTime}</span>
               </div>
             </div>
+            <div className="flex items-center gap-2">
+              <span className="card-tag">Event</span>
+            </div>
+          </div>
 
           <div className={!coverImage ? 'glass-overlay' : 'card-overlay'}>
-              <div className="user-profile">
+            <div className="user-profile">
 
               <div className={!coverImage ? "front-text-content" : "mt-2"}>
                 <div className={!coverImage ? "front-description whitespace-pre-wrap" : ""}>
@@ -147,8 +147,8 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
                 <span className={cn(
                   "inline-block px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider backdrop-blur-md shadow-lg border",
                   (item as any).approvalStatus === 'PENDING_ADVISOR' ? "bg-orange-500/20 text-orange-400 border-orange-500/30" :
-                  (item as any).approvalStatus === 'PENDING_ADMIN' ? "bg-yellow-500/20 text-yellow-400 border-yellow-500/30" :
-                  "bg-red-500/20 text-red-400 border-red-500/30"
+                    (item as any).approvalStatus === 'PENDING_ADMIN' ? "bg-yellow-500/20 text-yellow-400 border-yellow-500/30" :
+                      "bg-red-500/20 text-red-400 border-red-500/30"
                 )}>
                   {(item as any).approvalStatus === 'PENDING_ADMIN' ? 'Pending DSA' : (item as any).approvalStatus === 'PENDING_ADVISOR' ? 'Pending Advisor' : (item as any).approvalStatus.replace('_', ' ')}
                 </span>
@@ -157,24 +157,24 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
             <div className="flex items-center gap-2 mt-auto w-full">
               {canEditOrDelete && (
                 <div className="menu-container shrink-0 h-full flex items-center">
-                  <button 
-                    type="button" 
+                  <button
+                    type="button"
                     className="card-button flex items-center justify-center p-0" aria-label="Options" ref={buttonRef} onClick={toggleDropdown} style={{ height: '48px', width: '48px', borderRadius: '9999px' }}
                   >
                     <svg viewBox="0 0 24 24" fill="white"><circle cx="5" cy="12" r="2.5"></circle><circle cx="12" cy="12" r="2.5"></circle><circle cx="19" cy="12" r="2.5"></circle></svg>
                   </button>
                   {dropdownOpen && createPortal(
-                    <div 
-                      className="card-dropdown-menu active" 
+                    <div
+                      className="card-dropdown-menu active"
                       style={{ position: 'fixed', bottom: window.innerHeight - dropdownPos.top + 50, left: dropdownPos.left, zIndex: 9999, margin: 0 }}
                       onClick={(e) => e.stopPropagation()}
                     >
-                      {canEdit && !((item as any).approvalStatus === 'CHANGES_REQUESTED' || (item as any).approvalStatus?.includes('PENDING')) && <button className="card-dropdown-item" onClick={(e) => { 
-                        e.stopPropagation(); setDropdownOpen(false); 
-                        if(onEdit) onEdit(); else navigate(`/events/${item.id}/edit`);
+                      {canEdit && !((item as any).approvalStatus === 'CHANGES_REQUESTED' || (item as any).approvalStatus?.includes('PENDING')) && <button className="card-dropdown-item" onClick={(e) => {
+                        e.stopPropagation(); setDropdownOpen(false);
+                        if (onEdit) onEdit(); else navigate(`/events/${item.id}/edit`);
                       }}>Edit Event</button>}
-                      <button className="card-dropdown-item delete" onClick={(e) => { 
-                        e.stopPropagation(); setDropdownOpen(false); 
+                      <button className="card-dropdown-item delete" onClick={(e) => {
+                        e.stopPropagation(); setDropdownOpen(false);
                         setShowDeleteConfirm(true);
                       }}>Delete Event</button>
                     </div>,
@@ -194,7 +194,7 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
                           await eventService.deleteEvent(item.id);
                           globalNotification.triggerSuccess('Event deleted successfully');
                           window.location.reload();
-                        } catch(err) {
+                        } catch (err) {
                           globalNotification.triggerFailed('Failed to delete event');
                         }
                       }}>Delete</button>
@@ -202,22 +202,22 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
                   </div>
                 </div>, document.body
               )}
-                <button 
-                  type="button" 
-                  className="card-button open-details-btn flex-1" style={{ height: "48px", borderRadius: "9999px" }}
-                  onClick={(e) => { 
-                    e.stopPropagation(); 
-                    if (reviewUrl) {
-                      navigate(reviewUrl);
-                    } else if (canEdit && ((item as any).approvalStatus === 'CHANGES_REQUESTED' || (item as any).approvalStatus?.includes('PENDING'))) {
-                      navigate(`/events/${item.id}/edit`);
-                    } else {
-                      openCard(true);
-                    }
-                  }}
-                >
-                  {reviewUrl ? 'Review Event' : (canEdit && ((item as any).approvalStatus === 'CHANGES_REQUESTED' || (item as any).approvalStatus?.includes('PENDING'))) ? 'Edit Event' : 'View Details'}
-                </button>
+              <button
+                type="button"
+                className="card-button open-details-btn flex-1" style={{ height: "48px", borderRadius: "9999px" }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (reviewUrl) {
+                    navigate(reviewUrl);
+                  } else if (canEdit && ((item as any).approvalStatus === 'CHANGES_REQUESTED' || (item as any).approvalStatus?.includes('PENDING'))) {
+                    navigate(`/events/${item.id}/edit`);
+                  } else {
+                    openCard(true);
+                  }
+                }}
+              >
+                {reviewUrl ? 'Review Event' : (canEdit && ((item as any).approvalStatus === 'CHANGES_REQUESTED' || (item as any).approvalStatus?.includes('PENDING'))) ? 'Edit Event' : 'View Details'}
+              </button>
             </div>
           </div>
         </div>
@@ -230,9 +230,9 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
             <div className="glass-card-bg"></div>
           )}
           <div className="card-back-inner">
-            <button 
-              type="button" 
-              className="close-btn" 
+            <button
+              type="button"
+              className="close-btn"
               aria-label="Close details"
               onClick={(e) => { e.stopPropagation(); closeCard(); }}
             >
@@ -241,12 +241,12 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
 
             <div className="back-content-section">
               <div className="profile-header pb-4 mb-5 border-b border-gray-700">
-                <img 
-                  src={logoImage} 
-                  alt={authorName} 
-                  className="avatar" 
+                <img
+                  src={logoImage}
+                  alt={authorName}
+                  className="avatar"
                   style={{ width: '48px', height: '48px' }}
-                  onError={(e) => { e.currentTarget.src = '/default-society.jpg'; }} 
+                  onError={(e) => { e.currentTarget.src = '/default-society.jpg'; }}
                 />
                 <div className="author-name-group">
                   <span className="author-name" style={{ fontSize: '1.05rem' }}>{authorName}</span>
