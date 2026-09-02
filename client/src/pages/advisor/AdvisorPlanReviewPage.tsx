@@ -196,12 +196,19 @@ export const AdvisorPlanReviewPage: React.FC = () => {
                     <h3 className="text-base sm:text-lg font-bold text-white leading-tight">{event.eventName}</h3>
                     
                     <div className="flex flex-wrap gap-2 mt-3 mb-2">
-                      <span className="inline-flex items-center gap-1.5 px-2 py-1 text-sm font-bold text-gray-200">
-                        Venue: {event.venue || 'N/A'}
+                      <span className="inline-flex items-center gap-1.5 text-sm text-gray-300">
+                        Venue: <span className="font-bold text-base text-white">{event.venue || 'N/A'}</span>
                       </span>
                     </div>
 
-                    <p className="text-sm text-gray-400 mt-1 leading-relaxed">{event.description}</p>
+                    <div className="mt-2">
+                      <span className="inline-flex items-center gap-1.5 text-sm text-gray-300 mb-1.5">
+                        Description:
+                      </span>
+                      <div className="p-3 bg-white/5 border border-white/10 rounded-lg">
+                        <p className="text-sm text-gray-300 leading-relaxed">{event.description}</p>
+                      </div>
+                    </div>
                   </div>
                   <div className="flex flex-col sm:items-end gap-1.5 shrink-0 sm:min-w-[140px]">
                     {event.startDate && event.endDate && new Date(event.startDate).getTime() === new Date(event.endDate).getTime() ? (

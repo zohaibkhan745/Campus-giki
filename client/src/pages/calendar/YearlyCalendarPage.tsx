@@ -151,6 +151,10 @@ export const YearlyCalendarPage: React.FC = () => {
     else createMutation.mutate({ payload: cleanData(data), status: 'PENDING_ADVISOR' as PlanStatus });
   };
 
+  const handleRequestEdit = () => {
+    updateMutation.mutate({ payload: cleanData(getValues()), status: 'CHANGES_REQUESTED' as PlanStatus });
+  };
+
   const isSaving = createMutation.isPending || updateMutation.isPending;
 
   return (
@@ -450,8 +454,9 @@ export const YearlyCalendarPage: React.FC = () => {
           <div className="flex flex-col sm:flex-row gap-4 pt-4 border-t border-white/10">
             <button
               type="button"
-              className={`flex-1 btn-submit-review !bg-white/10 !border !border-white/20 !shadow-none ${existingPlan.status !== 'APPROVED' ? 'opacity-50 cursor-not-allowed' : 'hover:!bg-white/20'}`}
+              className={`flex-1 btn-submit-review text-white !shadow-none ${existingPlan.status !== 'APPROVED' ? 'opacity-50 cursor-not-allowed !bg-orange-500/50 !border-orange-500/50' : 'hover:!bg-orange-600 !bg-orange-500 !border-orange-500'}`}
               disabled={existingPlan.status !== 'APPROVED' || isSaving}
+              onClick={handleRequestEdit}
             >
               <Edit3 className="w-5 h-5 mr-2" />
               Request Edit Access
