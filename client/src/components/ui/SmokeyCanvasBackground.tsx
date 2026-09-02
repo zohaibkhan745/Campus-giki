@@ -5,7 +5,7 @@ interface SmokeyCanvasBackgroundProps {
   color?: [number, number, number]; // RGB values between 0-1
 }
 
-export const SmokeyCanvasBackground: React.FC<SmokeyCanvasBackgroundProps> = ({ 
+export const SmokeyCanvasBackground = React.memo<SmokeyCanvasBackgroundProps>(({ 
   className = '',
   color = [0.1176, 0.251, 0.6863] // Default: #1e40af
 }) => {
@@ -148,4 +148,4 @@ export const SmokeyCanvasBackground: React.FC<SmokeyCanvasBackgroundProps> = ({
       <div className="absolute inset-0 backdrop-blur-sm"></div>
     </div>
   );
-};
+});

@@ -167,7 +167,7 @@ export const DashboardPage: React.FC = () => {
                     <MicVocal className="w-6 h-6" />
                     <span>Events</span>
                     {changesRequestedEventsCount > 0 && (
-                      <span className="absolute -top-2 -right-2 flex items-center justify-center w-6 h-6 bg-ember-glow text-pure-white text-xs rounded-full shadow-sm animate-pulse border-2 border-pure-white">
+                      <span className="absolute -top-2 -right-2 flex items-center justify-center w-6 h-6 bg-red-500 text-pure-white text-xs rounded-full shadow-sm animate-pulse border-2 border-pure-white">
                         {changesRequestedEventsCount > 9 ? '9+' : changesRequestedEventsCount}
                       </span>
                     )}
@@ -179,7 +179,7 @@ export const DashboardPage: React.FC = () => {
                     <CalendarDays className="w-6 h-6" />
                     <span>Annual Calendar</span>
                     {changesRequestedPlanCount > 0 && (
-                      <span className="absolute -top-2 -right-2 flex items-center justify-center w-6 h-6 bg-ember-glow text-pure-white text-xs rounded-full shadow-sm animate-pulse">
+                      <span className="absolute -top-2 -right-2 flex items-center justify-center w-6 h-6 bg-red-500 text-pure-white text-xs rounded-full shadow-sm animate-pulse">
                         !
                       </span>
                     )}

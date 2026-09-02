@@ -382,14 +382,18 @@ export const YearlyCalendarPage: React.FC = () => {
                         />
                       )}
                     />
-                    {customVenueRows[index] && (
-                      <div className="input-box mt-2">
-                        <input type="text" placeholder="Enter custom venue" disabled={isReadOnly || isSaving} {...register(`events.${index}.venue`)} />
-                      </div>
-                    )}
                     {errors.events?.[index]?.venue?.message && <span className="error-text !block">{errors.events[index]?.venue?.message}</span>}
                   </div>
                 </div>
+
+                {customVenueRows[index] && (
+                  <div className="field-group">
+                    <label className="field-label">CUSTOM VENUE DETAILS</label>
+                    <div className="input-box">
+                      <input type="text" placeholder="Enter custom venue" disabled={isReadOnly || isSaving} {...register(`events.${index}.venue`)} />
+                    </div>
+                  </div>
+                )}
 
                 <div className="field-group">
                   <label className="field-label">DESCRIPTION</label>

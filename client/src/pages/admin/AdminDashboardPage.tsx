@@ -34,7 +34,7 @@ import { EventGrid } from '@/components/admin/FlippableAdminEventCard';
 export const AdminDashboardPage: React.FC = () => {
   const { user, logout } = useAuth();
   const [isAnnouncementDialogOpen, setIsAnnouncementDialogOpen] = useState(false);
-  const { totalPending } = usePendingCounts();
+  const { pendingEventsCount, pendingPlansCount } = usePendingCounts();
   const {
     data,
     isLoading,
@@ -124,9 +124,9 @@ export const AdminDashboardPage: React.FC = () => {
             to="/admin/events"
             className="flex flex-col items-center justify-center gap-2 p-4 bg-transparent hover:bg-white/10 text-white border border-white/20 rounded-xl font-bold transition-transform hover:-translate-y-1 shadow-[0_4px_12px_rgba(0,0,0,0.2)] relative"
           >
-            {totalPending > 0 && (
-              <span className="absolute top-2 right-2 flex items-center justify-center w-5 h-5 bg-ember-glow text-pure-white text-[10px] font-bold rounded-full shadow-sm animate-pulse">
-                {totalPending > 9 ? '9+' : totalPending}
+            {pendingEventsCount > 0 && (
+              <span className="absolute top-2 right-2 flex items-center justify-center w-5 h-5 bg-red-500 text-pure-white text-[10px] font-bold rounded-full shadow-sm animate-pulse">
+                {pendingEventsCount > 9 ? '9+' : pendingEventsCount}
               </span>
             )}
             <MicVocal className="w-6 h-6" />
@@ -141,8 +141,13 @@ export const AdminDashboardPage: React.FC = () => {
           </Link>
           <Link
             to="/admin/yearly-plans"
-            className="flex flex-col items-center justify-center gap-2 p-4 bg-transparent hover:bg-white/10 text-white border border-white/20 rounded-xl font-bold transition-transform hover:-translate-y-1 shadow-[0_4px_12px_rgba(0,0,0,0.2)]"
+            className="flex flex-col items-center justify-center gap-2 p-4 bg-transparent hover:bg-white/10 text-white border border-white/20 rounded-xl font-bold transition-transform hover:-translate-y-1 shadow-[0_4px_12px_rgba(0,0,0,0.2)] relative"
           >
+            {pendingPlansCount > 0 && (
+              <span className="absolute top-2 right-2 flex items-center justify-center w-5 h-5 bg-red-500 text-pure-white text-[10px] font-bold rounded-full shadow-sm animate-pulse">
+                {pendingPlansCount > 9 ? '9+' : pendingPlansCount}
+              </span>
+            )}
             <CalendarDays className="w-6 h-6" />
             <span>Yearly Plans</span>
           </Link>

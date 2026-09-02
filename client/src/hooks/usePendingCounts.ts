@@ -42,14 +42,21 @@ export const usePendingCounts = () => {
     staleTime: 60000,
   });
 
+  const { data: adminPlans } = useQuery({
+    queryKey: ['adminPlans', 'PENDING_ADMIN'],
+    queryFn: () => adminService.getAllYearlyPlans({ status: 'PENDING_ADMIN' as any, limit: 1 }),
+    enabled: isAdmin,
+    staleTime: 60000,
+  });
+
   let totalPending = 0;
   let pendingEventsCount = 0;
   let pendingPlansCount = 0;
 
   if (isAdmin && adminDashboardData) {
     pendingEventsCount = adminDashboardData.pendingEventsPreview?.length || 0;
-    // Admins don't currently have a pending plans preview in getDashboardData
-    totalPending = pendingEventsCount;
+    pendingPlansCount = adminPlans?.meta?.total || 0;
+    totalPending = pendingEventsCount + pendingPlansCount;
   }
 
   if (isAdvisor) {

@@ -79,7 +79,7 @@ export const AdminYearlyPlanDetailPage: React.FC = () => {
   const isPendingAdmin = plan.status === 'PENDING_ADMIN' || plan.status === 'PENDING';
 
   return (
-    <div className="relative min-h-screen w-screen bg-gray-950 overflow-x-hidden overflow-y-auto m-0 flex justify-center py-10 px-4">
+    <div className="relative min-h-screen w-full bg-gray-950 overflow-x-hidden overflow-y-auto m-0 flex justify-center py-10 px-4">
       <SmokeyCanvasBackground />
       
       <div className="relative z-10 w-full max-w-4xl mx-auto flex flex-col gap-6 text-left">
@@ -115,7 +115,6 @@ export const AdminYearlyPlanDetailPage: React.FC = () => {
 
         <div className="bg-gray-900/60 border border-white/10 rounded-2xl p-5 sm:p-7 backdrop-blur-md flex flex-col gap-4">
           <div className="flex items-center gap-2">
-            <Shield className="w-5 h-5 text-white" />
             <h2 className="text-base sm:text-lg font-bold text-white">DSA Admin Feedback &amp; Decision</h2>
           </div>
 
@@ -160,10 +159,9 @@ export const AdminYearlyPlanDetailPage: React.FC = () => {
                   type="button"
                   variant="primary"
                   size="lg"
-                  className="w-full sm:w-1/2 bg-white text-gray-900 hover:bg-gray-200"
+                  className="w-full sm:w-1/2 bg-emerald-500 text-white hover:bg-emerald-600 border-transparent shadow-md"
                   isLoading={reviewMutation.isPending}
                   onClick={handleApprove}
-                  leftIcon={<CheckCircle2 className="w-5 h-5" />}
                   disabled={!isPendingAdmin}
                 >
                   Approve Plan
@@ -180,10 +178,9 @@ export const AdminYearlyPlanDetailPage: React.FC = () => {
         <div className="bg-gray-900/60 border border-white/10 rounded-2xl p-5 sm:p-7 backdrop-blur-md flex flex-col">
           <div className="flex items-center justify-between gap-4 border-b border-white/10 pb-4 mb-4">
             <div className="flex items-center gap-2">
-              <Calendar className="w-5 h-5 text-white" />
-              <h2 className="text-base sm:text-lg font-bold text-white">Submitted Events</h2>
+              <h2 className="text-lg sm:text-xl font-bold text-white">Submitted Events</h2>
             </div>
-            <span className="px-2.5 py-1 rounded-md text-xs font-bold bg-white/10 text-white">{plan.plannedEvents?.length || 0} Events</span>
+            <span className="px-3 py-1.5 rounded-lg text-sm font-bold bg-white/10 text-white border border-white/10">{plan.plannedEvents?.length || 0} Events</span>
           </div>
 
           <div className="flex flex-col">
@@ -195,9 +192,8 @@ export const AdminYearlyPlanDetailPage: React.FC = () => {
                     <h3 className="text-base sm:text-lg font-bold text-white leading-tight">{event.eventName}</h3>
                     
                     <div className="flex flex-wrap gap-2 mt-3 mb-2">
-                      <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded bg-white/5 border border-white/10 text-xs font-medium text-gray-300">
-                        <Building2 className="w-3.5 h-3.5 text-blue-400" />
-                        <span className="font-bold text-white">Venue:</span> {event.venue || 'N/A'}
+                      <span className="inline-flex items-center gap-1.5 px-2 py-1 text-sm font-bold text-gray-200">
+                        Venue: {event.venue || 'N/A'}
                       </span>
                     </div>
 
@@ -206,7 +202,7 @@ export const AdminYearlyPlanDetailPage: React.FC = () => {
                   <div className="flex flex-col sm:items-end gap-1.5 shrink-0 sm:min-w-[140px]">
                     {event.startDate && event.endDate && new Date(event.startDate).getTime() === new Date(event.endDate).getTime() ? (
                       <>
-                        <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-blue-500/10 text-blue-400 border border-blue-500/20 mb-1">1 Day Event</span>
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-500/10 text-blue-400 border border-blue-500/20 mb-1">1 Day Event</span>
                         <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Event Date</span>
                         <span className="text-sm font-bold text-white">
                           {new Date(event.startDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
@@ -214,7 +210,7 @@ export const AdminYearlyPlanDetailPage: React.FC = () => {
                       </>
                     ) : (
                       <>
-                        <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-purple-500/10 text-purple-400 border border-purple-500/20 mb-1">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-500/10 text-purple-400 border border-purple-500/20 mb-1">
                           {event.startDate && event.endDate ? 
                             (() => {
                               const diffTime = Math.abs(new Date(event.endDate).getTime() - new Date(event.startDate).getTime());
