@@ -152,7 +152,7 @@ export const YearlyCalendarPage: React.FC = () => {
   };
 
   const handleRequestEdit = () => {
-    updateMutation.mutate({ payload: cleanData(getValues()), status: 'CHANGES_REQUESTED' as PlanStatus });
+    updateMutation.mutate({ payload: cleanData(getValues()), status: 'DRAFT' as PlanStatus });
   };
 
   const isSaving = createMutation.isPending || updateMutation.isPending;
