@@ -36,4 +36,12 @@ export const yearlyPlanService = {
   ): Promise<YearlyPlan> {
     return api.patch(`/yearly-plans/${id}/review`, payload);
   },
+
+  async requestEdit(id: string, reason: string): Promise<void> {
+    return api.patch(`/yearly-plans/${id}/edit-request`, { reason });
+  },
+
+  async resolveEditRequest(id: string, status: 'APPROVED' | 'REJECTED'): Promise<void> {
+    return api.patch(`/yearly-plans/${id}/edit-request-resolve`, { status });
+  },
 };

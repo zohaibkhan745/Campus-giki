@@ -219,6 +219,7 @@ export const AdvisorQueuePage: React.FC = () => {
                 {value:"ALL",label:"All Statuses"},
                 {value:"PENDING_ADVISOR",label:"Pending Advisor"},
                 {value:"CHANGES_REQUESTED",label:"Changes Requested"},
+                {value:"PENDING_ADMIN",label:"Pending DSA"},
                 {value:"APPROVED",label:"Approved"},
                 {value:"DRAFT",label:"Draft"}
               ]} 

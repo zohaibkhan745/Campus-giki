@@ -45,7 +45,6 @@ export const YearlyCalendarPage: React.FC = () => {
   const currentYear = new Date().getFullYear();
   const existingPlan = plans.find((p) => p.year === currentYear) || plans[0];
 
-  const isReadOnly = existingPlan?.status === 'PENDING_ADVISOR' || existingPlan?.status === 'PENDING_ADMIN' || existingPlan?.status === 'APPROVED';
   const isChangesRequested = existingPlan?.status === 'CHANGES_REQUESTED';
 
   const {
@@ -151,11 +150,25 @@ export const YearlyCalendarPage: React.FC = () => {
     else createMutation.mutate({ payload: cleanData(data), status: 'PENDING_ADVISOR' as PlanStatus });
   };
 
+  const requestEditMutation = useMutation({
+    mutationFn: () => yearlyPlanService.requestEdit(existingPlan!.id, 'Society requested edit access'),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['yearly-plans', 'me'] });
+      setSuccessMessage('Edit access requested successfully. Waiting for admin approval.');
+    },
+    onError: (error: any) => {
+      setServerError(error.response?.data?.message || 'Failed to request edit access.');
+    }
+  });
+
   const handleRequestEdit = () => {
-    updateMutation.mutate({ payload: cleanData(getValues()), status: 'DRAFT' as PlanStatus });
+    requestEditMutation.mutate();
   };
 
-  const isSaving = createMutation.isPending || updateMutation.isPending;
+  const isSaving = createMutation.isPending || updateMutation.isPending || requestEditMutation.isPending;
+
+  const isEditRequestPending = existingPlan?.editRequestStatus === 'PENDING';
+  const isReadOnly = (existingPlan?.status === 'APPROVED' || existingPlan?.status === 'PENDING_ADVISOR' || existingPlan?.status === 'PENDING_ADMIN') && !isEditRequestPending;
 
   return (
     <div className="max-w-5xl mx-auto space-y-6 animate-fade-in p-4 sm:p-6 lg:p-8">
@@ -184,11 +197,12 @@ export const YearlyCalendarPage: React.FC = () => {
               existingPlan.status === 'CHANGES_REQUESTED' ? "bg-red-500/10 border-red-500/50 text-red-400" :
               "bg-white/10 border-white/20 text-white"
             )}>
-              {existingPlan.status === 'APPROVED' && <CheckCircle2 className="w-3.5 h-3.5" />}
-              {(existingPlan.status === 'PENDING_ADVISOR' || existingPlan.status === 'PENDING_ADMIN') && <Clock className="w-3.5 h-3.5" />}
-              {existingPlan.status === 'CHANGES_REQUESTED' && <AlertCircle className="w-3.5 h-3.5" />}
+              {isEditRequestPending ? <Clock className="w-3.5 h-3.5" /> : existingPlan.status === 'APPROVED' && <CheckCircle2 className="w-3.5 h-3.5" />}
+              {!isEditRequestPending && (existingPlan.status === 'PENDING_ADVISOR' || existingPlan.status === 'PENDING_ADMIN') && <Clock className="w-3.5 h-3.5" />}
+              {!isEditRequestPending && existingPlan.status === 'CHANGES_REQUESTED' && <AlertCircle className="w-3.5 h-3.5" />}
               <span>
-                {existingPlan.status === 'PENDING_ADVISOR' ? 'Pending Advisor' :
+                {isEditRequestPending ? 'Edit Request Pending' :
+                 existingPlan.status === 'PENDING_ADVISOR' ? 'Pending Advisor' :
                  existingPlan.status === 'PENDING_ADMIN' ? 'Pending Admin' :
                  existingPlan.status === 'CHANGES_REQUESTED' ? 'Changes Requested' :
                  existingPlan.status === 'APPROVED' ? 'Approved' :
@@ -234,15 +248,6 @@ export const YearlyCalendarPage: React.FC = () => {
         <div className="form-section">
           <div className="section-header" style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
             <h2 className="section-title">Planned Calendar Events ({fields.length})</h2>
-            {!isReadOnly && (
-              <button
-                type="button"
-                className="btn-change"
-                onClick={() => append({ eventName: '', startDate: '', endDate: '', description: '', venue: '', rules: '', societyRules: '' })}
-              >
-                + Add Event Row
-              </button>
-            )}
           </div>
           <div className="section-divider"></div>
 
@@ -276,12 +281,14 @@ export const YearlyCalendarPage: React.FC = () => {
                           onChange={(val: string) => {
                             dField.onChange(val);
                             const start = getValues(`events.${index}.startDate`);
-                            if (start) {
+                            if (start && val !== 'One Day Event') {
                               const date = new Date(start);
                               if (val === 'Two Day Event') date.setDate(date.getDate() + 1);
                               else if (val === 'Three Day Event') date.setDate(date.getDate() + 2);
                               else if (val === 'Weekly Event') date.setDate(date.getDate() + 7);
                               setValue(`events.${index}.endDate`, date.toISOString(), { shouldValidate: true });
+                            } else if (start && val === 'One Day Event') {
+                              setValue(`events.${index}.endDate`, start, { shouldValidate: true });
                             } else {
                               setValue(`events.${index}.endDate`, '', { shouldValidate: true });
                             }
@@ -299,28 +306,58 @@ export const YearlyCalendarPage: React.FC = () => {
                   </div>
 
                   <div className="field-group">
-                    <label className="field-label">DATE (Tentative)</label>
-                    <Controller
-                      name={`events.${index}.startDate`}
-                      control={control}
-                      render={({ field: rField }) => (
-                        <CustomDatePicker 
-                          value={rField.value} 
-                          onChange={(val: string) => {
-                            rField.onChange(val);
-                            const dur = getValues(`events.${index}.duration`) || 'One Day Event';
-                            const date = new Date(val);
-                            if (dur === 'Two Day Event') date.setDate(date.getDate() + 1);
-                            else if (dur === 'Three Day Event') date.setDate(date.getDate() + 2);
-                            else if (dur === 'Weekly Event') date.setDate(date.getDate() + 7);
-                            setValue(`events.${index}.endDate`, date.toISOString(), { shouldValidate: true });
-                          }} 
-                          placeholder="mm/dd/yyyy"
-                          disabled={isReadOnly || isSaving}
+                    <label className="field-label">
+                      {watch(`events.${index}.duration`) !== 'One Day Event' ? 'START DATE (Tentative)' : 'DATE (Tentative)'}
+                    </label>
+                    <div className="flex flex-col sm:flex-row gap-3">
+                      <div className="flex-1">
+                        <Controller
+                          name={`events.${index}.startDate`}
+                          control={control}
+                          render={({ field: rField }) => (
+                            <CustomDatePicker 
+                              value={rField.value} 
+                              onChange={(val: string) => {
+                                rField.onChange(val);
+                                const dur = getValues(`events.${index}.duration`) || 'One Day Event';
+                                if (dur !== 'One Day Event') {
+                                  const date = new Date(val);
+                                  if (dur === 'Two Day Event') date.setDate(date.getDate() + 1);
+                                  else if (dur === 'Three Day Event') date.setDate(date.getDate() + 2);
+                                  else if (dur === 'Weekly Event') date.setDate(date.getDate() + 7);
+                                  setValue(`events.${index}.endDate`, date.toISOString(), { shouldValidate: true });
+                                } else {
+                                  setValue(`events.${index}.endDate`, val, { shouldValidate: true });
+                                }
+                              }} 
+                              placeholder="mm/dd/yyyy"
+                              disabled={isReadOnly || isSaving}
+                            />
+                          )}
                         />
+                        {errors.events?.[index]?.startDate?.message && <span className="error-text !block">{errors.events[index]?.startDate?.message}</span>}
+                      </div>
+
+                      {watch(`events.${index}.duration`) !== 'One Day Event' && (
+                        <div className="flex-1">
+                          <Controller
+                            name={`events.${index}.endDate`}
+                            control={control}
+                            render={({ field: eField }) => (
+                              <CustomDatePicker 
+                                value={eField.value} 
+                                onChange={(val: string) => {
+                                  eField.onChange(val);
+                                }} 
+                                placeholder="End Date"
+                                disabled={isReadOnly || isSaving}
+                              />
+                            )}
+                          />
+                          {errors.events?.[index]?.endDate?.message && <span className="error-text !block">{errors.events[index]?.endDate?.message}</span>}
+                        </div>
                       )}
-                    />
-                    {errors.events?.[index]?.startDate?.message && <span className="error-text !block">{errors.events[index]?.startDate?.message}</span>}
+                    </div>
                   </div>
                 </div>
 
@@ -427,6 +464,18 @@ export const YearlyCalendarPage: React.FC = () => {
             ))}
 
           </div>
+
+          {!isReadOnly && (
+            <div className="flex justify-center mt-8">
+              <button
+                type="button"
+                className="btn-change !px-8 !py-3 !text-sm border border-dashed border-white/30 hover:border-white/60 bg-white/5 hover:bg-white/10 text-white shadow-none w-full sm:w-auto"
+                onClick={() => append({ eventName: '', startDate: '', endDate: '', description: '', venue: '', rules: '', societyRules: '' })}
+              >
+                + Add Event Row
+              </button>
+            </div>
+          )}
         </div>
 
         {!isReadOnly ? (
@@ -454,12 +503,12 @@ export const YearlyCalendarPage: React.FC = () => {
           <div className="flex flex-col sm:flex-row gap-4 pt-4 border-t border-white/10">
             <button
               type="button"
-              className={`flex-1 btn-submit-review text-white !shadow-none ${existingPlan.status !== 'APPROVED' ? 'opacity-50 cursor-not-allowed !bg-orange-500/50 !border-orange-500/50' : 'hover:!bg-orange-600 !bg-orange-500 !border-orange-500'}`}
-              disabled={existingPlan.status !== 'APPROVED' || isSaving}
+              className={`flex-1 btn-submit-review text-white !shadow-none ${(existingPlan.status !== 'APPROVED' || isEditRequestPending) ? 'opacity-50 cursor-not-allowed !bg-orange-500/50 !border-orange-500/50' : 'hover:!bg-orange-600 !bg-orange-500 !border-orange-500'}`}
+              disabled={existingPlan.status !== 'APPROVED' || isEditRequestPending || isSaving}
               onClick={handleRequestEdit}
             >
-              <Edit3 className="w-5 h-5 mr-2" />
-              Request Edit Access
+              {isEditRequestPending ? <Clock className="w-5 h-5 mr-2" /> : <Edit3 className="w-5 h-5 mr-2" />}
+              {isEditRequestPending ? 'Edit Request Pending Approval' : 'Request Edit Access'}
             </button>
           </div>
         )}

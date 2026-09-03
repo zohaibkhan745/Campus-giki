@@ -175,7 +175,7 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ profil
 
             {/* Profile Logo */}
             <div className="absolute top-[45%] left-[50%] -translate-y-[50%] -translate-x-[50%] md:top-auto md:bottom-[-90px] md:left-[48px] md:translate-x-0 md:translate-y-0 z-[10]">
-              <img src={getSocietyLogo(profile.logoUrl)} alt="Society Logo" className="w-[110px] h-[110px] md:w-[180px] md:h-[180px] rounded-full border-[3px] md:border-[5px] border-[#0d0d0d] object-cover bg-[#0d0d0d] shadow-[0_4px_10px_rgba(0,0,0,0.15)] block" />
+              <img src={getSocietyLogo(profile.logoUrl)} alt="Society Logo" className="w-[110px] h-[110px] md:w-[180px] md:h-[180px] rounded-full border-[3px] md:border-[5px] border-[#0d0d0d] object-cover bg-[#0d0d0d] shadow-[0_4px_10px_rgba(0,0,0,0.15)] block" onError={(e) => { e.currentTarget.src = '/default-society.jpg'; }} />
             </div>
 
             {/* Society Name */}

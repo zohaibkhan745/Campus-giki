@@ -11,18 +11,22 @@ import {
   Shield,
   Loader2,
   Send,
+  AlertCircle,
 } from 'lucide-react';
 import { adminService } from '@/services/admin.service';
 import { yearlyPlanService } from '@/services/yearly-plan.service';
 import type { ReviewYearlyPlanPayload } from '@/services/yearly-plan.service';
 import { FeedbackHistory } from '@/components/shared/FeedbackHistory';
 import { SmokeyCanvasBackground } from '@/components/ui/SmokeyCanvasBackground';
+import { cn } from '@/lib/utils';
+import { globalNotification } from '@/contexts/NotificationContext';
 
 export const AdminYearlyPlanDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [comment, setComment] = useState('');
+  const [commentError, setCommentError] = useState(false);
 
   const {
     data: plan,
@@ -44,12 +48,27 @@ export const AdminYearlyPlanDetailPage: React.FC = () => {
     }
   });
 
+  const resolveEditRequestMutation = useMutation({
+    meta: { notify: true },
+    mutationFn: (status: 'APPROVED' | 'REJECTED') => yearlyPlanService.resolveEditRequest(id!, status),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['adminYearlyPlanDetail', id] });
+      queryClient.invalidateQueries({ queryKey: ['adminDashboard'] });
+    }
+  });
+
   const handleApprove = () => {
     reviewMutation.mutate({ decision: 'APPROVED', comment });
   };
 
   const handleRequestChanges = () => {
-    reviewMutation.mutate({ decision: 'CHANGES_REQUESTED', comment });
+    if (!comment.trim()) {
+      setCommentError(true);
+      globalNotification.triggerFailed('Please add a comment detailing the requested changes.');
+      return;
+    }
+    setCommentError(false);
+    reviewMutation.mutate({ decision: 'CHANGES_REQUESTED', comment: comment.trim() });
   };
 
   if (isLoading) {
@@ -113,6 +132,37 @@ export const AdminYearlyPlanDetailPage: React.FC = () => {
           </div>
         </div>
 
+        {plan.editRequestStatus === 'PENDING' && (
+          <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-2xl p-5 sm:p-6 backdrop-blur-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-start gap-3">
+              <AlertCircle className="w-6 h-6 text-yellow-400 shrink-0 mt-0.5" />
+              <div>
+                <h3 className="text-base font-bold text-yellow-400">Edit Access Requested</h3>
+                <p className="text-sm text-yellow-500/80 mt-1">The society has requested to edit this yearly plan.</p>
+                <p className="text-sm text-white/90 font-medium mt-2 bg-black/20 p-2 rounded-lg border border-yellow-500/20">Reason: {plan.editRequestReason}</p>
+              </div>
+            </div>
+            <div className="flex sm:flex-col gap-2 shrink-0">
+              <Button 
+                variant="primary" 
+                className="bg-yellow-500 hover:bg-yellow-600 text-yellow-950 font-bold border-none shadow-md"
+                onClick={() => resolveEditRequestMutation.mutate('APPROVED')}
+                isLoading={resolveEditRequestMutation.isPending}
+              >
+                Approve Edit Request
+              </Button>
+              <Button 
+                variant="outline"
+                className="bg-black/20 hover:bg-black/40 text-yellow-400 border-yellow-500/30 hover:border-yellow-500/50"
+                onClick={() => resolveEditRequestMutation.mutate('REJECTED')}
+                isLoading={resolveEditRequestMutation.isPending}
+              >
+                Reject Request
+              </Button>
+            </div>
+          </div>
+        )}
+
         <div className="bg-gray-900/60 border border-white/10 rounded-2xl p-5 sm:p-7 backdrop-blur-md flex flex-col gap-4">
           <div className="flex items-center gap-2">
             <h2 className="text-base sm:text-lg font-bold text-white">DSA Admin Feedback &amp; Decision</h2>
@@ -134,11 +184,22 @@ export const AdminYearlyPlanDetailPage: React.FC = () => {
                 <textarea
                   rows={4}
                   value={comment}
-                  onChange={(e) => setComment(e.target.value)}
+                  onChange={(e) => {
+                    setComment(e.target.value);
+                    if (e.target.value.trim()) setCommentError(false);
+                  }}
                   placeholder="Type revision comments or feedback notes for the society officers..."
-                  className="w-full bg-white/5 text-white placeholder:text-gray-500 text-sm rounded-xl border border-white/10 p-3.5 transition-all outline-none focus:border-white/30 focus:ring-2 focus:ring-white/10"
+                  className={cn(
+                    "w-full bg-white/5 text-white placeholder:text-gray-500 text-sm rounded-xl border p-3.5 transition-all outline-none",
+                    commentError 
+                      ? "border-red-500/50 ring-2 ring-red-500/20 focus:border-red-500" 
+                      : "border-white/10 focus:border-white/30 focus:ring-2 focus:ring-white/10"
+                  )}
                   disabled={!isPendingAdmin}
                 />
+                {commentError && (
+                  <p className="text-red-400 text-xs mt-1">Comment is required to request changes.</p>
+                )}
               </div>
 
               <div className="flex flex-col sm:flex-row items-center gap-3 pt-2">

@@ -136,4 +136,22 @@ export class YearlyPlansController {
   ): Promise<YearlyPlanResponseDto> {
     return this.yearlyPlansService.reviewYearlyPlan(id, user.id, user.role, dto);
   }
+
+  @Patch(':id/edit-request')
+  @Auth(Role.SOCIETY)
+  @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Society: Request edit access for a locked yearly plan' })
+  async requestEdit(@Param('id', ParseUUIDPipe) id: string, @Body('reason') reason: string) {
+    return this.yearlyPlansService.requestEdit(id, reason);
+  }
+
+  @Patch(':id/edit-request-resolve')
+  @Auth(Role.DSA_ADMIN)
+  @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'DSA: Approve or reject an edit request for yearly plan' })
+  async resolveEditRequest(@Param('id', ParseUUIDPipe) id: string, @Body('status') status: 'APPROVED' | 'REJECTED') {
+    return this.yearlyPlansService.resolveEditRequest(id, status);
+  }
 }

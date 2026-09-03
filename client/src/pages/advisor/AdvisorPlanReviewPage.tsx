@@ -17,12 +17,15 @@ import { FeedbackHistory } from '@/components/shared/FeedbackHistory';
 import { SmokeyCanvasBackground } from '@/components/ui/SmokeyCanvasBackground';
 import type { AxiosError } from 'axios';
 
+import { cn } from '@/lib/utils';
+import { globalNotification } from '@/contexts/NotificationContext';
 export const AdvisorPlanReviewPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
   const [comment, setComment] = useState<string>('');
+  const [commentError, setCommentError] = useState<boolean>(false);
 
   const {
     data: plan,
@@ -52,8 +55,11 @@ export const AdvisorPlanReviewPage: React.FC = () => {
 
   const handleRequestChanges = () => {
     if (!comment.trim()) {
+      setCommentError(true);
+      globalNotification.triggerFailed('Please add a comment detailing the requested changes.');
       return;
     }
+    setCommentError(false);
     reviewMutation.mutate({ decision: 'CHANGES_REQUESTED', comment: comment.trim() });
   };
 
@@ -141,10 +147,21 @@ export const AdvisorPlanReviewPage: React.FC = () => {
                 <textarea
                   rows={4}
                   value={comment}
-                  onChange={(e) => setComment(e.target.value)}
+                  onChange={(e) => {
+                    setComment(e.target.value);
+                    if (e.target.value.trim()) setCommentError(false);
+                  }}
                   placeholder="Type revision comments or feedback notes for the society officers..."
-                  className="w-full bg-white/5 text-white placeholder:text-gray-500 text-sm rounded-xl border border-white/10 p-3.5 transition-all outline-none focus:border-white/30 focus:ring-2 focus:ring-white/10"
+                  className={cn(
+                    "w-full bg-white/5 text-white placeholder:text-gray-500 text-sm rounded-xl border p-3.5 transition-all outline-none",
+                    commentError 
+                      ? "border-red-500/50 ring-2 ring-red-500/20 focus:border-red-500" 
+                      : "border-white/10 focus:border-white/30 focus:ring-2 focus:ring-white/10"
+                  )}
                 />
+                {commentError && (
+                  <p className="text-red-400 text-xs mt-1">Comment is required to request changes.</p>
+                )}
               </div>
 
               <div className="flex flex-col sm:flex-row items-center gap-3 pt-2">

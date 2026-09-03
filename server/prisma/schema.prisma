@@ -187,12 +187,14 @@ model Event {
 
 model YearlyPlan {
   id              String     @id @default(uuid())
-  year            Int
-  status          PlanStatus @default(DRAFT)
-  advisorComments String?
-  societyId       String
-  createdAt       DateTime   @default(now())
-  updatedAt       DateTime   @updatedAt
+  year              Int
+  status            PlanStatus @default(DRAFT)
+  advisorComments   String?
+  editRequestStatus String? // PENDING, APPROVED, REJECTED
+  editRequestReason String?
+  societyId         String
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
 
   // Relationships
   society       Society        @relation(fields: [societyId], references: [id], onDelete: Cascade)

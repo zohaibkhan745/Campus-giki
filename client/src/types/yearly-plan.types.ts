@@ -43,6 +43,8 @@ export interface YearlyPlan {
   year: number;
   status: PlanStatus;
   advisorComments?: string | null;
+  editRequestStatus?: string | null;
+  editRequestReason?: string | null;
   societyId: string;
   society?: YearlyPlanSociety | null;
   plannedEvents: PlannedEventItem[];

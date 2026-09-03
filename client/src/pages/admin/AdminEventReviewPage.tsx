@@ -42,12 +42,15 @@ const getBadgeStyles = (status: string) => {
 }
 const formatStatus = (s: string) => s.replace('_', ' ');
 
+import { cn } from '@/lib/utils';
+import { globalNotification } from '@/contexts/NotificationContext';
 export const AdminEventReviewPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [serverError, setServerError] = useState<string | null>(null);
   const [dsaComment, setDsaComment] = useState('');
+  const [commentError, setCommentError] = useState(false);
 
   const {
     data: eventData,
@@ -132,6 +135,16 @@ export const AdminEventReviewPage: React.FC = () => {
     },
   });
 
+  const handleRequestChanges = () => {
+    if (!dsaComment.trim()) {
+      setCommentError(true);
+      globalNotification.triggerFailed('Please add a comment detailing the requested changes.');
+      return;
+    }
+    setCommentError(false);
+    updateEventStatusMutation.mutate({ status: 'CHANGES_REQUESTED' });
+  };
+
   const onSaveDetails = (data: EventFormData) => {
     setServerError(null);
     updateMutation.mutate(data);
@@ -213,11 +226,22 @@ export const AdminEventReviewPage: React.FC = () => {
             <textarea
               rows={3}
               value={dsaComment}
-              onChange={(e) => setDsaComment(e.target.value)}
+              onChange={(e) => {
+                setDsaComment(e.target.value);
+                if (e.target.value.trim()) setCommentError(false);
+              }}
               placeholder="Provide feedback or reasons for requesting changes..."
               disabled={!isPending || updateEventStatusMutation.isPending}
-              className="w-full text-sm transition-all outline-none bg-transparent text-white placeholder:text-gray-500 rounded-inputs px-3.5 py-2.5 border border-white/20 focus:border-white/40 focus:ring-2 focus:ring-white/10 resize-y disabled:opacity-50"
+              className={cn(
+                "w-full text-sm transition-all outline-none bg-transparent text-white placeholder:text-gray-500 rounded-inputs px-3.5 py-2.5 border resize-y disabled:opacity-50",
+                commentError 
+                  ? "border-red-500/50 ring-2 ring-red-500/20 focus:border-red-500" 
+                  : "border-white/20 focus:border-white/40 focus:ring-2 focus:ring-white/10"
+              )}
             />
+            {commentError && (
+              <p className="text-red-400 text-xs mt-1 font-medium">Comment is required to request changes.</p>
+            )}
           </div>
 
           {isPending ? (
@@ -235,7 +259,7 @@ export const AdminEventReviewPage: React.FC = () => {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => updateEventStatusMutation.mutate({ status: 'CHANGES_REQUESTED' })}
+                onClick={handleRequestChanges}
                 isLoading={updateEventStatusMutation.isPending}
                 leftIcon={<AlertCircle className="w-4 h-4 text-black" />}
                 className="bg-white text-black hover:bg-gray-200 w-full sm:flex-1"

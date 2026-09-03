@@ -202,6 +202,16 @@ export const SocietySetupPage: React.FC = () => {
     return <div className="p-8 text-center text-fog font-medium text-sm">Loading society profile...</div>;
   }
 
+  const onFormError = (formErrors: any) => {
+    if (formErrors.name || formErrors.shortform || formErrors.description || formErrors.logoUrl) {
+      setActiveTab('info');
+      globalNotification.triggerFailed('Please fill out all required society info.');
+    } else {
+      setActiveTab('council');
+      globalNotification.triggerFailed('Executive members info not provided or invalid.');
+    }
+  };
+
   return (
     <div className="max-w-4xl mx-auto space-y-6 text-left py-4 mb-24">
       {/* Top Back Navigation */}
@@ -246,7 +256,7 @@ export const SocietySetupPage: React.FC = () => {
         </button>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit, () => globalNotification.triggerFailed('Executive members info not provided or invalid.'))} className="space-y-8">
+      <form onSubmit={handleSubmit(onSubmit, onFormError)} className="space-y-8">
         
         {/* SOCIETY INFO TAB */}
         <div className={activeTab === 'info' ? 'block space-y-8' : 'hidden'}>

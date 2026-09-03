@@ -62,16 +62,16 @@ export const YearlyPlanCard: React.FC<YearlyPlanCardProps> = ({ plan, baseUrl })
           </span>
         </div>
 
-        <div className="w-40 h-40 sm:w-48 sm:h-48 rounded-full bg-[#007ebb] p-3 flex items-center justify-center shadow-[0_0_40px_rgba(0,126,187,0.45)] border-4 border-white overflow-hidden">
+        <div className="w-40 h-40 sm:w-48 sm:h-48 rounded-full flex items-center justify-center shadow-xl border-4 border-white overflow-hidden bg-[#0d0d0d] z-20">
           {society.logoUrl ? (
             <img 
               src={getSocietyLogo(society.logoUrl)} 
               alt={society.name}
-              className="w-full h-full rounded-full border-2 border-white/90 object-cover bg-[#007ebb]"
+              className="w-full h-full rounded-full object-cover"
               onError={(e) => { e.currentTarget.src = '/default-society.jpg'; }}
             />
           ) : (
-            <div className="w-full h-full rounded-full border-2 border-white/90 flex flex-col items-center justify-center select-none bg-[#007ebb]">
+            <div className="w-full h-full flex flex-col items-center justify-center select-none">
               <span className="text-white text-3xl sm:text-4xl font-extrabold tracking-tight leading-none">{societyInitials}</span>
               <span className="text-white text-[10px] sm:text-xs font-semibold tracking-wider uppercase mt-1">Chapter</span>
             </div>

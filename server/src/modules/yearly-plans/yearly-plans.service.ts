@@ -338,5 +338,62 @@ export class YearlyPlansService {
 
     return updated;
   }
+
+  async requestEdit(id: string, reason: string) {
+    const plan = await this.prisma.yearlyPlan.findUnique({ where: { id } });
+    if (!plan) throw new NotFoundException('Plan not found');
+    
+    return this.prisma.yearlyPlan.update({
+      where: { id },
+      data: {
+        editRequestStatus: 'PENDING',
+        editRequestReason: reason
+      },
+      include: {
+        society: {
+          select: {
+            id: true,
+            name: true,
+            logoUrl: true,
+          },
+        },
+        plannedEvents: {
+          orderBy: { startDate: 'asc' },
+        },
+      }
+    });
+  }
+
+  async resolveEditRequest(id: string, status: 'APPROVED' | 'REJECTED') {
+    const plan = await this.prisma.yearlyPlan.findUnique({ where: { id } });
+    if (!plan) throw new NotFoundException('Plan not found');
+
+    const updateData: any = {
+      editRequestStatus: status,
+    };
+
+    if (status === 'APPROVED') {
+      updateData.status = 'DRAFT';
+      updateData.editRequestStatus = null;
+      updateData.editRequestReason = null;
+    }
+
+    return this.prisma.yearlyPlan.update({
+      where: { id },
+      data: updateData,
+      include: {
+        society: {
+          select: {
+            id: true,
+            name: true,
+            logoUrl: true,
+          },
+        },
+        plannedEvents: {
+          orderBy: { startDate: 'asc' },
+        },
+      }
+    });
+  }
 }
 
