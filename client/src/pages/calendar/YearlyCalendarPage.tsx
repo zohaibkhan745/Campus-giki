@@ -1,3 +1,4 @@
+import { globalNotification } from '@/contexts/NotificationContext';
 import React, { useEffect, useState } from 'react';
 import { useForm, useFieldArray, Controller } from 'react-hook-form';
 import { FeedbackHistory } from '@/components/shared/FeedbackHistory';
@@ -33,6 +34,8 @@ export const YearlyCalendarPage: React.FC = () => {
   const queryClient = useQueryClient();
   const [serverError, setServerError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [editReason, setEditReason] = useState('');
+  const [editReasonError, setEditReasonError] = useState(false);
 
   // For custom venue input tracking
   const [customVenueRows, setCustomVenueRows] = useState<Record<number, boolean>>({});
@@ -40,6 +43,7 @@ export const YearlyCalendarPage: React.FC = () => {
   const { data: plans = [] } = useQuery({
     queryKey: ['myYearlyPlans'],
     queryFn: yearlyPlanService.getMyPlans,
+    refetchInterval: 10000,
   });
 
   const currentYear = new Date().getFullYear();
@@ -81,6 +85,8 @@ export const YearlyCalendarPage: React.FC = () => {
           venue: e.venue || '',
           rules: e.rules || '',
           societyRules: e.societyRules || '',
+          eventType: e.eventType || '',
+          duration: e.duration || 'One Day Event',
         })),
       });
     }
@@ -131,7 +137,7 @@ export const YearlyCalendarPage: React.FC = () => {
   const cleanData = (data: YearlyPlanFormData) => {
     return {
       ...data,
-      events: data.events.map(({ eventType, duration, ...rest }) => rest)
+      events: data.events
     };
   };
 
@@ -151,10 +157,13 @@ export const YearlyCalendarPage: React.FC = () => {
   };
 
   const requestEditMutation = useMutation({
-    mutationFn: () => yearlyPlanService.requestEdit(existingPlan!.id, 'Society requested edit access'),
+    mutationFn: () => yearlyPlanService.requestEdit(existingPlan!.id, editReason),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['yearly-plans', 'me'] });
       setSuccessMessage('Edit access requested successfully. Waiting for admin approval.');
+      globalNotification.triggerSuccess('Edit access requested successfully. Waiting for admin approval.');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      setTimeout(() => window.location.reload(), 1000);
     },
     onError: (error: any) => {
       setServerError(error.response?.data?.message || 'Failed to request edit access.');
@@ -162,13 +171,17 @@ export const YearlyCalendarPage: React.FC = () => {
   });
 
   const handleRequestEdit = () => {
+    if (!editReason.trim()) {
+      setEditReasonError(true);
+      return;
+    }
     requestEditMutation.mutate();
   };
 
   const isSaving = createMutation.isPending || updateMutation.isPending || requestEditMutation.isPending;
 
   const isEditRequestPending = existingPlan?.editRequestStatus === 'PENDING';
-  const isReadOnly = (existingPlan?.status === 'APPROVED' || existingPlan?.status === 'PENDING_ADVISOR' || existingPlan?.status === 'PENDING_ADMIN') && !isEditRequestPending;
+  const isReadOnly = existingPlan?.status === 'APPROVED' || existingPlan?.status === 'PENDING_ADVISOR' || existingPlan?.status === 'PENDING_ADMIN';
 
   return (
     <div className="max-w-5xl mx-auto space-y-6 animate-fade-in p-4 sm:p-6 lg:p-8">
@@ -244,6 +257,36 @@ export const YearlyCalendarPage: React.FC = () => {
         </div>
       )}
 
+      {existingPlan?.editRequestStatus === 'APPROVED' && (
+        <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-4 flex items-start gap-3">
+          <CheckCircle2 className="w-5 h-5 text-emerald-400 mt-0.5 shrink-0" />
+          <div>
+            <h3 className="text-emerald-400 font-semibold">Edit Request Approved</h3>
+            <p className="text-emerald-400/80 text-sm mt-1">Your request to edit the annual calendar has been approved by the DSA. You can now make changes and resubmit for approval.</p>
+          </div>
+        </div>
+      )}
+
+      {existingPlan?.editRequestStatus === 'REJECTED' && (
+        <div className="bg-rose-500/10 border border-rose-500/30 rounded-xl p-4 flex items-start gap-3">
+          <AlertCircle className="w-5 h-5 text-rose-400 mt-0.5 shrink-0" />
+          <div>
+            <h3 className="text-rose-400 font-semibold">Edit Request Rejected</h3>
+            <p className="text-rose-400/80 text-sm mt-1">Your request to edit the annual calendar was rejected by the DSA. If you still need to make changes, please contact the DSA directly or submit another request with more details.</p>
+          </div>
+        </div>
+      )}
+
+      {existingPlan?.editRequestStatus === 'PENDING' && (
+        <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-4 flex items-start gap-3">
+          <Clock className="w-5 h-5 text-yellow-400 mt-0.5 shrink-0" />
+          <div>
+            <h3 className="text-yellow-400 font-semibold">Edit Request Pending</h3>
+            <p className="text-yellow-400/80 text-sm mt-1">Your request to edit the annual calendar is currently pending approval from the DSA.</p>
+          </div>
+        </div>
+      )}
+
       <form className="glass-form-card" noValidate>
         <div className="form-section">
           <div className="section-header" style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -260,7 +303,7 @@ export const YearlyCalendarPage: React.FC = () => {
               <div key={field.id} className="relative space-y-4">
                 {index > 0 && <hr className="border-t border-white/10 my-8" />}
                 
-                <div className="field-grid-3">
+                <div className={watch(`events.${index}.duration`) === 'One Day Event' ? 'field-grid-3' : 'field-grid-2'}>
                   <div className="field-group">
                     <label className="field-label">EVENT NAME #{index + 1}</label>
                     <div className={cn("input-box", errors.events?.[index]?.eventName && "error")}>
@@ -305,12 +348,12 @@ export const YearlyCalendarPage: React.FC = () => {
                     />
                   </div>
 
-                  <div className="field-group">
-                    <label className="field-label">
-                      {watch(`events.${index}.duration`) !== 'One Day Event' ? 'START DATE (Tentative)' : 'DATE (Tentative)'}
-                    </label>
+                  <div className={cn("field-group", watch(`events.${index}.duration`) !== 'One Day Event' && "md:col-span-2")}>
                     <div className="flex flex-col sm:flex-row gap-3">
                       <div className="flex-1">
+                        <label className="field-label">
+                          {watch(`events.${index}.duration`) !== 'One Day Event' ? 'START DATE (Tentative)' : 'DATE (Tentative)'}
+                        </label>
                         <Controller
                           name={`events.${index}.startDate`}
                           control={control}
@@ -340,6 +383,7 @@ export const YearlyCalendarPage: React.FC = () => {
 
                       {watch(`events.${index}.duration`) !== 'One Day Event' && (
                         <div className="flex-1">
+                          <label className="field-label">END DATE (Tentative)</label>
                           <Controller
                             name={`events.${index}.endDate`}
                             control={control}
@@ -350,7 +394,7 @@ export const YearlyCalendarPage: React.FC = () => {
                                   eField.onChange(val);
                                 }} 
                                 placeholder="End Date"
-                                disabled={isReadOnly || isSaving}
+                                disabled={true}
                               />
                             )}
                           />
@@ -469,11 +513,10 @@ export const YearlyCalendarPage: React.FC = () => {
             <div className="flex justify-center mt-8">
               <button
                 type="button"
-                className="btn-change !px-8 !py-3 !text-sm border border-dashed border-white/30 hover:border-white/60 bg-white/5 hover:bg-white/10 text-white shadow-none w-full sm:w-auto"
-                onClick={() => append({ eventName: '', startDate: '', endDate: '', description: '', venue: '', rules: '', societyRules: '' })}
-              >
-                + Add Event Row
-              </button>
+                className="w-full py-4 border-2 border-dashed border-white/20 rounded-xl text-gray-400 hover:text-white hover:border-white/40 hover:bg-white/5 transition-all font-semibold flex items-center justify-center gap-2"
+                onClick={() => append({ eventName: '', startDate: '', endDate: '', description: '', venue: '', rules: '', societyRules: '', duration: 'One Day Event' })}
+                disabled={isReadOnly || isSaving}
+              >+ Add Event Row</button>
             </div>
           )}
         </div>
@@ -500,16 +543,42 @@ export const YearlyCalendarPage: React.FC = () => {
             </button>
           </div>
         ) : existingPlan && (
-          <div className="flex flex-col sm:flex-row gap-4 pt-4 border-t border-white/10">
-            <button
-              type="button"
-              className={`flex-1 btn-submit-review text-white !shadow-none ${(existingPlan.status !== 'APPROVED' || isEditRequestPending) ? 'opacity-50 cursor-not-allowed !bg-orange-500/50 !border-orange-500/50' : 'hover:!bg-orange-600 !bg-orange-500 !border-orange-500'}`}
-              disabled={existingPlan.status !== 'APPROVED' || isEditRequestPending || isSaving}
-              onClick={handleRequestEdit}
-            >
-              {isEditRequestPending ? <Clock className="w-5 h-5 mr-2" /> : <Edit3 className="w-5 h-5 mr-2" />}
-              {isEditRequestPending ? 'Edit Request Pending Approval' : 'Request Edit Access'}
-            </button>
+          <div className="flex flex-col gap-4 pt-4 border-t border-white/10">
+            {existingPlan.status === 'APPROVED' && !isEditRequestPending && (
+              <div className="flex flex-col space-y-2">
+                <label className="text-sm font-medium text-gray-300">
+                  Reason for Edit Request <span className="text-red-500">*</span>
+                </label>
+                <textarea
+                  value={editReason}
+                  onChange={(e) => {
+                    setEditReason(e.target.value);
+                    if (e.target.value.trim()) setEditReasonError(false);
+                  }}
+                  placeholder="Explain why you need edit access..."
+                  className={cn(
+                    "w-full bg-white/5 text-white placeholder:text-gray-500 text-sm rounded-xl border p-3.5 transition-all outline-none resize-none h-24",
+                    editReasonError 
+                      ? "border-red-500/50 ring-2 ring-red-500/20 focus:border-red-500" 
+                      : "border-white/10 focus:border-white/30 focus:ring-2 focus:ring-white/10"
+                  )}
+                />
+                {editReasonError && (
+                  <p className="text-red-400 text-xs mt-1">Please provide a reason to request edit access.</p>
+                )}
+              </div>
+            )}
+            <div className="flex flex-col sm:flex-row gap-4">
+              <button
+                type="button"
+                className={`flex-1 btn-submit-review text-white !shadow-none ${(existingPlan.status !== 'APPROVED' || isEditRequestPending) ? 'opacity-50 cursor-not-allowed !bg-orange-500/50 !border-orange-500/50' : 'hover:!bg-orange-600 !bg-orange-500 !border-orange-500'}`}
+                disabled={existingPlan.status !== 'APPROVED' || isEditRequestPending || isSaving}
+                onClick={handleRequestEdit}
+              >
+                {isEditRequestPending ? <Clock className="w-5 h-5 mr-2" /> : <Edit3 className="w-5 h-5 mr-2" />}
+                {isEditRequestPending ? 'Edit Request Pending Approval' : 'Request Edit Access'}
+              </button>
+            </div>
           </div>
         )}
       </form>

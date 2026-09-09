@@ -96,7 +96,7 @@ export const CalendarEventModal = ({ event, sourceRect, bg, color, onClose }: { 
         </div>
 
         {/* Modal Content (Fades in when opening) */}
-        <div className="card-face card-back !shadow-none !w-full !h-full relative" style={{ transform: 'none' }}>
+        <div className="card-face card-back !shadow-none !w-full !h-full relative rounded-[inherit] overflow-hidden" style={{ transform: 'none' }}>
           <img 
             src={coverImage} 
             alt="Event Cover" 
@@ -108,7 +108,7 @@ export const CalendarEventModal = ({ event, sourceRect, bg, color, onClose }: { 
             }}
           />
           
-          <div className="card-back-inner !top-0 !left-0 !w-full !h-full" style={{ transform: 'none' }}>
+          <div className="card-back-inner !top-0 !left-0 !w-full !h-full rounded-[inherit] overflow-hidden" style={{ transform: 'none' }}>
             <button 
               type="button" 
               className="close-btn" 

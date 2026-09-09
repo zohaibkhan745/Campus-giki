@@ -213,6 +213,8 @@ model PlannedEvent {
   venue        String
   rules        String?
   societyRules String?
+  eventType    String?
+  duration     String?
   yearlyPlanId String
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt

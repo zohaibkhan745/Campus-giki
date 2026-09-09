@@ -59,6 +59,12 @@ export class AdminPlanSummaryItemDto {
   @ApiProperty({ example: 12 })
   totalPlannedEvents: number;
 
+  @ApiPropertyOptional({ example: 'PENDING' })
+  editRequestStatus?: string | null;
+
+  @ApiPropertyOptional({ example: 'Reason for edit' })
+  editRequestReason?: string | null;
+
   @ApiProperty({ type: AdminSocietySummaryDto })
   society: AdminSocietySummaryDto;
 }

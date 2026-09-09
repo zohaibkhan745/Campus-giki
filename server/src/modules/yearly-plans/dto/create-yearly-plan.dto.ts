@@ -62,6 +62,16 @@ export class PlannedEventItemDto {
   @IsString()
   @IsOptional()
   societyRules?: string;
+
+  @ApiProperty({ example: 'Technical', description: 'Type of event', required: false })
+  @IsString()
+  @IsOptional()
+  eventType?: string;
+
+  @ApiProperty({ example: 'One Day Event', description: 'Duration of the event', required: false })
+  @IsString()
+  @IsOptional()
+  duration?: string;
 }
 
 export class CreateYearlyPlanDto {

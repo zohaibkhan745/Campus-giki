@@ -8,6 +8,8 @@ export interface PlannedEventPayload {
   venue: string;
   rules?: string;
   societyRules?: string;
+  eventType?: string;
+  duration?: string;
 }
 
 export interface PlannedEventItem {
@@ -19,6 +21,8 @@ export interface PlannedEventItem {
   venue: string;
   rules?: string | null;
   societyRules?: string | null;
+  eventType?: string | null;
+  duration?: string | null;
 }
 
 export interface YearlyPlanSocietyAdvisor {

@@ -102,6 +102,7 @@ export const AdminEventReviewPage: React.FC = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['event', id] });
       queryClient.invalidateQueries({ queryKey: ['adminDashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['societyDashboard'] });
     },
     onError: (
       error: AxiosError<{ message?: string | string[]; error?: string }>,
@@ -122,6 +123,7 @@ export const AdminEventReviewPage: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: ['event', id] });
       queryClient.invalidateQueries({ queryKey: ['adminDashboard'] });
       queryClient.invalidateQueries({ queryKey: ['adminEventsList'] });
+      queryClient.invalidateQueries({ queryKey: ['societyDashboard'] });
       navigate('/dashboard', { replace: true });
     },
     onError: (

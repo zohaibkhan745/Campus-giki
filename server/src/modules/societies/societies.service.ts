@@ -327,7 +327,7 @@ export class SocietiesService {
     today.setHours(0, 0, 0, 0);
 
     const pendingEvents = events.filter(
-      (e) => e.approvalStatus === 'PENDING_ADVISOR' || e.approvalStatus === 'PENDING_ADMIN' || e.approvalStatus === 'CHANGES_REQUESTED'
+      (e) => e.approvalStatus === 'PENDING_ADVISOR' || e.approvalStatus === 'PENDING_ADMIN' || e.approvalStatus === 'CHANGES_REQUESTED' || e.approvalStatus === 'APPROVED' || e.approvalStatus === 'REJECTED'
     );
     const allUpcoming = events.filter((e) => new Date(e.eventDate) >= today && e.approvalStatus === 'PUBLISHED');
     const allPast = events.filter((e) => new Date(e.eventDate) < today && e.approvalStatus === 'PUBLISHED');
@@ -355,6 +355,7 @@ export class SocietiesService {
       ? {
           totalEventsInPlan: yearlyPlan._count.plannedEvents,
           status: yearlyPlan.status,
+          editRequestStatus: yearlyPlan.editRequestStatus,
         }
       : {
           totalEventsInPlan: 0,

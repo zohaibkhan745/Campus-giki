@@ -102,6 +102,7 @@ export const AdvisorEventReviewPage: React.FC = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['event', id] });
       queryClient.invalidateQueries({ queryKey: ['advisorEventsQueue'] });
+      queryClient.invalidateQueries({ queryKey: ['societyDashboard'] });
     },
     onError: (
       error: AxiosError<{ message?: string | string[]; error?: string }>,
@@ -122,6 +123,7 @@ export const AdvisorEventReviewPage: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: ['event', id] });
       queryClient.invalidateQueries({ queryKey: ['advisorEventsQueue'] });
       queryClient.invalidateQueries({ queryKey: ['advisorEvents'] });
+      queryClient.invalidateQueries({ queryKey: ['societyDashboard'] });
       navigate('/advisor/yearly-plans', { replace: true });
     },
     onError: (

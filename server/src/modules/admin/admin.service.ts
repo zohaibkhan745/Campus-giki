@@ -898,6 +898,10 @@ export class AdminService {
       status: query.status ? query.status : { not: PlanStatus.DRAFT },
     };
 
+    if (query.editRequestStatus) {
+      whereClause.editRequestStatus = query.editRequestStatus;
+    }
+
     if (query.year) {
       whereClause.year = Number(query.year);
     }
@@ -956,6 +960,8 @@ export class AdminService {
       advisorComments: plan.advisorComments,
       createdAt: plan.createdAt,
       updatedAt: plan.updatedAt,
+      editRequestStatus: plan.editRequestStatus,
+      editRequestReason: plan.editRequestReason,
       totalPlannedEvents: plan._count.plannedEvents,
       society: plan.society,
     }));
@@ -1029,6 +1035,8 @@ export class AdminService {
               venue: e.venue,
               rules: e.rules,
               societyRules: e.societyRules,
+              eventType: e.eventType,
+              duration: e.duration,
               yearlyPlanId: id,
             })),
           });

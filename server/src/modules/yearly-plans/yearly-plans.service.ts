@@ -98,6 +98,8 @@ export class YearlyPlansService {
               venue: e.venue,
               rules: e.rules,
               societyRules: e.societyRules,
+              eventType: e.eventType,
+              duration: e.duration,
             })),
           },
         },
@@ -221,6 +223,8 @@ export class YearlyPlansService {
         where: { id: planId },
         data: {
           ...(dto.status && { status: dto.status }),
+          editRequestStatus: null,
+          editRequestReason: null,
           ...(dto.events && {
             plannedEvents: {
               create: dto.events.map((e) => ({
@@ -231,6 +235,8 @@ export class YearlyPlansService {
                 venue: e.venue,
                 rules: e.rules,
                 societyRules: e.societyRules,
+                eventType: e.eventType,
+                duration: e.duration,
               })),
             },
           }),
@@ -310,7 +316,8 @@ export class YearlyPlansService {
       const dateStr = new Date().toLocaleDateString('en-US', { 
         month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' 
       });
-      const formattedComment = `[${dateStr}] ${newStatus}:\n${dto.comment.trim()}`;
+      const roleStr = role === Role.ADVISOR ? 'Advisor' : 'DSA Admin';
+      const formattedComment = `[${dateStr}] ${newStatus} - ${roleStr}:\n${dto.comment.trim()}`;
       newAdvisorComments = plan.advisorComments
         ? `${plan.advisorComments}\n\n---\n\n${formattedComment}`
         : formattedComment;
@@ -374,7 +381,7 @@ export class YearlyPlansService {
 
     if (status === 'APPROVED') {
       updateData.status = 'DRAFT';
-      updateData.editRequestStatus = null;
+      updateData.editRequestStatus = 'APPROVED';
       updateData.editRequestReason = null;
     }
 

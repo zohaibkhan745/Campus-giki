@@ -4,6 +4,7 @@ import { MessageSquare, Clock, CheckCircle2, AlertCircle } from 'lucide-react';
 interface FeedbackBlock {
   date: string | null;
   status: string | null;
+  role: string | null;
   text: string;
 }
 
@@ -17,18 +18,20 @@ export const FeedbackHistory: React.FC<FeedbackHistoryProps> = ({ rawComments })
   const parseComments = (raw: string): FeedbackBlock[] => {
     const blocks = raw.split('\n\n---\n\n');
     return blocks.map(block => {
-      // Matches [Date] STATUS:\n Comment Text
-      const match = block.match(/^\[(.*?)\] (.*?):\n([\s\S]*)$/);
+      // Matches [Date] STATUS:\n Comment Text OR [Date] STATUS - ROLE:\n Comment Text
+      const match = block.match(/^\[(.*?)\] (.*?)(?: - (.*?))?:\n([\s\S]*)$/);
       if (match) {
         return {
           date: match[1],
           status: match[2],
-          text: match[3],
+          role: match[3] || null,
+          text: match[4],
         };
       }
       return {
         date: null,
         status: null,
+        role: null,
         text: block,
       };
     }).reverse(); // Show latest first
@@ -60,6 +63,7 @@ export const FeedbackHistory: React.FC<FeedbackHistoryProps> = ({ rawComments })
 
   return (
     <div className="space-y-3 mt-4">
+      <h3 className="text-sm font-bold text-gray-300 uppercase tracking-wide mb-2">Comments History</h3>
       <div className="space-y-3">
         {parsed.map((item, idx) => (
           <div 
@@ -73,6 +77,11 @@ export const FeedbackHistory: React.FC<FeedbackHistoryProps> = ({ rawComments })
                   <Clock className="w-3 h-3" />
                   {item.date}
                 </span>
+                {item.role && (
+                  <span className="text-[10px] font-bold text-gray-400 bg-black/20 px-2 py-0.5 rounded-full ml-2">
+                    By {item.role}
+                  </span>
+                )}
                 {item.status && (
                   <span className="ml-auto text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-white/10 text-white tracking-wider">
                     {item.status.replace('_', ' ')}

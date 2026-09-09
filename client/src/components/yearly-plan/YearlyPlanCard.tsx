@@ -51,7 +51,7 @@ export const YearlyPlanCard: React.FC<YearlyPlanCardProps> = ({ plan, baseUrl })
   return (
     <div className="relative z-10 w-full max-w-full sm:max-w-sm rounded-3xl overflow-hidden border border-white/10 bg-white/5 backdrop-blur-xl shadow-2xl transition-all duration-300 hover:border-white/20">
       <div className="relative w-full aspect-square bg-gradient-to-b from-blue-600/10 via-transparent to-black/40 flex items-center justify-center p-4 sm:p-6">
-        <div className="absolute top-4 left-4 sm:top-5 sm:left-5 flex flex-col gap-1.5 items-start z-10">
+        <div className="absolute top-4 left-4 sm:top-5 sm:left-5 flex flex-col gap-1.5 items-start z-30">
           <div className="flex items-baseline gap-1.5 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
             <span className="text-white text-lg sm:text-xl font-black tracking-tight">{society.name}</span>
             <span className="text-white/70 text-xs font-semibold">({plan.year})</span>
@@ -60,6 +60,24 @@ export const YearlyPlanCard: React.FC<YearlyPlanCardProps> = ({ plan, baseUrl })
             <span className={`w-1.5 h-1.5 rounded-full animate-pulse ${statusColorClass}`}></span>
             {statusLabel}
           </span>
+          {plan.editRequestStatus === 'PENDING' && (
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border backdrop-blur-md shadow-inner text-yellow-400 bg-yellow-500/15 border-yellow-500/30">
+              <span className="w-1.5 h-1.5 rounded-full animate-pulse bg-yellow-400"></span>
+              Edit Request Pending
+            </span>
+          )}
+          {plan.editRequestStatus === 'APPROVED' && (
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border backdrop-blur-md shadow-inner text-emerald-400 bg-emerald-500/15 border-emerald-500/30">
+              <span className="w-1.5 h-1.5 rounded-full animate-pulse bg-emerald-400"></span>
+              Edit Request Approved
+            </span>
+          )}
+          {plan.editRequestStatus === 'REJECTED' && (
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border backdrop-blur-md shadow-inner text-rose-400 bg-rose-500/15 border-rose-500/30">
+              <span className="w-1.5 h-1.5 rounded-full animate-pulse bg-rose-400"></span>
+              Edit Request Rejected
+            </span>
+          )}
         </div>
 
         <div className="w-40 h-40 sm:w-48 sm:h-48 rounded-full flex items-center justify-center shadow-xl border-4 border-white overflow-hidden bg-[#0d0d0d] z-20">

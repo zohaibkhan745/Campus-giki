@@ -43,6 +43,7 @@ export const AdminDashboardPage: React.FC = () => {
   } = useQuery({
     queryKey: ['adminDashboard'],
     queryFn: adminService.getDashboardData,
+    refetchInterval: 10000,
   });
 
   const stats = data?.statistics;
@@ -50,7 +51,8 @@ export const AdminDashboardPage: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState<string>('PENDING_ADMIN');
   const { data: eventsData, isLoading: eventsLoading } = useQuery({
     queryKey: ['dashboardEvents', statusFilter],
-    queryFn: () => adminService.getAllEvents({ status: statusFilter as any, limit: 4 })
+    queryFn: () => adminService.getAllEvents({ status: statusFilter as any, limit: 4 }),
+    refetchInterval: 10000,
   });
   
   const pendingEvents = eventsData?.items || [];

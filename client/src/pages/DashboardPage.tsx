@@ -76,8 +76,8 @@ export const DashboardPage: React.FC = () => {
   const pendingEvents = dashboardData?.pendingEvents || [];
   const yearlyPlan = dashboardData?.yearlyPlanSummary;
 
-  const changesRequestedEventsCount = pendingEvents.filter(e => e.approvalStatus === 'CHANGES_REQUESTED').length;
-  const changesRequestedPlanCount = yearlyPlan?.status === 'CHANGES_REQUESTED' ? 1 : 0;
+  const changesRequestedEventsCount = pendingEvents.filter(e => e.approvalStatus === 'CHANGES_REQUESTED' || e.approvalStatus === 'APPROVED' || e.approvalStatus === 'REJECTED').length;
+  const changesRequestedPlanCount = (yearlyPlan?.status === 'CHANGES_REQUESTED' || yearlyPlan?.editRequestStatus === 'APPROVED' || yearlyPlan?.editRequestStatus === 'REJECTED') ? 1 : 0;
 
   // First-login redirect if profile setup incomplete
   if (user?.role === 'SOCIETY' && !isLoading) {

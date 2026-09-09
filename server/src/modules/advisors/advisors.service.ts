@@ -83,6 +83,8 @@ export class AdvisorsService {
       advisorComments: plan.advisorComments,
       createdAt: plan.createdAt,
       updatedAt: plan.updatedAt,
+      editRequestStatus: plan.editRequestStatus,
+      editRequestReason: plan.editRequestReason,
       totalPlannedEvents: plan._count.plannedEvents,
       society: plan.society,
     }));

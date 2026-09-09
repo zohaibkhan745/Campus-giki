@@ -49,13 +49,25 @@ export const usePendingCounts = () => {
     staleTime: 60000,
   });
 
+  const { data: adminEditRequests } = useQuery({
+    queryKey: ['adminEditRequests'],
+    queryFn: () => adminService.getAllYearlyPlans({ editRequestStatus: 'PENDING' } as any),
+    enabled: isAdmin,
+    staleTime: 60000,
+  });
+
   let totalPending = 0;
   let pendingEventsCount = 0;
   let pendingPlansCount = 0;
 
   if (isAdmin && adminDashboardData) {
     pendingEventsCount = adminDashboardData.pendingEventsPreview?.length || 0;
-    pendingPlansCount = adminPlans?.meta?.total || 0;
+    
+    // Add pending admin plans AND pending edit requests
+    const pendingPlans = adminPlans?.meta?.total || 0;
+    const pendingEditRequestsCount = adminEditRequests?.meta?.total || 0;
+    
+    pendingPlansCount = pendingPlans + pendingEditRequestsCount;
     totalPending = pendingEventsCount + pendingPlansCount;
   }
 
@@ -66,8 +78,10 @@ export const usePendingCounts = () => {
   }
 
   if (isSociety && societyDashboardData) {
-    const changesRequestedEvents = societyDashboardData.pendingEvents.filter(e => e.approvalStatus === 'CHANGES_REQUESTED').length;
-    const changesRequestedPlan = societyDashboardData.yearlyPlanSummary.status === 'CHANGES_REQUESTED' ? 1 : 0;
+    const changesRequestedEvents = societyDashboardData.pendingEvents.filter(e => e.approvalStatus === 'CHANGES_REQUESTED' || e.approvalStatus === 'APPROVED' || e.approvalStatus === 'REJECTED').length;
+    
+    const summary = societyDashboardData.yearlyPlanSummary;
+    const changesRequestedPlan = summary.status === 'CHANGES_REQUESTED' || summary.editRequestStatus === 'APPROVED' || summary.editRequestStatus === 'REJECTED' ? 1 : 0;
     
     pendingEventsCount = changesRequestedEvents;
     pendingPlansCount = changesRequestedPlan;

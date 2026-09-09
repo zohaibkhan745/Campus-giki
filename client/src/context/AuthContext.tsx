@@ -12,6 +12,7 @@ import type {
   UserProfile,
 } from '@/types/auth.types';
 import { authService } from '@/services/auth.service';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface AuthContextType {
   user: UserProfile | null;
@@ -40,6 +41,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   });
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const queryClient = useQueryClient();
 
   const saveAuthSession = (authData: AuthResponse) => {
     setToken(authData.accessToken);
@@ -53,7 +55,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     setUser(null);
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-  }, []);
+    queryClient.clear();
+  }, [queryClient]);
 
   const refetchUser = useCallback(async () => {
     const activeToken = localStorage.getItem('token');

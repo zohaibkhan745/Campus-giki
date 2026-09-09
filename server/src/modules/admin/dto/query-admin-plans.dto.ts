@@ -24,6 +24,11 @@ export class QueryAdminYearlyPlansDto {
   @IsEnum(PlanStatus, { message: 'Status must be a valid PlanStatus enum value' })
   status?: PlanStatus;
 
+  @ApiPropertyOptional({ example: 'PENDING' })
+  @IsOptional()
+  @IsString()
+  editRequestStatus?: string;
+
   @ApiPropertyOptional({ example: 2026 })
   @IsOptional()
   @Type(() => Number)

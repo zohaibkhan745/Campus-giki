@@ -85,6 +85,7 @@ export interface DashboardStatistics {
 export interface YearlyPlanSummary {
   totalEventsInPlan: number;
   status: string;
+  editRequestStatus?: string | null;
 }
 
 export interface SocietyDashboardResponse {

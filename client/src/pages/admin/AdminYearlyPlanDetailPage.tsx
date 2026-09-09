@@ -44,6 +44,9 @@ export const AdminYearlyPlanDetailPage: React.FC = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['adminYearlyPlanDetail', id] });
       queryClient.invalidateQueries({ queryKey: ['adminDashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['adminPlans'] });
+      queryClient.invalidateQueries({ queryKey: ['adminEditRequests'] });
+      queryClient.invalidateQueries({ queryKey: ['societyDashboard'] });
       setComment('');
     }
   });
@@ -54,6 +57,9 @@ export const AdminYearlyPlanDetailPage: React.FC = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['adminYearlyPlanDetail', id] });
       queryClient.invalidateQueries({ queryKey: ['adminDashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['adminPlans'] });
+      queryClient.invalidateQueries({ queryKey: ['adminEditRequests'] });
+      queryClient.invalidateQueries({ queryKey: ['societyDashboard'] });
     }
   });
 
@@ -256,6 +262,11 @@ export const AdminYearlyPlanDetailPage: React.FC = () => {
                       <span className="inline-flex items-center gap-1.5 text-sm text-gray-300">
                         Venue: <span className="font-bold text-base text-white">{event.venue || 'N/A'}</span>
                       </span>
+                      {event.eventType && (
+                        <span className="inline-flex items-center px-2 py-0.5 ml-3 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                          {event.eventType}
+                        </span>
+                      )}
                     </div>
 
                     <div className="mt-2">
@@ -270,7 +281,7 @@ export const AdminYearlyPlanDetailPage: React.FC = () => {
                   <div className="flex flex-col sm:items-end gap-1.5 shrink-0 sm:min-w-[140px]">
                     {event.startDate && event.endDate && new Date(event.startDate).getTime() === new Date(event.endDate).getTime() ? (
                       <>
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-500/10 text-blue-400 border border-blue-500/20 mb-1">1 Day Event</span>
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-500/10 text-blue-400 border border-blue-500/20 mb-1">{event.duration || '1 Day Event'}</span>
                         <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Event Date</span>
                         <span className="text-sm font-bold text-white">
                           {new Date(event.startDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
@@ -279,7 +290,7 @@ export const AdminYearlyPlanDetailPage: React.FC = () => {
                     ) : (
                       <>
                         <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-500/10 text-purple-400 border border-purple-500/20 mb-1">
-                          {event.startDate && event.endDate ? 
+                          {event.duration ? event.duration : (event.startDate && event.endDate ? 
                             (() => {
                               const diffTime = Math.abs(new Date(event.endDate).getTime() - new Date(event.startDate).getTime());
                               const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
@@ -287,7 +298,7 @@ export const AdminYearlyPlanDetailPage: React.FC = () => {
                               return `${diffDays} Day Event`;
                             })() 
                             : "Multi-Day Event"
-                          }
+                          )}
                         </span>
                         <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Start Date</span>
                         <span className="text-sm font-bold text-white">

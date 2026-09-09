@@ -34,6 +34,12 @@ export class AdvisorPlanItemDto {
   @ApiProperty({ example: 8 })
   totalPlannedEvents: number;
 
+  @ApiPropertyOptional({ example: 'PENDING' })
+  editRequestStatus?: string | null;
+
+  @ApiPropertyOptional({ example: 'Reason for edit' })
+  editRequestReason?: string | null;
+
   @ApiProperty({ type: AdvisorSocietySummaryDto })
   society: AdvisorSocietySummaryDto;
 }

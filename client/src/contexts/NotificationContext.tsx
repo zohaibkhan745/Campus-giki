@@ -114,7 +114,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
         }
 
         .notification-pill.expanded {
-          max-width: 400px;
+          max-width: 800px;
           padding: 0 5px;
         }
 

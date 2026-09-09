@@ -342,6 +342,7 @@ export const adminService = {
     year?: number;
     society?: string;
     search?: string;
+    editRequestStatus?: string;
   }): Promise<PaginatedAdminPlansResponse> {
     return api.get('/admin/yearly-plans', { params });
   },
