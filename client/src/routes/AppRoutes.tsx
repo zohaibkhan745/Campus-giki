@@ -46,6 +46,7 @@ const AdminEventReviewPage = React.lazy(() => import('@/pages/admin/AdminEventRe
 const AdminPostsPage = React.lazy(() => import('@/pages/admin/AdminPostsPage').then(m => ({ default: m.AdminPostsPage })));
 const AdminAdvisorsPage = React.lazy(() => import('@/pages/admin/AdminAdvisorsPage').then(m => ({ default: m.AdminAdvisorsPage })));
 const NotFoundPage = React.lazy(() => import('@/pages/NotFoundPage').then(m => ({ default: m.NotFoundPage })));
+const ComingSoonPage = React.lazy(() => import('@/pages/ComingSoonPage').then(m => ({ default: m.ComingSoonPage })));
 const SocietyEventsPage = React.lazy(() => import('@/pages/societies/SocietyEventsPage').then(m => ({ default: m.SocietyEventsPage })));
 const SocietyPostsPage = React.lazy(() => import('@/pages/societies/SocietyPostsPage').then(m => ({ default: m.SocietyPostsPage })));
 const SettingsPage = React.lazy(() => import('@/pages/SettingsPage').then(m => ({ default: m.SettingsPage })));
@@ -138,6 +139,12 @@ export const AppRoutes: React.FC = () => {
         </Route>
 
         {/* Catch-all 404 Route */}
+        <Route path="/coming-soon" element={<ComingSoonPage />} />
+        <Route path="/about" element={<ComingSoonPage />} />
+        <Route path="/services" element={<ComingSoonPage />} />
+        <Route path="/privacy-policy" element={<ComingSoonPage />} />
+        <Route path="/terms-of-service" element={<ComingSoonPage />} />
+        <Route path="/cookie-settings" element={<ComingSoonPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </Suspense>
