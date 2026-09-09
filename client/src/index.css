@@ -281,7 +281,7 @@ body.is-focused .cards-container:has(.in-focus) {
   position: relative;
   width: 100%; 
   min-width: 0;
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 4 / 5;
   transform-style: preserve-3d;
   z-index: 10;
   will-change: transform, width, height, top, left;

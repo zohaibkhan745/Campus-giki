@@ -53,7 +53,7 @@ const PostCardComponent: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) 
     };
   }, [dropdownOpen]);
 
-  const coverImage = resolveImageUrl(item.imageUrl) || 'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?auto=format&fit=crop&w=800&q=80';
+  const coverImage = resolveImageUrl(item.imageUrl);
   const logoImage = getSocietyLogo(item.society.logoUrl);
   const authorName = item.isAdminPost ? 'Dean Student Affairs' : item.society.name;
 
@@ -91,9 +91,11 @@ const PostCardComponent: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) 
           <div className="card-front-content">
             
             {/* Square Image Area (aspect-square) */}
-            <div className="relative w-full aspect-square overflow-hidden shrink-0 bg-gray-900">
-              <img src={coverImage} alt="Post Cover" className="absolute inset-0 w-full h-full object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-b from-black/85 via-black/30 to-black/90"></div>
+            <div className={`relative w-full aspect-square overflow-hidden shrink-0 ${!coverImage ? 'bg-white/[0.05] backdrop-blur-[20px]' : 'bg-gray-900'}`}>
+              {coverImage && (
+                <img src={coverImage} alt="Post Cover" className="absolute inset-0 w-full h-full object-cover" />
+              )}
+              {coverImage && <div className="absolute inset-0 bg-gradient-to-b from-black/85 via-black/30 to-black/90"></div>}
               
               <div className="absolute top-5 left-5 right-5 flex flex-col gap-2 z-10 text-left">
                 <div className="flex items-center justify-between gap-[20px] flex-wrap w-full">
@@ -188,7 +190,9 @@ const PostCardComponent: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) 
           <div className="card-back-inner">
             
             <div className="relative h-[200px] w-full flex-shrink-0 bg-gray-900 flex items-center justify-center overflow-hidden">
-              <img src={coverImage} alt="Cover" className="w-full h-full object-cover opacity-60" />
+              {coverImage && (
+                <img src={coverImage} alt="Cover" className="w-full h-full object-cover opacity-60" />
+              )}
               <button type="button" className="close-btn" aria-label="Close details" onClick={(e) => { e.stopPropagation(); closeCard(); }}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
               </button>

@@ -98,11 +98,11 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
           <div className="card-front-content">
             
             {/* Square Image Area */}
-            <div className="relative w-full aspect-square overflow-hidden shrink-0 bg-gray-900">
+            <div className={`relative w-full aspect-square overflow-hidden shrink-0 ${!coverImage ? 'bg-white/[0.05] backdrop-blur-[20px]' : 'bg-gray-900'}`}>
               {coverImage && (
                 <img src={coverImage} alt="Event Poster" className="absolute inset-0 w-full h-full object-cover" />
               )}
-              <div className="absolute inset-0 bg-gradient-to-b from-black/85 via-black/30 to-black/90"></div>
+              {coverImage && <div className="absolute inset-0 bg-gradient-to-b from-black/85 via-black/30 to-black/90"></div>}
               
               <div className="absolute top-5 left-5 right-5 flex flex-col gap-2 z-10 text-left">
                 <div className="flex items-center justify-between gap-[20px] flex-wrap w-full">
