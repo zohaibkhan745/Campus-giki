@@ -40,8 +40,7 @@ export const Footer: React.FC = () => {
               <li><Link to="/" className="hover:text-white transition">Home</Link></li>
               <li><Link to="/about" className="hover:text-white transition">About Us</Link></li>
               <li><Link to="/services" className="hover:text-white transition">Services</Link></li>
-              <li><Link to="/products" className="hover:text-white transition">Products</Link></li>
-              <li><Link to="/contact" className="hover:text-white transition">Contact</Link></li>
+              <li><Link to="/contact" className="hover:text-white transition">Contact Us</Link></li>
             </ul>
           </div>
 
@@ -49,10 +48,11 @@ export const Footer: React.FC = () => {
           <div>
             <h4 className="text-base font-semibold text-white mb-4">Contact Us</h4>
             <ul className="space-y-2.5 text-sm text-gray-400">
-              <li>123 Innovation Street</li>
-              <li>Tech City, TC 12345</li>
-              <li>Phone: (123) 456-7890</li>
-              <li>Email: hello@example.com</li>
+              <li>GIK Institute of Engineering Sciences and Technology,</li>
+              <li>Topi 23640, District Swabi, Khyber Pakhtunkhwa, Pakistan.</li>
+              <li>Telephone: +92 938 281026 (Exchange)</li>
+              <li>Fax: 0938-281032, 281041</li>
+              <li>Email: u2023050@giki.edu.pk, u2023787@giki.edu.pk</li>
             </ul>
           </div>
 
@@ -65,9 +65,9 @@ export const Footer: React.FC = () => {
             &copy; 2026 GIKI Campus. All rights reserved.
           </div>
           <div className="flex space-x-6 text-gray-400">
-            <a href="#" className="hover:text-white transition">Privacy Policy</a>
-            <a href="#" className="hover:text-white transition">Terms of Service</a>
-            <a href="#" className="hover:text-white transition">Cookie Settings</a>
+            <Link to="/privacy-policy" className="hover:text-white transition">Privacy Policy</Link>
+            <Link to="/terms-of-service" className="hover:text-white transition">Terms of Service</Link>
+            <Link to="/cookie-settings" className="hover:text-white transition">Cookie Settings</Link>
           </div>
         </div>
       </div>
