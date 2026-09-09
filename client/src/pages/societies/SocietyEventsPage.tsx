@@ -29,7 +29,7 @@ export const SocietyEventsPage: React.FC = () => {
   }
 
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [statusFilter, setStatusFilter] = useState<string>(searchParams.get('status') || '');
+  const [statusFilter, setStatusFilter] = useState<string>(searchParams.get('status') || 'all');
   const [typeToggle, setTypeToggle] = useState<'all' | 'this_week' | 'this_month' | 'upcoming' | 'past'>(defaultType);
 
   // Query events
@@ -49,7 +49,7 @@ export const SocietyEventsPage: React.FC = () => {
 
   const handleClearFilters = () => {
     setSearchQuery('');
-    setStatusFilter('');
+    setStatusFilter('all');
     setTypeToggle('all');
   };
 
@@ -67,8 +67,18 @@ export const SocietyEventsPage: React.FC = () => {
       }
 
       // 2. Status Filter
-      if (statusFilter && event.approvalStatus !== statusFilter) {
-        return false;
+      if (statusFilter && statusFilter !== 'all') {
+        if (statusFilter === 'PENDING_REVIEW') {
+          if (event.approvalStatus !== 'PENDING_ADMIN' && event.approvalStatus !== 'PENDING_ADVISOR') {
+            return false;
+          }
+        } else if (statusFilter === 'PUBLISHED') {
+          if (event.approvalStatus !== 'PUBLISHED' && event.approvalStatus !== 'APPROVED') {
+            return false;
+          }
+        } else if (event.approvalStatus !== statusFilter) {
+          return false;
+        }
       }
 
       // 3. Time Window (Type) Filter
@@ -134,7 +144,7 @@ export const SocietyEventsPage: React.FC = () => {
           </div>
 
           <div className="flex flex-row items-center gap-3 shrink-0">
-            <div className="w-44 shrink-0">
+            <div className="w-56 shrink-0">
               <CustomDropdown className="w-full" icon={<Calendar className="w-4 h-4" />} options={[{ value: 'all', label: 'All Event Timings' }, { value: 'this_week', label: 'This Week' }, { value: 'this_month', label: 'This Month' }, { value: 'upcoming', label: 'Upcoming' }, { value: 'past', label: 'Past Events' }]}
                 value={typeToggle}
                 onChange={(e: any) => { setTypeToggle(e.target.value); }}
@@ -142,15 +152,15 @@ export const SocietyEventsPage: React.FC = () => {
               />
             </div>
             
-            <div className="w-44 shrink-0">
-              <CustomDropdown className="w-full" icon={<Filter className="w-4 h-4" />} options={[{ value: "", label: "All Statuses" }, { value: 'PENDING_ADMIN', label: 'Pending Review' }, { value: 'PUBLISHED', label: 'Published / Approved' }, { value: 'CHANGES_REQUESTED', label: 'Changes Requested' }, { value: 'DRAFT', label: 'Draft' }]}
+            <div className="w-56 shrink-0">
+              <CustomDropdown className="w-full" icon={<Filter className="w-4 h-4" />} options={[{ value: 'all', label: "All Statuses" }, { value: 'PENDING_REVIEW', label: 'Pending Review' }, { value: 'PUBLISHED', label: 'Published / Approved' }, { value: 'CHANGES_REQUESTED', label: 'Changes Requested' }]}
                 value={statusFilter}
                 onChange={(e: any) => { setStatusFilter(e.target.value); }}
                 placeholder="All Statuses"
               />
             </div>
 
-            {(searchQuery || statusFilter || typeToggle !== 'all') && (
+            {(searchQuery || statusFilter !== 'all' || typeToggle !== 'all') && (
               <button
                 onClick={handleClearFilters}
                 className="flex items-center justify-center p-2 text-red-400 hover:text-white bg-red-500/10 hover:bg-red-500/30 rounded-xl transition-all shrink-0"
@@ -183,12 +193,12 @@ export const SocietyEventsPage: React.FC = () => {
               <div>
                 <h3 className="text-xl font-extrabold text-white">No Events Found</h3>
                 <p className="text-gray-400 mt-2 max-w-sm mx-auto">
-                  {searchQuery || statusFilter || typeToggle !== 'all'
+                  {searchQuery || statusFilter !== 'all' || typeToggle !== 'all'
                     ? "We couldn't find any events matching your current filters."
                     : "Your society hasn't created any events yet."}
                 </p>
               </div>
-              {(searchQuery || statusFilter || typeToggle !== 'all') ? (
+              {(searchQuery || statusFilter !== 'all' || typeToggle !== 'all') ? (
                 <button
                   onClick={handleClearFilters}
                   className="px-6 py-2 mt-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white rounded-xl transition-all text-sm font-semibold"
