@@ -52,7 +52,6 @@ export const Footer: React.FC = () => {
               <li>Topi 23640, District Swabi, Khyber Pakhtunkhwa, Pakistan.</li>
               <li>Telephone: +92 938 281026 (Exchange)</li>
               <li>Fax: 0938-281032, 281041</li>
-              <li>Email: u2023050@giki.edu.pk, u2023787@giki.edu.pk</li>
             </ul>
           </div>
 

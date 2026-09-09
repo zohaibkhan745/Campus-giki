@@ -16,7 +16,7 @@ export const ComingSoonPage: React.FC = () => {
             filter: 'drop-shadow(0 4px 12px rgba(255, 255, 255, 0.15)) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4))'
           }}
         >
-          SOON
+          XOX
         </div>
         
         <h3 className="text-2xl font-bold leading-tight drop-shadow-md">
@@ -24,7 +24,7 @@ export const ComingSoonPage: React.FC = () => {
         </h3>
         
         <p className="text-[0.95rem] text-white/85 leading-relaxed drop-shadow-sm">
-          We are working hard to bring this feature to you. Please check back later!
+          This page/feature will be brought soon
         </p>
         
         <div className="flex gap-3 w-full mt-2">
