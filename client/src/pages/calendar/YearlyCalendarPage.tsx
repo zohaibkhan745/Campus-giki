@@ -92,39 +92,6 @@ export const YearlyCalendarPage: React.FC = () => {
     }
   }, [existingPlan, reset]);
 
-  const watchedEvents = watch('events');
-
-  useEffect(() => {
-    if (!watchedEvents) return;
-    watchedEvents.forEach((event, index) => {
-      const dur = event.duration || 'One Day Event';
-      if (event.startDate) {
-        if (dur !== 'One Day Event') {
-          const parts = event.startDate.split('-');
-          if (parts.length === 3) {
-            const date = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
-            if (dur === 'Two Day Event') date.setDate(date.getDate() + 1);
-            else if (dur === 'Three Day Event') date.setDate(date.getDate() + 2);
-            else if (dur === 'Weekly Event') date.setDate(date.getDate() + 7);
-            
-            const yy = date.getFullYear();
-            const mm = String(date.getMonth() + 1).padStart(2, '0');
-            const dd = String(date.getDate()).padStart(2, '0');
-            const newEndDate = `${yy}-${mm}-${dd}`;
-            
-            if (event.endDate !== newEndDate) {
-              setValue(`events.${index}.endDate`, newEndDate, { shouldValidate: true });
-            }
-          }
-        } else {
-          if (event.endDate !== event.startDate) {
-            setValue(`events.${index}.endDate`, event.startDate, { shouldValidate: true });
-          }
-        }
-      }
-    });
-  }, [watchedEvents, setValue]);
-
   const createMutation = useMutation({
     meta: { notify: true },
     mutationFn: (data: { payload: YearlyPlanFormData; status: PlanStatus }) =>
@@ -356,6 +323,18 @@ export const YearlyCalendarPage: React.FC = () => {
                           value={dField.value || "One Day Event"}
                           onChange={(val: string) => {
                             dField.onChange(val);
+                            const start = getValues(`events.${index}.startDate`);
+                            if (start && val !== 'One Day Event') {
+                              const date = new Date(start);
+                              if (val === 'Two Day Event') date.setDate(date.getDate() + 1);
+                              else if (val === 'Three Day Event') date.setDate(date.getDate() + 2);
+                              else if (val === 'Weekly Event') date.setDate(date.getDate() + 7);
+                              setValue(`events.${index}.endDate`, date.toISOString(), { shouldValidate: true });
+                            } else if (start && val === 'One Day Event') {
+                              setValue(`events.${index}.endDate`, start, { shouldValidate: true });
+                            } else {
+                              setValue(`events.${index}.endDate`, '', { shouldValidate: true });
+                            }
                           }}
                           options={[
                             {label: "One Day Event", value: "One Day Event"},
@@ -383,6 +362,16 @@ export const YearlyCalendarPage: React.FC = () => {
                               value={rField.value} 
                               onChange={(val: string) => {
                                 rField.onChange(val);
+                                const dur = getValues(`events.${index}.duration`) || 'One Day Event';
+                                if (dur !== 'One Day Event') {
+                                  const date = new Date(val);
+                                  if (dur === 'Two Day Event') date.setDate(date.getDate() + 1);
+                                  else if (dur === 'Three Day Event') date.setDate(date.getDate() + 2);
+                                  else if (dur === 'Weekly Event') date.setDate(date.getDate() + 7);
+                                  setValue(`events.${index}.endDate`, date.toISOString(), { shouldValidate: true });
+                                } else {
+                                  setValue(`events.${index}.endDate`, val, { shouldValidate: true });
+                                }
                               }} 
                               placeholder="mm/dd/yyyy"
                               disabled={isReadOnly || isSaving}

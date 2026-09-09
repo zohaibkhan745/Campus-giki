@@ -223,13 +223,13 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
         </div>
 
         {/* BACK FACE */}
-        <div className="card-face card-back rounded-[inherit] overflow-hidden">
+        <div className="card-face card-back">
           {coverImage ? (
             <img src={coverImage} alt="Event Cover Background" className="back-bg-image" />
           ) : (
             <div className="glass-card-bg"></div>
           )}
-          <div className="card-back-inner rounded-[inherit] overflow-hidden">
+          <div className="card-back-inner">
             <button
               type="button"
               className="close-btn"
