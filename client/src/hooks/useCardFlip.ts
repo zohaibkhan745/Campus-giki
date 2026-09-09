@@ -116,7 +116,7 @@ export function useCardFlip(wrapperRef: RefObject<HTMLDivElement | null>, disabl
           targetLeft = padding;
         } else {
           targetWidth = 560;
-  targetHeight = 560;
+  targetHeight = 660;
           targetTop = (screenHeight - targetHeight) / 2;
           targetLeft = (screenWidth - targetWidth) / 2;
         }
