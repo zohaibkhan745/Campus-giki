@@ -107,7 +107,7 @@ const PostCardComponent: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) 
             {coverImage && (
               <img src={coverImage} alt="Post Cover" className="absolute inset-0 w-full h-full object-cover" />
             )}
-            {coverImage && <div className="absolute inset-0 bg-gradient-to-b from-black/85 via-black/30 to-black/90"></div>}
+            {!coverImage && <div className="absolute inset-0 bg-black/30"></div>}
             
             <div className={cn("relative z-10 text-left flex flex-col flex-1", !coverImage ? "p-4" : "absolute top-5 left-5 right-5")}>
               {!coverImage && (
@@ -154,7 +154,7 @@ const PostCardComponent: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) 
             </div>
             <div className="flex items-center gap-2 shrink-0 h-full">
               {needsFlip && (
-                <button type="button" className="px-4 h-[32px] flex items-center justify-center bg-white/10 hover:bg-white/20 text-white text-[11px] font-bold rounded-full transition-colors border border-white/10 pointer-events-auto" onClick={(e) => { e.preventDefault(); e.stopPropagation(); openCard(false); }}>
+                <button type="button" className="px-4 h-[32px] flex items-center justify-center bg-white hover:bg-gray-200 text-black text-[12px] font-bold rounded-lg transition-colors border-none shadow-sm pointer-events-auto" onClick={(e) => { e.preventDefault(); e.stopPropagation(); openCard(false); }}>
                   View Details
                 </button>
               )}
@@ -180,9 +180,9 @@ const PostCardComponent: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) 
         <div className="card-face card-back">
           <div className="card-back-inner">
             
-            <div className="relative h-[200px] w-full flex-shrink-0 bg-gray-900 flex items-center justify-center overflow-hidden">
+            <div className="relative h-[300px] w-full flex-shrink-0 bg-gray-950 flex items-center justify-center overflow-hidden">
               {coverImage && (
-                <img src={coverImage} alt="Cover" className="w-full h-full object-cover opacity-60" />
+                <img src={coverImage} alt="Cover" className="w-full h-full object-contain p-4" />
               )}
               <button type="button" className="close-btn" aria-label="Close details" onClick={(e) => { e.stopPropagation(); closeCard(); }}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
