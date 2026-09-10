@@ -365,7 +365,7 @@ body.is-focused .cards-container:has(.in-focus) {
 }
 
 .event-card-wrapper .card-front {
-  background: #14161b;
+  background: transparent;
   z-index: 2;
 }
 
@@ -492,12 +492,16 @@ body.is-focused .cards-container:has(.in-focus) {
 }
 
 .post-card-wrapper .card-back {
-    width: 100% !important;
-    height: 100% !important;
-    left: 0 !important;
-    top: 0 !important;
-    margin: 0 !important;
-  }
+  width: 100% !important;
+  height: 100% !important;
+  left: 0 !important;
+  top: 0 !important;
+  background: #191b22;
+  transform: rotateY(180deg) translateZ(0);
+  z-index: 1;
+  position: relative;
+  margin: 0 !important;
+}
 
   .event-card-wrapper .back-content-section,
 .post-card-wrapper .back-content-section {
