@@ -90,8 +90,17 @@ export const PostCreateModal: React.FC<PostCreateModalProps> = ({
 
   const handleSubmitForm = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!content.trim() || isUploading || isSubmitting) return;
+    if (isUploading || isSubmitting) return;
+    if (title.trim().length === 0) {
+      setUploadError('Heading is required');
+      return;
+    }
+    if (content.trim().length === 0 && !imageUrl) {
+      setUploadError('Please provide some text content or upload an image');
+      return;
+    }
 
+    setUploadError(null);
     await onSubmit({
       title: title.trim(),
       content: content.trim(),
@@ -222,7 +231,7 @@ export const PostCreateModal: React.FC<PostCreateModalProps> = ({
             <button
               type="submit"
               form="post-create-dialog-form"
-              disabled={isSubmitting || isUploading || content.trim().length === 0 || title.trim().length === 0}
+              disabled={isSubmitting || isUploading}
               className="btn-cancel" style={{width: "auto", background: "rgba(255,255,255,0.9)", color: "#000"}}
             >
               {isSubmitting ? 'Posting...' : 'Post'}
