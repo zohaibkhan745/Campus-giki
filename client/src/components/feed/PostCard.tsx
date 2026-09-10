@@ -1,7 +1,7 @@
+import { getSocietyLogo, resolveImageUrl, cn } from '@/lib/utils';
 import React, { useRef, useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
-import { getSocietyLogo, resolveImageUrl } from '@/lib/utils';
 import type { PostFeedItem } from '@/types/feed.types';
 import { useCardFlip } from '@/hooks/useCardFlip';
 import { useAuth } from '@/context/AuthContext';
@@ -17,7 +17,10 @@ interface PostCardProps {
 
 const PostCardComponent: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const { isActive, openCard, closeCard } = useCardFlip(wrapperRef);
+  const coverImage = resolveImageUrl(item.imageUrl);
+  const isLengthy = (item.content || '').length > 150;
+  const needsFlip = !!coverImage || isLengthy;
+  const { isActive, openCard, closeCard } = useCardFlip(wrapperRef, !needsFlip);
   const { user } = useAuth();
   const canEditOrDelete = user?.role === 'DSA_ADMIN' || (user?.role === 'SOCIETY' && user.society?.id === item.society?.id);
   const canEdit = user?.role === 'SOCIETY' && user.society?.id === item.society?.id;
@@ -53,7 +56,6 @@ const PostCardComponent: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) 
     };
   }, [dropdownOpen]);
 
-  const coverImage = resolveImageUrl(item.imageUrl);
   const logoImage = getSocietyLogo(item.society.logoUrl);
   const authorName = item.isAdminPost ? 'Dean Student Affairs' : item.society.name;
 
@@ -87,101 +89,69 @@ const PostCardComponent: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) 
       <div className="card-flipper">
         
         {/* FRONT FACE */}
-        <div className="card-face card-front">
-          <div className="card-front-content">
+        <div 
+          className={cn("card-face card-front flex flex-col", needsFlip && "cursor-pointer")}
+          onClick={() => needsFlip && openCard(false)}
+        >
+          {/* Upper Bar Section */}
+          <div className="bg-gray-950/95 border-b border-white/10 px-4 py-3 flex items-center justify-between gap-3 w-full rounded-t-[24px] shrink-0 z-20 relative">
+            <div className="flex items-baseline gap-2 flex-wrap min-w-0 flex-1">
+              <span className="text-white text-[15px] font-black tracking-tight truncate" title={postTitle}>{postTitle}</span>
+              <span className="text-gray-400 text-[10px] font-medium whitespace-nowrap">{formattedDate} • {formattedTime}</span>
+            </div>
+            <span className="card-tag !text-[9px] !py-1 !px-2 shrink-0">Post</span>
+          </div>
+
+          <div className={`relative w-full flex-1 overflow-hidden flex flex-col ${!coverImage ? 'bg-white/[0.05] backdrop-blur-[20px]' : 'bg-gray-900'}`}>
+            {coverImage && (
+              <img src={coverImage} alt="Post Cover" className="absolute inset-0 w-full h-full object-cover" />
+            )}
+            {coverImage && <div className="absolute inset-0 bg-gradient-to-b from-black/85 via-black/30 to-black/90"></div>}
             
-            {/* Square Image Area (aspect-square) */}
-            <div className={`relative w-full aspect-square overflow-hidden shrink-0 ${!coverImage ? 'bg-white/[0.05] backdrop-blur-[20px]' : 'bg-gray-900'}`}>
-              {coverImage && (
-                <img src={coverImage} alt="Post Cover" className="absolute inset-0 w-full h-full object-cover" />
-              )}
-              {coverImage && <div className="absolute inset-0 bg-gradient-to-b from-black/85 via-black/30 to-black/90"></div>}
-              
-              <div className="absolute top-5 left-5 right-5 flex flex-col gap-2 z-10 text-left">
-                <div className="flex items-center justify-between gap-[20px] flex-wrap w-full">
-                  <div className="flex items-baseline gap-2 flex-wrap min-w-0 flex-1">
-                    <span className="text-white text-xl font-black tracking-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)] truncate" title={postTitle}>{postTitle}</span>
-                    <span className="text-gray-300 text-xs font-medium drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)] whitespace-nowrap">{formattedDate} • {formattedTime}</span>
-                  </div>
-                  <span className="card-tag">Post</span>
+            <div className={cn("relative z-10 text-left flex flex-col flex-1", !coverImage ? "p-4" : "absolute top-5 left-5 right-5")}>
+              {!coverImage && (
+                <div className="text-gray-300 text-xs mt-3 line-clamp-6 whitespace-pre-wrap flex-1">
+                  {item.content}
                 </div>
+              )}
+            </div>
+          </div>
+
+          {/* Lower Bar Section */}
+          <div 
+             className="bg-gray-950/95 border-t border-white/10 p-4 flex items-center justify-between gap-3 shrink-0 rounded-b-[24px] relative z-20"
+             onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center gap-2.5 min-w-0 flex-1">
+              <div className="w-9 h-9 rounded-full bg-[#007ebb] flex items-center justify-center border border-white/20 shrink-0 overflow-hidden">
+                <img src={logoImage} alt={authorName} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.src = '/default-society.jpg'; }} />
+              </div>
+              <div className="flex flex-col min-w-0 flex-1 text-left">
+                <span className="text-white text-xs font-bold leading-none truncate">{authorName}</span>
+                <span className="text-gray-400 text-[11px] font-medium leading-none mt-1 truncate">@{(item.society as any)?.username || item.society.name.toLowerCase().replace(/\s+/g, '')}</span>
               </div>
             </div>
-
-            {/* Lower Bar Section */}
-            <div className="bg-gray-950/95 border-t border-white/10 p-4 flex items-center justify-between gap-3 flex-1 relative">
-              <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                <div className="w-9 h-9 rounded-full bg-[#007ebb] flex items-center justify-center border border-white/20 shrink-0 overflow-hidden">
-                  <img src={logoImage} alt={authorName} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.src = '/default-society.jpg'; }} />
-                </div>
-                <div className="flex flex-col min-w-0 flex-1 text-left">
-                  <span className="text-white text-xs font-bold leading-none truncate">{authorName}</span>
-                  <span className="text-gray-400 text-[11px] font-medium leading-none mt-1 truncate">@{(item.society as any)?.username || item.society.name.toLowerCase().replace(/\s+/g, '')}</span>
-                </div>
-              </div>
-
+            <div className="flex items-center gap-2 shrink-0 h-full">
+              {needsFlip && (
+                <button type="button" className="px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white text-[11px] font-bold rounded-full transition-colors border border-white/10" onClick={(e) => { e.stopPropagation(); openCard(false); }}>
+                  View Details
+                </button>
+              )}
               {canEditOrDelete && (
-                <div className="menu-container shrink-0 flex items-center">
-                  <button 
-                    type="button" 
-                    className="flex items-center justify-center p-2 rounded-full hover:bg-white/10 transition-colors" aria-label="Options" ref={buttonRef} onClick={toggleDropdown}
-                  >
+                <div className="menu-container shrink-0 h-full flex items-center">
+                  <button type="button" className="card-button visible flex items-center justify-center p-0" aria-label="Options" ref={buttonRef} onClick={toggleDropdown} style={{ height: '32px', width: '32px', borderRadius: '50%' }}>
                     <svg viewBox="0 0 24 24" fill="white" width="16" height="16"><circle cx="5" cy="12" r="2.5"></circle><circle cx="12" cy="12" r="2.5"></circle><circle cx="19" cy="12" r="2.5"></circle></svg>
                   </button>
                   {dropdownOpen && createPortal(
-                    <div 
-                      className="card-dropdown-menu active" 
-                      style={{ position: 'fixed', bottom: window.innerHeight - dropdownPos.top + 50, left: dropdownPos.left, zIndex: 9999, margin: 0 }}
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      {canEdit && <button className="card-dropdown-item" onClick={(e) => { 
-                        e.stopPropagation(); setDropdownOpen(false); 
-                        if(onEdit) onEdit(); else navigate(`/society/posts`);
-                      }}>Edit Post</button>}
-                      <button className="card-dropdown-item delete" onClick={(e) => { 
-                        e.stopPropagation(); setDropdownOpen(false); 
-                        setShowDeleteConfirm(true);
-                      }}>Delete Post</button>
+                    <div className="card-dropdown-menu active" style={{ position: 'fixed', top: dropdownPos.top, left: dropdownPos.left, zIndex: 99999, margin: 0 }} onClick={(e) => e.stopPropagation()}>
+                      {canEdit && <button className="card-dropdown-item" onClick={(e) => { e.stopPropagation(); setDropdownOpen(false); if(onEdit) onEdit(); else navigate(`/society/posts`); }}>Edit Post</button>}
+                      <button className="card-dropdown-item delete" onClick={(e) => { e.stopPropagation(); setDropdownOpen(false); setShowDeleteConfirm(true); }}>Delete Post</button>
                     </div>,
                     document.body
                   )}
                 </div>
               )}
-
-              <button 
-                type="button" 
-                onClick={(e) => { e.stopPropagation(); openCard(true); }} 
-                className="open-details-btn flex justify-center items-center gap-1.5 px-3.5 py-2 bg-white hover:bg-gray-100 text-gray-900 rounded-xl text-xs font-bold transition-all shrink-0 shadow-sm"
-              >
-                <span className="whitespace-nowrap">View Details</span>
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M5 12h14"></path>
-                  <path d="m12 5 7 7-7 7"></path>
-                </svg>
-              </button>
             </div>
-            
-            {showDeleteConfirm && createPortal(
-              <div id="delete-confirm-modal" style={{ position: 'fixed', inset: 0, zIndex: 10000, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(8px)' }} onClick={(e) => { e.stopPropagation(); setShowDeleteConfirm(false); }}>
-                <div style={{ background: 'rgba(25, 27, 34, 0.85)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,0.1)', padding: '24px', borderRadius: '24px', maxWidth: '400px', width: '90%', textAlign: 'center', boxShadow: '0 25px 50px rgba(0,0,0,0.5)' }} onClick={e => e.stopPropagation()}>
-                  <h3 style={{ color: '#fff', fontSize: '1.25rem', fontWeight: 700, marginBottom: '12px' }}>Delete Post?</h3>
-                  <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.9rem', marginBottom: '24px' }}>Are you sure you want to permanently delete this post? This action cannot be undone.</p>
-                  <div style={{ display: 'flex', gap: '12px' }}>
-                    <button style={{ flex: 1, padding: '12px', borderRadius: '12px', background: '#fff', color: '#000', fontWeight: 600, border: 'none', cursor: 'pointer' }} onClick={() => setShowDeleteConfirm(false)}>Cancel</button>
-                    <button style={{ flex: 1, padding: '12px', borderRadius: '12px', background: '#ff4d4f', border: '1px solid #ff4d4f', color: '#fff', fontWeight: 600, cursor: 'pointer' }} onClick={async () => {
-                      try {
-                        await postService.deletePost(item.id);
-                        globalNotification.triggerSuccess('Post deleted successfully');
-                        window.location.reload();
-                      } catch(err) {
-                        globalNotification.triggerFailed('Failed to delete post');
-                      }
-                    }}>Delete</button>
-                  </div>
-                </div>
-              </div>, document.body
-            )}
-
           </div>
         </div>
 
