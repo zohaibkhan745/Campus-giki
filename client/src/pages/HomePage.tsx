@@ -9,12 +9,18 @@ import { useState } from 'react';
 export const HomePage: React.FC = () => {
   const { items, meta, isLoading, isLoadingMore, error, loadMore: fetchNextPage, refetch } = useFeed(50);
   const [visibleCount, setVisibleCount] = useState(12);
+  const [feedType, setFeedType] = useState<'all'|'events'|'posts'>('all');
 
-  const visibleItems = items.slice(0, visibleCount);
+  const filteredItems = items.filter(item => {
+    if (feedType === 'events') return item.type === 'event';
+    if (feedType === 'posts') return item.type === 'post';
+    return true;
+  });
+  const visibleItems = filteredItems.slice(0, visibleCount);
   const hasMoreLocal = visibleCount < items.length || meta?.hasNextPage;
 
   const handleLoadMore = () => {
-    if (visibleCount + 8 > items.length && meta?.hasNextPage) {
+    if (visibleCount + 8 > filteredItems.length && meta?.hasNextPage) {
       fetchNextPage();
     }
     setVisibleCount(prev => prev + 8);
@@ -35,6 +41,30 @@ export const HomePage: React.FC = () => {
               Live announcements, events, and student society activities at GIKI.
             </p>
           </header>
+
+          {/* Feed Type Tabs */}
+          <div className="flex items-center gap-2 mb-8">
+            <div className="flex p-1 bg-white/[0.05] border border-white/10 rounded-full backdrop-blur-md">
+              <button
+                onClick={() => { setFeedType('all'); setVisibleCount(12); }}
+                className={`px-5 py-2 rounded-full text-[14px] tracking-wide font-bold transition-all ${feedType === 'all' ? 'bg-white text-black shadow-md' : 'text-gray-400 hover:text-white'}`}
+              >
+                All
+              </button>
+              <button
+                onClick={() => { setFeedType('events'); setVisibleCount(12); }}
+                className={`px-5 py-2 rounded-full text-[14px] tracking-wide font-bold transition-all ${feedType === 'events' ? 'bg-white text-black shadow-md' : 'text-gray-400 hover:text-white'}`}
+              >
+                Events
+              </button>
+              <button
+                onClick={() => { setFeedType('posts'); setVisibleCount(12); }}
+                className={`px-5 py-2 rounded-full text-[14px] tracking-wide font-bold transition-all ${feedType === 'posts' ? 'bg-white text-black shadow-md' : 'text-gray-400 hover:text-white'}`}
+              >
+                Posts
+              </button>
+            </div>
+          </div>
 
           {/* Error Callout State */}
           {error && (
