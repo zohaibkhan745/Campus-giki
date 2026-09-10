@@ -92,7 +92,7 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
   return (
     <div
       ref={wrapperRef}
-      className="card-wrapper"
+      className="card-wrapper event-card-wrapper"
       data-type="event"
       data-card-id={item.id}
     >
@@ -141,7 +141,7 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
               </div>
 
               {!coverImage && (
-                <div className="text-gray-300 text-[14.5px] leading-relaxed mt-3 line-clamp-6 whitespace-pre-wrap flex-1">
+                <div className="text-gray-300 text-[16px] leading-relaxed mt-3 line-clamp-6 whitespace-pre-wrap flex-1">
                   {item.description}
                 </div>
               )}
@@ -161,6 +161,26 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
             )}
           </div>
 
+                        {showDeleteConfirm && createPortal(
+                <div id="delete-confirm-modal" style={{ position: 'fixed', inset: 0, zIndex: 100000, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(8px)' }} onClick={(e) => { e.stopPropagation(); setShowDeleteConfirm(false); }}>
+                  <div style={{ background: 'rgba(25, 27, 34, 0.85)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,0.1)', padding: '24px', borderRadius: '24px', maxWidth: '400px', width: '90%', textAlign: 'center', boxShadow: '0 25px 50px rgba(0,0,0,0.5)' }} onClick={e => e.stopPropagation()}>
+                    <h3 style={{ color: '#fff', fontSize: '1.25rem', fontWeight: 700, marginBottom: '12px' }}>Delete Event?</h3>
+                    <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.9rem', marginBottom: '24px' }}>Are you sure you want to permanently delete this event? This action cannot be undone.</p>
+                    <div style={{ display: 'flex', gap: '12px' }}>
+                      <button style={{ flex: 1, padding: '12px', borderRadius: '12px', background: '#fff', color: '#000', fontWeight: 600, border: 'none', cursor: 'pointer' }} onClick={() => setShowDeleteConfirm(false)}>Cancel</button>
+                      <button style={{ flex: 1, padding: '12px', borderRadius: '12px', background: '#ff4d4f', border: '1px solid #ff4d4f', color: '#fff', fontWeight: 600, cursor: 'pointer' }} onClick={async () => {
+                        try {
+                          await eventService.deleteEvent(item.id);
+                          globalNotification.triggerSuccess('Event deleted successfully');
+                          window.location.reload();
+                        } catch (err) {
+                          globalNotification.triggerFailed('Failed to delete event');
+                        }
+                      }}>Delete</button>
+                    </div>
+                  </div>
+                </div>, document.body
+              )}
           {/* Lower Bar Section */}
           <div 
              className="bg-gray-950/95 border-t border-white/10 p-4 flex items-center justify-between gap-3 shrink-0 rounded-b-[24px] relative z-20"
@@ -189,7 +209,7 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
                   {dropdownOpen && createPortal(
                     <div className="card-dropdown-menu active" style={{ position: 'fixed', top: dropdownPos.top, left: dropdownPos.left, zIndex: 99999, margin: 0 }} onClick={(e) => e.stopPropagation()}>
                       {reviewUrl && <Link to={reviewUrl} className="card-dropdown-item" onClick={() => setDropdownOpen(false)}>Review Event</Link>}
-                      {canEdit && <button className="card-dropdown-item" onClick={(e) => { e.stopPropagation(); setDropdownOpen(false); if(onEdit) onEdit(); else navigate(`/society/events`); }}>Edit Event</button>}
+                      {canEdit && <button className="card-dropdown-item" onClick={(e) => { e.stopPropagation(); setDropdownOpen(false); if(onEdit) onEdit(); else navigate(`/events/${item.id}/edit`); }}>Edit Event</button>}
                       {canEditOrDelete && <button className="card-dropdown-item delete" onClick={(e) => { e.stopPropagation(); setDropdownOpen(false); setShowDeleteConfirm(true); }}>Delete Event</button>}
                     </div>,
                     document.body
