@@ -104,14 +104,14 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
         >
           {/* Upper Bar Section */}
           <div className="bg-gray-950/95 border-b border-white/10 px-4 py-3 flex items-center justify-between gap-3 w-full rounded-t-[24px] shrink-0 z-20 relative">
-            <div className="flex items-baseline gap-2 flex-wrap min-w-0 flex-1">
-              <span className="text-white text-[15px] font-black tracking-tight truncate" title={item.title}>{item.title}</span>
-              <span className="text-gray-400 text-[10px] font-medium whitespace-nowrap">{formattedDate} • {formattedTime}</span>
+            <div className="flex flex-col min-w-0 flex-1">
+              <span className="text-white text-[17px] font-black tracking-tight truncate leading-tight" title={item.title}>{item.title}</span>
+              <span className="text-gray-400 text-[11px] font-medium whitespace-nowrap mt-0.5">{formattedDate} • {formattedTime}</span>
             </div>
             <span className="card-tag !text-[9px] !py-1 !px-2 shrink-0">Event</span>
           </div>
 
-          <div className={`relative w-full flex-1 overflow-hidden flex flex-col ${!coverImage ? 'bg-white/[0.05] backdrop-blur-[20px]' : 'bg-gray-900'}`}>
+          <div className={`relative w-full flex-1 overflow-hidden flex flex-col ${!coverImage ? 'bg-black/[0.4] backdrop-blur-[24px]' : 'bg-gray-900'}`}>
             {coverImage && (
               <img src={coverImage} alt="Event Poster" className="absolute inset-0 w-full h-full object-cover" />
             )}
@@ -140,7 +140,7 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
               </div>
 
               {!coverImage && (
-                <div className="text-gray-300 text-xs mt-3 line-clamp-6 whitespace-pre-wrap flex-1">
+                <div className="text-gray-300 text-[13.5px] leading-relaxed mt-3 line-clamp-6 whitespace-pre-wrap flex-1">
                   {item.description}
                 </div>
               )}
@@ -163,7 +163,7 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
           {/* Lower Bar Section */}
           <div 
              className="bg-gray-950/95 border-t border-white/10 p-4 flex items-center justify-between gap-3 shrink-0 rounded-b-[24px] relative z-20"
-             onClick={(e) => e.stopPropagation()}
+             
           >
             <div className="flex items-center gap-2.5 min-w-0 flex-1">
               <div className="w-9 h-9 rounded-full bg-[#007ebb] flex items-center justify-center border border-white/20 shrink-0 overflow-hidden">
@@ -176,13 +176,13 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
             </div>
             <div className="flex items-center gap-2 shrink-0 h-full">
               {needsFlip && (
-                <button type="button" className="px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white text-[11px] font-bold rounded-full transition-colors border border-white/10" onClick={(e) => { e.stopPropagation(); openCard(false); }}>
+                <button type="button" className="px-4 h-[32px] flex items-center justify-center bg-white/10 hover:bg-white/20 text-white text-[11px] font-bold rounded-full transition-colors border border-white/10 pointer-events-auto" >
                   View Details
                 </button>
               )}
               {(reviewUrl || canEditOrDelete) && (
                 <div className="menu-container shrink-0 h-full flex items-center">
-                  <button type="button" className="card-button visible flex items-center justify-center p-0" aria-label="Options" ref={buttonRef} onClick={toggleDropdown} style={{ height: '32px', width: '32px', borderRadius: '50%' }}>
+                  <button type="button" className="card-button visible flex items-center justify-center p-0 pointer-events-auto" aria-label="Options" ref={buttonRef} onClick={toggleDropdown} style={{ height: '32px', width: '32px', borderRadius: '50%' }}>
                     <svg viewBox="0 0 24 24" fill="white" width="16" height="16"><circle cx="5" cy="12" r="2.5"></circle><circle cx="12" cy="12" r="2.5"></circle><circle cx="19" cy="12" r="2.5"></circle></svg>
                   </button>
                   {dropdownOpen && createPortal(
