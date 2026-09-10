@@ -196,12 +196,17 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
               </Link>
             </div>
             <div className="flex items-center gap-2 shrink-0 h-full">
-              {needsFlip && (
+              {needsFlip && !reviewUrl && (
                 <button type="button" className="px-4 h-[32px] flex items-center justify-center bg-white hover:bg-gray-200 text-black text-[12px] font-bold rounded-lg transition-colors border-none shadow-sm pointer-events-auto" onClick={(e) => { e.preventDefault(); e.stopPropagation(); openCard(false); }}>
                   View Details
                 </button>
               )}
-              {(reviewUrl || canEditOrDelete) && (
+              {reviewUrl && (
+                <Link to={reviewUrl} className="px-4 h-[32px] flex items-center justify-center bg-[#ea580c] hover:bg-[#c2410c] text-white text-[12px] font-bold rounded-lg transition-colors border-none shadow-sm pointer-events-auto" onClick={(e) => e.stopPropagation()}>
+                  Review
+                </Link>
+              )}
+              {canEditOrDelete && (
                 <div className="menu-container shrink-0 h-full flex items-center">
                   <button type="button" className="flex items-center justify-center p-2 rounded-full hover:bg-white/10 transition-colors pointer-events-auto" aria-label="Options" ref={buttonRef} onClick={toggleDropdown} style={{ height: '32px', width: '32px', borderRadius: '50%' }}>
                     <svg viewBox="0 0 24 24" fill="white" width="16" height="16"><circle cx="5" cy="12" r="2.5"></circle><circle cx="12" cy="12" r="2.5"></circle><circle cx="19" cy="12" r="2.5"></circle></svg>
