@@ -167,13 +167,13 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
              onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center gap-2.5 min-w-0 flex-1">
-              <div className="w-9 h-9 rounded-full bg-[#007ebb] flex items-center justify-center border border-white/20 shrink-0 overflow-hidden">
+              <Link to={`/societies/${item.society.id}`} className="w-9 h-9 rounded-full bg-[#007ebb] flex items-center justify-center border border-white/20 shrink-0 overflow-hidden hover:opacity-80 transition-opacity" onClick={(e) => e.stopPropagation()}>
                 <img src={logoImage} alt={authorName} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.src = '/default-society.jpg'; }} />
-              </div>
-              <div className="flex flex-col min-w-0 flex-1 text-left">
+              </Link>
+              <Link to={`/societies/${item.society.id}`} className="flex flex-col min-w-0 flex-1 text-left hover:opacity-80 transition-opacity" onClick={(e) => e.stopPropagation()}>
                 <span className="text-white text-[14px] font-bold leading-tight truncate">{authorName}</span>
                 <span className="text-gray-400 text-[12px] font-medium leading-none mt-0.5 truncate">@{(item.society as any).username || item.society.name.toLowerCase().replace(/\s+/g, '')}</span>
-              </div>
+              </Link>
             </div>
             <div className="flex items-center gap-2 shrink-0 h-full">
               {needsFlip && (

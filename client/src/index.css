@@ -1387,3 +1387,8 @@ input[type="radio"]:checked + .toggle-btn:hover { background: #e2e8f0; color: #0
   .field-grid-2, .field-grid-3 { grid-template-columns: 1fr; } 
   #dateGrid.multi-day { grid-template-columns: 1fr; }
 }
+
+
+.card-flipper:not(.flipped) .card-back {
+  pointer-events: none;
+}
