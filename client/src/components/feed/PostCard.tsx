@@ -32,6 +32,7 @@ const PostCardComponent: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) 
   const navigate = useNavigate();
 
   const toggleDropdown = (e: React.MouseEvent) => {
+    e.preventDefault();
     e.stopPropagation();
     if (dropdownOpen) {
       setDropdownOpen(false);
@@ -96,7 +97,7 @@ const PostCardComponent: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) 
           {/* Upper Bar Section */}
           <div className="bg-gray-950/95 border-b border-white/10 px-4 py-3 flex items-center justify-between gap-3 w-full rounded-t-[24px] shrink-0 z-20 relative">
             <div className="flex flex-col min-w-0 flex-1">
-              <span className="text-white text-[17px] font-black tracking-tight truncate leading-tight" title={postTitle}>{postTitle}</span>
+              <span className="text-white text-[18px] font-black tracking-tight truncate leading-tight" title={postTitle}>{postTitle}</span>
               <span className="text-gray-400 text-[11px] font-medium whitespace-nowrap mt-0.5">{formattedDate} • {formattedTime}</span>
             </div>
             <span className="card-tag !text-[9px] !py-1 !px-2 shrink-0">Post</span>
@@ -110,7 +111,7 @@ const PostCardComponent: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) 
             
             <div className={cn("relative z-10 text-left flex flex-col flex-1", !coverImage ? "p-4" : "absolute top-5 left-5 right-5")}>
               {!coverImage && (
-                <div className="text-gray-300 text-[13.5px] leading-relaxed mt-3 line-clamp-6 whitespace-pre-wrap flex-1">
+                <div className="text-gray-300 text-[14.5px] leading-relaxed mt-3 line-clamp-6 whitespace-pre-wrap flex-1">
                   {item.content}
                 </div>
               )}
@@ -120,26 +121,26 @@ const PostCardComponent: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) 
           {/* Lower Bar Section */}
           <div 
              className="bg-gray-950/95 border-t border-white/10 p-4 flex items-center justify-between gap-3 shrink-0 rounded-b-[24px] relative z-20"
-             
+             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center gap-2.5 min-w-0 flex-1">
               <div className="w-9 h-9 rounded-full bg-[#007ebb] flex items-center justify-center border border-white/20 shrink-0 overflow-hidden">
                 <img src={logoImage} alt={authorName} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.src = '/default-society.jpg'; }} />
               </div>
               <div className="flex flex-col min-w-0 flex-1 text-left">
-                <span className="text-white text-xs font-bold leading-none truncate">{authorName}</span>
-                <span className="text-gray-400 text-[11px] font-medium leading-none mt-1 truncate">@{(item.society as any)?.username || item.society.name.toLowerCase().replace(/\s+/g, '')}</span>
+                <span className="text-white text-[14px] font-bold leading-tight truncate">{authorName}</span>
+                <span className="text-gray-400 text-[12px] font-medium leading-none mt-0.5 truncate">@{(item.society as any)?.username || item.society.name.toLowerCase().replace(/\s+/g, '')}</span>
               </div>
             </div>
             <div className="flex items-center gap-2 shrink-0 h-full">
               {needsFlip && (
-                <button type="button" className="px-4 h-[32px] flex items-center justify-center bg-white/10 hover:bg-white/20 text-white text-[11px] font-bold rounded-full transition-colors border border-white/10 pointer-events-auto" >
+                <button type="button" className="px-4 h-[32px] flex items-center justify-center bg-white/10 hover:bg-white/20 text-white text-[11px] font-bold rounded-full transition-colors border border-white/10 pointer-events-auto" onClick={(e) => { e.preventDefault(); e.stopPropagation(); openCard(false); }}>
                   View Details
                 </button>
               )}
               {canEditOrDelete && (
                 <div className="menu-container shrink-0 h-full flex items-center">
-                  <button type="button" className="card-button visible flex items-center justify-center p-0 pointer-events-auto" aria-label="Options" ref={buttonRef} onClick={toggleDropdown} style={{ height: '32px', width: '32px', borderRadius: '50%' }}>
+                  <button type="button" className="flex items-center justify-center p-2 rounded-full hover:bg-white/10 transition-colors pointer-events-auto" aria-label="Options" ref={buttonRef} onClick={toggleDropdown} style={{ height: '32px', width: '32px', borderRadius: '50%' }}>
                     <svg viewBox="0 0 24 24" fill="white" width="16" height="16"><circle cx="5" cy="12" r="2.5"></circle><circle cx="12" cy="12" r="2.5"></circle><circle cx="19" cy="12" r="2.5"></circle></svg>
                   </button>
                   {dropdownOpen && createPortal(
