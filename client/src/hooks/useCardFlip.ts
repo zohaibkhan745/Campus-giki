@@ -111,15 +111,33 @@ export function useCardFlip(wrapperRef: RefObject<HTMLDivElement | null>, disabl
         if (isMobile) {
           const padding = 20; 
           targetWidth = screenWidth - (padding * 2); 
-          targetHeight = targetWidth;
-          targetTop = (screenHeight - targetHeight) / 2;
           targetLeft = padding;
         } else {
           targetWidth = 560;
-  targetHeight = 560;
-          targetTop = (screenHeight - targetHeight) / 2;
           targetLeft = (screenWidth - targetWidth) / 2;
         }
+
+        // Calculate dynamic height based on content
+        let contentHeight = isMobile ? 550 : 660;
+        const textContainer = wrapper.querySelector('.card-back-inner > div:nth-child(2)') as HTMLElement | null;
+        if (textContainer) {
+            const clone = textContainer.cloneNode(true) as HTMLElement;
+            clone.style.setProperty('position', 'absolute', 'important');
+            clone.style.setProperty('visibility', 'hidden', 'important');
+            clone.style.setProperty('height', 'auto', 'important');
+            clone.style.setProperty('width', targetWidth + 'px', 'important');
+            document.body.appendChild(clone);
+            
+            const textHeight = clone.scrollHeight;
+            document.body.removeChild(clone);
+            
+            const imgHeight = 300; // Height of the image container
+            contentHeight = imgHeight + textHeight;
+        }
+
+        const maxAllowedHeight = screenHeight - 160; // 80px top and bottom margin
+        targetHeight = Math.min(Math.max(contentHeight, isMobile ? 500 : 660), maxAllowedHeight);
+        targetTop = (screenHeight - targetHeight) / 2;
 
         wrapper.style.width = targetWidth + "px";
         wrapper.style.height = targetHeight + "px";

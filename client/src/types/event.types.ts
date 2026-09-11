@@ -15,7 +15,7 @@ export interface EventItem {
   inChargeContact?: string | null;
   rules?: string | null;
   isPublished: boolean;
-  approvalStatus?: 'DRAFT' | 'PUBLISHED' | 'PENDING_ADVISOR' | 'PENDING_ADMIN' | 'CHANGES_REQUESTED' | 'APPROVED';
+  approvalStatus?: 'DRAFT' | 'PUBLISHED' | 'PENDING_ADVISOR' | 'PENDING_ADMIN' | 'CHANGES_REQUESTED' | 'APPROVED' | 'REJECTED';
   advisorComments?: string | null;
   dsaComments?: string | null;
   advisorApprovedAt?: string | null;
