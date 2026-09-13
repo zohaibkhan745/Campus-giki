@@ -6,7 +6,6 @@ import {
   Users,
   User,
   LogOut,
-  Settings,
   Shield,
   Building2,
   GraduationCap,
@@ -17,9 +16,9 @@ import { usePendingCounts } from '@/hooks/usePendingCounts';
 export const MainNavigation: React.FC = () => {
   const { user, logout } = useAuth();
   const location = useLocation();
+  const { totalPending } = usePendingCounts();
   const hideRoutes = ['/society/setup', '/admin/settings', '/advisor/settings', '/dsa/settings', '/settings'];
   if (hideRoutes.some(route => location.pathname.includes(route))) return null;
-  const { totalPending } = usePendingCounts();
 
   const navLinks = [
     { label: 'Home', path: '/', icon: Home },

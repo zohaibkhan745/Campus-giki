@@ -1,3 +1,5 @@
+export type VenueClearanceStatus = 'PENDING_UPLOAD' | 'SUBMITTED' | 'VERIFIED' | 'REJECTED';
+
 export interface EventItem {
   id: string;
   title: string;
@@ -15,12 +17,17 @@ export interface EventItem {
   inChargeContact?: string | null;
   rules?: string | null;
   isPublished: boolean;
-  approvalStatus?: 'DRAFT' | 'PUBLISHED' | 'PENDING_ADVISOR' | 'PENDING_ADMIN' | 'CHANGES_REQUESTED' | 'APPROVED' | 'REJECTED';
+  approvalStatus?: 'DRAFT' | 'PUBLISHED' | 'PENDING_ADVISOR' | 'PENDING_ADMIN' | 'CHANGES_REQUESTED' | 'APPROVED' | 'REJECTED' | 'CANCELLED';
   advisorComments?: string | null;
   dsaComments?: string | null;
   advisorApprovedAt?: string | null;
   dsaApprovedAt?: string | null;
   lastChangeRequestBy?: string | null;
+  venueClearanceStatus?: VenueClearanceStatus | null;
+  signedVenueSlipUrl?: string | null;
+  venueSlipUploadedAt?: string | null;
+  venueClearanceVerifiedAt?: string | null;
+  venueClearanceNotes?: string | null;
   societyId: string;
   society?: {
     id: string;

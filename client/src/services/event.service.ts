@@ -45,4 +45,16 @@ export const eventService = {
   async deleteEvent(id: string): Promise<{ message: string; id: string }> {
     return api.delete(`/events/${id}`);
   },
+
+  async uploadVenueSlip(eventId: string, file: File): Promise<EventItem> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return api.post(`/events/${eventId}/venue-slip`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+  },
+
+  async getVenueSlipData(eventId: string): Promise<any> {
+    return api.get(`/events/${eventId}/venue-slip`);
+  },
 };

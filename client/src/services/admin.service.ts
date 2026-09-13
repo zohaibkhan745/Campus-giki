@@ -358,6 +358,13 @@ export const adminService = {
   async updateEventStatus(id: string, payload: { status: string; comments?: string; rules?: string }) {
     return api.patch(`/admin/events/${id}/status`, payload);
   },
+
+  async verifyVenueClearance(
+    id: string,
+    payload: { status: 'VERIFIED' | 'REJECTED'; notes?: string },
+  ) {
+    return api.patch(`/admin/events/${id}/venue-clearance`, payload);
+  },
 };
 
 

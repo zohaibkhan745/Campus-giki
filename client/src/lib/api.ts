@@ -40,9 +40,12 @@ api.interceptors.response.use(
   },
   (error: AxiosError) => {
     if (error.response && error.response.status === 401) {
-      // Clear token on 401 Unauthorized to trigger clean re-auth
+      // Clear token on 401 Unauthorized and notify state observers
       localStorage.removeItem('token');
       localStorage.removeItem('user');
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('auth:unauthorized'));
+      }
     }
     return Promise.reject(error);
   },

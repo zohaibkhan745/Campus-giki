@@ -1,8 +1,6 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 import { DockNav } from '@/components/navigation/DockNav';
-import { Footer } from '@/components/navigation/Footer';
-
 export const DashboardLayout: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col font-inter text-gray-200 relative overflow-x-hidden w-screen max-w-[100vw]">
@@ -11,10 +9,6 @@ export const DashboardLayout: React.FC = () => {
         <Outlet />
         <div className="focus-backdrop" id="focusBackdrop"></div>
       </main>
-
-      <div className="relative z-10 w-full mt-auto">
-        <Footer />
-      </div>
 
       <DockNav />
     </div>

@@ -5,38 +5,8 @@ export function useCardFlip(wrapperRef: RefObject<HTMLDivElement | null>, disabl
   const [isFlipped, setIsFlipped] = useState(false);
   const [isActive, setIsActive] = useState(false); // represents 'in-focus'
 
-  useEffect(() => {
-    const wrapper = wrapperRef.current;
-    if (!wrapper || disable) return;
 
-    const handleMouseMove = (e: MouseEvent) => {
-      if (wrapper.classList.contains('in-focus')) return;
-      const rect = wrapper.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      const centerX = rect.width / 2;
-      const centerY = rect.height / 2;
-      const rotateX = ((y - centerY) / centerY) * -10;
-      const rotateY = ((x - centerX) / centerX) * 10;
-      wrapper.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-    };
-
-    const handleMouseLeave = () => {
-      if (!wrapper.classList.contains('in-focus')) {
-        wrapper.style.transform = 'rotateX(0deg) rotateY(0deg)';
-      }
-    };
-
-    wrapper.addEventListener('mousemove', handleMouseMove);
-    wrapper.addEventListener('mouseleave', handleMouseLeave);
-    
-    return () => {
-      wrapper.removeEventListener('mousemove', handleMouseMove);
-      wrapper.removeEventListener('mouseleave', handleMouseLeave);
-    };
-  }, [wrapperRef]);
-
-  // Global click listener to close card if clicking outside
+  // Global click listener to close card if clicking outside, and Escape key
   useEffect(() => {
     if (!isActive) return;
 
@@ -48,16 +18,95 @@ export function useCardFlip(wrapperRef: RefObject<HTMLDivElement | null>, disabl
       }
     };
 
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        closeCard();
+      }
+    };
+
     // Small timeout to prevent immediate triggering from the open click
     const timer = setTimeout(() => {
       window.addEventListener('click', handleGlobalClick);
+      window.addEventListener('keydown', handleKeyDown);
     }, 100);
 
     return () => {
       clearTimeout(timer);
       window.removeEventListener('click', handleGlobalClick);
+      window.removeEventListener('keydown', handleKeyDown);
     };
   }, [isActive]);
+
+  // Active wheel and touch scroll handler when card is in focus
+  useEffect(() => {
+    const wrapper = wrapperRef.current;
+    if (!wrapper || !isActive) return;
+
+    const handleWheel = (e: WheelEvent) => {
+      // Find the scrollable container inside the card
+      const scrollEl = (wrapper.querySelector('.card-back-inner') || wrapper.querySelector('.scroll-area')) as HTMLElement | null;
+      if (!scrollEl) return;
+
+      let delta = e.deltaY;
+      if (e.deltaMode === 1) {
+        delta *= 24; // Lines to px
+      } else if (e.deltaMode === 2) {
+        delta *= scrollEl.clientHeight; // Pages to px
+      }
+
+      const maxScroll = scrollEl.scrollHeight - scrollEl.clientHeight;
+      if (maxScroll <= 0) {
+        e.preventDefault();
+        e.stopPropagation();
+        return;
+      }
+
+      const canScrollDown = delta > 0 && scrollEl.scrollTop < maxScroll;
+      const canScrollUp = delta < 0 && scrollEl.scrollTop > 0;
+
+      if (canScrollDown || canScrollUp) {
+        scrollEl.scrollTop += delta;
+      }
+      e.preventDefault();
+      e.stopPropagation();
+    };
+
+    let touchStartY = 0;
+    const handleTouchStart = (e: TouchEvent) => {
+      if (e.touches.length === 1) {
+        touchStartY = e.touches[0].clientY;
+      }
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      const scrollEl = (wrapper.querySelector('.card-back-inner') || wrapper.querySelector('.scroll-area')) as HTMLElement | null;
+      if (!scrollEl || e.touches.length !== 1) return;
+
+      const currentY = e.touches[0].clientY;
+      const deltaY = touchStartY - currentY;
+      touchStartY = currentY;
+
+      const maxScroll = scrollEl.scrollHeight - scrollEl.clientHeight;
+      if (maxScroll <= 0) return;
+
+      const canScrollDown = deltaY > 0 && scrollEl.scrollTop < maxScroll;
+      const canScrollUp = deltaY < 0 && scrollEl.scrollTop > 0;
+
+      if (canScrollDown || canScrollUp) {
+        scrollEl.scrollTop += deltaY;
+      }
+    };
+
+    wrapper.addEventListener('wheel', handleWheel, { passive: false });
+    wrapper.addEventListener('touchstart', handleTouchStart, { passive: true });
+    wrapper.addEventListener('touchmove', handleTouchMove, { passive: true });
+
+    return () => {
+      wrapper.removeEventListener('wheel', handleWheel);
+      wrapper.removeEventListener('touchstart', handleTouchStart);
+      wrapper.removeEventListener('touchmove', handleTouchMove);
+    };
+  }, [isActive, wrapperRef]);
 
   const openCard = (isEvent: boolean) => {
     window.dispatchEvent(new CustomEvent('close-all-dropdowns'));
@@ -67,6 +116,10 @@ export function useCardFlip(wrapperRef: RefObject<HTMLDivElement | null>, disabl
     const flipper = wrapper.querySelector('.card-flipper');
     const focusBackdrop = document.getElementById('focusBackdrop');
     if (!flipper || !focusBackdrop) return;
+
+    // Reset scroll position to top
+    const scrollEl = (wrapper.querySelector('.card-back-inner') || wrapper.querySelector('.scroll-area')) as HTMLElement | null;
+    if (scrollEl) scrollEl.scrollTop = 0;
 
     const rect = wrapper.getBoundingClientRect();
     const startWidth = rect.width;
@@ -118,7 +171,7 @@ export function useCardFlip(wrapperRef: RefObject<HTMLDivElement | null>, disabl
         }
 
         // Calculate dynamic height based on content
-        let contentHeight = isMobile ? 550 : 660;
+        let contentHeight = isMobile ? 520 : 640;
         const textContainer = wrapper.querySelector('.card-back-inner > div:nth-child(2)') as HTMLElement | null;
         if (textContainer) {
             const clone = textContainer.cloneNode(true) as HTMLElement;
@@ -131,13 +184,14 @@ export function useCardFlip(wrapperRef: RefObject<HTMLDivElement | null>, disabl
             const textHeight = clone.scrollHeight;
             document.body.removeChild(clone);
             
-            const imgHeight = 300; // Height of the image container
+            const imgHeight = isMobile ? 200 : 220; // Height of the image container
             contentHeight = imgHeight + textHeight;
         }
 
-        const maxAllowedHeight = screenHeight - 160; // 80px top and bottom margin
-        targetHeight = Math.min(Math.max(contentHeight, isMobile ? 500 : 660), maxAllowedHeight);
-        targetTop = (screenHeight - targetHeight) / 2;
+        const minHeight = isMobile ? 480 : 540;
+        const maxAllowedHeight = Math.max(minHeight, screenHeight - 64);
+        targetHeight = Math.min(Math.max(contentHeight, minHeight), maxAllowedHeight);
+        targetTop = Math.max(20, (screenHeight - targetHeight) / 2);
 
         wrapper.style.width = targetWidth + "px";
         wrapper.style.height = targetHeight + "px";
