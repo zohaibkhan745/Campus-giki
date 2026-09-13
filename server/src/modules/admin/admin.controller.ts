@@ -24,6 +24,7 @@ import { CreateAdvisorDto } from './dto/create-advisor.dto';
 import { QueryAdminEventsDto } from './dto/query-admin-events.dto';
 import { AdminDashboardResponseDto } from './dto/admin-dashboard-response.dto';
 import { AdminUpdateYearlyPlanDto } from './dto/admin-update-yearly-plan.dto';
+import { VerifyVenueClearanceDto } from './dto/verify-venue-clearance.dto';
 import { Auth } from '../../core/decorators/auth.decorator';
 
 @ApiTags('DSA Administration')
@@ -294,5 +295,19 @@ export class AdminController {
     @Body() dto: { status: string; comments?: string; rules?: string },
   ) {
     return this.adminService.updateEventStatus(id, dto);
+  }
+
+  @Patch('events/:id/venue-clearance')
+  @Auth(Role.DSA_ADMIN)
+  @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({
+    summary: 'DSA Management: Verify or reject physical venue clearance slip from PS to Dean',
+  })
+  async verifyVenueClearance(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: VerifyVenueClearanceDto,
+  ) {
+    return this.adminService.verifyVenueClearance(id, dto);
   }
 }

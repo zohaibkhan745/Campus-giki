@@ -7,10 +7,14 @@ import { HttpExceptionFilter } from './core/filters/http-exception.filter';
 import { LoggingInterceptor } from './core/interceptors/logging.interceptor';
 import { TransformInterceptor } from './core/interceptors/transform.interceptor';
 import { setupSwagger } from './core/swagger/swagger.config';
+import compression from 'compression';
 
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
   const app = await NestFactory.create(AppModule);
+
+  // Enable HTTP wire compression (Gzip/Deflate)
+  app.use(compression());
 
   // Enable graceful shutdown hooks
   app.enableShutdownHooks();

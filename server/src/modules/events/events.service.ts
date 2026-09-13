@@ -10,7 +10,8 @@ import { UpdateEventDto } from './dto/update-event.dto';
 import { QueryEventsDto } from './dto/query-events.dto';
 import { EventResponseDto } from './dto/event-response.dto';
 import { ReviewEventDto } from './dto/review-event.dto';
-import { Society, Event, Prisma, EventApprovalStatus } from '@prisma/client';
+import { Society, Event, Prisma, EventApprovalStatus, VenueClearanceStatus } from '@prisma/client';
+import { UploadsService } from '../uploads/uploads.service';
 
 export interface SocietyEventsGroupDto {
   upcoming: EventResponseDto[];
@@ -31,7 +32,10 @@ export interface PaginatedEventsResponseDto {
 
 @Injectable()
 export class EventsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly uploadsService: UploadsService,
+  ) {}
 
   /**
    * Public Events Query: Returns events filtered by date range [from, to] and category.
@@ -81,7 +85,7 @@ export class EventsService {
       const cat = query.category.trim();
       whereClause.society = {
         category: {
-          OR: [{ slug: cat.toLowerCase() }, { name: { contains: cat } }],
+          OR: [{ slug: cat.toLowerCase() }, { name: { contains: cat, mode: 'insensitive' } }],
         },
       };
     }
@@ -157,12 +161,6 @@ export class EventsService {
       throw new ForbiddenException('Access denied: You must complete your Executive Council details (all 5 mandatory positions) before managing resources');
     }
 
-    if (false) {
-      throw new ForbiddenException(
-        'Access denied: You must complete your society profile setup before managing event resources',
-      );
-    }
-
     return society;
   }
 
@@ -176,7 +174,7 @@ export class EventsService {
   ): Promise<{ event: Event; society: Society }> {
     const event = await this.prisma.event.findUnique({
       where: { id: eventId },
-      include: { society: true },
+      include: { society: { include: { advisor: true } } },
     });
 
     if (!event) {
@@ -184,7 +182,7 @@ export class EventsService {
     }
 
     const isSociety = event.society.userId === userId;
-    const isAdvisor = userRole === 'ADVISOR' && event.society.advisorId === userId;
+    const isAdvisor = userRole === 'ADVISOR' && event.society.advisor?.userId === userId;
     const isDsaAdmin = userRole === 'DSA_ADMIN';
 
     if (!isSociety && !isAdvisor && !isDsaAdmin) {
@@ -467,14 +465,14 @@ export class EventsService {
   async reviewEventByAdvisor(eventId: string, userId: string, dto: ReviewEventDto): Promise<EventResponseDto> {
     const event = await this.prisma.event.findUnique({
       where: { id: eventId },
-      include: { society: true },
+      include: { society: { include: { advisor: true } } },
     });
 
     if (!event) {
       throw new NotFoundException(`Event not found`);
     }
 
-    if (event.society.advisorId !== userId) {
+    if (!event.society.advisor || event.society.advisor.userId !== userId) {
       throw new ForbiddenException('You are not the advisor for this society');
     }
 
@@ -514,6 +512,9 @@ export class EventsService {
         dsaComments: dto.comments || null,
         dsaApprovedAt: isApproved ? new Date() : null,
         isPublished: isApproved, // Automatically publish if approved
+        ...(isApproved && !event.venueClearanceStatus
+          ? { venueClearanceStatus: VenueClearanceStatus.PENDING_UPLOAD }
+          : {}),
       },
       include: {
         society: {
@@ -523,6 +524,87 @@ export class EventsService {
     });
 
     return updated as any;
+  }
+
+  /**
+   * Society uploads physical signed venue clearance slip.
+   */
+  async uploadVenueClearanceSlip(
+    eventId: string,
+    userId: string,
+    file: Express.Multer.File,
+  ): Promise<EventResponseDto> {
+    const event = await this.prisma.event.findUnique({
+      where: { id: eventId },
+      include: {
+        society: true,
+      },
+    });
+
+    if (!event) {
+      throw new NotFoundException('Event not found');
+    }
+
+    if (event.society.userId !== userId) {
+      throw new ForbiddenException('You do not own this event resource');
+    }
+
+    if (
+      event.approvalStatus !== EventApprovalStatus.APPROVED &&
+      event.approvalStatus !== EventApprovalStatus.PUBLISHED
+    ) {
+      throw new BadRequestException(
+        'Event must be approved by DSA before submitting physical venue clearance',
+      );
+    }
+
+    const uploadResult = await this.uploadsService.uploadMedia(file, 'venue-slips');
+
+    const updated = await this.prisma.event.update({
+      where: { id: eventId },
+      data: {
+        signedVenueSlipUrl: uploadResult.url,
+        venueSlipUploadedAt: new Date(),
+        venueClearanceStatus: VenueClearanceStatus.SUBMITTED,
+        venueClearanceNotes: null,
+      },
+      include: {
+        society: {
+          select: { id: true, name: true, logoUrl: true },
+        },
+      },
+    });
+
+    return updated as any;
+  }
+
+  /**
+   * Retrieve venue slip printable data for an event.
+   */
+  async getVenueSlipData(eventId: string) {
+    const event = await this.prisma.event.findUnique({
+      where: { id: eventId },
+      include: {
+        society: {
+          include: {
+            advisor: {
+              include: {
+                user: {
+                  select: { fullName: true, email: true },
+                },
+              },
+            },
+            category: true,
+          },
+        },
+      },
+    });
+
+    if (!event) {
+      throw new NotFoundException('Event not found');
+    }
+
+    return event;
   }
 }
 

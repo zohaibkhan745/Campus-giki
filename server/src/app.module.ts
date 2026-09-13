@@ -9,18 +9,25 @@ import { CategoriesModule } from './modules/categories/categories.module';
 import { SocietiesModule } from './modules/societies/societies.module';
 import { EventsModule } from './modules/events/events.module';
 import { YearlyPlansModule } from './modules/yearly-plans/yearly-plans.module';
-import { UploadModule } from './modules/upload/upload.module';
+import { UploadsModule } from './modules/uploads/uploads.module';
 import { AdvisorsModule } from './modules/advisors/advisors.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { FeedModule } from './modules/feed/feed.module';
 import { PostsModule } from './modules/posts/posts.module';
 import { EmailModule } from './modules/email/email.module';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
     AppConfigModule,
     PrismaModule,
     EmailModule,
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000,
+        limit: 60,
+      },
+    ]),
     ServeStaticModule.forRoot({
       rootPath: join(process.cwd(), 'uploads'),
       serveRoot: '/uploads',
@@ -34,7 +41,7 @@ import { EmailModule } from './modules/email/email.module';
     SocietiesModule,
     EventsModule,
     YearlyPlansModule,
-    UploadModule,
+    UploadsModule,
     AdvisorsModule,
     AdminModule,
     FeedModule,

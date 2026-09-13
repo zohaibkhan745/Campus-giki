@@ -14,7 +14,7 @@ export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
   @Post()
-  @Auth(Role.SOCIETY, Role.DSA_ADMIN)
+  @Auth(Role.DSA_ADMIN, Role.SOCIETY)
   @ApiBearerAuth('JWT-auth')
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Create a new announcement' })

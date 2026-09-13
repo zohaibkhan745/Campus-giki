@@ -42,12 +42,6 @@ export class YearlyPlansService {
       throw new ForbiddenException('Access denied: You must complete your Executive Council details (all 5 mandatory positions) before managing resources');
     }
 
-    if (false) {
-      throw new ForbiddenException(
-        'Access denied: You must complete your society profile setup before managing yearly calendar plans',
-      );
-    }
-
     return society;
   }
 

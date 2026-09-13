@@ -10,8 +10,20 @@ import {
   HttpCode,
   HttpStatus,
   ParseUUIDPipe,
+  UseInterceptors,
+  UploadedFile,
+  BadRequestException,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+  ApiParam,
+  ApiConsumes,
+  ApiBody,
+} from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { Role } from '@prisma/client';
 import { EventsService, PaginatedEventsResponseDto } from './events.service';
 import { CreateEventDto } from './dto/create-event.dto';
@@ -201,5 +213,46 @@ export class EventsController {
     @Body() dto: ReviewEventDto,
   ): Promise<EventResponseDto> {
     return this.eventsService.reviewEventByDsa(id, user.id, dto);
+  }
+
+  @Post(':id/venue-slip')
+  @Auth(Role.SOCIETY)
+  @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth('JWT-auth')
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiOperation({ summary: 'Society: Upload signed and stamped physical venue permission slip' })
+  @ApiConsumes('multipart/form-data')
+  @ApiParam({ name: 'id', description: 'Event UUID' })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+          description: 'Image or PDF scan of the signed venue permission slip',
+        },
+      },
+    },
+  })
+  async uploadVenueSlip(
+    @Param('id', ParseUUIDPipe) id: string,
+    @CurrentUser() user: UserProfileDto,
+    @UploadedFile() file: Express.Multer.File,
+  ): Promise<EventResponseDto> {
+    if (!file) {
+      throw new BadRequestException('Please provide a file in the form field "file"');
+    }
+    return this.eventsService.uploadVenueClearanceSlip(id, user.id, file);
+  }
+
+  @Get(':id/venue-slip')
+  @Auth(Role.SOCIETY, Role.ADVISOR, Role.DSA_ADMIN)
+  @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Retrieve full event and society data for printable venue permission slip' })
+  @ApiParam({ name: 'id', description: 'Event UUID' })
+  async getVenueSlipData(@Param('id', ParseUUIDPipe) id: string) {
+    return this.eventsService.getVenueSlipData(id);
   }
 }

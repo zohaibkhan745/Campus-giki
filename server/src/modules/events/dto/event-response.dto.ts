@@ -85,6 +85,21 @@ export class EventResponseDto {
   @ApiPropertyOptional()
   dsaApprovedAt?: Date | null;
 
+  @ApiPropertyOptional({ example: 'PENDING_UPLOAD' })
+  venueClearanceStatus?: string | null;
+
+  @ApiPropertyOptional({ example: '/uploads/venue-slips/signed-slip-123.webp' })
+  signedVenueSlipUrl?: string | null;
+
+  @ApiPropertyOptional()
+  venueSlipUploadedAt?: Date | null;
+
+  @ApiPropertyOptional()
+  venueClearanceVerifiedAt?: Date | null;
+
+  @ApiPropertyOptional({ example: 'PS to Dean signature verified.' })
+  venueClearanceNotes?: string | null;
+
   @ApiProperty({ example: 'society-uuid-1234' })
   societyId: string;
 

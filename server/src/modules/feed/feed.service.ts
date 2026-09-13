@@ -1,20 +1,53 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../../core/database/prisma.service';
 import { QueryFeedDto } from './dto/query-feed.dto';
 import { FeedItemDto, PaginatedFeedResponseDto } from './dto/feed-response.dto';
 
+interface CacheEntry {
+  data: PaginatedFeedResponseDto;
+  expiresAt: number;
+}
+
 @Injectable()
 export class FeedService {
+  private readonly logger = new Logger(FeedService.name);
+  private readonly cache = new Map<string, CacheEntry>();
+  private readonly CACHE_TTL_MS = 20_000; // 20s micro-cache
+
   constructor(private readonly prisma: PrismaService) {}
 
-  async getMergedFeed(query: QueryFeedDto): Promise<PaginatedFeedResponseDto> {
-    const page = query.page || 1;
-    const limit = query.limit || 10;
+  public invalidateCache(): void {
+    this.cache.clear();
+  }
 
-    // Fetch published events and general posts in parallel
-    const [events, posts] = await Promise.all([
+  async getMergedFeed(query: QueryFeedDto): Promise<PaginatedFeedResponseDto> {
+    const page = Math.max(1, query.page || 1);
+    const limit = Math.min(100, Math.max(1, query.limit || 10));
+    const skip = (page - 1) * limit;
+    const cacheKey = `feed_${page}_${limit}`;
+
+    const cached = this.cache.get(cacheKey);
+    if (cached && Date.now() < cached.expiresAt) {
+      return cached.data;
+    }
+
+    // Parallel bounded queries + counts for true $O(1)$ memory scalability
+    const fetchLimit = Math.min(skip + limit, 200);
+
+    const [eventsCount, postsCount, events, posts] = await Promise.all([
+      this.prisma.event.count({
+        where: {
+          isPublished: true,
+          approvalStatus: { in: ['APPROVED', 'PUBLISHED'] },
+        },
+      }),
+      this.prisma.post.count(),
       this.prisma.event.findMany({
-        where: { isPublished: true },
+        where: {
+          isPublished: true,
+          approvalStatus: { in: ['APPROVED', 'PUBLISHED'] },
+        },
+        take: fetchLimit,
         include: {
           society: {
             select: {
@@ -34,6 +67,7 @@ export class FeedService {
         orderBy: { createdAt: 'desc' },
       }),
       this.prisma.post.findMany({
+        take: fetchLimit,
         include: {
           author: {
             select: {
@@ -78,7 +112,7 @@ export class FeedService {
 
     const postItems: FeedItemDto[] = posts.map((post) => {
       const isAdminPost = post.author.role === 'DSA_ADMIN';
-      
+
       const societyInfo = isAdminPost
         ? {
             id: 'giki-admin',
@@ -86,7 +120,12 @@ export class FeedService {
             logoUrl: null,
             category: { id: 'admin', name: 'Administration', slug: 'administration' },
           }
-        : post.author.society!;
+        : (post.author.society || {
+            id: post.authorId,
+            name: 'Campus Announcement',
+            logoUrl: null,
+            category: null,
+          });
 
       return {
         type: 'post',
@@ -106,12 +145,11 @@ export class FeedService {
       (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
     );
 
-    const total = combined.length;
-    const skip = (page - 1) * limit;
+    const total = eventsCount + postsCount;
     const items = combined.slice(skip, skip + limit);
     const totalPages = Math.ceil(total / limit) || 1;
 
-    return {
+    const result: PaginatedFeedResponseDto = {
       items,
       meta: {
         total,
@@ -122,5 +160,23 @@ export class FeedService {
         hasPreviousPage: page > 1,
       },
     };
+
+    // Cache page result with micro-TTL
+    this.cache.set(cacheKey, {
+      data: result,
+      expiresAt: Date.now() + this.CACHE_TTL_MS,
+    });
+
+    // Housekeeping: prevent unbounded map size
+    if (this.cache.size > 100) {
+      const now = Date.now();
+      for (const [key, entry] of this.cache.entries()) {
+        if (entry.expiresAt < now) {
+          this.cache.delete(key);
+        }
+      }
+    }
+
+    return result;
   }
 }

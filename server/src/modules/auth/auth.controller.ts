@@ -1,6 +1,17 @@
-import { Controller, Post, Get, Patch, Body, HttpCode, HttpStatus } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  Patch,
+  Body,
+  HttpCode,
+  HttpStatus,
+  UseGuards,
+  ForbiddenException,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Role } from '@prisma/client';
+import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
 import { AuthService } from './auth.service';
 import { RegisterStudentDto } from './dto/register-student.dto';
 import { LoginDto } from './dto/login.dto';
@@ -11,30 +22,25 @@ import { CurrentUser } from './decorators/current-user.decorator';
 import { Auth } from '../../core/decorators/auth.decorator';
 
 @ApiTags('Auth')
+@UseGuards(ThrottlerGuard)
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('register/student')
-  @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Register a new GIKI student account' })
+  @HttpCode(HttpStatus.FORBIDDEN)
+  @ApiOperation({ summary: 'Register a new GIKI student account (Disabled)' })
   @ApiResponse({
-    status: 201,
-    description: 'Student account successfully created',
-    type: AuthResponseDto,
+    status: 403,
+    description: 'Student self-registration is closed',
   })
-  @ApiResponse({
-    status: 400,
-    description: 'Validation failed for input fields',
-  })
-  @ApiResponse({
-    status: 409,
-    description: 'Account with this email already exists',
-  })
-  async registerStudent(@Body() dto: RegisterStudentDto): Promise<AuthResponseDto> {
-    return this.authService.registerStudent(dto);
+  async registerStudent(): Promise<never> {
+    throw new ForbiddenException(
+      'Student self-registration is closed. Administrative and society accounts are provisioned via DSA invitation.',
+    );
   }
 
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
   @Post('login')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Authenticate user with email and password' })
@@ -47,10 +53,15 @@ export class AuthController {
     status: 401,
     description: 'Invalid credentials or inactive account',
   })
+  @ApiResponse({
+    status: 429,
+    description: 'Too many authentication attempts. Please wait before retrying.',
+  })
   async login(@Body() dto: LoginDto): Promise<AuthResponseDto> {
     return this.authService.login(dto);
   }
 
+  @Throttle({ default: { limit: 3, ttl: 60000 } })
   @Post('activate-society')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Activate provisioned society account using single-use token' })

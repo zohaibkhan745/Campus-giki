@@ -9,24 +9,34 @@ import { Role, Prisma } from '@prisma/client';
 export class PostsService {
   constructor(private readonly prisma: PrismaService) {}
 
+  private async validateSocietyCanPost(userId: string) {
+    const society = await this.prisma.society.findUnique({ where: { userId } });
+    if (!society || !society.isSetupComplete) {
+      throw new ForbiddenException('Access denied: Society profile setup must be completed before posting announcements');
+    }
+    let hasFullCouncil = false;
+    try {
+      const council = JSON.parse(society.executiveCouncil || '[]');
+      const mandatoryRoles = ['Vice President', 'Event Coordinator', 'General Secretary', 'Treasurer', 'Director Liaison'];
+      const existingRoles = council.map((m: any) => m.role);
+      hasFullCouncil = mandatoryRoles.every(r => existingRoles.includes(r));
+    } catch (e) {}
+
+    if (!hasFullCouncil) {
+      throw new ForbiddenException('Access denied: You must complete your Executive Council details (all 5 mandatory positions) before creating or updating posts');
+    }
+    return society;
+  }
+
   async createPost(user: UserProfileDto, dto: CreatePostDto) {
-    if (user.role === Role.SOCIETY) {
-      const society = await this.prisma.society.findUnique({ where: { userId: user.id } });
-      let hasFullCouncil = false;
-      try {
-        const council = JSON.parse(society?.executiveCouncil || '[]');
-        const mandatoryRoles = ['Vice President', 'Event Coordinator', 'General Secretary', 'Treasurer', 'Director Liaison'];
-        const existingRoles = council.map((m: any) => m.role);
-        hasFullCouncil = mandatoryRoles.every(r => existingRoles.includes(r));
-      } catch(e) {}
-      if (!hasFullCouncil) {
-        throw new ForbiddenException('Access denied: You must complete your Executive Council details (all 5 mandatory positions) before creating posts');
-      }
+    if (user.role !== Role.DSA_ADMIN && user.role !== Role.SOCIETY) {
+      throw new ForbiddenException('Only the Director of Student Affairs or authorized student societies can create announcements');
     }
 
-    if (user.role !== Role.DSA_ADMIN && user.role !== Role.SOCIETY) {
-      throw new ForbiddenException('You do not have permission to create an announcement');
+    if (user.role === Role.SOCIETY) {
+      await this.validateSocietyCanPost(user.id);
     }
+
     return this.prisma.post.create({
       data: {
         title: dto.title,
@@ -34,6 +44,16 @@ export class PostsService {
         imageUrl: dto.imageUrl,
         videoUrl: dto.videoUrl,
         authorId: user.id,
+      },
+      include: {
+        author: {
+          select: {
+            role: true,
+            society: {
+              select: { id: true, name: true, logoUrl: true, category: true },
+            },
+          },
+        },
       },
     });
   }
@@ -162,17 +182,7 @@ export class PostsService {
     if (user.role === Role.SOCIETY && post.authorId !== user.id) {
       throw new ForbiddenException('You can only edit your own posts');
     } else if (user.role === Role.SOCIETY) {
-      const society = await this.prisma.society.findUnique({ where: { userId: user.id } });
-      let hasFullCouncil = false;
-      try {
-        const council = JSON.parse(society?.executiveCouncil || '[]');
-        const mandatoryRoles = ['Vice President', 'Event Coordinator', 'General Secretary', 'Treasurer', 'Director Liaison'];
-        const existingRoles = council.map((m: any) => m.role);
-        hasFullCouncil = mandatoryRoles.every(r => existingRoles.includes(r));
-      } catch(e) {}
-      if (!hasFullCouncil) {
-        throw new ForbiddenException('Access denied: You must complete your Executive Council details (all 5 mandatory positions) before creating posts');
-      }
+      await this.validateSocietyCanPost(user.id);
     }
 
     if (user.role !== Role.DSA_ADMIN && user.role !== Role.SOCIETY) {

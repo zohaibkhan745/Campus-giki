@@ -382,7 +382,7 @@ export class AdminService {
         OR: [
           { id: cat },
           { slug: cat.toLowerCase() },
-          { name: { contains: cat } },
+          { name: { contains: cat, mode: 'insensitive' } },
         ],
       };
       hasSocietyFilter = true;
@@ -392,7 +392,7 @@ export class AdminService {
       const soc = query.society.trim();
       societyWhere.OR = [
         { id: soc },
-        { name: { contains: soc } },
+        { name: { contains: soc, mode: 'insensitive' } },
       ];
       hasSocietyFilter = true;
     }
@@ -405,9 +405,9 @@ export class AdminService {
     if (query.search) {
       const term = query.search.trim();
       whereClause.OR = [
-        { title: { contains: term } },
-        { description: { contains: term } },
-        { venue: { contains: term } },
+        { title: { contains: term, mode: 'insensitive' } },
+        { description: { contains: term, mode: 'insensitive' } },
+        { venue: { contains: term, mode: 'insensitive' } },
       ];
     }
 
@@ -502,13 +502,13 @@ export class AdminService {
     if (query.category) {
       const cat = query.category.trim();
       whereClause.category = {
-        OR: [{ slug: cat.toLowerCase() }, { name: { contains: cat } }],
+        OR: [{ slug: cat.toLowerCase() }, { name: { contains: cat, mode: 'insensitive' } }],
       };
     }
 
     if (query.search) {
       const searchTerm = query.search.trim();
-      whereClause.name = { contains: searchTerm };
+      whereClause.name = { contains: searchTerm, mode: 'insensitive' };
     }
 
     const [total, items] = await Promise.all([
@@ -910,7 +910,7 @@ export class AdminService {
     if (searchTerm) {
       const term = searchTerm.trim();
       whereClause.society = {
-        name: { contains: term },
+        name: { contains: term, mode: 'insensitive' },
       };
     }
 
@@ -1086,11 +1086,44 @@ export class AdminService {
 
     if (dto.status === 'PUBLISHED' || dto.status === 'APPROVED') {
       data.dsaApprovedAt = new Date();
+      if (!event.venueClearanceStatus) {
+        data.venueClearanceStatus = 'PENDING_UPLOAD';
+      }
     }
 
     return this.prisma.event.update({
       where: { id: eventId },
       data,
+    });
+  }
+
+  async verifyVenueClearance(
+    eventId: string,
+    dto: { status: 'VERIFIED' | 'REJECTED'; notes?: string },
+  ) {
+    const event = await this.prisma.event.findUnique({ where: { id: eventId } });
+    if (!event) {
+      throw new NotFoundException('Event not found');
+    }
+
+    if (!event.signedVenueSlipUrl) {
+      throw new BadRequestException('Society has not uploaded a signed venue slip yet.');
+    }
+
+    const data: any = {
+      venueClearanceStatus: dto.status,
+      venueClearanceNotes: dto.notes || null,
+      venueClearanceVerifiedAt: dto.status === 'VERIFIED' ? new Date() : null,
+    };
+
+    return this.prisma.event.update({
+      where: { id: eventId },
+      data,
+      include: {
+        society: {
+          select: { id: true, name: true, logoUrl: true },
+        },
+      },
     });
   }
 }

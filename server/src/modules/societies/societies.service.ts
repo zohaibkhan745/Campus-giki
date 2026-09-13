@@ -44,7 +44,7 @@ export class SocietiesService {
       whereClause.category = {
         OR: [
           { slug: catFilter.toLowerCase() },
-          { name: { contains: catFilter } },
+          { name: { contains: catFilter, mode: 'insensitive' } },
         ],
       };
     }
@@ -56,8 +56,8 @@ export class SocietiesService {
     if (query.search) {
       const searchFilter = query.search.trim();
       whereClause.OR = [
-        { name: { contains: searchFilter } },
-        { shortDescription: { contains: searchFilter } },
+        { name: { contains: searchFilter, mode: 'insensitive' } },
+        { shortDescription: { contains: searchFilter, mode: 'insensitive' } },
       ];
     }
 
@@ -125,7 +125,6 @@ export class SocietiesService {
         presidentName: true,
         presidentFaculty: true,
           presidentEmail: true,
-          presidentContact: true,
           presidentRegNum: true,
           executiveCouncil: true,
           advisor: { select: { department: true, user: { select: { fullName: true, email: true } } } },
@@ -142,6 +141,19 @@ export class SocietiesService {
 
     if (!society || !society.isSetupComplete) {
       throw new NotFoundException(`Society with ID '${id}' was not found or is not published`);
+    }
+
+    if (society.executiveCouncil) {
+      try {
+        const parsed = JSON.parse(society.executiveCouncil);
+        if (Array.isArray(parsed)) {
+          const sanitized = parsed.map((m: any) => {
+            const { contact, ...rest } = m;
+            return rest;
+          });
+          society.executiveCouncil = JSON.stringify(sanitized);
+        }
+      } catch (e) {}
     }
 
     return society;
@@ -308,48 +320,83 @@ export class SocietiesService {
       };
     }
 
-    // Parallel fetch for events
-    const events = await this.prisma.event.findMany({
-      where: { societyId: society.id },
-      orderBy: [{ eventDate: 'asc' }, { startTime: 'asc' }],
-      include: {
-        society: {
-          select: {
-            id: true,
-            name: true,
-            logoUrl: true,
-          },
-        },
-      },
-    });
-
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    const pendingEvents = events.filter(
-      (e) => e.approvalStatus === 'PENDING_ADVISOR' || e.approvalStatus === 'PENDING_ADMIN' || e.approvalStatus === 'CHANGES_REQUESTED' || e.approvalStatus === 'APPROVED' || e.approvalStatus === 'REJECTED'
-    );
-    const allUpcoming = events.filter((e) => new Date(e.eventDate) >= today && e.approvalStatus === 'PUBLISHED');
-    const allPast = events.filter((e) => new Date(e.eventDate) < today && e.approvalStatus === 'PUBLISHED');
+    const societySelect = {
+      id: true,
+      name: true,
+      logoUrl: true,
+    };
 
-    // Limit display items for dashboard overview cards
-    const upcomingEvents = allUpcoming.slice(0, 5);
-    const recentEvents = allPast.slice(-5).reverse();
-
-    const currentYear = new Date().getFullYear();
-    const yearlyPlan = await this.prisma.yearlyPlan.findUnique({
-      where: {
-        societyId_year: {
+    // Parallel bounded queries for dashboard widgets
+    const [
+      totalEvents,
+      upcomingCount,
+      pastCount,
+      pendingEvents,
+      upcomingEvents,
+      recentEvents,
+      yearlyPlan,
+    ] = await Promise.all([
+      this.prisma.event.count({ where: { societyId: society.id } }),
+      this.prisma.event.count({
+        where: { societyId: society.id, eventDate: { gte: today }, approvalStatus: 'PUBLISHED' },
+      }),
+      this.prisma.event.count({
+        where: { societyId: society.id, eventDate: { lt: today }, approvalStatus: 'PUBLISHED' },
+      }),
+      this.prisma.event.findMany({
+        where: {
           societyId: society.id,
-          year: currentYear,
+          approvalStatus: {
+            in: [
+              'PENDING_ADVISOR',
+              'PENDING_ADMIN',
+              'CHANGES_REQUESTED',
+              'APPROVED',
+              'REJECTED',
+            ],
+          },
         },
-      },
-      include: {
-        _count: {
-          select: { plannedEvents: true },
+        take: 10,
+        orderBy: [{ updatedAt: 'desc' }],
+        include: { society: { select: societySelect } },
+      }),
+      this.prisma.event.findMany({
+        where: {
+          societyId: society.id,
+          eventDate: { gte: today },
+          approvalStatus: 'PUBLISHED',
         },
-      },
-    });
+        take: 5,
+        orderBy: [{ eventDate: 'asc' }, { startTime: 'asc' }],
+        include: { society: { select: societySelect } },
+      }),
+      this.prisma.event.findMany({
+        where: {
+          societyId: society.id,
+          eventDate: { lt: today },
+          approvalStatus: 'PUBLISHED',
+        },
+        take: 5,
+        orderBy: [{ eventDate: 'desc' }, { startTime: 'desc' }],
+        include: { society: { select: societySelect } },
+      }),
+      this.prisma.yearlyPlan.findUnique({
+        where: {
+          societyId_year: {
+            societyId: society.id,
+            year: new Date().getFullYear(),
+          },
+        },
+        include: {
+          _count: {
+            select: { plannedEvents: true },
+          },
+        },
+      }),
+    ]);
 
     const yearlyPlanSummary = yearlyPlan
       ? {
@@ -363,9 +410,9 @@ export class SocietiesService {
         };
 
     const statistics = {
-      totalEvents: events.length,
-      upcomingEvents: allUpcoming.length,
-      pastEvents: allPast.length,
+      totalEvents,
+      upcomingEvents: upcomingCount,
+      pastEvents: pastCount,
     };
 
     return {
