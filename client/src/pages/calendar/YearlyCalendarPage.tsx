@@ -161,9 +161,7 @@ export const YearlyCalendarPage: React.FC = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['yearly-plans', 'me'] });
       setSuccessMessage('Edit access requested successfully. Waiting for admin approval.');
-      globalNotification.triggerSuccess('Edit access requested successfully. Waiting for admin approval.');
       window.scrollTo({ top: 0, behavior: 'smooth' });
-      setTimeout(() => window.location.reload(), 1000);
     },
     onError: (error: any) => {
       setServerError(error.response?.data?.message || 'Failed to request edit access.');

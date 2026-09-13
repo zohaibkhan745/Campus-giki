@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { RootLayout } from '@/layouts/RootLayout';
 import { AuthLayout } from '@/layouts/AuthLayout';
 import { DashboardLayout } from '@/layouts/DashboardLayout';
@@ -21,7 +21,6 @@ const PageFallback = () => (
 // Lazy Loaded Pages
 const HomePage = React.lazy(() => import('@/pages/HomePage').then(m => ({ default: m.HomePage })));
 const LoginPage = React.lazy(() => import('@/pages/LoginPage').then(m => ({ default: m.LoginPage })));
-const RegisterPage = React.lazy(() => import('@/pages/RegisterPage').then(m => ({ default: m.RegisterPage })));
 const ActivateSocietyPage = React.lazy(() => import('@/pages/ActivateSocietyPage').then(m => ({ default: m.ActivateSocietyPage })));
 const DashboardPage = React.lazy(() => import('@/pages/DashboardPage').then(m => ({ default: m.DashboardPage })));
 const SocietySetupPage = React.lazy(() => import('@/pages/SocietySetupPage').then(m => ({ default: m.SocietySetupPage })));
@@ -74,7 +73,7 @@ export const AppRoutes: React.FC = () => {
           }
         >
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/register" element={<Navigate to="/login" replace />} />
           <Route path="/activate-society" element={<ActivateSocietyPage />} />
         </Route>
 

@@ -7,24 +7,12 @@ import { RefreshCw, AlertCircle } from 'lucide-react';
 import { useState } from 'react';
 
 export const HomePage: React.FC = () => {
-  const { items, meta, isLoading, isLoadingMore, error, loadMore: fetchNextPage, refetch } = useFeed(50);
-  const [visibleCount, setVisibleCount] = useState(12);
-  const [feedType, setFeedType] = useState<'all'|'events'|'posts'>('all');
-
-  const filteredItems = items.filter(item => {
-    if (feedType === 'events') return item.type === 'event';
-    if (feedType === 'posts') return item.type === 'post';
-    return true;
-  });
-  const visibleItems = filteredItems.slice(0, visibleCount);
-  const hasMoreLocal = visibleCount < items.length || meta?.hasNextPage;
+  const { items, meta, isLoading, isLoadingMore, error, loadMore: fetchNextPage, refetch } = useFeed(12);
 
   const handleLoadMore = () => {
-    if (visibleCount + 8 > filteredItems.length && meta?.hasNextPage) {
-      fetchNextPage();
-    }
-    setVisibleCount(prev => prev + 8);
+    fetchNextPage();
   };
+
 
   return (
     <div className="bg-transparent text-gray-200 min-h-screen font-inter">
@@ -41,30 +29,6 @@ export const HomePage: React.FC = () => {
               Live announcements, events, and student society activities at GIKI.
             </p>
           </header>
-
-          {/* Feed Type Tabs */}
-          <div className="w-full mb-8">
-            <div className="flex p-1.5 bg-[#17181c]/80 border border-white/10 rounded-[24px] backdrop-blur-md w-full shadow-xl">
-              <button
-                onClick={() => { setFeedType('all'); setVisibleCount(12); }}
-                className={`flex-1 py-3.5 rounded-[20px] text-[15.5px] tracking-wide font-bold transition-all ${feedType === 'all' ? 'bg-white text-black shadow-md' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
-              >
-                All
-              </button>
-              <button
-                onClick={() => { setFeedType('events'); setVisibleCount(12); }}
-                className={`flex-1 py-3.5 rounded-[20px] text-[15.5px] tracking-wide font-bold transition-all ${feedType === 'events' ? 'bg-white text-black shadow-md' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
-              >
-                Events
-              </button>
-              <button
-                onClick={() => { setFeedType('posts'); setVisibleCount(12); }}
-                className={`flex-1 py-3.5 rounded-[20px] text-[15.5px] tracking-wide font-bold transition-all ${feedType === 'posts' ? 'bg-white text-black shadow-md' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
-              >
-                Posts
-              </button>
-            </div>
-          </div>
 
           {/* Error Callout State */}
           {error && (
@@ -103,7 +67,7 @@ export const HomePage: React.FC = () => {
           ) : (
             /* Feed Items Stack */
             <div className="cards-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 w-full mx-auto">
-              {visibleItems.map((item) =>
+              {items.map((item) =>
                 item.type === 'event' ? (
                   <EventCard key={`event-${item.id}`} item={item}  />
                 ) : (
@@ -114,7 +78,7 @@ export const HomePage: React.FC = () => {
           )}
 
           {/* Pagination / Load More Button */}
-          {hasMoreLocal && (
+          {meta?.hasNextPage && (
             <div className="pt-6 text-center pb-8">
               <button
                 onClick={handleLoadMore}

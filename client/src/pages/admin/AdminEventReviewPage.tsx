@@ -21,6 +21,8 @@ import {
 } from 'lucide-react';
 import { eventService } from '@/services/event.service';
 import { adminService } from '@/services/admin.service';
+import { VenuePermissionSlipModal } from '@/components/events/VenuePermissionSlipModal';
+import { resolveImageUrl } from '@/lib/utils';
 import {
   eventFormSchema,
   type EventFormData,
@@ -51,6 +53,8 @@ export const AdminEventReviewPage: React.FC = () => {
   const [serverError, setServerError] = useState<string | null>(null);
   const [dsaComment, setDsaComment] = useState('');
   const [commentError, setCommentError] = useState(false);
+  const [venueNotes, setVenueNotes] = useState('');
+  const [isVenueSlipPreviewOpen, setIsVenueSlipPreviewOpen] = useState(false);
 
   const {
     data: eventData,
@@ -60,6 +64,25 @@ export const AdminEventReviewPage: React.FC = () => {
     queryKey: ['event', id],
     queryFn: () => eventService.getEventById(id!),
     enabled: !!id,
+  });
+
+  const verifyVenueMutation = useMutation({
+    mutationFn: (payload: { status: 'VERIFIED' | 'REJECTED'; notes?: string }) =>
+      adminService.verifyVenueClearance(id!, payload),
+    onSuccess: (data, variables) => {
+      globalNotification.triggerSuccess(
+        variables.status === 'VERIFIED'
+          ? 'Physical venue clearance verified successfully!'
+          : 'Venue slip re-upload requested from society.'
+      );
+      queryClient.invalidateQueries({ queryKey: ['event', id] });
+      queryClient.invalidateQueries({ queryKey: ['adminDashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['adminEventsList'] });
+    },
+    onError: (err: any) => {
+      const msg = err.response?.data?.message || 'Failed to update venue clearance status.';
+      globalNotification.triggerFailed(Array.isArray(msg) ? msg.join(', ') : msg);
+    },
   });
 
   const {
@@ -78,6 +101,7 @@ export const AdminEventReviewPage: React.FC = () => {
         : '';
 
       setDsaComment(eventData.dsaComments || '');
+      setVenueNotes(eventData.venueClearanceNotes || '');
 
       reset({
         title: eventData.title,
@@ -276,6 +300,159 @@ export const AdminEventReviewPage: React.FC = () => {
           )}
         </div>
 
+        {/* Physical Venue Clearance Review Section */}
+        {(eventData.approvalStatus === 'APPROVED' || eventData.approvalStatus === 'PUBLISHED') && (
+          <>
+            <div className="w-full h-px bg-white/10 my-6"></div>
+            <div className="space-y-4">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <h2 className="text-lg font-extrabold flex items-center gap-2">
+                  <FileText className="w-5 h-5 text-amber-400" />
+                  Physical Venue Clearance &amp; PS to Dean Endorsement
+                </h2>
+                <span className={cn(
+                  "px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-inputs border",
+                  eventData.venueClearanceStatus === 'VERIFIED'
+                    ? "bg-green-600/20 text-green-400 border-green-500/40"
+                    : eventData.venueClearanceStatus === 'SUBMITTED'
+                    ? "bg-blue-600/20 text-blue-400 border-blue-500/40"
+                    : eventData.venueClearanceStatus === 'REJECTED'
+                    ? "bg-red-600/20 text-red-400 border-red-500/40"
+                    : "bg-amber-500/20 text-amber-300 border-amber-500/40"
+                )}>
+                  {eventData.venueClearanceStatus === 'VERIFIED'
+                    ? 'Verified & Cleared'
+                    : eventData.venueClearanceStatus === 'SUBMITTED'
+                    ? 'Signed Slip Uploaded (Review Needed)'
+                    : eventData.venueClearanceStatus === 'REJECTED'
+                    ? 'Slip Re-upload Requested'
+                    : 'Awaiting Society Upload'}
+                </span>
+              </div>
+
+              <div className="p-4 bg-white/5 border border-white/10 rounded-2xl space-y-2 text-xs text-gray-300">
+                <p>
+                  Requested Venue: <strong className="text-white text-sm">{eventData.venue}</strong>
+                </p>
+                <p className="text-gray-400">
+                  Society must obtain an official signature and stamp from the PS to Dean / Dean&apos;s Office certifying that this facility is vacant and allocated.
+                </p>
+                <div className="pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsVenueSlipPreviewOpen(true)}
+                    className="inline-flex items-center gap-1.5 text-xs text-blue-400 hover:text-blue-300 font-bold transition-colors cursor-pointer"
+                  >
+                    <FileText className="w-3.5 h-3.5" />
+                    <span>Preview Official Generated Slip (PDF)</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Stamped Document Preview & Action */}
+              {eventData.signedVenueSlipUrl ? (
+                <div className="space-y-4 pt-2">
+                  <div className="p-4 bg-white/5 border border-white/10 rounded-2xl space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs uppercase tracking-wider text-gray-400 font-bold">
+                        Uploaded PS to Dean Endorsement Slip
+                      </span>
+                      {eventData.venueSlipUploadedAt && (
+                        <span className="text-[11px] text-gray-400">
+                          Uploaded on {new Date(eventData.venueSlipUploadedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Preview box */}
+                    <div className="rounded-xl overflow-hidden border border-white/10 bg-black flex flex-col items-center justify-center p-3">
+                      {eventData.signedVenueSlipUrl.toLowerCase().endsWith('.pdf') ? (
+                        <div className="py-8 flex flex-col items-center gap-3">
+                          <FileText className="w-12 h-12 text-red-400" />
+                          <p className="text-xs text-gray-300 font-medium">Scanned PDF Document Uploaded</p>
+                          <a
+                            href={resolveImageUrl(eventData.signedVenueSlipUrl)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-colors"
+                          >
+                            <span>Open Stamped Document</span>
+                            <ExternalLink className="w-3.5 h-3.5" />
+                          </a>
+                        </div>
+                      ) : (
+                        <div className="space-y-2 w-full text-center">
+                          <a
+                            href={resolveImageUrl(eventData.signedVenueSlipUrl)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="block group relative"
+                            title="Click to view full size in new tab"
+                          >
+                            <img
+                              src={resolveImageUrl(eventData.signedVenueSlipUrl)}
+                              alt="Signed Venue Slip"
+                              className="max-h-96 mx-auto rounded-lg object-contain shadow-lg group-hover:opacity-90 transition-opacity"
+                            />
+                            <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg text-white text-xs font-bold gap-1.5">
+                              <span>Click to Expand / Open Full Resolution</span>
+                              <ExternalLink className="w-3.5 h-3.5" />
+                            </div>
+                          </a>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Feedback notes input */}
+                  <div className="space-y-1.5 text-left">
+                    <label className="block text-xs uppercase tracking-wider text-gray-400 font-semibold mb-1">
+                      DSA Venue Notes / Re-upload Instructions
+                    </label>
+                    <textarea
+                      rows={2}
+                      value={venueNotes}
+                      onChange={(e) => setVenueNotes(e.target.value)}
+                      placeholder="e.g. Signature and stamp verified, hall reserved. OR: Stamp unclear, please re-upload."
+                      disabled={verifyVenueMutation.isPending}
+                      className="w-full text-sm transition-all outline-none bg-transparent text-white placeholder:text-gray-500 rounded-inputs px-3.5 py-2.5 border border-white/20 focus:border-white/40 focus:ring-2 focus:ring-white/10 resize-y"
+                    />
+                  </div>
+
+                  {/* Verification action buttons */}
+                  <div className="flex flex-col sm:flex-row gap-3 pt-1">
+                    <Button
+                      type="button"
+                      variant="primary"
+                      onClick={() => verifyVenueMutation.mutate({ status: 'VERIFIED', notes: venueNotes.trim() || undefined })}
+                      isLoading={verifyVenueMutation.isPending}
+                      leftIcon={<CheckCircle2 className="w-4 h-4 text-white" />}
+                      className="bg-emerald-600 hover:bg-emerald-700 text-white w-full sm:flex-1"
+                    >
+                      {eventData.venueClearanceStatus === 'VERIFIED' ? 'Update Verified Notes' : 'Verify & Confirm Venue'}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => verifyVenueMutation.mutate({ status: 'REJECTED', notes: venueNotes.trim() || 'Please re-upload a clear photo with the official stamp.' })}
+                      isLoading={verifyVenueMutation.isPending}
+                      leftIcon={<AlertCircle className="w-4 h-4 text-red-400" />}
+                      className="bg-red-500/10 hover:bg-red-500/20 text-red-300 border-red-500/30 w-full sm:flex-1"
+                    >
+                      Request Re-upload
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-2xl text-xs text-amber-300 flex items-center gap-2.5">
+                  <AlertCircle className="w-4 h-4 shrink-0" />
+                  <span>The society has not yet uploaded the signed venue slip for this event.</span>
+                </div>
+              )}
+            </div>
+          </>
+        )}
+
         {/* Separator Line */}
         <div className="w-full h-px bg-white/10 my-6"></div>
 
@@ -400,6 +577,16 @@ export const AdminEventReviewPage: React.FC = () => {
           </div>
         </form>
       </div>
+
+      {isVenueSlipPreviewOpen && (
+        <VenuePermissionSlipModal
+          isOpen={isVenueSlipPreviewOpen}
+          onClose={() => setIsVenueSlipPreviewOpen(false)}
+          event={eventData}
+          societyName={eventData.society?.name}
+          societyLogo={eventData.society?.logoUrl}
+        />
+      )}
     </div>
   );
 };

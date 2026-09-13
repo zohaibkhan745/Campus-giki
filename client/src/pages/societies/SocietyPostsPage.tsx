@@ -151,14 +151,6 @@ export const SocietyPostsPage: React.FC = () => {
         <h1 className="font-extrabold text-5xl sm:text-6xl text-white tracking-tight leading-tight drop-shadow-md">
           Manage Posts
         </h1>
-        <Button
-          variant="primary"
-          onClick={handleOpenCreate}
-          className="shrink-0"
-          leftIcon={<Plus className="w-4 h-4" />}
-        >
-          New Post
-        </Button>
       </div>
 
       {isLoading ? (
@@ -172,11 +164,8 @@ export const SocietyPostsPage: React.FC = () => {
           </div>
           <h3 className="text-lg font-extrabold text-white">No posts yet</h3>
           <p className="text-sm text-gray-400 max-w-sm">
-            You haven't published any posts. Create one to keep students updated on your society's activities.
+            Posts and announcements are issued centrally by the Director of Student Affairs (DSA).
           </p>
-          <Button onClick={handleOpenCreate} variant="outline" className="mt-2 text-white border-white/20 bg-white/10 hover:bg-white/20">
-            Create First Post
-          </Button>
         </div>
       ) : (
         <div className="cards-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 w-full mx-auto">

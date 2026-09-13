@@ -68,7 +68,7 @@ export const ActivateSocietyPage: React.FC = () => {
     },
     onError: (err: AxiosError<{ message?: string }>) => {
       const msg = err.response?.data?.message || err.message || 'Failed to activate society account.';
-      setServerError('');
+      setServerError(msg);
     },
   });
 
@@ -119,7 +119,7 @@ export const ActivateSocietyPage: React.FC = () => {
         {/* Main Activation Card */}
         <div className="p-8 rounded-3xl bg-slate-900/60 border border-slate-800/80 shadow-2xl backdrop-blur-xl space-y-6">
           {serverError && (
-            null /* Removed error alert */
+            <Alert variant="error" message={serverError} />
           )}
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">

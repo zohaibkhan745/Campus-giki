@@ -6,6 +6,7 @@ import type { PostFeedItem } from '@/types/feed.types';
 import { useCardFlip } from '@/hooks/useCardFlip';
 import { useAuth } from '@/context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import { postService } from '@/services/post.service';
 import { globalNotification } from '@/contexts/NotificationContext';
 
@@ -22,6 +23,7 @@ const PostCardComponent: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) 
   const needsFlip = !!coverImage || isLengthy;
   const { isActive, openCard, closeCard } = useCardFlip(wrapperRef, !needsFlip);
   const { user } = useAuth();
+  const queryClient = useQueryClient();
   const canEditOrDelete = user?.role === 'DSA_ADMIN' || (user?.role === 'SOCIETY' && user.society?.id === item.society?.id);
   const canEdit = user?.role === 'SOCIETY' && user.society?.id === item.society?.id;
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -105,7 +107,7 @@ const PostCardComponent: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) 
 
           <div className={`relative w-full flex-1 overflow-hidden flex flex-col ${!coverImage ? 'bg-black/[0.4] backdrop-blur-[24px]' : 'bg-gray-900'}`}>
             {coverImage && (
-              <img src={coverImage} alt="Post Cover" className="absolute inset-0 w-full h-full object-cover" />
+              <img src={coverImage} alt="Post Cover" loading="lazy" decoding="async" className="absolute inset-0 w-full h-full object-cover" />
             )}
             {!coverImage && <div className="absolute inset-0 bg-black/30"></div>}
             
@@ -129,7 +131,11 @@ const PostCardComponent: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) 
                         try {
                           await postService.deletePost(item.id);
                           globalNotification.triggerSuccess('Post deleted successfully');
-                          window.location.reload();
+                          setShowDeleteConfirm(false);
+                          queryClient.invalidateQueries({ queryKey: ['campusFeed'] });
+                          queryClient.invalidateQueries({ queryKey: ['societyPosts'] });
+                          queryClient.invalidateQueries({ queryKey: ['adminPosts'] });
+                          if (onDelete) onDelete();
                         } catch (err) {
                           globalNotification.triggerFailed('Failed to delete post');
                         }
@@ -145,7 +151,7 @@ const PostCardComponent: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) 
           >
             <div className="flex items-center gap-2.5 min-w-0 flex-1">
               <div className="w-9 h-9 rounded-full bg-[#007ebb] flex items-center justify-center border border-white/20 shrink-0 overflow-hidden">
-                <img src={logoImage} alt={authorName} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.src = '/default-society.jpg'; }} />
+                <img src={logoImage} alt={authorName} loading="lazy" decoding="async" className="w-full h-full object-cover" onError={(e) => { e.currentTarget.src = '/default-society.jpg'; }} />
               </div>
               <div className="flex flex-col min-w-0 flex-1 text-left">
                 <span className="text-white text-[14px] font-bold leading-tight truncate">{authorName}</span>
@@ -178,51 +184,62 @@ const PostCardComponent: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) 
 
         {/* BACK FACE */}
         <div className="card-face card-back">
+          <button 
+            type="button" 
+            className="close-btn z-30" 
+            aria-label="Close details" 
+            onClick={(e) => { e.stopPropagation(); closeCard(); }}
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+
           <div className="card-back-inner">
-            
-            <div className="relative h-[300px] w-full flex-shrink-0 bg-gray-950 flex items-center justify-center overflow-hidden">
+            <div className="relative h-[200px] sm:h-[220px] w-full flex-shrink-0 bg-gray-950 flex items-center justify-center overflow-hidden">
               <img 
                 src={coverImage || logoImage} 
+                loading="lazy"
+                decoding="async"
                 onError={(e) => { e.currentTarget.src = '/default-society.jpg'; }} 
                 alt="Cover" 
                 className={`drop-shadow-xl ${!coverImage ? 'object-cover rounded-full' : 'object-contain p-2'}`}
                 style={{ 
                   border: "1px solid rgba(255,255,255,0.12)", 
-                  borderRadius: !coverImage ? '50%' : '20px', 
-                  margin: "16px", 
-                  height: !coverImage ? '160px' : 'calc(100% - 32px)', 
-                  width: !coverImage ? '160px' : 'calc(100% - 32px)', 
+                  borderRadius: !coverImage ? '50%' : '16px', 
+                  margin: "12px", 
+                  height: !coverImage ? '130px' : 'calc(100% - 24px)', 
+                  width: !coverImage ? '130px' : 'calc(100% - 24px)', 
                   background: "rgba(0,0,0,0.4)" 
                 }} 
               />
-              <button type="button" className="close-btn" aria-label="Close details" onClick={(e) => { e.stopPropagation(); closeCard(); }}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-              </button>
             </div>
 
-            <div className="p-8 bg-[#111827] flex flex-col flex-1 min-h-0 rounded-b-[28px] text-left">
-              <div className="flex items-center gap-3 pb-4 mb-5 border-b border-gray-700">
-                <div className="w-11 h-11 rounded-full bg-[#007ebb] flex items-center justify-center border border-white/20 shrink-0 overflow-hidden">
+            <div className="p-6 sm:p-7 bg-[#111827] flex flex-col flex-1 text-left">
+              <div className="flex items-center gap-3 pb-3 mb-4 border-b border-gray-700/80 shrink-0">
+                <div className="w-10 h-10 rounded-full bg-[#007ebb] flex items-center justify-center border border-white/20 shrink-0 overflow-hidden">
                   <img src={logoImage} alt={authorName} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.src = '/default-society.jpg'; }} />
                 </div>
-                <div className="flex flex-col">
-                  <span className="text-white font-bold text-base leading-tight">{authorName}</span>
-                  <span className="text-gray-400 text-xs mt-0.5">{formattedDate} • {formattedTime}</span>
+                <div className="flex flex-col min-w-0">
+                  <span className="text-white font-bold text-base leading-tight truncate">{authorName}</span>
+                  <span className="text-gray-400 text-xs mt-0.5 truncate">{formattedDate} • {formattedTime}</span>
                 </div>
               </div>
 
-              <div className="scroll-area flex-1 min-h-0">
-                <div className="flex flex-col gap-2.5 mb-4">
-                  {item.title && <h4 className="text-xl font-bold text-white">{item.title}</h4>}
-                  <p className="text-sm text-gray-300 leading-relaxed whitespace-pre-wrap">
-                    {item.content}
-                  </p>
-                </div>
+              <div className="flex flex-col gap-2 mb-4">
+                {item.title && <h4 className="text-lg sm:text-xl font-bold text-white leading-snug">{item.title}</h4>}
+                <p className="text-sm sm:text-base text-gray-300 leading-relaxed whitespace-pre-wrap">
+                  {item.content}
+                </p>
               </div>
 
-              <button type="button" onClick={(e) => { e.stopPropagation(); closeCard(); }} className="mt-4 flex items-center justify-center gap-2 w-full py-3.5 bg-white text-gray-900 font-bold rounded-xl hover:bg-gray-100 transition-colors">
-                <span>Close Details</span>
-              </button>
+              <div className="sticky bottom-0 z-20 pt-4 pb-2 mt-auto w-full bg-gradient-to-t from-[#111827] via-[#111827]/95 to-transparent">
+                <button 
+                  type="button" 
+                  onClick={(e) => { e.stopPropagation(); closeCard(); }} 
+                  className="flex items-center justify-center gap-2 w-full py-3 px-4 bg-white text-gray-900 font-bold rounded-xl hover:bg-gray-100 transition-colors shadow-md text-sm sm:text-base cursor-pointer"
+                >
+                  <span>Close Details</span>
+                </button>
+              </div>
             </div>
 
           </div>

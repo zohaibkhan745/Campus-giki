@@ -11,9 +11,10 @@ describe('NotFoundPage Integration', () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByText('404 - Page Not Found')).toBeInTheDocument();
+    expect(screen.getByText('404')).toBeInTheDocument();
+    expect(screen.getByText('Page Not Found')).toBeInTheDocument();
     expect(
-      screen.getByText('The requested page does not exist or has been moved.')
+      screen.getByText(/The requested resource could not be located on this server/i)
     ).toBeInTheDocument();
   });
 
@@ -24,7 +25,7 @@ describe('NotFoundPage Integration', () => {
       </MemoryRouter>
     );
 
-    const homeLink = screen.getByRole('link', { name: /go back/i });
+    const homeLink = screen.getByRole('link', { name: /return home/i });
     expect(homeLink).toBeInTheDocument();
     expect(homeLink).toHaveAttribute('href', '/');
   });

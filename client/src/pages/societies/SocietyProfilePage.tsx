@@ -456,7 +456,7 @@ export const SocietyProfilePage: React.FC = () => {
               <div className="space-y-4 max-w-5xl mx-auto pb-10">
 
                 <div className="bg-[#1e2025]/50 border border-white/10 rounded-2xl overflow-hidden shadow-2xl overflow-x-auto custom-scrollbar">
-                  <table className="w-full text-left border-collapse min-w-[800px] whitespace-nowrap">
+                  <table className="w-full text-left border-collapse min-w-[650px] whitespace-nowrap">
                     <thead>
                       <tr className="bg-white/5 border-b border-white/10">
                         <th className="py-4 px-5 text-xs font-bold text-gray-400 uppercase tracking-wider">Sr. No</th>
@@ -464,7 +464,6 @@ export const SocietyProfilePage: React.FC = () => {
                         <th className="py-4 px-5 text-xs font-bold text-gray-400 uppercase tracking-wider">Post</th>
                         <th className="py-4 px-5 text-xs font-bold text-gray-400 uppercase tracking-wider">Faculty</th>
                         <th className="py-4 px-5 text-xs font-bold text-gray-400 uppercase tracking-wider">Email</th>
-                        <th className="py-4 px-5 text-xs font-bold text-gray-400 uppercase tracking-wider">Phone</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -474,7 +473,6 @@ export const SocietyProfilePage: React.FC = () => {
                         <td className="py-4 px-5 text-sm text-amber-400 font-semibold">President</td>
                         <td className="py-4 px-5 text-sm text-gray-300">{society.presidentFaculty || 'N/A'}</td>
                         <td className="py-4 px-5 text-sm text-gray-300">{society.presidentEmail || 'N/A'}</td>
-                        <td className="py-4 px-5 text-sm text-gray-300">{society.presidentContact || 'N/A'}</td>
                       </tr>
                       {(() => {
                         try {
@@ -497,7 +495,6 @@ export const SocietyProfilePage: React.FC = () => {
                               <td className={`py-4 px-5 text-sm font-semibold ${['Vice President', 'Event Coordinator', 'General Secretary', 'Treasurer', 'Director Liaison'].includes(member.role) ? 'text-blue-400' : 'text-white'}`}>{member.role}</td>
                               <td className="py-4 px-5 text-sm text-gray-300">{member.faculty || 'N/A'}</td>
                               <td className="py-4 px-5 text-sm text-gray-300">{member.email || 'N/A'}</td>
-                              <td className="py-4 px-5 text-sm text-gray-300">{member.contact || 'N/A'}</td>
                             </tr>
                           ));
                         } catch {
@@ -511,7 +508,6 @@ export const SocietyProfilePage: React.FC = () => {
                           <td className="py-4 px-5 text-sm text-purple-400 font-semibold">Faculty Advisor</td>
                           <td className="py-4 px-5 text-sm text-gray-300">{society.advisor.department || 'N/A'}</td>
                           <td className="py-4 px-5 text-sm text-gray-300">{society.advisor.user?.email || 'N/A'}</td>
-                          <td className="py-4 px-5 text-sm text-gray-300">N/A</td>
                         </tr>
                       )}
                     </tbody>
