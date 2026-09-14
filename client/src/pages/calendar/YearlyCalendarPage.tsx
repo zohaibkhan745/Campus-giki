@@ -43,7 +43,6 @@ export const YearlyCalendarPage: React.FC = () => {
   const { data: plans = [] } = useQuery({
     queryKey: ['myYearlyPlans'],
     queryFn: yearlyPlanService.getMyPlans,
-    refetchInterval: 10000,
   });
 
   const currentYear = new Date().getFullYear();
@@ -59,7 +58,7 @@ export const YearlyCalendarPage: React.FC = () => {
     setValue,
     getValues,
     watch,
-    formState: { errors },
+    formState: { errors, isDirty },
   } = useForm<YearlyPlanFormData>({
     resolver: zodResolver(yearlyPlanFormSchema),
     defaultValues: {
@@ -74,7 +73,7 @@ export const YearlyCalendarPage: React.FC = () => {
   });
 
   useEffect(() => {
-    if (existingPlan) {
+    if (existingPlan && !isDirty) {
       reset({
         year: existingPlan.year,
         events: existingPlan.plannedEvents.map((e) => ({
@@ -90,7 +89,7 @@ export const YearlyCalendarPage: React.FC = () => {
         })),
       });
     }
-  }, [existingPlan, reset]);
+  }, [existingPlan, reset, isDirty]);
 
   const createMutation = useMutation({
     meta: { notify: true },

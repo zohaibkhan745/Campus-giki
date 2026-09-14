@@ -49,7 +49,7 @@ export const AdminYearlyPlansPage: React.FC = () => {
         year: yearFilter ? parseInt(yearFilter, 10) : undefined,
         search: searchQuery || undefined,
       }),
-    refetchInterval: 10000,
+    staleTime: 30000,
   });
 
   const plans = plansData?.items || [];

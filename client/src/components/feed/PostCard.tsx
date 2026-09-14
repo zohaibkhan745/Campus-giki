@@ -4,7 +4,7 @@ import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import type { PostFeedItem } from '@/types/feed.types';
 import { useCardFlip } from '@/hooks/useCardFlip';
-import { useAuth } from '@/context/AuthContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { postService } from '@/services/post.service';

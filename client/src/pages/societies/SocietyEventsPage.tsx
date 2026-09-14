@@ -44,7 +44,7 @@ export const SocietyEventsPage: React.FC = () => {
       // Flatten upcoming and past events into a single array
       return [...data.upcoming, ...data.past];
     },
-    refetchInterval: 10000,
+    staleTime: 30000,
   });
 
   const handleClearFilters = () => {

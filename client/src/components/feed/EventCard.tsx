@@ -5,7 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { getSocietyLogo, cn, resolveImageUrl } from '@/lib/utils';
 import type { EventFeedItem } from '@/types/feed.types';
 import { useCardFlip } from '@/hooks/useCardFlip';
-import { useAuth } from '@/context/AuthContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { useQueryClient } from '@tanstack/react-query';
 import { eventService } from '@/services/event.service';
 import { globalNotification } from '@/contexts/NotificationContext';
