@@ -15,7 +15,11 @@
     "prisma:migrate:dev": "cd server && npm run prisma:migrate:dev",
     "prisma:studio": "cd server && npm run prisma:studio",
     "seed": "cd server && npm run seed",
-    "tunnel": "ngrok http 3000"
+    "tunnel": "ngrok http 3000",
+    "docker:up": "docker compose up -d --build",
+    "docker:down": "docker compose down",
+    "docker:logs": "docker compose logs -f",
+    "docker:ps": "docker compose ps"
   },
   "keywords": [
     "giki",
@@ -26,8 +30,6 @@
     "tailwind"
   ],
   "author": "GIKI Development Team",
-  "license": "MIT",
-  "dependencies": {
-    "glob": "^13.0.6"
-  }
+  "license": "MIT"
 }
+
