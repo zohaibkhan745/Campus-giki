@@ -33,7 +33,9 @@ export class EmailService implements OnModuleInit {
       });
       this.isEthereal = false;
     } else {
-      this.logger.warn('No SMTP credentials found in env. Creating Ethereal Test Email Account for local dev...');
+      this.logger.warn(
+        'No SMTP credentials found in env. Creating Ethereal Test Email Account for local dev...',
+      );
       try {
         const testAccount = await nodemailer.createTestAccount();
         this.transporter = nodemailer.createTransport({
@@ -65,7 +67,8 @@ export class EmailService implements OnModuleInit {
       await this.initTransporter();
     }
 
-    const fromAddress = this.configService.get<string>('EMAIL_FROM') || '"Campus GIKI DSA" <dsa@giki.edu.pk>';
+    const fromAddress =
+      this.configService.get<string>('EMAIL_FROM') || '"Campus GIKI DSA" <dsa@giki.edu.pk>';
 
     const htmlContent = `
       <!DOCTYPE html>
@@ -132,7 +135,9 @@ export class EmailService implements OnModuleInit {
         this.logger.log(`🔗 DIRECT ACTIVATION LINK: ${activationUrl}`);
         this.logger.log('====================================================');
       } else {
-        this.logger.log(`Email successfully dispatched to ${toEmail}. Message ID: ${info.messageId}`);
+        this.logger.log(
+          `Email successfully dispatched to ${toEmail}. Message ID: ${info.messageId}`,
+        );
       }
 
       return {

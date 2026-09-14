@@ -145,7 +145,4 @@ export class SetupSocietyDto {
   @IsOptional()
   @IsString()
   presidentFaculty?: string;
-
 }
-
-

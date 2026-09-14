@@ -34,9 +34,10 @@ export class SocietiesService {
     const skip = (page - 1) * limit;
 
     const whereClause: Prisma.SocietyWhereInput = {
+      isSetupComplete: true,
       user: {
         isActive: true,
-      }
+      },
     };
 
     if (query.category) {
@@ -74,9 +75,9 @@ export class SocietiesService {
           type: true,
           shortDescription: true,
           logoUrl: true,
-            executiveCouncil: true,
-            presidentName: true,
-            category: {
+          executiveCouncil: true,
+          presidentName: true,
+          category: {
             select: {
               id: true,
               name: true,
@@ -124,11 +125,13 @@ export class SocietiesService {
         email: true,
         presidentName: true,
         presidentFaculty: true,
-          presidentEmail: true,
-          presidentRegNum: true,
-          executiveCouncil: true,
-          advisor: { select: { department: true, user: { select: { fullName: true, email: true } } } },
-          isSetupComplete: true,
+        presidentEmail: true,
+        presidentRegNum: true,
+        executiveCouncil: true,
+        advisor: {
+          select: { department: true, user: { select: { fullName: true, email: true } } },
+        },
+        isSetupComplete: true,
         category: {
           select: {
             id: true,
@@ -181,7 +184,9 @@ export class SocietiesService {
           societyId,
           eventDate: { gte: today },
           isPublished: true,
+          approvalStatus: { in: ['APPROVED', 'PUBLISHED'] },
         },
+        take: 50,
         orderBy: [{ eventDate: 'asc' }, { startTime: 'asc' }],
         include: {
           society: {
@@ -198,7 +203,9 @@ export class SocietiesService {
           societyId,
           eventDate: { lt: today },
           isPublished: true,
+          approvalStatus: { in: ['APPROVED', 'PUBLISHED'] },
         },
+        take: 50,
         orderBy: [{ eventDate: 'desc' }, { startTime: 'desc' }],
         include: {
           society: {
@@ -227,6 +234,7 @@ export class SocietiesService {
           },
         },
       },
+      take: 50,
       include: {
         author: {
           select: {
@@ -341,22 +349,26 @@ export class SocietiesService {
     ] = await Promise.all([
       this.prisma.event.count({ where: { societyId: society.id } }),
       this.prisma.event.count({
-        where: { societyId: society.id, eventDate: { gte: today }, approvalStatus: 'PUBLISHED' },
+        where: {
+          societyId: society.id,
+          eventDate: { gte: today },
+          isPublished: true,
+          approvalStatus: { in: ['APPROVED', 'PUBLISHED'] },
+        },
       }),
       this.prisma.event.count({
-        where: { societyId: society.id, eventDate: { lt: today }, approvalStatus: 'PUBLISHED' },
+        where: {
+          societyId: society.id,
+          eventDate: { lt: today },
+          isPublished: true,
+          approvalStatus: { in: ['APPROVED', 'PUBLISHED'] },
+        },
       }),
       this.prisma.event.findMany({
         where: {
           societyId: society.id,
           approvalStatus: {
-            in: [
-              'PENDING_ADVISOR',
-              'PENDING_ADMIN',
-              'CHANGES_REQUESTED',
-              'APPROVED',
-              'REJECTED',
-            ],
+            in: ['PENDING_ADVISOR', 'PENDING_ADMIN', 'CHANGES_REQUESTED'],
           },
         },
         take: 10,
@@ -367,7 +379,8 @@ export class SocietiesService {
         where: {
           societyId: society.id,
           eventDate: { gte: today },
-          approvalStatus: 'PUBLISHED',
+          isPublished: true,
+          approvalStatus: { in: ['APPROVED', 'PUBLISHED'] },
         },
         take: 5,
         orderBy: [{ eventDate: 'asc' }, { startTime: 'asc' }],
@@ -377,7 +390,8 @@ export class SocietiesService {
         where: {
           societyId: society.id,
           eventDate: { lt: today },
-          approvalStatus: 'PUBLISHED',
+          isPublished: true,
+          approvalStatus: { in: ['APPROVED', 'PUBLISHED'] },
         },
         take: 5,
         orderBy: [{ eventDate: 'desc' }, { startTime: 'desc' }],
@@ -476,10 +490,19 @@ export class SocietiesService {
           website: dto.website || null,
           email: dto.email || null,
           ...(dto.presidentName !== undefined && { presidentName: dto.presidentName || null }),
-          ...(dto.presidentRegNum !== undefined && { presidentRegNum: dto.presidentRegNum || null }),
-          ...(dto.presidentContact !== undefined && { presidentContact: dto.presidentContact || null }),
+          ...(dto.presidentRegNum !== undefined && {
+            presidentRegNum: dto.presidentRegNum || null,
+          }),
+          ...(dto.presidentContact !== undefined && {
+            presidentContact: dto.presidentContact || null,
+          }),
           ...(dto.presidentEmail !== undefined && { presidentEmail: dto.presidentEmail || null }),
-          ...(dto.presidentFaculty !== undefined && { presidentFaculty: dto.presidentFaculty || null }),
+          ...(dto.presidentFaculty !== undefined && {
+            presidentFaculty: dto.presidentFaculty || null,
+          }),
+          ...(dto.executiveCouncil !== undefined && {
+            executiveCouncil: dto.executiveCouncil || null,
+          }),
           isSetupComplete: true,
         },
         create: {
@@ -501,6 +524,7 @@ export class SocietiesService {
           presidentContact: dto.presidentContact || null,
           presidentEmail: dto.presidentEmail || null,
           presidentFaculty: dto.presidentFaculty || null,
+          executiveCouncil: dto.executiveCouncil || null,
           isSetupComplete: true,
         },
         include: {
@@ -577,7 +601,9 @@ export class SocietiesService {
           presidentContact: dto.presidentContact || null,
         }),
         ...(dto.presidentEmail !== undefined && { presidentEmail: dto.presidentEmail || null }),
-        ...(dto.executiveCouncil !== undefined && { executiveCouncil: dto.executiveCouncil || null }),
+        ...(dto.executiveCouncil !== undefined && {
+          executiveCouncil: dto.executiveCouncil || null,
+        }),
         ...(dto.presidentFaculty !== undefined && {
           presidentFaculty: dto.presidentFaculty || null,
         }),
@@ -590,10 +616,3 @@ export class SocietiesService {
     return updated;
   }
 }
-
-
-
-
-
-
-

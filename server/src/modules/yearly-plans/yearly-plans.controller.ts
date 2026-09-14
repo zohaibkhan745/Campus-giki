@@ -142,8 +142,12 @@ export class YearlyPlansController {
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Society: Request edit access for a locked yearly plan' })
-  async requestEdit(@Param('id', ParseUUIDPipe) id: string, @Body('reason') reason: string) {
-    return this.yearlyPlansService.requestEdit(id, reason);
+  async requestEdit(
+    @Param('id', ParseUUIDPipe) id: string,
+    @CurrentUser() user: UserProfileDto,
+    @Body('reason') reason: string,
+  ) {
+    return this.yearlyPlansService.requestEdit(id, user.id, user.role, reason);
   }
 
   @Patch(':id/edit-request-resolve')
@@ -151,7 +155,10 @@ export class YearlyPlansController {
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'DSA: Approve or reject an edit request for yearly plan' })
-  async resolveEditRequest(@Param('id', ParseUUIDPipe) id: string, @Body('status') status: 'APPROVED' | 'REJECTED') {
+  async resolveEditRequest(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body('status') status: 'APPROVED' | 'REJECTED',
+  ) {
     return this.yearlyPlansService.resolveEditRequest(id, status);
   }
 }

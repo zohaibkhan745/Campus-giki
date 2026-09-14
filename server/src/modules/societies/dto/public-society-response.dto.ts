@@ -65,4 +65,3 @@ export class PaginatedSocietiesResponseDto {
   @ApiProperty({ type: PaginationMetaDto })
   meta: PaginationMetaDto;
 }
-

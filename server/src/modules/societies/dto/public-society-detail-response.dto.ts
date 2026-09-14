@@ -46,7 +46,10 @@ export class PublicSocietyDetailResponseDto {
   presidentFaculty?: string | null;
 
   @ApiPropertyOptional()
-  advisor?: { department?: string | null; user?: { fullName?: string | null; email?: string | null } } | null;
+  advisor?: {
+    department?: string | null;
+    user?: { fullName?: string | null; email?: string | null };
+  } | null;
 
   @ApiPropertyOptional()
   presidentEmail?: string | null;
@@ -63,6 +66,3 @@ export class PublicSocietyDetailResponseDto {
   @ApiPropertyOptional({ type: MinimalCategoryDto })
   category?: MinimalCategoryDto | null;
 }
-
-
-

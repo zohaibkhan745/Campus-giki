@@ -21,6 +21,18 @@ export class AllExceptionsFilter implements ExceptionFilter {
         status = HttpStatus.CONFLICT;
         message = 'A record with this unique identifier already exists.';
         error = 'ConflictError';
+      } else if (exception.code === 'P2025') {
+        status = HttpStatus.NOT_FOUND;
+        message = 'The requested resource was not found.';
+        error = 'NotFoundError';
+      } else if (exception.code === 'P2003') {
+        status = HttpStatus.BAD_REQUEST;
+        message = 'Related entity reference is invalid.';
+        error = 'ForeignKeyConstraintError';
+      } else if (exception.code === 'P2014') {
+        status = HttpStatus.BAD_REQUEST;
+        message = 'The relation constraint violation occurred.';
+        error = 'RelationConstraintError';
       }
     }
 

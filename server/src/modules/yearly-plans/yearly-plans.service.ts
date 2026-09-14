@@ -11,6 +11,7 @@ import { UpdateYearlyPlanDto } from './dto/update-yearly-plan.dto';
 import { ReviewYearlyPlanDto, ReviewDecision } from './dto/review-yearly-plan.dto';
 import { YearlyPlanResponseDto } from './dto/yearly-plan-response.dto';
 import { PlanStatus, Society, Role } from '@prisma/client';
+import { validateExecutiveCouncil } from '../../common/utils/council.util';
 
 @Injectable()
 export class YearlyPlansService {
@@ -30,16 +31,10 @@ export class YearlyPlansService {
       );
     }
 
-    let hasFullCouncil = false;
-    try {
-      const council = JSON.parse(society.executiveCouncil || '[]');
-      const mandatoryRoles = ['Vice President', 'Event Coordinator', 'General Secretary', 'Treasurer', 'Director Liaison'];
-      const existingRoles = council.map((m: any) => m.role);
-      hasFullCouncil = mandatoryRoles.every(r => existingRoles.includes(r));
-    } catch(e) {}
-
-    if (!hasFullCouncil) {
-      throw new ForbiddenException('Access denied: You must complete your Executive Council details (all 5 mandatory positions) before managing resources');
+    if (!validateExecutiveCouncil(society.executiveCouncil)) {
+      throw new ForbiddenException(
+        'Access denied: You must complete your Executive Council details (all 5 mandatory positions) before managing resources',
+      );
     }
 
     return society;
@@ -190,10 +185,11 @@ export class YearlyPlansService {
       throw new ForbiddenException('Access denied: You do not own this yearly calendar plan');
     }
 
-    if ((plan.status === PlanStatus.PENDING_ADVISOR || plan.status === PlanStatus.PENDING_ADMIN) && !dto.status) {
-      throw new ForbiddenException(
-        'Cannot edit a plan that is currently pending review.',
-      );
+    if (
+      (plan.status === PlanStatus.PENDING_ADVISOR || plan.status === PlanStatus.PENDING_ADMIN) &&
+      !dto.status
+    ) {
+      throw new ForbiddenException('Cannot edit a plan that is currently pending review.');
     }
 
     return this.prisma.$transaction(async (tx) => {
@@ -284,15 +280,11 @@ export class YearlyPlansService {
         );
       }
       if (plan.status !== PlanStatus.PENDING_ADVISOR) {
-        throw new BadRequestException(
-          'Plan is not pending advisor review.',
-        );
+        throw new BadRequestException('Plan is not pending advisor review.');
       }
     } else if (role === Role.DSA_ADMIN) {
       if (plan.status !== PlanStatus.PENDING_ADMIN) {
-        throw new BadRequestException(
-          'Plan is not pending DSA Admin review.',
-        );
+        throw new BadRequestException('Plan is not pending DSA Admin review.');
       }
     } else {
       throw new ForbiddenException('Invalid role for review');
@@ -300,15 +292,25 @@ export class YearlyPlansService {
 
     let newStatus: PlanStatus;
     if (role === Role.ADVISOR) {
-      newStatus = dto.decision === ReviewDecision.APPROVED ? PlanStatus.PENDING_ADMIN : PlanStatus.CHANGES_REQUESTED;
+      newStatus =
+        dto.decision === ReviewDecision.APPROVED
+          ? PlanStatus.PENDING_ADMIN
+          : PlanStatus.CHANGES_REQUESTED;
     } else {
-      newStatus = dto.decision === ReviewDecision.APPROVED ? PlanStatus.APPROVED : PlanStatus.CHANGES_REQUESTED;
+      newStatus =
+        dto.decision === ReviewDecision.APPROVED
+          ? PlanStatus.APPROVED
+          : PlanStatus.CHANGES_REQUESTED;
     }
 
     let newAdvisorComments = plan.advisorComments;
     if (dto.comment && dto.comment.trim() !== '') {
-      const dateStr = new Date().toLocaleDateString('en-US', { 
-        month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' 
+      const dateStr = new Date().toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
       });
       const roleStr = role === Role.ADVISOR ? 'Advisor' : 'DSA Admin';
       const formattedComment = `[${dateStr}] ${newStatus} - ${roleStr}:\n${dto.comment.trim()}`;
@@ -340,15 +342,22 @@ export class YearlyPlansService {
     return updated;
   }
 
-  async requestEdit(id: string, reason: string) {
-    const plan = await this.prisma.yearlyPlan.findUnique({ where: { id } });
+  async requestEdit(id: string, userId: string, userRole: string, reason: string) {
+    const plan = await this.prisma.yearlyPlan.findUnique({
+      where: { id },
+      include: { society: true },
+    });
     if (!plan) throw new NotFoundException('Plan not found');
-    
+
+    if (userRole !== Role.DSA_ADMIN && plan.society.userId !== userId) {
+      throw new ForbiddenException('Access denied: You do not own this yearly plan resource');
+    }
+
     return this.prisma.yearlyPlan.update({
       where: { id },
       data: {
         editRequestStatus: 'PENDING',
-        editRequestReason: reason
+        editRequestReason: reason,
       },
       include: {
         society: {
@@ -361,7 +370,7 @@ export class YearlyPlansService {
         plannedEvents: {
           orderBy: { startDate: 'asc' },
         },
-      }
+      },
     });
   }
 
@@ -393,8 +402,7 @@ export class YearlyPlansService {
         plannedEvents: {
           orderBy: { startDate: 'asc' },
         },
-      }
+      },
     });
   }
 }
-

@@ -2,12 +2,18 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
 
 export class ActivateSocietyDto {
-  @ApiProperty({ example: 'a1b2c3d4e5f6...', description: 'Raw single-use activation token sent via email' })
+  @ApiProperty({
+    example: 'a1b2c3d4e5f6...',
+    description: 'Raw single-use activation token sent via email',
+  })
   @IsString()
   @IsNotEmpty()
   token: string;
 
-  @ApiProperty({ example: 'president.acm@giki.edu.pk', description: 'Registered president/society email' })
+  @ApiProperty({
+    example: 'president.acm@giki.edu.pk',
+    description: 'Registered president/society email',
+  })
   @IsEmail()
   @IsNotEmpty()
   email: string;

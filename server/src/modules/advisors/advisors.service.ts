@@ -43,7 +43,7 @@ export class AdvisorsService {
     const skip = (page - 1) * limit;
 
     const whereClause: Prisma.YearlyPlanWhereInput = {
-      societyId: { in: societies.map(s => s.id) },
+      societyId: { in: societies.map((s) => s.id) },
     };
 
     if (query.status) {
@@ -113,7 +113,7 @@ export class AdvisorsService {
     const skip = (page - 1) * limit;
 
     const whereClause: Prisma.EventWhereInput = {
-      societyId: { in: societies.map(s => s.id) },
+      societyId: { in: societies.map((s) => s.id) },
     };
 
     if (query.status) {
@@ -129,10 +129,10 @@ export class AdvisorsService {
         orderBy: [{ eventDate: 'asc' }, { startTime: 'asc' }],
         include: {
           society: {
-            select: { id: true, name: true, logoUrl: true }
-          }
-        }
-      })
+            select: { id: true, name: true, logoUrl: true },
+          },
+        },
+      }),
     ]);
 
     const totalPages = Math.ceil(total / limit) || 1;
@@ -146,7 +146,7 @@ export class AdvisorsService {
         totalPages,
         hasNextPage: page < totalPages,
         hasPreviousPage: page > 1,
-      }
+      },
     };
   }
 
@@ -155,14 +155,16 @@ export class AdvisorsService {
    */
   async updateEventStatus(userId: string, eventId: string, dto: UpdateAdvisorEventDto) {
     const societies = await this.getAdvisorAssignedSocieties(userId);
-    const societyIds = societies.map(s => s.id);
+    const societyIds = societies.map((s) => s.id);
 
     const event = await this.prisma.event.findUnique({
       where: { id: eventId },
     });
 
     if (!event || !societyIds.includes(event.societyId)) {
-      throw new ForbiddenException('Access denied: Event not found or does not belong to your assigned society');
+      throw new ForbiddenException(
+        'Access denied: Event not found or does not belong to your assigned society',
+      );
     }
 
     const isPublished = dto.status === 'PUBLISHED';
@@ -177,9 +179,9 @@ export class AdvisorsService {
       },
       include: {
         society: {
-          select: { id: true, name: true, logoUrl: true }
-        }
-      }
+          select: { id: true, name: true, logoUrl: true },
+        },
+      },
     });
   }
 }

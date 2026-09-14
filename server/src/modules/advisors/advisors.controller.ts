@@ -1,4 +1,14 @@
-import { Controller, Get, Patch, Body, Param, ParseUUIDPipe, Query, HttpCode, HttpStatus } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Patch,
+  Body,
+  Param,
+  ParseUUIDPipe,
+  Query,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam } from '@nestjs/swagger';
 import { Role } from '@prisma/client';
 import { AdvisorsService } from './advisors.service';
@@ -23,7 +33,7 @@ export class AdvisorsController {
   async getMyProfile(@CurrentUser() user: UserProfileDto) {
     const societies = await this.advisorsService.getAdvisorAssignedSocieties(user.id);
     return {
-      societies: societies.map(s => ({ id: s.id, name: s.name, logoUrl: s.logoUrl }))
+      societies: societies.map((s) => ({ id: s.id, name: s.name, logoUrl: s.logoUrl })),
     };
   }
 

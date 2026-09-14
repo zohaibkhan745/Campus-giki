@@ -53,12 +53,17 @@ export class PlannedEventItemDto {
 
   @ApiProperty({
     description: 'DSA rules/directives for the event',
-    required: false, })
+    required: false,
+  })
   @IsString()
   @IsOptional()
   rules?: string;
 
-  @ApiProperty({ example: 'Bring laptop for workshop.', description: 'Society rules and internal guidelines', required: false })
+  @ApiProperty({
+    example: 'Bring laptop for workshop.',
+    description: 'Society rules and internal guidelines',
+    required: false,
+  })
   @IsString()
   @IsOptional()
   societyRules?: string;
