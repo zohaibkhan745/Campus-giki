@@ -365,6 +365,14 @@ export const adminService = {
   ) {
     return api.patch(`/admin/events/${id}/venue-clearance`, payload);
   },
+
+  async getPendingSummary(): Promise<{
+    totalPending: number;
+    pendingEventsCount: number;
+    pendingPlansCount: number;
+  }> {
+    return api.get('/admin/pending-summary');
+  },
 };
 
 

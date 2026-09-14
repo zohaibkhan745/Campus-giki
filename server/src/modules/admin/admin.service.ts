@@ -14,6 +14,7 @@ import { UpdateSocietyAdminDto } from './dto/update-society-admin.dto';
 import { QueryAdminEventsDto, EventTimeType } from './dto/query-admin-events.dto';
 import { AdminUpdateYearlyPlanDto } from './dto/admin-update-yearly-plan.dto';
 import { AdminDashboardResponseDto } from './dto/admin-dashboard-response.dto';
+import { AdminPendingSummaryDto } from './dto/admin-pending-summary.dto';
 import { Prisma, Role, PlanStatus } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
@@ -29,6 +30,37 @@ export class AdminService {
     private readonly emailService: EmailService,
     private readonly configService: ConfigService,
   ) {}
+
+  /**
+   * Fast summary of pending items for admin navigation/layout badge counters.
+   * Runs lightweight count queries instead of triggering the full 13-query dashboard.
+   */
+  async getPendingSummary(): Promise<AdminPendingSummaryDto> {
+    const [pendingEvents, eventEditRequests, pendingPlans, planEditRequests] =
+      await Promise.all([
+        this.prisma.event.count({
+          where: { approvalStatus: 'PENDING_ADMIN' },
+        }),
+        this.prisma.event.count({
+          where: { editRequestStatus: 'PENDING' },
+        }),
+        this.prisma.yearlyPlan.count({
+          where: { status: PlanStatus.PENDING_ADMIN },
+        }),
+        this.prisma.yearlyPlan.count({
+          where: { editRequestStatus: 'PENDING' },
+        }),
+      ]);
+
+    const pendingEventsCount = pendingEvents + eventEditRequests;
+    const pendingPlansCount = pendingPlans + planEditRequests;
+
+    return {
+      totalPending: pendingEventsCount + pendingPlansCount,
+      pendingEventsCount,
+      pendingPlansCount,
+    };
+  }
 
   /**
    * DSA Aggregated Dashboard API: Returns system-wide metrics, active statistics, and pending action queues.
@@ -245,7 +277,7 @@ export class AdminService {
   /**
    * Retrieves list of available faculty advisors for society onboarding forms.
    */
-  
+
   async deleteAdvisor(advisorId: string) {
     const advisor = await this.prisma.advisor.findUnique({
       where: { id: advisorId },
@@ -359,7 +391,7 @@ export class AdminService {
 
     const now = new Date();
     const today = new Date();
-    today.setHours(0,0,0,0);
+    today.setHours(0, 0, 0, 0);
     if (query.type === EventTimeType.UPCOMING && !query.from) {
       dateConditions.gte = today;
       hasDateFilter = true;
@@ -390,10 +422,7 @@ export class AdminService {
 
     if (query.society) {
       const soc = query.society.trim();
-      societyWhere.OR = [
-        { id: soc },
-        { name: { contains: soc, mode: 'insensitive' } },
-      ];
+      societyWhere.OR = [{ id: soc }, { name: { contains: soc, mode: 'insensitive' } }];
       hasSocietyFilter = true;
     }
 
@@ -600,36 +629,29 @@ export class AdminService {
       throw new NotFoundException(`Society with ID '${id}' was not found`);
     }
 
-    if (dto.categoryId) {
-      const categoryExists = await this.prisma.category.findUnique({
-        where: { id: dto.categoryId },
-      });
-      if (!categoryExists) {
-        throw new NotFoundException('Selected category does not exist');
-      }
+    // Parallel validation checks
+    const [categoryExists, advisorExists, existingAssignment, nameTaken] = await Promise.all([
+      dto.categoryId ? this.prisma.category.findUnique({ where: { id: dto.categoryId } }) : null,
+      dto.advisorId ? this.prisma.advisor.findUnique({ where: { id: dto.advisorId } }) : null,
+      dto.advisorId
+        ? this.prisma.society.findFirst({ where: { advisorId: dto.advisorId, id: { not: id } } })
+        : null,
+      dto.name && dto.name !== existing.name
+        ? this.prisma.society.findUnique({ where: { name: dto.name } })
+        : null,
+    ]);
+
+    if (dto.categoryId && !categoryExists) {
+      throw new NotFoundException('Selected category does not exist');
     }
-
-    if (dto.advisorId) {
-      const advisorExists = await this.prisma.advisor.findUnique({
-        where: { id: dto.advisorId },
-      });
-      if (!advisorExists) {
-          throw new NotFoundException('Selected faculty advisor does not exist');
-        }
-
-        const existingAssignment = await this.prisma.society.findFirst({ where: { advisorId: dto.advisorId, id: { not: id } } });
-        if (existingAssignment) {
-          throw new BadRequestException('Only one society can be alloted to an advisor.');
-        }
+    if (dto.advisorId && !advisorExists) {
+      throw new NotFoundException('Selected faculty advisor does not exist');
     }
-
-    if (dto.name && dto.name !== existing.name) {
-      const nameTaken = await this.prisma.society.findUnique({
-        where: { name: dto.name },
-      });
-      if (nameTaken) {
-        throw new ConflictException(`A society with the name '${dto.name}' is already registered`);
-      }
+    if (dto.advisorId && existingAssignment) {
+      throw new BadRequestException('Only one society can be alloted to an advisor.');
+    }
+    if (dto.name && dto.name !== existing.name && nameTaken) {
+      throw new ConflictException(`A society with the name '${dto.name}' is already registered`);
     }
 
     const updated = await this.prisma.society.update({
@@ -764,51 +786,43 @@ export class AdminService {
     const email = dto.presidentEmail.toLowerCase().trim();
     const name = dto.name.trim();
 
-    // 1. Check duplicate president email
-    const emailExists = await this.prisma.user.findUnique({
-      where: { email },
-    });
+    // Parallel validation checks (P11)
+    const [emailExists, nameExists, category, advisor, existingAssignment] = await Promise.all([
+      this.prisma.user.findUnique({ where: { email } }),
+      this.prisma.society.findUnique({ where: { name } }),
+      this.prisma.category.findUnique({ where: { id: dto.categoryId } }),
+      this.prisma.advisor.findUnique({
+        where: { id: dto.advisorId },
+        include: {
+          user: {
+            select: {
+              fullName: true,
+            },
+          },
+        },
+      }),
+      this.prisma.society.findFirst({
+        where: { advisorId: dto.advisorId },
+      }),
+    ]);
+
     if (emailExists) {
       throw new ConflictException(
         `A user account with the email '${email}' already exists in the system`,
       );
     }
-
-    // 2. Check duplicate society name
-    const nameExists = await this.prisma.society.findUnique({
-      where: { name },
-    });
     if (nameExists) {
       throw new ConflictException(`A society with the name '${name}' is already registered`);
     }
-
-    // 3. Verify category exists
-    const category = await this.prisma.category.findUnique({
-      where: { id: dto.categoryId },
-    });
     if (!category) {
       throw new NotFoundException('Selected society category does not exist');
     }
-
-    // 4. Verify advisor exists
-    const advisor = await this.prisma.advisor.findUnique({
-      where: { id: dto.advisorId },
-      include: {
-        user: {
-          select: {
-            fullName: true,
-          },
-        },
-      },
-    });
     if (!advisor) {
-        throw new NotFoundException('Selected faculty advisor does not exist');
-      }
-
-      const existingAssignment = await this.prisma.society.findFirst({ where: { advisorId: dto.advisorId } });
-      if (existingAssignment) {
-        throw new BadRequestException('Only one society can be alloted to an advisor.');
-      }
+      throw new NotFoundException('Selected faculty advisor does not exist');
+    }
+    if (existingAssignment) {
+      throw new BadRequestException('Only one society can be alloted to an advisor.');
+    }
 
     // 5. Generate secure activation token (48 hours expiration)
     const rawToken = crypto.randomBytes(32).toString('hex');
@@ -846,28 +860,20 @@ export class AdminService {
       return { society, user };
     });
 
-    // 7. Dispatch activation email to Society/President Email
+    // 7. Dispatch activation email asynchronously (P07 fire-and-forget to avoid SMTP blocking latency)
     const clientUrl = this.configService.get<string>('CLIENT_URL') || 'http://localhost:5173';
     const activationUrl = `${clientUrl}/activate-society?token=${rawToken}&email=${encodeURIComponent(email)}`;
 
-    let emailResult: { messageId: string; previewUrl?: string } = { messageId: '' };
-    try {
-      emailResult = await this.emailService.sendSocietyActivationEmail(
-        email,
-        name,
-        activationUrl,
-      );
-    } catch (err) {
-      // Log error but allow transaction return
-      console.error('Failed to send activation email:', err);
-    }
+    this.emailService
+      .sendSocietyActivationEmail(email, name, activationUrl)
+      .catch((err) => console.error('Failed to send activation email:', err));
 
     return {
       id: result.society.id,
       name: result.society.name,
       presidentEmail: result.user.email,
       activationEmailSent: true,
-      emailPreviewUrl: emailResult.previewUrl,
+      emailPreviewUrl: undefined,
       isSetupComplete: false,
       category: {
         id: category.id,
@@ -1069,7 +1075,10 @@ export class AdminService {
     });
   }
 
-  async updateEventStatus(eventId: string, dto: { status: string; comments?: string; rules?: string }) {
+  async updateEventStatus(
+    eventId: string,
+    dto: { status: string; comments?: string; rules?: string },
+  ) {
     const event = await this.prisma.event.findUnique({ where: { id: eventId } });
     if (!event) {
       throw new NotFoundException('Event not found');
@@ -1081,7 +1090,9 @@ export class AdminService {
       rules: dto.rules !== undefined ? dto.rules : undefined,
       isPublished: dto.status === 'PUBLISHED' || dto.status === 'APPROVED',
       ...(dto.status === 'CHANGES_REQUESTED' ? { lastChangeRequestBy: 'DSA_ADMIN' } : {}),
-      ...(dto.status === 'PUBLISHED' || dto.status === 'APPROVED' ? { lastChangeRequestBy: null } : {}),
+      ...(dto.status === 'PUBLISHED' || dto.status === 'APPROVED'
+        ? { lastChangeRequestBy: null }
+        : {}),
     };
 
     if (dto.status === 'PUBLISHED' || dto.status === 'APPROVED') {
@@ -1127,5 +1138,3 @@ export class AdminService {
     });
   }
 }
-
-

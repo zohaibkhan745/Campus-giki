@@ -23,6 +23,7 @@ import { UpdateSocietyAdminDto } from './dto/update-society-admin.dto';
 import { CreateAdvisorDto } from './dto/create-advisor.dto';
 import { QueryAdminEventsDto } from './dto/query-admin-events.dto';
 import { AdminDashboardResponseDto } from './dto/admin-dashboard-response.dto';
+import { AdminPendingSummaryDto } from './dto/admin-pending-summary.dto';
 import { AdminUpdateYearlyPlanDto } from './dto/admin-update-yearly-plan.dto';
 import { VerifyVenueClearanceDto } from './dto/verify-venue-clearance.dto';
 import { Auth } from '../../core/decorators/auth.decorator';
@@ -31,6 +32,22 @@ import { Auth } from '../../core/decorators/auth.decorator';
 @Controller('admin')
 export class AdminController {
   constructor(private readonly adminService: AdminService) {}
+
+  @Get('pending-summary')
+  @Auth(Role.DSA_ADMIN)
+  @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({
+    summary: 'DSA Quick Summary: Lightweight pending counts for navigation/layout badges',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Pending counts for admin badge counters',
+    type: AdminPendingSummaryDto,
+  })
+  async getPendingSummary(): Promise<AdminPendingSummaryDto> {
+    return this.adminService.getPendingSummary();
+  }
 
   @Get('dashboard')
   @Auth(Role.DSA_ADMIN)
@@ -63,7 +80,6 @@ export class AdminController {
     return this.adminService.getAvailableAdvisors();
   }
 
-  
   @Delete('advisors/:id')
   @Auth(Role.DSA_ADMIN)
   @HttpCode(HttpStatus.OK)

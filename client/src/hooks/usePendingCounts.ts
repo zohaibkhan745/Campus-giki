@@ -11,10 +11,10 @@ export const usePendingCounts = () => {
   const isAdvisor = user?.role === 'ADVISOR';
   const isSociety = user?.role === 'SOCIETY';
 
-  // Admin counts (derived from dashboard data)
-  const { data: adminDashboardData } = useQuery({
-    queryKey: ['adminDashboard'],
-    queryFn: adminService.getDashboardData,
+  // Admin counts (single lightweight endpoint instead of 3 separate queries including the 13-query dashboard)
+  const { data: adminSummary } = useQuery({
+    queryKey: ['adminPendingSummary'],
+    queryFn: adminService.getPendingSummary,
     enabled: isAdmin,
     staleTime: 60000,
   });
@@ -42,33 +42,14 @@ export const usePendingCounts = () => {
     staleTime: 60000,
   });
 
-  const { data: adminPlans } = useQuery({
-    queryKey: ['adminPlans', 'PENDING_ADMIN'],
-    queryFn: () => adminService.getAllYearlyPlans({ status: 'PENDING_ADMIN' as any, limit: 1 }),
-    enabled: isAdmin,
-    staleTime: 60000,
-  });
-
-  const { data: adminEditRequests } = useQuery({
-    queryKey: ['adminEditRequests'],
-    queryFn: () => adminService.getAllYearlyPlans({ editRequestStatus: 'PENDING' } as any),
-    enabled: isAdmin,
-    staleTime: 60000,
-  });
-
   let totalPending = 0;
   let pendingEventsCount = 0;
   let pendingPlansCount = 0;
 
-  if (isAdmin && adminDashboardData) {
-    pendingEventsCount = adminDashboardData.pendingEventsPreview?.length || 0;
-    
-    // Add pending admin plans AND pending edit requests
-    const pendingPlans = adminPlans?.meta?.total || 0;
-    const pendingEditRequestsCount = adminEditRequests?.meta?.total || 0;
-    
-    pendingPlansCount = pendingPlans + pendingEditRequestsCount;
-    totalPending = pendingEventsCount + pendingPlansCount;
+  if (isAdmin && adminSummary) {
+    pendingEventsCount = adminSummary.pendingEventsCount;
+    pendingPlansCount = adminSummary.pendingPlansCount;
+    totalPending = adminSummary.totalPending;
   }
 
   if (isAdvisor) {
