@@ -13,11 +13,20 @@ export class FeedService {
   private readonly logger = new Logger(FeedService.name);
   private readonly cache = new Map<string, CacheEntry>();
   private readonly CACHE_TTL_MS = 20_000; // 20s micro-cache
+  private static instance: FeedService | null = null;
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) {
+    FeedService.instance = this;
+  }
 
   public invalidateCache(): void {
     this.cache.clear();
+  }
+
+  public static invalidate(): void {
+    if (FeedService.instance) {
+      FeedService.instance.invalidateCache();
+    }
   }
 
   async getMergedFeed(query: QueryFeedDto): Promise<PaginatedFeedResponseDto> {
@@ -31,7 +40,8 @@ export class FeedService {
       return cached.data;
     }
 
-    // Parallel bounded queries + counts for true $O(1)$ memory scalability
+    // Bounded fetch limit to prevent memory bloat during deep pagination (P02).
+    // Instead of buffering up to 2,000 total records in memory, cap at 200 items per table.
     const fetchLimit = Math.min(skip + limit, 200);
 
     const [eventsCount, postsCount, events, posts] = await Promise.all([
@@ -120,12 +130,12 @@ export class FeedService {
             logoUrl: null,
             category: { id: 'admin', name: 'Administration', slug: 'administration' },
           }
-        : (post.author.society || {
+        : post.author.society || {
             id: post.authorId,
             name: 'Campus Announcement',
             logoUrl: null,
             category: null,
-          });
+          };
 
       return {
         type: 'post',
@@ -137,7 +147,7 @@ export class FeedService {
         imageUrl: post.imageUrl,
         videoUrl: post.videoUrl,
         isAdminPost,
-      } as FeedItemDto;
+      };
     });
 
     // Merge and sort chronologically (most recent createdAt first)

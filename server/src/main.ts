@@ -7,14 +7,13 @@ import { HttpExceptionFilter } from './core/filters/http-exception.filter';
 import { LoggingInterceptor } from './core/interceptors/logging.interceptor';
 import { TransformInterceptor } from './core/interceptors/transform.interceptor';
 import { setupSwagger } from './core/swagger/swagger.config';
-import compression from 'compression';
 
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
   const app = await NestFactory.create(AppModule);
 
-  // Enable HTTP wire compression (Gzip/Deflate)
-  app.use(compression());
+  // NOTE: Gzip compression is handled by Nginx reverse proxy in production.
+  // Removed app.use(compression()) to avoid double-compression CPU waste.
 
   // Enable graceful shutdown hooks
   app.enableShutdownHooks();
@@ -28,14 +27,27 @@ async function bootstrap() {
   // Set global API prefix
   app.setGlobalPrefix(apiPrefix);
 
-  // Enable CORS
+  // Enable CORS with origin validation
+  const allowedOrigins = corsOrigin.split(',').map((o) => o.trim());
   app.enableCors({
-    origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
-      // Always allow any origin (e.g., localhost, 127.0.0.1, any port)
-      callback(null, true);
+    origin: (
+      origin: string | undefined,
+      callback: (err: Error | null, allow?: boolean) => void,
+    ) => {
+      if (!origin || corsOrigin === '*' || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error(`Origin '${origin}' not allowed by CORS`));
+      }
     },
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'X-Requested-With', 'ngrok-skip-browser-warning'],
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      'Accept',
+      'X-Requested-With',
+      'ngrok-skip-browser-warning',
+    ],
     credentials: true,
   });
 

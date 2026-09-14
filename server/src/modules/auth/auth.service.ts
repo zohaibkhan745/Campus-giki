@@ -1,4 +1,10 @@
-import { Injectable, ConflictException, UnauthorizedException, BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  ConflictException,
+  UnauthorizedException,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Role, User } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
@@ -19,6 +25,23 @@ export class AuthService {
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
   ) {}
+
+  /**
+   * Fetches the full user profile from DB (used by GET /auth/profile).
+   * This is the explicit alternative to the per-request DB lookup that was removed from JwtStrategy.
+   */
+  async getFullProfile(userId: string): Promise<UserProfileDto> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      include: { advisor: true, society: true },
+    });
+
+    if (!user || !user.isActive) {
+      throw new UnauthorizedException('User account not found or is currently inactive');
+    }
+
+    return this.sanitizeUser(user);
+  }
 
   /**
    * Registers a new student account.
@@ -49,7 +72,7 @@ export class AuthService {
       include: {
         advisor: true,
         society: true,
-      }
+      },
     });
 
     // Generate JWT access token
@@ -72,7 +95,7 @@ export class AuthService {
       include: {
         advisor: true,
         society: true,
-      }
+      },
     });
 
     if (!user) {
@@ -81,7 +104,9 @@ export class AuthService {
 
     if (!user.isActive) {
       if (user.role === Role.SOCIETY) {
-        throw new UnauthorizedException('The society is banned, kindly visit DSA Office for further inquiry');
+        throw new UnauthorizedException(
+          'The society is banned, kindly visit DSA Office for further inquiry',
+        );
       }
       throw new UnauthorizedException('Invalid email or password');
     }
@@ -184,7 +209,9 @@ export class AuthService {
     }
 
     if (user.verificationExpires && user.verificationExpires < new Date()) {
-      throw new BadRequestException('Activation token has expired. Please ask DSA for a new invitation.');
+      throw new BadRequestException(
+        'Activation token has expired. Please ask DSA for a new invitation.',
+      );
     }
 
     // 3. Hash new password
@@ -216,7 +243,7 @@ export class AuthService {
             presidentName: dto.presidentName.trim(),
             presidentRegNum: dto.presidentRegNum.trim(),
             presidentContact: dto.presidentContact.trim(),
-            isSetupComplete: true,
+            isSetupComplete: false,
           },
         });
       }

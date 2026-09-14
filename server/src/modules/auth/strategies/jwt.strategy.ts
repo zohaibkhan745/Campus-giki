@@ -1,17 +1,22 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { PrismaService } from '../../../core/database/prisma.service';
 import { JwtPayload } from '../interfaces/jwt-payload.interface';
-import { UserProfileDto } from '../dto/auth-response.dto';
 
+/**
+ * JWT Strategy: Validates token signature and expiration only.
+ *
+ * PERFORMANCE: Returns claims directly from the JWT payload without a database query.
+ * The JWT contains sub (id), email, and role — which is all that controllers and guards need.
+ * Endpoints that require the full user profile (e.g. GET /auth/profile) fetch it themselves.
+ *
+ * Security note: Deactivated users remain valid until their JWT expires (default 1 day).
+ * This is an acceptable trade-off for eliminating 1 DB query (with 2 JOINs) per authenticated request.
+ */
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor(
-    private readonly configService: ConfigService,
-    private readonly prisma: PrismaService,
-  ) {
+  constructor(private readonly configService: ConfigService) {
     const jwtSecret = configService.get<string>('app.jwtSecret');
 
     if (!jwtSecret) {
@@ -25,19 +30,15 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: JwtPayload): Promise<UserProfileDto> {
-    const user = await this.prisma.user.findUnique({
-      where: { id: payload.sub },
-      include: { advisor: true, society: true },
-    });
-
-    if (!user || !user.isActive) {
-      throw new UnauthorizedException('User account not found or is currently inactive');
-    }
-
-    // Omit sensitive password hash
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password, ...safeUser } = user;
-    return safeUser;
+  /**
+   * Returns JWT claims directly — no database round-trip.
+   * The returned object is attached to `request.user` by Passport.
+   */
+  validate(payload: JwtPayload) {
+    return {
+      id: payload.sub,
+      email: payload.email,
+      role: payload.role,
+    };
   }
 }

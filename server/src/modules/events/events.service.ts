@@ -12,6 +12,8 @@ import { EventResponseDto } from './dto/event-response.dto';
 import { ReviewEventDto } from './dto/review-event.dto';
 import { Society, Event, Prisma, EventApprovalStatus, VenueClearanceStatus } from '@prisma/client';
 import { UploadsService } from '../uploads/uploads.service';
+import { validateExecutiveCouncil } from '../../common/utils/council.util';
+import { FeedService } from '../feed/feed.service';
 
 export interface SocietyEventsGroupDto {
   upcoming: EventResponseDto[];
@@ -43,14 +45,14 @@ export class EventsService {
    */
   async getAllPublicEvents(query: QueryEventsDto): Promise<PaginatedEventsResponseDto> {
     const page = Math.max(1, query.page || 1);
-    const limit = Math.min(200, Math.max(1, query.limit || 100));
+    const limit = Math.min(200, Math.max(1, query.limit || 20));
     const skip = (page - 1) * limit;
 
     const whereClause: Prisma.EventWhereInput = {
       isPublished: true,
       approvalStatus: {
-        in: ['APPROVED', 'PUBLISHED']
-      }
+        in: ['APPROVED', 'PUBLISHED'],
+      },
     };
 
     if (query.from || query.to) {
@@ -66,7 +68,7 @@ export class EventsService {
         }
         dateFilter.gte = fromDate;
       }
-      
+
       if (query.to) {
         let toDate;
         if (query.to.includes('-')) {
@@ -149,16 +151,10 @@ export class EventsService {
       );
     }
 
-    let hasFullCouncil = false;
-    try {
-      const council = JSON.parse(society.executiveCouncil || '[]');
-      const mandatoryRoles = ['Vice President', 'Event Coordinator', 'General Secretary', 'Treasurer', 'Director Liaison'];
-      const existingRoles = council.map((m: any) => m.role);
-      hasFullCouncil = mandatoryRoles.every(r => existingRoles.includes(r));
-    } catch(e) {}
-
-    if (!hasFullCouncil) {
-      throw new ForbiddenException('Access denied: You must complete your Executive Council details (all 5 mandatory positions) before managing resources');
+    if (!validateExecutiveCouncil(society.executiveCouncil)) {
+      throw new ForbiddenException(
+        'Access denied: You must complete your Executive Council details (all 5 mandatory positions) before managing resources',
+      );
     }
 
     return society;
@@ -254,8 +250,10 @@ export class EventsService {
     this.validateTimeRange(dto.startTime, dto.endTime);
 
     const submitForApproval = Boolean(dto.submitForApproval);
-    const isPublished = !submitForApproval;
-    const approvalStatus = submitForApproval ? 'PENDING_ADVISOR' : 'PUBLISHED';
+    const isPublished = false;
+    const approvalStatus = submitForApproval
+      ? EventApprovalStatus.PENDING_ADVISOR
+      : EventApprovalStatus.DRAFT;
 
     const coverImageUrl = this.sanitizeImageUrl(dto.coverImageUrl);
 
@@ -289,6 +287,7 @@ export class EventsService {
       },
     });
 
+    FeedService.invalidate();
     return event;
   }
 
@@ -364,32 +363,38 @@ export class EventsService {
   /**
    * Updates an existing event after enforcing ownership validation.
    */
-  
-  async requestEdit(id: string, reason: string): Promise<EventResponseDto> {
+
+  async requestEdit(
+    id: string,
+    userId: string,
+    userRole: string,
+    reason: string,
+  ): Promise<EventResponseDto> {
+    await this.validateEventOwnership(id, userId, userRole);
+
     const event = await this.prisma.event.update({
       where: { id },
       data: {
         editRequestStatus: 'PENDING',
-        editRequestReason: reason
+        editRequestReason: reason,
       },
-      include: { society: true }
+      include: { society: true },
     });
-    return event as any;
+    return event;
   }
 
   async resolveEditRequest(id: string, status: 'APPROVED' | 'REJECTED'): Promise<EventResponseDto> {
     const event = await this.prisma.event.update({
       where: { id },
       data: {
-        editRequestStatus: status
+        editRequestStatus: status,
       },
-      include: { society: true }
+      include: { society: true },
     });
-    return event as any;
+    return event;
   }
 
   async updateEvent(
-
     eventId: string,
     userId: string,
     dto: UpdateEventDto,
@@ -427,7 +432,15 @@ export class EventsService {
         ...(dto.inChargeName !== undefined && { inChargeName: dto.inChargeName || null }),
         ...(dto.inChargeRegNum !== undefined && { inChargeRegNum: dto.inChargeRegNum || null }),
         ...(dto.inChargeContact !== undefined && { inChargeContact: dto.inChargeContact || null }),
-        ...(dto.submitForApproval === true && { approvalStatus: (event.approvalStatus === 'CHANGES_REQUESTED' && event.lastChangeRequestBy === 'DSA_ADMIN') ? 'PENDING_ADMIN' : 'PENDING_ADVISOR', isPublished: false, lastChangeRequestBy: null }),
+        ...(dto.submitForApproval === true && {
+          approvalStatus:
+            event.approvalStatus === 'CHANGES_REQUESTED' &&
+            event.lastChangeRequestBy === 'DSA_ADMIN'
+              ? 'PENDING_ADMIN'
+              : 'PENDING_ADVISOR',
+          isPublished: false,
+          lastChangeRequestBy: null,
+        }),
       },
       include: {
         society: {
@@ -440,19 +453,32 @@ export class EventsService {
       },
     });
 
+    FeedService.invalidate();
     return updated;
   }
 
   /**
    * Deletes an event after enforcing ownership validation.
    */
-  async deleteEvent(eventId: string, userId: string, userRole: string): Promise<{ message: string; id: string }> {
-    await this.validateEventOwnership(eventId, userId, userRole);
+  async deleteEvent(
+    eventId: string,
+    userId: string,
+    userRole: string,
+  ): Promise<{ message: string; id: string }> {
+    const { event } = await this.validateEventOwnership(eventId, userId, userRole);
 
     await this.prisma.event.delete({
       where: { id: eventId },
     });
 
+    // Clean up associated uploaded files from disk (parallel, fire-and-forget)
+    await Promise.allSettled([
+      event.coverImageUrl ? this.uploadsService.deleteImage(event.coverImageUrl) : null,
+      event.signedVenueSlipUrl ? this.uploadsService.deleteImage(event.signedVenueSlipUrl) : null,
+      event.videoUrl ? this.uploadsService.deleteImage(event.videoUrl) : null,
+    ].filter(Boolean) as Promise<boolean>[]);
+
+    FeedService.invalidate();
     return {
       message: 'Event deleted successfully',
       id: eventId,
@@ -462,7 +488,11 @@ export class EventsService {
   /**
    * Advisor reviews a pending event.
    */
-  async reviewEventByAdvisor(eventId: string, userId: string, dto: ReviewEventDto): Promise<EventResponseDto> {
+  async reviewEventByAdvisor(
+    eventId: string,
+    userId: string,
+    dto: ReviewEventDto,
+  ): Promise<EventResponseDto> {
     const event = await this.prisma.event.findUnique({
       where: { id: eventId },
       include: { society: { include: { advisor: true } } },
@@ -490,13 +520,17 @@ export class EventsService {
       },
     });
 
-    return updated as any; // Typecasting for brevity here, normally you would map to EventResponseDto precisely
+    return updated; // Typecasting for brevity here, normally you would map to EventResponseDto precisely
   }
 
   /**
    * DSA Admin reviews a pending event.
    */
-  async reviewEventByDsa(eventId: string, userId: string, dto: ReviewEventDto): Promise<EventResponseDto> {
+  async reviewEventByDsa(
+    eventId: string,
+    userId: string,
+    dto: ReviewEventDto,
+  ): Promise<EventResponseDto> {
     const event = await this.prisma.event.findUnique({ where: { id: eventId } });
 
     if (!event) {
@@ -523,7 +557,8 @@ export class EventsService {
       },
     });
 
-    return updated as any;
+    FeedService.invalidate();
+    return updated;
   }
 
   /**
@@ -575,7 +610,7 @@ export class EventsService {
       },
     });
 
-    return updated as any;
+    return updated;
   }
 
   /**
@@ -607,4 +642,3 @@ export class EventsService {
     return event;
   }
 }
-

@@ -90,7 +90,10 @@ export class CreateEventDto {
   @IsUrl({}, { message: 'Registration Link must be a valid URL address' })
   registrationLink?: string;
 
-  @ApiPropertyOptional({ example: false, description: 'Submit event for advisor & DSA approval instead of direct publishing' })
+  @ApiPropertyOptional({
+    example: false,
+    description: 'Submit event for advisor & DSA approval instead of direct publishing',
+  })
   @IsOptional()
   @IsBoolean()
   submitForApproval?: boolean;
@@ -109,7 +112,9 @@ export class CreateEventDto {
   @Transform(({ value }: { value: unknown }) =>
     typeof value === 'string' ? value.trim() : (value as string),
   )
-  @Matches(/^[a-zA-Z\s.,-]+$/, { message: 'Name can only contain alphabets, spaces, dots, commas, and dashes' })
+  @Matches(/^[a-zA-Z\s.,-]+$/, {
+    message: 'Name can only contain alphabets, spaces, dots, commas, and dashes',
+  })
   inChargeName?: string;
 
   @ApiPropertyOptional({ example: '2022000' })

@@ -116,14 +116,22 @@ export class EventsController {
     return this.eventsService.getEventById(id);
   }
 
-  
   @Patch(':id/edit-request')
   @Auth(Role.SOCIETY)
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Society: Request edit access for a locked event' })
-  async requestEdit(@Param('id', ParseUUIDPipe) id: string, @Body('reason') reason: string) {
-    return this.eventsService.requestEdit(id, reason || 'Society requested edit access');
+  async requestEdit(
+    @Param('id', ParseUUIDPipe) id: string,
+    @CurrentUser() user: UserProfileDto,
+    @Body('reason') reason: string,
+  ) {
+    return this.eventsService.requestEdit(
+      id,
+      user.id,
+      user.role,
+      reason || 'Society requested edit access',
+    );
   }
 
   @Patch(':id/edit-request-resolve')
@@ -131,7 +139,10 @@ export class EventsController {
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'DSA: Approve or reject an edit request' })
-  async resolveEditRequest(@Param('id', ParseUUIDPipe) id: string, @Body('status') status: 'APPROVED' | 'REJECTED') {
+  async resolveEditRequest(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body('status') status: 'APPROVED' | 'REJECTED',
+  ) {
     return this.eventsService.resolveEditRequest(id, status);
   }
 
@@ -250,7 +261,9 @@ export class EventsController {
   @Auth(Role.SOCIETY, Role.ADVISOR, Role.DSA_ADMIN)
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth('JWT-auth')
-  @ApiOperation({ summary: 'Retrieve full event and society data for printable venue permission slip' })
+  @ApiOperation({
+    summary: 'Retrieve full event and society data for printable venue permission slip',
+  })
   @ApiParam({ name: 'id', description: 'Event UUID' })
   async getVenueSlipData(@Param('id', ParseUUIDPipe) id: string) {
     return this.eventsService.getVenueSlipData(id);

@@ -15,7 +15,8 @@ import { AdminModule } from './modules/admin/admin.module';
 import { FeedModule } from './modules/feed/feed.module';
 import { PostsModule } from './modules/posts/posts.module';
 import { EmailModule } from './modules/email/email.module';
-import { ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
@@ -25,7 +26,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
     ThrottlerModule.forRoot([
       {
         ttl: 60000,
-        limit: 60,
+        limit: 120,
       },
     ]),
     ServeStaticModule.forRoot({
@@ -46,6 +47,12 @@ import { ThrottlerModule } from '@nestjs/throttler';
     AdminModule,
     FeedModule,
     PostsModule,
+  ],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
   ],
 })
 export class AppModule {}

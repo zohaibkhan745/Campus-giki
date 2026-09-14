@@ -1,4 +1,15 @@
-import { Controller, Post, Get, Put, Delete, Body, Param, Query, HttpCode, HttpStatus } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  Put,
+  Delete,
+  Body,
+  Param,
+  Query,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
@@ -19,10 +30,7 @@ export class PostsController {
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Create a new announcement' })
   @ApiResponse({ status: 201, description: 'Announcement created successfully' })
-  async createPost(
-    @CurrentUser() user: UserProfileDto,
-    @Body() dto: CreatePostDto,
-  ) {
+  async createPost(@CurrentUser() user: UserProfileDto, @Body() dto: CreatePostDto) {
     return this.postsService.createPost(user, dto);
   }
 
@@ -87,10 +95,7 @@ export class PostsController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Delete an announcement' })
   @ApiResponse({ status: 200, description: 'Announcement deleted successfully' })
-  async deletePost(
-    @CurrentUser() user: UserProfileDto,
-    @Param('id') id: string,
-  ) {
+  async deletePost(@CurrentUser() user: UserProfileDto, @Param('id') id: string) {
     return this.postsService.deletePost(user, id);
   }
 }

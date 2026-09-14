@@ -91,8 +91,8 @@ export class AuthController {
     status: 401,
     description: 'Unauthorized access - token invalid or missing',
   })
-  getProfile(@CurrentUser() user: UserProfileDto): UserProfileDto {
-    return user;
+  async getProfile(@CurrentUser() user: UserProfileDto): Promise<UserProfileDto> {
+    return this.authService.getFullProfile(user.id);
   }
 
   @Patch('profile')
@@ -130,7 +130,7 @@ export class AuthController {
   getDsaDashboard(@CurrentUser() user: UserProfileDto) {
     return {
       message: 'Welcome to the DSA Admin Dashboard',
-      admin: user.fullName,
+      admin: user.email,
     };
   }
 }

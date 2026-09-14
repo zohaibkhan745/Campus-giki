@@ -3,41 +3,45 @@ import { PrismaService } from '../../core/database/prisma.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { UserProfileDto } from '../auth/dto/auth-response.dto';
-import { Role, Prisma } from '@prisma/client';
+import { Role } from '@prisma/client';
+import { UploadsService } from '../uploads/uploads.service';
+import { validateExecutiveCouncil } from '../../common/utils/council.util';
+import { FeedService } from '../feed/feed.service';
 
 @Injectable()
 export class PostsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly uploadsService: UploadsService,
+  ) {}
 
   private async validateSocietyCanPost(userId: string) {
     const society = await this.prisma.society.findUnique({ where: { userId } });
     if (!society || !society.isSetupComplete) {
-      throw new ForbiddenException('Access denied: Society profile setup must be completed before posting announcements');
+      throw new ForbiddenException(
+        'Access denied: Society profile setup must be completed before posting announcements',
+      );
     }
-    let hasFullCouncil = false;
-    try {
-      const council = JSON.parse(society.executiveCouncil || '[]');
-      const mandatoryRoles = ['Vice President', 'Event Coordinator', 'General Secretary', 'Treasurer', 'Director Liaison'];
-      const existingRoles = council.map((m: any) => m.role);
-      hasFullCouncil = mandatoryRoles.every(r => existingRoles.includes(r));
-    } catch (e) {}
-
-    if (!hasFullCouncil) {
-      throw new ForbiddenException('Access denied: You must complete your Executive Council details (all 5 mandatory positions) before creating or updating posts');
+    if (!validateExecutiveCouncil(society.executiveCouncil)) {
+      throw new ForbiddenException(
+        'Access denied: You must complete your Executive Council details (all 5 mandatory positions) before creating or updating posts',
+      );
     }
     return society;
   }
 
   async createPost(user: UserProfileDto, dto: CreatePostDto) {
     if (user.role !== Role.DSA_ADMIN && user.role !== Role.SOCIETY) {
-      throw new ForbiddenException('Only the Director of Student Affairs or authorized student societies can create announcements');
+      throw new ForbiddenException(
+        'Only the Director of Student Affairs or authorized student societies can create announcements',
+      );
     }
 
     if (user.role === Role.SOCIETY) {
       await this.validateSocietyCanPost(user.id);
     }
 
-    return this.prisma.post.create({
+    const created = await this.prisma.post.create({
       data: {
         title: dto.title,
         content: dto.content,
@@ -56,16 +60,26 @@ export class PostsService {
         },
       },
     });
+
+    FeedService.invalidate();
+    return created;
   }
 
-  async getAllPosts(params: { page: number; limit: number; type?: string; societyId?: string; from?: string; to?: string }) {
+  async getAllPosts(params: {
+    page: number;
+    limit: number;
+    type?: string;
+    societyId?: string;
+    from?: string;
+    to?: string;
+  }) {
     const { page, limit, type, societyId, from, to } = params;
     const skip = (page - 1) * limit;
 
     const where: any = {};
     if (from || to) {
       where.createdAt = {};
-      
+
       if (from) {
         let fromDate;
         if (from.includes('-')) {
@@ -77,7 +91,7 @@ export class PostsService {
         }
         where.createdAt.gte = fromDate;
       }
-      
+
       if (to) {
         let toDate;
         if (to.includes('-')) {
@@ -90,13 +104,13 @@ export class PostsService {
         where.createdAt.lte = toDate;
       }
     }
-    
+
     if (type === 'global') {
       where.author = { role: Role.DSA_ADMIN };
     } else if (type === 'society') {
       where.author = { role: Role.SOCIETY };
     }
-    
+
     if (societyId) {
       where.author = {
         ...where.author,
@@ -189,7 +203,7 @@ export class PostsService {
       throw new ForbiddenException('Permission denied');
     }
 
-    return this.prisma.post.update({
+    const updated = await this.prisma.post.update({
       where: { id: postId },
       data: {
         title: dto.title,
@@ -197,6 +211,9 @@ export class PostsService {
         imageUrl: dto.imageUrl,
       },
     });
+
+    FeedService.invalidate();
+    return updated;
   }
 
   async deletePost(user: UserProfileDto, postId: string) {
@@ -222,7 +239,13 @@ export class PostsService {
       where: { id: postId },
     });
 
+    // Clean up uploaded media files from disk (parallel, fire-and-forget)
+    await Promise.allSettled([
+      post.imageUrl ? this.uploadsService.deleteImage(post.imageUrl) : null,
+      post.videoUrl ? this.uploadsService.deleteImage(post.videoUrl) : null,
+    ].filter(Boolean) as Promise<boolean>[]);
+
+    FeedService.invalidate();
     return { message: 'Post deleted successfully' };
   }
 }
-
