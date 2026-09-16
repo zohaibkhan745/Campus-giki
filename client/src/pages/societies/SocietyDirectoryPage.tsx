@@ -1,6 +1,6 @@
 import { getSocietyLogo, getSocietyBanner } from '@/lib/utils';
 import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   Building2,
@@ -24,6 +24,7 @@ export const SocietyDirectoryPage: React.FC = () => {
   const { data: categories = [] } = useQuery({
     queryKey: ['categories'],
     queryFn: societyService.getCategories,
+    placeholderData: keepPreviousData,
   });
 
   // Query paginated public societies
@@ -42,6 +43,7 @@ export const SocietyDirectoryPage: React.FC = () => {
         type: selectedType || undefined,
         search: searchQuery || undefined,
       }),
+    placeholderData: keepPreviousData,
   });
 
   const societies = directoryData?.items || [];

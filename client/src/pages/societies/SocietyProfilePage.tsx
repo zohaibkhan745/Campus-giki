@@ -1,10 +1,9 @@
 import { getSocietyLogo, getSocietyBanner } from '@/lib/utils';
 import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   Calendar as CalendarIcon,
-  Megaphone,
   History,
   Loader2,
   ArrowLeft,
@@ -14,7 +13,6 @@ import {
 } from 'lucide-react';
 import { societyService } from '@/services/society.service';
 import { EventCard } from '@/components/feed/EventCard';
-import { PostCard } from '@/components/feed/PostCard';
 
 const Instagram = ({className}: {className?: string}) => <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>;
 const Facebook = ({className}: {className?: string}) => <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>;
@@ -23,7 +21,8 @@ const Linkedin = ({className}: {className?: string}) => <svg className={classNam
 export const SocietyProfilePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<'posts' | 'upcoming' | 'past' | 'council'>('upcoming');
+  const queryClient = useQueryClient();
+  const [activeTab, setActiveTab] = useState<'upcoming' | 'past' | 'council'>('upcoming');
 
   const {
     data: society,
@@ -33,28 +32,51 @@ export const SocietyProfilePage: React.FC = () => {
     queryKey: ['publicSociety', id],
     queryFn: () => societyService.getPublicSocietyById(id!),
     enabled: !!id,
+    placeholderData: keepPreviousData,
+    initialData: () => {
+      if (!id) return undefined;
+      // 1. Direct cache
+      const cached = queryClient.getQueryData<any>(['publicSociety', id]);
+      if (cached) return cached;
+      // 2. Check publicSocieties directory queries
+      const directoryQueries = queryClient.getQueriesData<any>({ queryKey: ['publicSocieties'] });
+      for (const [, data] of directoryQueries) {
+        if (data?.items) {
+          const found = data.items.find((s: any) => s.id === id);
+          if (found) return found;
+        }
+      }
+      // 3. Check societies list filter cache
+      const listData = queryClient.getQueryData<any>(['societiesListForFilter']);
+      if (listData?.items) {
+        const found = listData.items.find((s: any) => s.id === id);
+        if (found) return found;
+      }
+      return undefined;
+    },
   });
 
   const { data: eventsData, isLoading: isLoadingEvents } = useQuery({
     queryKey: ['publicSocietyEvents', id],
     queryFn: () => societyService.getPublicSocietyEvents(id!),
     enabled: !!id,
-  });
-
-  const { data: postsData = [], isLoading: isLoadingPosts } = useQuery({
-    queryKey: ['publicSocietyPosts', id],
-    queryFn: () => societyService.getPublicSocietyPosts(id!),
-    enabled: !!id,
+    placeholderData: keepPreviousData,
   });
 
   const upcomingEvents = eventsData?.upcoming || [];
   const pastEvents = eventsData?.past || [];
 
-  if (isLoadingSociety) {
+  if (isLoadingSociety && !society) {
     return (
-      <div className="min-h-[50vh] flex flex-col justify-center items-center text-gray-400 gap-3">
-        <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
-        <p className="text-sm font-medium">Loading society profile...</p>
+      <div className="w-full text-left font-sans bg-transparent animate-pulse">
+        <div className="w-screen h-[280px] md:h-[320px] bg-white/5 relative -ml-[50vw] left-1/2 -mt-8">
+          <div className="absolute bottom-[-60px] md:bottom-[-90px] left-6 md:left-12 w-[120px] md:w-[180px] h-[120px] md:h-[180px] rounded-full bg-white/10 border-4 border-[#121318]" />
+        </div>
+        <div className="max-w-[1440px] mx-auto px-6 md:px-12 pt-20 md:pt-28 space-y-4">
+          <div className="h-8 w-64 bg-white/10 rounded-lg" />
+          <div className="h-4 w-96 bg-white/5 rounded" />
+          <div className="h-24 w-full max-w-2xl bg-white/5 rounded-xl mt-6" />
+        </div>
       </div>
     );
   }
@@ -327,17 +349,6 @@ export const SocietyProfilePage: React.FC = () => {
             <span>Upcoming Events</span>
           </button>
 
-          <button
-            onClick={() => setActiveTab('posts')}
-            className={`flex-1 flex justify-center items-center gap-2 px-4 py-3 text-sm font-bold rounded-xl transition-all ${
-              activeTab === 'posts'
-                ? 'bg-white text-gray-900 shadow-md'
-                : 'text-gray-400 hover:text-white hover:bg-white/5'
-            }`}
-          >
-            <Megaphone className="w-5 h-5" />
-            <span>Announcements</span>
-          </button>
 
           <button
             onClick={() => setActiveTab('past')}
@@ -399,30 +410,6 @@ export const SocietyProfilePage: React.FC = () => {
             </div>
           )}
 
-          {activeTab === 'posts' && (
-            <div className="space-y-4">
-              {isLoadingPosts ? (
-                <div className="py-8 text-center text-gray-400 text-sm flex items-center justify-center gap-2">
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Loading posts...</span>
-                </div>
-              ) : postsData.length === 0 ? (
-                <div className="bg-white/5 p-8 rounded-2xl border border-white/10 text-center space-y-2">
-                  <Megaphone className="w-10 h-10 text-gray-500 mx-auto" />
-                  <h3 className="font-semibold text-white text-sm">No Posts Available</h3>
-                  <p className="text-xs text-gray-400">
-                    {society.name} has not posted any announcements or updates yet.
-                  </p>
-                </div>
-              ) : (
-                <div className="cards-container">
-                  {postsData.map((post) => (
-                    <PostCard key={post.id} item={post} />
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
 
           {activeTab === 'past' && (
             <div className="space-y-4">
