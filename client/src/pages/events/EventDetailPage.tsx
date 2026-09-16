@@ -76,7 +76,6 @@ export const EventDetailPage: React.FC = () => {
   if (isError || !eventItem) {
     return (
       <div className="max-w-md mx-auto py-12 space-y-4 text-center">
-        null /* Removed error alert */
         <Link
           to="/societies"
           className="fixed top-4 left-4 sm:top-6 sm:left-6 z-[100] inline-flex items-center justify-center w-10 h-10 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white rounded-full transition-all cursor-pointer shadow-lg"
@@ -88,12 +87,13 @@ export const EventDetailPage: React.FC = () => {
     );
   }
 
+  const targetSocietyId = eventItem.society?.id || eventItem.societyId;
   const isPast = new Date(eventItem.eventDate) < new Date(new Date().setHours(0, 0, 0, 0));
   
   const canViewRules =
     user?.role === 'DSA_ADMIN' ||
     user?.role === 'ADVISOR' ||
-    (user?.role === 'SOCIETY' && user.society?.id === eventItem.societyId);
+    (user?.role === 'SOCIETY' && user.society?.id === targetSocietyId);
 
   return (
     <div className="page-transition max-w-4xl mx-auto space-y-6 text-left pt-10 sm:pt-14 pb-8 px-4">
@@ -138,7 +138,32 @@ export const EventDetailPage: React.FC = () => {
         {/* 2. Hero Header */}
         <div className="space-y-4 border-b border-vast-ink/20 pb-6">
           <div className="flex flex-wrap items-center justify-between gap-4">
-            <div className="space-y-1">
+            <div className="space-y-2">
+              {targetSocietyId && eventItem.society && (
+                <Link
+                  to={`/societies/${targetSocietyId}`}
+                  className="inline-flex items-center gap-2.5 py-1 px-3 rounded-full bg-white/5 hover:bg-white/10 border border-white/15 transition-all text-left group/soc"
+                  onClick={() => {
+                    queryClient.setQueryData(['publicSociety', targetSocietyId], (prev: any) => prev || eventItem.society);
+                  }}
+                  onMouseEnter={() => {
+                    queryClient.setQueryData(['publicSociety', targetSocietyId], (prev: any) => prev || eventItem.society);
+                  }}
+                  onTouchStart={() => {
+                    queryClient.setQueryData(['publicSociety', targetSocietyId], (prev: any) => prev || eventItem.society);
+                  }}
+                >
+                  <img
+                    src={getSocietyLogo(eventItem.society.logoUrl)}
+                    alt={eventItem.society.name}
+                    className="w-5 h-5 rounded-full object-cover border border-white/20"
+                    onError={(e) => { e.currentTarget.src = '/default-society.jpg'; }}
+                  />
+                  <span className="text-xs font-bold text-gray-200 group-hover/soc:text-blue-400 transition-colors">
+                    {eventItem.society.name}
+                  </span>
+                </Link>
+              )}
 
               <h1 className="text-2xl sm:text-3xl font-extrabold text-vast-ink">
                 {eventItem.title}
@@ -280,7 +305,7 @@ export const EventDetailPage: React.FC = () => {
                   <span>View / Print Permission Slip</span>
                 </button>
 
-                {user?.role === 'SOCIETY' && user.society?.id === eventItem.societyId && (
+                {user?.role === 'SOCIETY' && user.society?.id === targetSocietyId && (
                   <button
                     type="button"
                     onClick={() => setIsUploadModalOpen(true)}
@@ -308,29 +333,29 @@ export const EventDetailPage: React.FC = () => {
         )}
 
         {/* 7. Hosting Society Information Card */}
-        {eventItem.society && (
+        {eventItem.society && targetSocietyId && (
           <div className="space-y-3 pt-2">
             <h3 className="text-xs font-semibold uppercase tracking-wider text-fog">
               Hosting Society
             </h3>
             <Link
-              to={`/societies/${eventItem.societyId}`}
+              to={`/societies/${targetSocietyId}`}
               onMouseEnter={() => {
                 if (eventItem.society) {
-                  queryClient.setQueryData(['publicSociety', eventItem.societyId], (prev: any) => prev || eventItem.society);
+                  queryClient.setQueryData(['publicSociety', targetSocietyId], (prev: any) => prev || eventItem.society);
                 }
               }}
               onTouchStart={() => {
                 if (eventItem.society) {
-                  queryClient.setQueryData(['publicSociety', eventItem.societyId], (prev: any) => prev || eventItem.society);
+                  queryClient.setQueryData(['publicSociety', targetSocietyId], (prev: any) => prev || eventItem.society);
                 }
               }}
               onClick={() => {
                 if (eventItem.society) {
-                  queryClient.setQueryData(['publicSociety', eventItem.societyId], (prev: any) => prev || eventItem.society);
+                  queryClient.setQueryData(['publicSociety', targetSocietyId], (prev: any) => prev || eventItem.society);
                 }
               }}
-              className="flex items-center justify-between p-4 bg-transparent hover:bg-lumen-stone rounded-cards border border-vast-ink/20 transition-all group"
+              className="flex items-center justify-between p-4 bg-transparent hover:bg-lumen-stone rounded-cards border border-vast-ink/20 transition-all group cursor-pointer"
             >
               <div className="flex items-center gap-3">
                 {eventItem.society.logoUrl ? (
