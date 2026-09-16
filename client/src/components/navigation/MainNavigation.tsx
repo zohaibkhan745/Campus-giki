@@ -99,7 +99,7 @@ export const MainNavigation: React.FC = () => {
                     title={link.label}
                     className={`flex items-center justify-center lg:justify-start gap-4 px-3.5 py-3 rounded-full transition-all relative ${
                       isActive
-                        ? 'bg-vast-ink text-pure-white shadow-sm'
+                        ? 'bg-white text-black shadow-sm'
                         : 'text-vast-ink hover:bg-lumen-stone'
                     }`}
                   >
@@ -169,7 +169,7 @@ export const MainNavigation: React.FC = () => {
                 <div
                   className={`relative flex items-center justify-center w-14 h-8 rounded-full transition-colors ${
                     isActive
-                      ? 'bg-vast-ink text-pure-white'
+                      ? 'bg-vast-ink text-black'
                       : 'text-vast-ink/60 hover:text-vast-ink'
                   }`}
                 >

@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Home, CalendarDays, Menu } from 'lucide-react';
 import { UpcomingEventIcon } from '@/components/icons/UpcomingEventIcon';
@@ -63,7 +63,10 @@ function isNavItemActive(item: DockNavItem, currentPath: string): boolean {
   if (item.activePrefixes && item.activePrefixes.length > 0) {
     return item.activePrefixes.some(prefix => currentPath.startsWith(prefix));
   }
-  return item.path === '/' ? currentPath === '/' : currentPath.startsWith(item.path);
+  if (item.path === '/') {
+    return currentPath === '/';
+  }
+  return currentPath.startsWith(item.path);
 }
 
 export const DockNav: React.FC = () => {
@@ -77,35 +80,102 @@ export const DockNav: React.FC = () => {
   const handlePrefetch = (path: string) => {
     try {
       if (path === '/') {
-        import('@/pages/HomePage');
         queryClient.prefetchInfiniteQuery({
           queryKey: ['campusFeed', 12],
           queryFn: ({ pageParam = 1 }) => feedService.getFeed({ page: pageParam, limit: 12 }),
           initialPageParam: 1,
         });
       } else if (path === '/upcoming-events') {
-        import('@/pages/events/UpcomingEventsPage');
         queryClient.prefetchQuery({
           queryKey: ['events', 'upcoming'],
           queryFn: () => eventService.getAllPublicEvents({ from: new Date().toISOString(), limit: 50, page: 1 }),
         });
       } else if (path === '/events') {
-        import('@/pages/events/CampusCalendarPage');
+        const now = new Date();
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+        const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+        queryClient.prefetchQuery({
+          queryKey: ['publicCalendarEvents', startOfMonth.toISOString(), endOfMonth.toISOString(), 'all', ''],
+          queryFn: () => eventService.getAllPublicEvents({ 
+            from: new Date(now.getFullYear(), now.getMonth(), -7).toISOString(), 
+            to: new Date(now.getFullYear(), now.getMonth() + 1, 7).toISOString(), 
+            limit: 150 
+          }),
+        });
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        queryClient.prefetchQuery({
+          queryKey: ['publicListEvents', 'upcoming', ''],
+          queryFn: () => eventService.getAllPublicEvents({ 
+            from: today.toISOString(), 
+            limit: 150 
+          }),
+        });
         queryClient.prefetchQuery({
           queryKey: ['societiesListForFilter'],
           queryFn: () => societyService.getPublicSocieties({ limit: 100 }),
         });
       } else if (path === '/societies') {
-        import('@/pages/societies/SocietyDirectoryPage');
         queryClient.prefetchQuery({
           queryKey: ['publicSocieties', 1, '', '', ''],
           queryFn: () => societyService.getPublicSocieties({ page: 1, limit: 100 }),
+        });
+        queryClient.prefetchQuery({
+          queryKey: ['categories'],
+          queryFn: societyService.getCategories,
         });
       }
     } catch {
       // Speculative pre-fetch failure is safely non-blocking
     }
   };
+
+  // Idle background pre-warming for instant 0ms tab switches
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      try {
+        queryClient.prefetchInfiniteQuery({
+          queryKey: ['campusFeed', 12],
+          queryFn: ({ pageParam = 1 }) => feedService.getFeed({ page: pageParam, limit: 12 }),
+          initialPageParam: 1,
+        });
+
+        queryClient.prefetchQuery({
+          queryKey: ['events', 'upcoming'],
+          queryFn: () => eventService.getAllPublicEvents({ from: new Date().toISOString(), limit: 50, page: 1 }),
+        });
+
+        queryClient.prefetchQuery({
+          queryKey: ['publicSocieties', 1, '', '', ''],
+          queryFn: () => societyService.getPublicSocieties({ page: 1, limit: 100 }),
+        });
+        queryClient.prefetchQuery({
+          queryKey: ['categories'],
+          queryFn: societyService.getCategories,
+        });
+
+        const now = new Date();
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+        const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+        queryClient.prefetchQuery({
+          queryKey: ['publicCalendarEvents', startOfMonth.toISOString(), endOfMonth.toISOString(), 'all', ''],
+          queryFn: () => eventService.getAllPublicEvents({ 
+            from: new Date(now.getFullYear(), now.getMonth(), -7).toISOString(), 
+            to: new Date(now.getFullYear(), now.getMonth() + 1, 7).toISOString(), 
+            limit: 150 
+          }),
+        });
+        queryClient.prefetchQuery({
+          queryKey: ['societiesListForFilter'],
+          queryFn: () => societyService.getPublicSocieties({ limit: 100 }),
+        });
+      } catch {
+        // Non-blocking
+      }
+    }, 600);
+
+    return () => clearTimeout(timer);
+  }, [queryClient]);
 
   // Dynamically resolve navigation links based on user authentication state
   const visibleNavLinks = useMemo(

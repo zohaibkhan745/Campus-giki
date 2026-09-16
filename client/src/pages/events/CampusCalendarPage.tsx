@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -44,7 +44,7 @@ export const CampusCalendarPage: React.FC = () => {
     queryFn: () => eventService.getAllPublicEvents({ 
       from: new Date(currentDate.getFullYear(), currentDate.getMonth(), -7).toISOString(), 
       to: new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 7).toISOString(), 
-      societyId: selectedSociety !== 'all' ? selectedSociety : undefined,
+      societyId: selectedSociety !== 'all' ? selectedSociety : undefined, 
       limit: 150 
     }),
     placeholderData: keepPreviousData,
@@ -52,9 +52,9 @@ export const CampusCalendarPage: React.FC = () => {
   
   const calendarEventsList = (calendarEventsData?.items || []).filter(ev => !searchQuery || ev.title.toLowerCase().includes(searchQuery.toLowerCase()) || ev.description?.toLowerCase().includes(searchQuery.toLowerCase()));
 
-  const getFilterDates = () => {
+  const filterDates = useMemo(() => {
     const today = new Date();
-    today.setHours(0,0,0,0);
+    today.setHours(0, 0, 0, 0);
     if (listFilter === 'today') {
       const toDate = new Date(today);
       toDate.setDate(today.getDate() + 1);
@@ -71,9 +71,7 @@ export const CampusCalendarPage: React.FC = () => {
       return { from: today.toISOString(), to: toDate.toISOString() };
     }
     return { from: today.toISOString(), to: undefined };
-  };
-  
-  const filterDates = getFilterDates();
+  }, [listFilter]);
   
   const { data: listEventsData, isLoading: isListLoading } = useQuery({
     queryKey: ['publicListEvents', listFilter, selectedSociety !== 'all' ? selectedSociety : ''],
@@ -96,24 +94,27 @@ export const CampusCalendarPage: React.FC = () => {
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const daysInPrevMonth = new Date(year, month, 0).getDate();
 
-  const cells = [];
-  // Prev month cells
-  for (let i = 0; i < firstDay; i++) {
-    const d = daysInPrevMonth - firstDay + i + 1;
-    cells.push({ day: d, isOtherMonth: true, fullDate: new Date(year, month - 1, d) });
-  }
-  // Current month cells
-  for (let i = 1; i <= daysInMonth; i++) {
-    cells.push({ day: i, isOtherMonth: false, fullDate: new Date(year, month, i) });
-  }
-  // Next month cells
-  const remaining = cells.length % 7;
-  if (remaining !== 0) {
-    const needed = 7 - remaining;
-    for (let i = 1; i <= needed; i++) {
-      cells.push({ day: i, isOtherMonth: true, fullDate: new Date(year, month + 1, i) });
+  const cells = useMemo(() => {
+    const arr = [];
+    // Prev month cells
+    for (let i = 0; i < firstDay; i++) {
+      const d = daysInPrevMonth - firstDay + i + 1;
+      arr.push({ day: d, isOtherMonth: true, fullDate: new Date(year, month - 1, d) });
     }
-  }
+    // Current month cells
+    for (let i = 1; i <= daysInMonth; i++) {
+      arr.push({ day: i, isOtherMonth: false, fullDate: new Date(year, month, i) });
+    }
+    // Next month cells
+    const remaining = arr.length % 7;
+    if (remaining !== 0) {
+      const needed = 7 - remaining;
+      for (let i = 1; i <= needed; i++) {
+        arr.push({ day: i, isOtherMonth: true, fullDate: new Date(year, month + 1, i) });
+      }
+    }
+    return arr;
+  }, [firstDay, daysInPrevMonth, daysInMonth, year, month]);
 
   const prevMonth = () => setCurrentDate(new Date(year, month - 1, 1));
   const nextMonth = () => setCurrentDate(new Date(year, month + 1, 1));
@@ -381,7 +382,7 @@ export const CampusCalendarPage: React.FC = () => {
                         const color = computedStyle.color;
                         setSelectedEvent({ event: ev, rect, bg, color });
                       }}
-                      className={`event-tag ${getEventColorClass(ev.society?.name || 'A')} ${selectedEvent?.event.id === ev.id ? 'opacity-0 pointer-events-none' : ''}`}
+                      className={`event-tag ${getEventColorClass(ev.society?.name || 'A')} ${selectedEvent?.event.id === ev.id ? 'ring-2 ring-white/60 shadow-sm' : ''}`}
                       title={ev.title}
                     >
                       {ev.title}
