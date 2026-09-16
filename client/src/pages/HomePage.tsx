@@ -39,7 +39,7 @@ export const HomePage: React.FC = () => {
               </div>
               <button
                 onClick={refetch}
-                className="inline-flex items-center gap-2 bg-[#2c2f38] border border-white/10 rounded-xl px-4 py-2 text-sm font-semibold text-white hover:bg-white/10 transition-colors shrink-0"
+                className="inline-flex items-center gap-2 bg-[#2c2f38] border border-white/10 rounded-xl px-4 py-2 text-sm font-semibold text-white hover:bg-white/10 active:scale-95 transition-all shrink-0 cursor-pointer"
               >
                 <RefreshCw className="w-4 h-4" />
                 <span>Retry Feed</span>
@@ -83,7 +83,7 @@ export const HomePage: React.FC = () => {
               <button
                 onClick={handleLoadMore}
                 disabled={isLoadingMore}
-                className="inline-flex items-center gap-3 bg-[rgba(255,255,255,0.08)] backdrop-blur-[12px] border border-[rgba(255,255,255,0.15)] rounded-[12px] px-8 py-3 text-[16px] font-semibold text-white hover:bg-[rgba(255,255,255,0.16)] hover:border-[rgba(255,255,255,0.25)] disabled:opacity-50 transition-all focus:outline-none"
+                className="inline-flex items-center gap-3 bg-[rgba(255,255,255,0.08)] backdrop-blur-[12px] border border-[rgba(255,255,255,0.15)] rounded-[12px] px-8 py-3 text-[16px] font-semibold text-white hover:bg-[rgba(255,255,255,0.16)] hover:border-[rgba(255,255,255,0.25)] active:scale-[0.98] disabled:opacity-50 transition-all focus:outline-none cursor-pointer"
               >
                 {isLoadingMore ? (
                   <>

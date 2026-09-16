@@ -56,7 +56,7 @@ export const UpcomingEventsPage: React.FC = () => {
               <div className="mt-12 flex justify-center">
                 <button 
                   onClick={() => setVisibleEventsCount(prev => prev + 4)}
-                  className="px-8 py-3 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold transition-all backdrop-blur-md"
+                  className="px-8 py-3 rounded-xl bg-white/10 hover:bg-white/20 active:scale-[0.98] border border-white/20 text-white font-bold transition-all backdrop-blur-md cursor-pointer"
                 >
                   Load More Events
                 </button>

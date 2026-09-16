@@ -9,6 +9,7 @@ import { eventService } from '@/services/event.service';
 import { globalNotification } from '@/contexts/NotificationContext';
 import { VenuePermissionSlipModal } from '@/components/events/VenuePermissionSlipModal';
 import { UploadSignedSlipModal } from '@/components/events/UploadSignedSlipModal';
+import { Loader2 } from 'lucide-react';
 
 interface EventCardProps {
   item: EventFeedItem;
@@ -34,6 +35,7 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
   const isApproved = (item as any).approvalStatus === 'APPROVED' || (item as any).approvalStatus === 'PUBLISHED';
 
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [isVenueSlipOpen, setIsVenueSlipOpen] = useState(false);
   const [isUploadSlipOpen, setIsUploadSlipOpen] = useState(false);
 
@@ -244,6 +246,7 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
               <div style={{ display: 'flex', gap: '12px' }}>
                 <button
                   type="button"
+                  disabled={isDeleting}
                   style={{
                     flex: 1,
                     padding: '12px',
@@ -252,7 +255,8 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
                     color: '#000',
                     fontWeight: 600,
                     border: 'none',
-                    cursor: 'pointer',
+                    cursor: isDeleting ? 'not-allowed' : 'pointer',
+                    opacity: isDeleting ? 0.6 : 1,
                   }}
                   onClick={() => setShowDeleteConfirm(false)}
                 >
@@ -260,6 +264,7 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
                 </button>
                 <button
                   type="button"
+                  disabled={isDeleting}
                   style={{
                     flex: 1,
                     padding: '12px',
@@ -268,9 +273,16 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
                     border: '1px solid #ff4d4f',
                     color: '#fff',
                     fontWeight: 600,
-                    cursor: 'pointer',
+                    cursor: isDeleting ? 'not-allowed' : 'pointer',
+                    opacity: isDeleting ? 0.8 : 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '6px',
                   }}
                   onClick={async () => {
+                    if (isDeleting) return;
+                    setIsDeleting(true);
                     try {
                       await eventService.deleteEvent(item.id);
                       globalNotification.triggerSuccess('Event deleted successfully');
@@ -282,10 +294,19 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
                       if (onDelete) onDelete();
                     } catch {
                       globalNotification.triggerFailed('Failed to delete event');
+                    } finally {
+                      setIsDeleting(false);
                     }
                   }}
                 >
-                  Delete
+                  {isDeleting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>Deleting...</span>
+                    </>
+                  ) : (
+                    <span>Delete</span>
+                  )}
                 </button>
               </div>
             </div>
@@ -331,7 +352,7 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
           {reviewUrl ? (
             <Link
               to={reviewUrl}
-              className="px-4 h-[32px] flex items-center justify-center bg-[#ea580c] hover:bg-[#c2410c] text-white text-[12px] font-bold rounded-lg transition-colors border-none shadow-sm pointer-events-auto"
+              className="px-4 h-[32px] flex items-center justify-center bg-[#ea580c] hover:bg-[#c2410c] active:scale-95 text-white text-[12px] font-bold rounded-lg transition-all border-none shadow-sm pointer-events-auto"
               onClick={(e) => e.stopPropagation()}
             >
               Review
@@ -339,7 +360,7 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
           ) : (
             <button
               type="button"
-              className="px-4 h-[32px] flex items-center justify-center bg-white hover:bg-gray-200 text-black text-[12px] font-bold rounded-lg transition-colors border-none shadow-sm pointer-events-auto cursor-pointer"
+              className="px-4 h-[32px] flex items-center justify-center bg-white hover:bg-gray-200 active:scale-95 text-black text-[12px] font-bold rounded-lg transition-all border-none shadow-sm pointer-events-auto cursor-pointer"
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -354,7 +375,7 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
             <div className="menu-container shrink-0 h-full flex items-center">
               <button
                 type="button"
-                className="flex items-center justify-center p-2 rounded-full hover:bg-white/10 transition-colors pointer-events-auto cursor-pointer"
+                className="flex items-center justify-center p-2 rounded-full hover:bg-white/10 active:scale-90 transition-all pointer-events-auto cursor-pointer"
                 aria-label="Options"
                 ref={buttonRef}
                 onClick={toggleDropdown}

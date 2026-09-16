@@ -92,17 +92,21 @@ export const CustomDropdown = forwardRef<HTMLSelectElement, CustomDropdownProps>
     };
 
     if (isOpen) {
+      const handleScroll = () => {
+        setIsOpen(false);
+      };
+
       document.addEventListener('click', handleOutsideClick);
-      window.addEventListener('resize', updatePosition);
-      window.addEventListener('scroll', updatePosition, true);
+      window.addEventListener('resize', updatePosition, { passive: true });
+      window.addEventListener('scroll', handleScroll, { passive: true });
       updatePosition();
+
+      return () => {
+        document.removeEventListener('click', handleOutsideClick);
+        window.removeEventListener('resize', updatePosition);
+        window.removeEventListener('scroll', handleScroll);
+      };
     }
-    
-    return () => {
-      document.removeEventListener('click', handleOutsideClick);
-      window.removeEventListener('resize', updatePosition);
-      window.removeEventListener('scroll', updatePosition, true);
-    };
   }, [isOpen]);
 
   const handleSelect = (e: React.MouseEvent, val: string) => {
@@ -158,7 +162,7 @@ export const CustomDropdown = forwardRef<HTMLSelectElement, CustomDropdownProps>
       </select>
 
       <button 
-        className="dropdown-btn" 
+        className="dropdown-btn active:scale-[0.98] transition-transform" 
         type="button" 
         onClick={toggleDropdown}
         disabled={disabled}

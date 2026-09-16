@@ -3,7 +3,7 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate, Link } from "react-router-dom";
-import { ArrowLeft, CheckCircle2, ShieldCheck, Sparkles } from "lucide-react";
+import { ArrowLeft, CheckCircle2, ShieldCheck, Sparkles, Loader2 } from "lucide-react";
 import { eventService } from "@/services/event.service";
 import { societyService } from "@/services/society.service";
 import { yearlyPlanService } from "@/services/yearly-plan.service";
@@ -703,11 +703,18 @@ export const CreateEventPage: React.FC = () => {
 
         <button
           type="button"
-          className="btn-submit-review"
+          className="btn-submit-review active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
           disabled={createMutation.isPending}
           onClick={handleSubmit((data) => handlePublish(data, true), onError)}
         >
-          <span>Submit for Advisor & DSA Review</span>
+          {createMutation.isPending ? (
+            <>
+              <Loader2 className="w-5 h-5 animate-spin text-white" />
+              <span>Submitting for Review...</span>
+            </>
+          ) : (
+            <span>Submit for Advisor & DSA Review</span>
+          )}
         </button>
       </form>
       <CouncilNoticeModal

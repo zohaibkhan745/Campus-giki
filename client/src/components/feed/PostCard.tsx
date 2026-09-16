@@ -1,14 +1,14 @@
-import { getSocietyLogo, resolveImageUrl, cn } from '@/lib/utils';
 import React, { useRef, useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { X } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Loader2 } from 'lucide-react';
+import { getSocietyLogo, resolveImageUrl, cn } from '@/lib/utils';
 import type { PostFeedItem } from '@/types/feed.types';
-import { useCardFlip } from '@/hooks/useCardFlip';
 import { useAuth } from '@/contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { postService } from '@/services/post.service';
 import { globalNotification } from '@/contexts/NotificationContext';
+import { PostDetailModal } from './PostDetailModal';
 
 interface PostCardProps {
   item: PostFeedItem;
@@ -17,21 +17,53 @@ interface PostCardProps {
 }
 
 const PostCardComponent: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) => {
-  const wrapperRef = useRef<HTMLDivElement>(null);
-  const coverImage = resolveImageUrl(item.imageUrl);
-  const isLengthy = (item.content || '').length > 150;
-  const needsFlip = !!coverImage || isLengthy;
-  const { isActive, openCard, closeCard } = useCardFlip(wrapperRef, !needsFlip);
   const { user } = useAuth();
   const queryClient = useQueryClient();
-  const canEditOrDelete = user?.role === 'DSA_ADMIN';
-  const canEdit = user?.role === 'DSA_ADMIN';
+  const navigate = useNavigate();
+
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0 });
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const navigate = useNavigate();
+
+  const canEditOrDelete = user?.role === 'DSA_ADMIN';
+  const canEdit = user?.role === 'DSA_ADMIN';
+
+  const coverImage = resolveImageUrl(item.imageUrl);
+  const logoImage = getSocietyLogo(item.society?.logoUrl);
+  const authorName = item.isAdminPost ? 'Dean Student Affairs' : item.society?.name;
+  const societyId = item.society?.id;
+
+  const formattedDate = new Date(item.createdAt).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
+
+  const formattedTime = new Date(item.createdAt).toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+  });
+
+  const postTitle = item.title || (item.content ? item.content.slice(0, 45) + '...' : 'Announcement');
+
+  // Close dropdown on outside click or global event
+  useEffect(() => {
+    const handleClickOutside = () => setDropdownOpen(false);
+    window.addEventListener('close-all-dropdowns', handleClickOutside);
+
+    if (dropdownOpen) {
+      setTimeout(() => window.addEventListener('click', handleClickOutside), 10);
+    }
+    return () => {
+      window.removeEventListener('click', handleClickOutside);
+      window.removeEventListener('close-all-dropdowns', handleClickOutside);
+    };
+  }, [dropdownOpen]);
 
   const toggleDropdown = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -46,207 +78,316 @@ const PostCardComponent: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) 
     setDropdownOpen(true);
   };
 
-  useEffect(() => {
-    const handleClickOutside = () => setDropdownOpen(false);
-    window.addEventListener('close-all-dropdowns', handleClickOutside);
-    
-    if (dropdownOpen) {
-      setTimeout(() => window.addEventListener('click', handleClickOutside), 10);
+  const handleCardClick = () => {
+    setIsDetailOpen(true);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      setIsDetailOpen(true);
     }
-    return () => {
-      window.removeEventListener('click', handleClickOutside);
-      window.removeEventListener('close-all-dropdowns', handleClickOutside);
-    };
-  }, [dropdownOpen]);
+  };
 
-  const logoImage = getSocietyLogo(item.society.logoUrl);
-  const authorName = item.isAdminPost ? 'Dean Student Affairs' : item.society.name;
-
-  const formattedDate = new Date(item.createdAt).toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  });
-  
-  const formattedTime = new Date(item.createdAt).toLocaleTimeString('en-US', {
-    hour: '2-digit',
-    minute: '2-digit'
-  });
-
-  useEffect(() => {
-    if (isActive) {
-      if (dropdownOpen) setDropdownOpen(false);
-      if (showDeleteConfirm) setShowDeleteConfirm(false);
+  const handleDelete = async () => {
+    if (isDeleting) return;
+    setIsDeleting(true);
+    try {
+      await postService.deletePost(item.id);
+      globalNotification.triggerSuccess('Post deleted successfully');
+      setShowDeleteConfirm(false);
+      queryClient.invalidateQueries({ queryKey: ['campusFeed'] });
+      queryClient.invalidateQueries({ queryKey: ['societyPosts'] });
+      queryClient.invalidateQueries({ queryKey: ['adminPosts'] });
+      if (onDelete) onDelete();
+    } catch {
+      globalNotification.triggerFailed('Failed to delete post');
+    } finally {
+      setIsDeleting(false);
     }
-  }, [isActive, dropdownOpen, showDeleteConfirm]);
-
-  const postTitle = item.title || (item.content ? item.content.slice(0, 40) + '...' : 'Announcement');
+  };
 
   return (
-    <div 
-      ref={wrapperRef}
-      className="card-wrapper post-card-wrapper"
-      data-type="post"
-      data-card-id={item.id}
-    >
-      <div className="card-flipper">
-        
-        {/* FRONT FACE */}
-        <div 
-          className={cn("card-face card-front flex flex-col", needsFlip && "cursor-pointer")}
-          onClick={() => needsFlip && openCard(false)}
-        >
-          {/* Upper Bar Section */}
-          <div className="bg-gray-950/95 border-b border-white/10 px-4 py-3 flex items-center justify-between gap-3 w-full rounded-t-[24px] shrink-0 z-20 relative">
-            <div className="flex flex-col min-w-0 flex-1">
-              <span className="text-white text-[18px] font-black tracking-tight truncate leading-tight" title={postTitle}>{postTitle}</span>
-              <span className="text-gray-400 text-[11px] font-medium whitespace-nowrap mt-0.5">{formattedDate} • {formattedTime}</span>
-            </div>
-            <span className="card-tag !text-[9px] !py-1 !px-2 shrink-0">Post</span>
+    <>
+      <article
+        className="card-wrapper post-card-wrapper group relative flex flex-col w-full h-full rounded-[28px] overflow-hidden border border-white/10 bg-gray-950 shadow-2xl transition-all duration-200 hover:-translate-y-1 hover:border-white/25 hover:shadow-blue-500/10 active:scale-[0.99] cursor-pointer select-none focus:outline-none focus:ring-2 focus:ring-white/30"
+        data-type="post"
+        data-card-id={item.id}
+        onClick={handleCardClick}
+        onKeyDown={handleKeyDown}
+        tabIndex={0}
+        role="article"
+        aria-label={`Announcement: ${postTitle}`}
+      >
+        {/* Upper Bar Section */}
+        <div className="bg-gray-950/95 border-b border-white/10 px-4 py-3 flex items-center justify-between gap-3 w-full rounded-t-[24px] shrink-0 z-20 relative">
+          <div className="flex flex-col min-w-0 flex-1 text-left">
+            <span
+              className="text-white text-[18px] font-black tracking-tight truncate leading-tight group-hover:text-blue-400 transition-colors"
+              title={postTitle}
+            >
+              {postTitle}
+            </span>
+            <span className="text-gray-400 text-[11px] font-medium whitespace-nowrap mt-0.5">
+              {formattedDate} • {formattedTime}
+            </span>
           </div>
+          <span className="card-tag !text-[9px] !py-1 !px-2 shrink-0">Post</span>
+        </div>
 
-          <div className={`relative w-full flex-1 overflow-hidden flex flex-col ${!coverImage ? 'bg-black/[0.4] backdrop-blur-[24px]' : 'bg-gray-900'}`}>
-            {coverImage && (
-              <img src={coverImage} alt="Post Cover" loading="lazy" decoding="async" className="absolute inset-0 w-full h-full object-cover" />
+        {/* Center Media & Description Body */}
+        <div className={`relative w-full flex-1 min-h-0 overflow-hidden flex flex-col ${!coverImage ? 'bg-black/[0.4] backdrop-blur-[24px]' : 'bg-gray-900'}`}>
+          {coverImage ? (
+            <img
+              src={coverImage}
+              alt={postTitle}
+              loading="lazy"
+              decoding="async"
+              className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+            />
+          ) : (
+            <div className="absolute inset-0 bg-black/30" />
+          )}
+
+          <div className={cn("relative z-10 text-left flex flex-col flex-1", !coverImage ? "p-4" : "absolute top-5 left-5 right-5")}>
+            {!coverImage && (
+              <div className="text-gray-300 text-[16px] leading-relaxed mt-3 line-clamp-6 whitespace-pre-wrap flex-1">
+                {item.content}
+              </div>
             )}
-            {!coverImage && <div className="absolute inset-0 bg-black/30"></div>}
-            
-            <div className={cn("relative z-10 text-left flex flex-col flex-1", !coverImage ? "p-4" : "absolute top-5 left-5 right-5")}>
-              {!coverImage && (
-                <div className="text-gray-300 text-[16px] leading-relaxed mt-3 line-clamp-6 whitespace-pre-wrap flex-1">
-                  {item.content}
-                </div>
+          </div>
+        </div>
+
+        {/* Lower Bar Section */}
+        <div
+          className="bg-gray-950/95 border-t border-white/10 p-4 flex items-center justify-between gap-3 shrink-0 rounded-b-[24px] relative z-20"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="flex items-center gap-2.5 min-w-0 flex-1">
+            {societyId ? (
+              <Link
+                to={`/societies/${societyId}`}
+                className="w-9 h-9 rounded-full bg-[#007ebb] flex items-center justify-center border border-white/20 shrink-0 overflow-hidden hover:opacity-80 transition-opacity"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <img
+                  src={logoImage}
+                  alt={authorName}
+                  loading="lazy"
+                  decoding="async"
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.currentTarget.src = '/default-society.jpg';
+                  }}
+                />
+              </Link>
+            ) : (
+              <div className="w-9 h-9 rounded-full bg-[#007ebb] flex items-center justify-center border border-white/20 shrink-0 overflow-hidden">
+                <img
+                  src={logoImage}
+                  alt={authorName}
+                  loading="lazy"
+                  decoding="async"
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.currentTarget.src = '/default-society.jpg';
+                  }}
+                />
+              </div>
+            )}
+
+            <div className="flex flex-col min-w-0 flex-1 text-left">
+              {societyId ? (
+                <Link
+                  to={`/societies/${societyId}`}
+                  className="text-white text-[14px] font-bold leading-tight truncate hover:opacity-80 transition-opacity"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {authorName}
+                </Link>
+              ) : (
+                <span className="text-white text-[14px] font-bold leading-tight truncate">{authorName}</span>
               )}
+              <span className="text-gray-400 text-[12px] font-medium leading-none mt-0.5 truncate">
+                @{(item.society as any)?.username || item.society?.name?.toLowerCase().replace(/\s+/g, '') || 'dsa'}
+              </span>
             </div>
           </div>
 
-                        {showDeleteConfirm && createPortal(
-                <div id="delete-confirm-modal" style={{ position: 'fixed', inset: 0, zIndex: 100000, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(8px)' }} onClick={(e) => { e.stopPropagation(); setShowDeleteConfirm(false); }}>
-                  <div style={{ background: 'rgba(25, 27, 34, 0.85)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,0.1)', padding: '24px', borderRadius: '24px', maxWidth: '400px', width: '90%', textAlign: 'center', boxShadow: '0 25px 50px rgba(0,0,0,0.5)' }} onClick={e => e.stopPropagation()}>
-                    <h3 style={{ color: '#fff', fontSize: '1.25rem', fontWeight: 700, marginBottom: '12px' }}>Delete Post?</h3>
-                    <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.9rem', marginBottom: '24px' }}>Are you sure you want to permanently delete this post? This action cannot be undone.</p>
-                    <div style={{ display: 'flex', gap: '12px' }}>
-                      <button style={{ flex: 1, padding: '12px', borderRadius: '12px', background: '#fff', color: '#000', fontWeight: 600, border: 'none', cursor: 'pointer' }} onClick={() => setShowDeleteConfirm(false)}>Cancel</button>
-                      <button style={{ flex: 1, padding: '12px', borderRadius: '12px', background: '#ff4d4f', border: '1px solid #ff4d4f', color: '#fff', fontWeight: 600, cursor: 'pointer' }} onClick={async () => {
-                        try {
-                          await postService.deletePost(item.id);
-                          globalNotification.triggerSuccess('Post deleted successfully');
-                          setShowDeleteConfirm(false);
-                          queryClient.invalidateQueries({ queryKey: ['campusFeed'] });
-                          queryClient.invalidateQueries({ queryKey: ['societyPosts'] });
-                          queryClient.invalidateQueries({ queryKey: ['adminPosts'] });
-                          if (onDelete) onDelete();
-                        } catch (err) {
-                          globalNotification.triggerFailed('Failed to delete post');
-                        }
-                      }}>Delete</button>
-                    </div>
-                  </div>
-                </div>, document.body
-              )}
-          {/* Lower Bar Section */}
-          <div 
-             className="bg-gray-950/95 border-t border-white/10 p-4 flex items-center justify-between gap-3 shrink-0 rounded-b-[24px] relative z-20"
-             onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-center gap-2.5 min-w-0 flex-1">
-              <div className="w-9 h-9 rounded-full bg-[#007ebb] flex items-center justify-center border border-white/20 shrink-0 overflow-hidden">
-                <img src={logoImage} alt={authorName} loading="lazy" decoding="async" className="w-full h-full object-cover" onError={(e) => { e.currentTarget.src = '/default-society.jpg'; }} />
-              </div>
-              <div className="flex flex-col min-w-0 flex-1 text-left">
-                <span className="text-white text-[14px] font-bold leading-tight truncate">{authorName}</span>
-                <span className="text-gray-400 text-[12px] font-medium leading-none mt-0.5 truncate">@{(item.society as any)?.username || item.society.name.toLowerCase().replace(/\s+/g, '')}</span>
-              </div>
-            </div>
-            <div className="flex items-center gap-2 shrink-0 h-full">
-              {needsFlip && (
-                <button type="button" className="px-4 h-[32px] flex items-center justify-center bg-white hover:bg-gray-200 text-black text-[12px] font-bold rounded-lg transition-colors border-none shadow-sm pointer-events-auto" onClick={(e) => { e.preventDefault(); e.stopPropagation(); openCard(false); }}>
-                  View Details
+          <div className="flex items-center gap-2 shrink-0 h-full">
+            <button
+              type="button"
+              className="px-4 h-[32px] flex items-center justify-center bg-white hover:bg-gray-200 active:scale-95 text-black text-[12px] font-bold rounded-lg transition-all border-none shadow-sm pointer-events-auto cursor-pointer"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setIsDetailOpen(true);
+              }}
+            >
+              View Details
+            </button>
+
+            {canEditOrDelete && (
+              <div className="menu-container shrink-0 h-full flex items-center">
+                <button
+                  type="button"
+                  className="flex items-center justify-center p-2 rounded-full hover:bg-white/10 active:scale-90 transition-all pointer-events-auto cursor-pointer"
+                  aria-label="Options"
+                  ref={buttonRef}
+                  onClick={toggleDropdown}
+                  style={{ height: '32px', width: '32px', borderRadius: '50%' }}
+                >
+                  <svg viewBox="0 0 24 24" fill="white" width="16" height="16">
+                    <circle cx="5" cy="12" r="2.5" />
+                    <circle cx="12" cy="12" r="2.5" />
+                    <circle cx="19" cy="12" r="2.5" />
+                  </svg>
                 </button>
-              )}
-              {canEditOrDelete && (
-                <div className="menu-container shrink-0 h-full flex items-center">
-                  <button type="button" className="flex items-center justify-center p-2 rounded-full hover:bg-white/10 transition-colors pointer-events-auto" aria-label="Options" ref={buttonRef} onClick={toggleDropdown} style={{ height: '32px', width: '32px', borderRadius: '50%' }}>
-                    <svg viewBox="0 0 24 24" fill="white" width="16" height="16"><circle cx="5" cy="12" r="2.5"></circle><circle cx="12" cy="12" r="2.5"></circle><circle cx="19" cy="12" r="2.5"></circle></svg>
-                  </button>
-                  {dropdownOpen && createPortal(
-                    <div className="card-dropdown-menu active" style={{ position: 'fixed', top: dropdownPos.top, left: dropdownPos.left, zIndex: 99999, margin: 0 }} onClick={(e) => e.stopPropagation()}>
-                      {canEdit && <button className="card-dropdown-item" onClick={(e) => { e.stopPropagation(); setDropdownOpen(false); if(onEdit) onEdit(); else navigate(`/posts/${item.id}/edit`); }}>Edit Post</button>}
-                      <button className="card-dropdown-item delete" onClick={(e) => { e.stopPropagation(); setDropdownOpen(false); setShowDeleteConfirm(true); }}>Delete Post</button>
+
+                {dropdownOpen &&
+                  createPortal(
+                    <div
+                      className="card-dropdown-menu active"
+                      style={{
+                        position: 'fixed',
+                        top: dropdownPos.top,
+                        left: dropdownPos.left,
+                        zIndex: 99999,
+                        margin: 0,
+                      }}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      {canEdit && (
+                        <button
+                          className="card-dropdown-item"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setDropdownOpen(false);
+                            if (onEdit) onEdit();
+                            else navigate(`/posts/${item.id}/edit`);
+                          }}
+                        >
+                          Edit Post
+                        </button>
+                      )}
+                      <button
+                        className="card-dropdown-item delete"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setDropdownOpen(false);
+                          setShowDeleteConfirm(true);
+                        }}
+                      >
+                        Delete Post
+                      </button>
                     </div>,
                     document.body
                   )}
-                </div>
-              )}
-            </div>
+              </div>
+            )}
           </div>
         </div>
+      </article>
 
-        {/* BACK FACE */}
-        <div className="card-face card-back">
-          <button 
-            type="button" 
-            className="close-btn z-30" 
-            aria-label="Close details" 
-            onClick={(e) => { e.stopPropagation(); closeCard(); }}
+      {/* Detail Modal */}
+      {isDetailOpen && (
+        <PostDetailModal item={item} onClose={() => setIsDetailOpen(false)} />
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm &&
+        createPortal(
+          <div
+            id="delete-confirm-modal"
+            style={{
+              position: 'fixed',
+              inset: 0,
+              zIndex: 100000,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              background: 'rgba(0,0,0,0.5)',
+              backdropFilter: 'blur(8px)',
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+              if (!isDeleting) setShowDeleteConfirm(false);
+            }}
           >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-          </button>
-
-          <div className="card-back-inner">
-            <div className="relative h-[200px] sm:h-[220px] w-full flex-shrink-0 bg-gray-950 flex items-center justify-center overflow-hidden">
-              <img 
-                src={coverImage || logoImage} 
-                loading="lazy"
-                decoding="async"
-                onError={(e) => { e.currentTarget.src = '/default-society.jpg'; }} 
-                alt="Cover" 
-                className={`drop-shadow-xl ${!coverImage ? 'object-cover rounded-full' : 'object-contain p-2'}`}
-                style={{ 
-                  border: "1px solid rgba(255,255,255,0.12)", 
-                  borderRadius: !coverImage ? '50%' : '16px', 
-                  margin: "12px", 
-                  height: !coverImage ? '130px' : 'calc(100% - 24px)', 
-                  width: !coverImage ? '130px' : 'calc(100% - 24px)', 
-                  background: "rgba(0,0,0,0.4)" 
-                }} 
-              />
-            </div>
-
-            <div className="p-6 sm:p-7 bg-[#111827] flex flex-col flex-1 text-left">
-              <div className="flex items-center gap-3 pb-3 mb-4 border-b border-gray-700/80 shrink-0">
-                <div className="w-10 h-10 rounded-full bg-[#007ebb] flex items-center justify-center border border-white/20 shrink-0 overflow-hidden">
-                  <img src={logoImage} alt={authorName} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.src = '/default-society.jpg'; }} />
-                </div>
-                <div className="flex flex-col min-w-0">
-                  <span className="text-white font-bold text-base leading-tight truncate">{authorName}</span>
-                  <span className="text-gray-400 text-xs mt-0.5 truncate">{formattedDate} • {formattedTime}</span>
-                </div>
-              </div>
-
-              <div className="flex flex-col gap-2 mb-4">
-                {item.title && <h4 className="text-lg sm:text-xl font-bold text-white leading-snug">{item.title}</h4>}
-                <p className="text-sm sm:text-base text-gray-300 leading-relaxed whitespace-pre-wrap">
-                  {item.content}
-                </p>
-              </div>
-
-              <div className="sticky bottom-0 z-20 pt-4 pb-2 mt-auto w-full bg-gradient-to-t from-[#111827] via-[#111827]/95 to-transparent">
-                <button 
-                  type="button" 
-                  onClick={(e) => { e.stopPropagation(); closeCard(); }} 
-                  className="flex items-center justify-center gap-2 w-full py-3 px-4 bg-white text-gray-900 font-bold rounded-xl hover:bg-gray-100 transition-colors shadow-md text-sm sm:text-base cursor-pointer"
+            <div
+              style={{
+                background: 'rgba(25, 27, 34, 0.9)',
+                backdropFilter: 'blur(20px)',
+                border: '1px solid rgba(255,255,255,0.12)',
+                padding: '24px',
+                borderRadius: '24px',
+                maxWidth: '400px',
+                width: '90%',
+                textAlign: 'center',
+                boxShadow: '0 25px 50px rgba(0,0,0,0.5)',
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h3 style={{ color: '#fff', fontSize: '1.25rem', fontWeight: 700, marginBottom: '12px' }}>
+                Delete Post?
+              </h3>
+              <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.9rem', marginBottom: '24px' }}>
+                Are you sure you want to permanently delete this post? This action cannot be undone.
+              </p>
+              <div style={{ display: 'flex', gap: '12px' }}>
+                <button
+                  type="button"
+                  disabled={isDeleting}
+                  style={{
+                    flex: 1,
+                    padding: '12px',
+                    borderRadius: '12px',
+                    background: '#fff',
+                    color: '#000',
+                    fontWeight: 600,
+                    border: 'none',
+                    cursor: isDeleting ? 'not-allowed' : 'pointer',
+                    opacity: isDeleting ? 0.6 : 1,
+                  }}
+                  onClick={() => setShowDeleteConfirm(false)}
                 >
-                  <span>Close Details</span>
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  disabled={isDeleting}
+                  style={{
+                    flex: 1,
+                    padding: '12px',
+                    borderRadius: '12px',
+                    background: '#ff4d4f',
+                    border: '1px solid #ff4d4f',
+                    color: '#fff',
+                    fontWeight: 600,
+                    cursor: isDeleting ? 'not-allowed' : 'pointer',
+                    opacity: isDeleting ? 0.8 : 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '6px',
+                  }}
+                  onClick={handleDelete}
+                >
+                  {isDeleting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>Deleting...</span>
+                    </>
+                  ) : (
+                    <span>Delete</span>
+                  )}
                 </button>
               </div>
             </div>
-
-          </div>
-        </div>
-
-      </div>
-    </div>
+          </div>,
+          document.body
+        )}
+    </>
   );
 };
 
