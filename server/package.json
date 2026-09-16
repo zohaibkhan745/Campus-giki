@@ -6,7 +6,10 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "dev": "nest start --watch",
+    "dev": "npm --prefix .. run dev",
+    "dev:server": "nest start --watch",
+    "docker:up": "npm --prefix .. run docker:up",
+    "docker:down": "npm --prefix .. run docker:down",
     "build": "nest build && tsc prisma/seed.ts --outDir dist/prisma --module commonjs --target ES2022 --moduleResolution node --skipLibCheck",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" \"prisma/**/*.ts\"",
     "start": "nest start",

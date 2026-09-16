@@ -5,7 +5,6 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { UserProfileDto } from '../auth/dto/auth-response.dto';
 import { Role } from '@prisma/client';
 import { UploadsService } from '../uploads/uploads.service';
-import { validateExecutiveCouncil } from '../../common/utils/council.util';
 import { FeedService } from '../feed/feed.service';
 
 @Injectable()
@@ -15,30 +14,11 @@ export class PostsService {
     private readonly uploadsService: UploadsService,
   ) {}
 
-  private async validateSocietyCanPost(userId: string) {
-    const society = await this.prisma.society.findUnique({ where: { userId } });
-    if (!society || !society.isSetupComplete) {
-      throw new ForbiddenException(
-        'Access denied: Society profile setup must be completed before posting announcements',
-      );
-    }
-    if (!validateExecutiveCouncil(society.executiveCouncil)) {
-      throw new ForbiddenException(
-        'Access denied: You must complete your Executive Council details (all 5 mandatory positions) before creating or updating posts',
-      );
-    }
-    return society;
-  }
-
   async createPost(user: UserProfileDto, dto: CreatePostDto) {
-    if (user.role !== Role.DSA_ADMIN && user.role !== Role.SOCIETY) {
+    if (user.role !== Role.DSA_ADMIN) {
       throw new ForbiddenException(
-        'Only the Director of Student Affairs or authorized student societies can create announcements',
+        'Only the Director of Student Affairs (Admin) can create announcements',
       );
-    }
-
-    if (user.role === Role.SOCIETY) {
-      await this.validateSocietyCanPost(user.id);
     }
 
     const created = await this.prisma.post.create({
@@ -193,14 +173,8 @@ export class PostsService {
       throw new NotFoundException('Post not found');
     }
 
-    if (user.role === Role.SOCIETY && post.authorId !== user.id) {
-      throw new ForbiddenException('You can only edit your own posts');
-    } else if (user.role === Role.SOCIETY) {
-      await this.validateSocietyCanPost(user.id);
-    }
-
-    if (user.role !== Role.DSA_ADMIN && user.role !== Role.SOCIETY) {
-      throw new ForbiddenException('Permission denied');
+    if (user.role !== Role.DSA_ADMIN) {
+      throw new ForbiddenException('Only administrators can edit announcements');
     }
 
     const updated = await this.prisma.post.update({
@@ -225,14 +199,8 @@ export class PostsService {
       throw new NotFoundException('Post not found');
     }
 
-    if (user.role === Role.DSA_ADMIN) {
-      // Admin can delete any post
-    } else if (user.role === Role.SOCIETY) {
-      if (post.authorId !== user.id) {
-        throw new ForbiddenException('You can only delete your own posts');
-      }
-    } else {
-      throw new ForbiddenException('Permission denied');
+    if (user.role !== Role.DSA_ADMIN) {
+      throw new ForbiddenException('Only administrators can delete announcements');
     }
 
     await this.prisma.post.delete({

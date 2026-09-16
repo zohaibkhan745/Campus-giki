@@ -25,7 +25,7 @@ export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
   @Post()
-  @Auth(Role.DSA_ADMIN, Role.SOCIETY)
+  @Auth(Role.DSA_ADMIN)
   @ApiBearerAuth('JWT-auth')
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Create a new announcement' })
@@ -78,7 +78,7 @@ export class PostsController {
   }
 
   @Put(':id')
-  @Auth(Role.SOCIETY, Role.DSA_ADMIN)
+  @Auth(Role.DSA_ADMIN)
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Update an announcement' })
   async updatePost(
@@ -90,7 +90,7 @@ export class PostsController {
   }
 
   @Delete(':id')
-  @Auth(Role.SOCIETY, Role.DSA_ADMIN)
+  @Auth(Role.DSA_ADMIN)
   @ApiBearerAuth('JWT-auth')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Delete an announcement' })

@@ -93,15 +93,73 @@ Campus GIKI/
 
 ## 🚀 Getting Started
 
-### Prerequisites
-Make sure you have the following installed on your machine:
-* **Node.js**: `v18.14.0` or higher (Recommended: `v20.x` or `v22.x`)
-* **npm**: `v9.x` or higher
+You can run Campus GIKI either using **Docker Compose** (recommended for quick and isolated setup) or by running services **manually with Node.js**.
 
 ---
 
-### 1. Clone & Install Dependencies
+### Option A: Quickstart with Docker (Recommended)
 
+Docker Compose provisions the complete ecosystem in isolated containers:
+* **PostgreSQL 16** (`campus-giki-db`)
+* **NestJS API Server** (`campus-giki-server`) with automated Prisma schema synchronization and optional seeding
+* **React 19 + Nginx Reverse Proxy** (`campus-giki-client`) serving frontend and proxying `/api/v1`
+
+#### 1. Prerequisites
+* [Docker Desktop](https://www.docker.com/products/docker-desktop/) installed and running.
+
+#### 2. Configure Environment
+Copy the Docker environment template to `.env` in the project root:
+
+```bash
+# On Linux / macOS / Git Bash:
+cp .env.docker.example .env
+
+# On Windows PowerShell:
+Copy-Item .env.docker.example .env
+```
+
+> **Tip**: The default `.env` is preconfigured to run out-of-the-box. Ensure `AUTO_SEED=true` if you want initial categories, societies, events, and sample users automatically seeded on first launch.
+
+#### 3. Build & Run Containers
+Run the following command from the root directory:
+
+```bash
+docker compose up -d --build
+```
+
+#### 4. Access the Application
+* 🌐 **Web Application (SPA)**: [http://localhost](http://localhost)
+* 🔌 **Backend REST API**: [http://localhost/api/v1](http://localhost/api/v1)
+* 📚 **Interactive Swagger Docs**: [http://localhost:5000/api/v1/docs](http://localhost:5000/api/v1/docs)
+
+#### Useful Docker Management Commands
+```bash
+# View live container logs
+docker compose logs -f
+
+# View server backend logs only
+docker compose logs -f server
+
+# Run database seed manually inside the container (if AUTO_SEED was false)
+docker exec campus-giki-server npm run seed
+
+# Stop all containers
+docker compose down
+
+# Stop and wipe all persistent data (database & uploads volume) for a fresh start
+docker compose down -v
+```
+
+---
+
+### Option B: Manual Local Setup (Node.js)
+
+#### 1. Prerequisites
+* **Node.js**: `v18.14.0` or higher (Recommended: `v20.x` or `v22.x`)
+* **npm**: `v9.x` or higher
+* **PostgreSQL** installed locally or running via Docker
+
+#### 2. Clone & Install Dependencies
 Clone the repository and install dependencies for both `server` and `client`:
 
 ```bash
@@ -120,9 +178,9 @@ npm install
 
 ---
 
-### 2. Configure Environment Variables
+#### 3. Configure Environment Variables
 
-#### **Backend (`server/.env`)**
+**Backend (`server/.env`)**:
 Create a `.env` file inside the `server/` directory:
 
 ```env
@@ -132,8 +190,8 @@ API_PREFIX=api/v1
 CORS_ORIGIN=*
 SWAGGER_ENABLED=true
 
-# Database
-DATABASE_URL="file:./dev.db"
+# PostgreSQL Database
+DATABASE_URL="postgresql://postgres:admin@localhost:5432/campus_giki?schema=public"
 
 # Security
 JWT_SECRET=super_secret_jwt_key_campus_giki_2026
@@ -142,22 +200,23 @@ JWT_EXPIRES_IN=1d
 # Uploads & Storage Strategy
 STORAGE_DRIVER=local
 STORAGE_LOCAL_PATH=./uploads
-UPLOAD_MAX_SIZE_MB=5
+UPLOAD_MAX_SIZE_MB=25
 APP_URL=http://localhost:5000
+SEED_DEFAULT_PASSWORD=AdminPassword@123
 ```
 
-#### **Frontend (`client/.env`)**
+**Frontend (`client/.env`)**:
 Create a `.env` file inside the `client/` directory:
 
 ```env
-VITE_API_BASE_URL=http://localhost:5000/api/v1
+VITE_API_BASE_URL=/api/v1
 ```
 
 ---
 
-### 3. Database Migration & Seeding
+#### 4. Database Schema Sync & Seeding
 
-Initialize the Prisma database schema and populate seed data (default admin, sample societies, categories, and test accounts):
+Sync the Prisma database schema and populate seed data:
 
 ```bash
 cd server
@@ -165,38 +224,37 @@ cd server
 # Generate Prisma Client
 npm run prisma:generate
 
-# Run database migrations
-npm run prisma:migrate:dev
+# Sync schema to PostgreSQL
+npx prisma db push
 
-# Seed database with sample data
+# Seed database with predefined categories, societies, and accounts
 npm run seed
 ```
 
 ---
 
-### 4. Running the Application
+#### 5. Running the Application
 
-You can start both backend and frontend servers simultaneously using root scripts or separate terminal windows.
-
-#### **Option A: From Root Directory**
+##### **Single Command (Recommended):**
+Run both backend and frontend concurrently in a single terminal:
 ```bash
-# Terminal 1: Run NestJS Server
+npm run dev
+```
+
+##### **Separate Terminals (Optional):**
+```bash
+# Terminal 1: Run NestJS Server (http://localhost:5000)
 npm run dev:server
 
-# Terminal 2: Run React Client
+# Terminal 2: Run React Client (http://localhost:5173)
 npm run dev:client
 ```
 
-#### **Option B: From Subdirectories**
-```bash
-# Backend Server (http://localhost:5000/api/v1)
-cd server
-npm run start:dev
-
-# Frontend Client (http://localhost:5173)
-cd client
-npm run dev
-```
+> **Universal Command**: You can run `npm run dev` from the **root directory**, from inside **`server/`**, or from inside **`client/`** — it will always start both the backend and frontend together!
+> 
+> *To run only a single service:*
+> * Server only: `npm run dev:server`
+> * Client only: `npm run dev:client`
 
 ---
 
@@ -206,18 +264,22 @@ When the backend server is running, interactive Swagger API documentation is ava
 
 👉 **[http://localhost:5000/api/v1/docs](http://localhost:5000/api/v1/docs)**
 
-You can explore endpoints, test authentication requests, inspect DTO schemas, and test file upload endpoints (`POST /api/v1/uploads/image`).
+You can explore endpoints, test authentication requests, inspect DTO schemas, and test file upload endpoints.
 
 ---
 
-## 🔑 Default Seed Credentials (Development)
+## 🔑 Default Seed Credentials
 
-| Role | Email | Password |
-| :--- | :--- | :--- |
-| **DSA Admin** | `admin@giki.edu.pk` | `Admin123!` |
-| **Faculty Advisor** | `advisor.cs@giki.edu.pk` | `Advisor123!` |
-| **Society (ACM)** | `acm@giki.edu.pk` | `Society123!` |
-| **Student** | `student@giki.edu.pk` | `Student123!` |
+When using the seed data (`AUTO_SEED=true` or `npm run seed`), the following accounts are available:
+
+| Role | Email | Password | Description |
+| :--- | :--- | :--- | :--- |
+| **DSA Admin** | `admin.dsa@giki.edu.pk` | `AdminPassword@123` | Full administrative access to approve events, manage societies & advisors |
+| **Student** | `student.test@giki.edu.pk` | `AdminPassword@123` | Student account to browse events, feed, and society profiles |
+| **Society (ACM)** | `acm@giki.edu.pk` | `AdminPassword@123` | Society account to submit event proposals and publish posts |
+| **Faculty Advisor** | Linked to Advisor profile | `AdminPassword@123` | Review and endorse society proposals |
+
+> **Note**: Default password can be configured using `SEED_DEFAULT_PASSWORD` in your `.env` file.
 
 ---
 

@@ -4,8 +4,9 @@
   "private": true,
   "description": "Campus GIKI - Centralized Platform for GIKI Students, Societies, Events, and Activities",
   "scripts": {
+    "dev": "concurrently -n \"SERVER,CLIENT\" -c \"cyan,magenta\" \"npm:dev:server\" \"npm:dev:client\"",
     "dev:server": "cd server && npm run start:dev",
-    "dev:client": "cd client && npm run dev",
+    "dev:client": "cd client && npm run dev:client",
     "build:server": "cd server && npm run build",
     "build:client": "cd client && npm run build",
     "start:server": "cd server && npm run start:prod",
@@ -30,6 +31,8 @@
     "tailwind"
   ],
   "author": "GIKI Development Team",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^10.0.5"
+  }
 }
-

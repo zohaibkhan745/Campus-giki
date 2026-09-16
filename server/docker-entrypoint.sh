@@ -3,9 +3,9 @@ set -e
 
 echo "=== [Campus GIKI Server] Starting Entrypoint ==="
 
-# Wait for PostgreSQL to accept connections through Prisma
-echo "Applying Prisma database migrations..."
-npx prisma migrate deploy
+# Sync database schema to PostgreSQL through Prisma
+echo "Applying Prisma database schema sync..."
+npx prisma db push --accept-data-loss
 
 # Optionally seed the database on initial run
 if [ "$AUTO_SEED" = "true" ]; then
