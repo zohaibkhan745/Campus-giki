@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery, useInfiniteQuery } from '@tanstack/react-query';
 import { Link, useSearchParams, useNavigate } from 'react-router-dom';
+import { useDebounce } from '@/hooks/useDebounce';
 import {
   Calendar,
   Search,
@@ -53,6 +54,7 @@ export const AdminEventsPage: React.FC = () => {
 
   const [page, setPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const debouncedSearch = useDebounce(searchQuery, 250);
   const [statusFilter, setStatusFilter] = useState<string>(searchParams.get('status') || '');
   const [societyFilter, setSocietyFilter] = useState<string>('');
   const [fromDate, setFromDate] = useState<string>(defaultFrom);
@@ -96,14 +98,14 @@ export const AdminEventsPage: React.FC = () => {
     hasNextPage,
     isFetchingNextPage
   } = useInfiniteQuery({
-    queryKey: ['adminEventsList', statusFilter, societyFilter, searchQuery, fromDate, toDate, typeToggle],
+    queryKey: ['adminEventsList', statusFilter, societyFilter, debouncedSearch, fromDate, toDate, typeToggle],
     initialPageParam: 1,
     queryFn: ({ pageParam = 1 }) => adminService.getAllEvents({
       page: pageParam,
       limit: 9,
       status: statusFilter || undefined,
       society: societyFilter || undefined,
-      search: searchQuery || undefined,
+      search: debouncedSearch || undefined,
       from: fromDate || undefined,
       to: toDate || undefined,
       type: (typeToggle === 'upcoming' || typeToggle === 'past') ? typeToggle : undefined

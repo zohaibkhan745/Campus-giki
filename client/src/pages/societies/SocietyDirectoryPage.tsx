@@ -11,6 +11,7 @@ import { societyService } from '@/services/society.service';
 import { SocietyCardSkeleton } from '@/components/societies/SocietyCardSkeleton';
 import { Alert } from '@/components/ui/Alert';
 import { CustomDropdown } from '@/components/ui/CustomDropdown';
+import { useDebounce } from '@/hooks/useDebounce';
 import type { OrganizationType } from '@/types/society.types';
 
 export const SocietyDirectoryPage: React.FC = () => {
@@ -19,6 +20,7 @@ export const SocietyDirectoryPage: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [selectedType, setSelectedType] = useState<OrganizationType | ''>('');
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const debouncedSearch = useDebounce(searchQuery, 250);
 
   // Query predefined categories
   const { data: categories = [] } = useQuery({
@@ -34,14 +36,14 @@ export const SocietyDirectoryPage: React.FC = () => {
     isError,
     refetch,
   } = useQuery({
-    queryKey: ['publicSocieties', page, selectedCategory, selectedType, searchQuery],
+    queryKey: ['publicSocieties', page, selectedCategory, selectedType, debouncedSearch],
     queryFn: () =>
       societyService.getPublicSocieties({
         page,
         limit: 100,
         category: selectedCategory || undefined,
         type: selectedType || undefined,
-        search: searchQuery || undefined,
+        search: debouncedSearch || undefined,
       }),
     placeholderData: keepPreviousData,
   });

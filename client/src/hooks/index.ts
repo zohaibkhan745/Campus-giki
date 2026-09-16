@@ -3,3 +3,4 @@ export * from './useTheme';
 export * from './useFeed';
 export * from './usePendingCounts';
 export * from './useCardFlip';
+export * from './useDebounce';

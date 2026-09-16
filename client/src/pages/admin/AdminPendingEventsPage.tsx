@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery, useInfiniteQuery } from '@tanstack/react-query';
 import { Link, useSearchParams, useNavigate } from 'react-router-dom';
+import { useDebounce } from '@/hooks/useDebounce';
 import {
   Calendar,
   Search,
@@ -15,6 +16,8 @@ import {
   ArrowLeft,
   X,
   ArrowRight,
+  CalendarDays,
+  Sparkles,
 } from 'lucide-react';
 import { FlippableAdminEventCard, EventGrid } from '@/components/admin/FlippableAdminEventCard';
 import { adminService } from '@/services/admin.service';
@@ -22,6 +25,7 @@ import { societyService } from '@/services/society.service';
 import { Alert } from '@/components/ui/Alert';
 import { CustomDropdown } from '@/components/ui/CustomDropdown';
 import { CustomDatePicker } from '@/components/ui/date-picker';
+import type { EventItem } from '@/types/event.types';
 
 export const AdminPendingEventsPage: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -53,6 +57,7 @@ export const AdminPendingEventsPage: React.FC = () => {
 
   const [page, setPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const debouncedSearch = useDebounce(searchQuery, 250);
   
   const [societyFilter, setSocietyFilter] = useState<string>('');
   const [statusFilter, setStatusFilter] = useState<string>("PENDING_ADMIN");
@@ -98,14 +103,14 @@ export const AdminPendingEventsPage: React.FC = () => {
     hasNextPage,
     isFetchingNextPage
   } = useInfiniteQuery({
-    queryKey: ['adminEventsList', statusFilter, societyFilter, searchQuery, fromDate, toDate, typeToggle],
+    queryKey: ['adminEventsList', statusFilter, societyFilter, debouncedSearch, fromDate, toDate, typeToggle],
     initialPageParam: 1,
     queryFn: ({ pageParam = 1 }) => adminService.getAllEvents({
       page: pageParam,
       limit: 9,
       status: statusFilter,
       society: societyFilter || undefined,
-      search: searchQuery || undefined,
+      search: debouncedSearch || undefined,
         from: fromDate || undefined,
         to: toDate || undefined,
       
@@ -116,7 +121,7 @@ export const AdminPendingEventsPage: React.FC = () => {
         return lastPage.meta.page + 1;
       }
       return undefined;
-    }
+    },
   });
 
   const { data: societiesData } = useQuery({

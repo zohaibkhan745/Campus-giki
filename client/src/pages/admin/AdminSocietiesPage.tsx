@@ -2,8 +2,9 @@ import { CustomDropdown } from '@/components/ui/CustomDropdown';
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import { Link, useNavigate } from 'react-router-dom';
+import { useDebounce } from '@/hooks/useDebounce';
 import {
   Building2,
   Search,
@@ -45,6 +46,7 @@ export const AdminSocietiesPage: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState<string>('');
   const [categoryFilter, setCategoryFilter] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const debouncedSearch = useDebounce(searchQuery, 250);
   const [isAddSocietyModalOpen, setIsAddSocietyModalOpen] = useState(false);
   const [notification, setNotification] = useState<{ type: 'ban' | 'reactivate' | 'error'; message: string } | null>(null);
 
@@ -91,15 +93,16 @@ export const AdminSocietiesPage: React.FC = () => {
     isError,
     refetch,
   } = useQuery({
-    queryKey: ['adminSocietiesList', page, statusFilter, categoryFilter, searchQuery],
+    queryKey: ['adminSocietiesList', page, statusFilter, categoryFilter, debouncedSearch],
     queryFn: () =>
       adminService.getAllSocieties({
         page,
         limit: 10,
         status: (statusFilter as AdminSocietyStatusType) || undefined,
         category: categoryFilter || undefined,
-        search: searchQuery || undefined,
+        search: debouncedSearch || undefined,
       }),
+    placeholderData: keepPreviousData,
   });
 
   const societies = societiesData?.items || [];

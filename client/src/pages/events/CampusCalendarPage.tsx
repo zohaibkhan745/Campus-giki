@@ -8,6 +8,7 @@ import { eventService } from '@/services/event.service';
 import { societyService } from '@/services/society.service';
 import { EventCard } from '@/components/feed/EventCard';
 import { CalendarEventModal } from '@/components/calendar/CalendarEventModal';
+import { useDebounce } from '@/hooks/useDebounce';
 
 export const CampusCalendarPage: React.FC = () => {
   const navigate = useNavigate();
@@ -16,6 +17,7 @@ export const CampusCalendarPage: React.FC = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedSociety, setSelectedSociety] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const debouncedSearch = useDebounce(searchQuery, 250);
   const [searchParams] = useSearchParams();
   const viewParam = searchParams.get('view') as 'today' | 'week' | 'month' | 'upcoming' | null;
   const [listFilter, setListFilter] = useState<'today' | 'week' | 'month' | 'upcoming'>(viewParam || 'upcoming');
@@ -40,7 +42,7 @@ export const CampusCalendarPage: React.FC = () => {
   const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
 
   const { data: calendarEventsData, isLoading: isCalendarLoading } = useQuery({
-    queryKey: ['publicCalendarEvents', startOfMonth.toISOString(), endOfMonth.toISOString(), selectedSociety, searchQuery],
+    queryKey: ['publicCalendarEvents', startOfMonth.toISOString(), endOfMonth.toISOString(), selectedSociety, debouncedSearch],
     queryFn: () => eventService.getAllPublicEvents({ 
       from: new Date(currentDate.getFullYear(), currentDate.getMonth(), -7).toISOString(), 
       to: new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 7).toISOString(), 

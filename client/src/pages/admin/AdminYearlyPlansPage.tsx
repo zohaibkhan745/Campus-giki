@@ -1,7 +1,8 @@
 import { getSocietyLogo } from '@/lib/utils';
 import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { Link, useSearchParams, useNavigate } from 'react-router-dom';
+import { useDebounce } from '@/hooks/useDebounce';
 import { CustomDropdown } from '@/components/ui/CustomDropdown';
 import {
   Shield,
@@ -13,14 +14,15 @@ import {
   Clock,
   CheckCircle2,
   AlertCircle,
-  Building2,
-  ArrowRight,
-  UserCheck,
+  XCircle,
+  FileText,
   FilterX,
   ArrowLeft,
+  CalendarDays,
+  Sparkles,
 } from 'lucide-react';
-import { YearlyPlanCard } from '@/components/yearly-plan/YearlyPlanCard';
 import { adminService } from '@/services/admin.service';
+import { YearlyPlanCard } from '@/components/yearly-plan/YearlyPlanCard';
 import type { PlanStatus } from '@/types/yearly-plan.types';
 import { Alert } from '@/components/ui/Alert';
 
@@ -33,6 +35,7 @@ export const AdminYearlyPlansPage: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState<string>(initialStatus);
   const [yearFilter, setYearFilter] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const debouncedSearch = useDebounce(searchQuery, 250);
 
   const {
     data: plansData,
@@ -40,15 +43,16 @@ export const AdminYearlyPlansPage: React.FC = () => {
     isError,
     refetch,
   } = useQuery({
-    queryKey: ['adminYearlyPlans', page, statusFilter, yearFilter, searchQuery],
+    queryKey: ['adminYearlyPlans', page, statusFilter, yearFilter, debouncedSearch],
     queryFn: () =>
       adminService.getAllYearlyPlans({
         page,
         limit: 10,
         status: (statusFilter as PlanStatus) || undefined,
         year: yearFilter ? parseInt(yearFilter, 10) : undefined,
-        search: searchQuery || undefined,
+        search: debouncedSearch || undefined,
       }),
+    placeholderData: keepPreviousData,
     staleTime: 30000,
   });
 
