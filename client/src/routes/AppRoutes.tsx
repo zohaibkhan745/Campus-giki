@@ -9,7 +9,15 @@ import { PublicOnlyRoute } from '@/routes/PublicOnlyRoute';
 // UI components for Suspense Fallback
 import { Loader2 } from 'lucide-react';
 
-const PageFallback = () => (
+// Core Public Pages (Eagerly imported for instant tab switching and smooth transitions)
+import { HomePage } from '@/pages/HomePage';
+import { UpcomingEventsPage } from '@/pages/events/UpcomingEventsPage';
+import { CampusCalendarPage } from '@/pages/events/CampusCalendarPage';
+import { SocietyDirectoryPage } from '@/pages/societies/SocietyDirectoryPage';
+import { SocietyProfilePage } from '@/pages/societies/SocietyProfilePage';
+import { EventDetailPage } from '@/pages/events/EventDetailPage';
+
+export const PageFallback = () => (
   <div className="flex-1 flex flex-col items-center justify-center min-h-[50vh] space-y-4">
     <div className="p-4 bg-slate-900/50 rounded-2xl border border-slate-800">
       <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
@@ -18,19 +26,13 @@ const PageFallback = () => (
   </div>
 );
 
-// Lazy Loaded Pages
-const HomePage = React.lazy(() => import('@/pages/HomePage').then(m => ({ default: m.HomePage })));
+// Lazy Loaded Protected / Admin Pages
 const LoginPage = React.lazy(() => import('@/pages/LoginPage').then(m => ({ default: m.LoginPage })));
 const ActivateSocietyPage = React.lazy(() => import('@/pages/ActivateSocietyPage').then(m => ({ default: m.ActivateSocietyPage })));
 const DashboardPage = React.lazy(() => import('@/pages/DashboardPage').then(m => ({ default: m.DashboardPage })));
 const SocietySetupPage = React.lazy(() => import('@/pages/SocietySetupPage').then(m => ({ default: m.SocietySetupPage })));
-const SocietyDirectoryPage = React.lazy(() => import('@/pages/societies/SocietyDirectoryPage').then(m => ({ default: m.SocietyDirectoryPage })));
-const SocietyProfilePage = React.lazy(() => import('@/pages/societies/SocietyProfilePage').then(m => ({ default: m.SocietyProfilePage })));
-const CampusCalendarPage = React.lazy(() => import('@/pages/events/CampusCalendarPage').then(m => ({ default: m.CampusCalendarPage })));
-const UpcomingEventsPage = React.lazy(() => import('@/pages/events/UpcomingEventsPage').then(m => ({ default: m.UpcomingEventsPage })));
 const CreateEventPage = React.lazy(() => import('@/pages/events/CreateEventPage').then(m => ({ default: m.CreateEventPage })));
 const EditEventPage = React.lazy(() => import('@/pages/events/EditEventPage').then(m => ({ default: m.EditEventPage })));
-const EventDetailPage = React.lazy(() => import('@/pages/events/EventDetailPage').then(m => ({ default: m.EventDetailPage })));
 const YearlyCalendarPage = React.lazy(() => import('@/pages/calendar/YearlyCalendarPage').then(m => ({ default: m.YearlyCalendarPage })));
 const AdvisorQueuePage = React.lazy(() => import('@/pages/advisor/AdvisorQueuePage').then(m => ({ default: m.AdvisorQueuePage })));
 const AdvisorPlanReviewPage = React.lazy(() => import('@/pages/advisor/AdvisorPlanReviewPage').then(m => ({ default: m.AdvisorPlanReviewPage })));
@@ -47,22 +49,20 @@ const AdminAdvisorsPage = React.lazy(() => import('@/pages/admin/AdminAdvisorsPa
 const NotFoundPage = React.lazy(() => import('@/pages/NotFoundPage').then(m => ({ default: m.NotFoundPage })));
 const ComingSoonPage = React.lazy(() => import('@/pages/ComingSoonPage').then(m => ({ default: m.ComingSoonPage })));
 const SocietyEventsPage = React.lazy(() => import('@/pages/societies/SocietyEventsPage').then(m => ({ default: m.SocietyEventsPage })));
-const SocietyPostsPage = React.lazy(() => import('@/pages/societies/SocietyPostsPage').then(m => ({ default: m.SocietyPostsPage })));
 const SettingsPage = React.lazy(() => import('@/pages/SettingsPage').then(m => ({ default: m.SettingsPage })));
 
 export const AppRoutes: React.FC = () => {
   return (
-    <Suspense fallback={<PageFallback />}>
-      <Routes>
-        {/* Public Routes with Global Navigation */}
-        <Route element={<RootLayout />}>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/upcoming-events" element={<UpcomingEventsPage />} />
-          <Route path="/societies" element={<SocietyDirectoryPage />} />
-          <Route path="/societies/:id" element={<SocietyProfilePage />} />
-          <Route path="/events" element={<CampusCalendarPage />} />
-          <Route path="/events/:id" element={<EventDetailPage />} />
-        </Route>
+    <Routes>
+      {/* Public Routes with Global Navigation */}
+      <Route element={<RootLayout />}>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/upcoming-events" element={<UpcomingEventsPage />} />
+        <Route path="/societies" element={<SocietyDirectoryPage />} />
+        <Route path="/societies/:id" element={<SocietyProfilePage />} />
+        <Route path="/events" element={<CampusCalendarPage />} />
+        <Route path="/events/:id" element={<EventDetailPage />} />
+      </Route>
 
         {/* Auth Routes */}
         <Route
@@ -88,7 +88,6 @@ export const AppRoutes: React.FC = () => {
           <Route path="/society/setup" element={<SocietySetupPage />} />
           <Route path="/society/calendar" element={<YearlyCalendarPage />} />
           <Route path="/society/events" element={<SocietyEventsPage />} />
-          <Route path="/society/posts" element={<SocietyPostsPage />} />
           <Route path="/events/create" element={<CreateEventPage />} />
           <Route path="/events/:id/edit" element={<EditEventPage />} />
         </Route>
@@ -138,15 +137,14 @@ export const AppRoutes: React.FC = () => {
         </Route>
 
         {/* Catch-all 404 Route */}
-        <Route path="/coming-soon" element={<ComingSoonPage />} />
-        <Route path="/about" element={<ComingSoonPage />} />
-        <Route path="/services" element={<ComingSoonPage />} />
-        <Route path="/privacy-policy" element={<ComingSoonPage />} />
-        <Route path="/terms-of-service" element={<ComingSoonPage />} />
-        <Route path="/cookie-settings" element={<ComingSoonPage />} />
-        <Route path="*" element={<NotFoundPage />} />
+        <Route path="/coming-soon" element={<Suspense fallback={<PageFallback />}><ComingSoonPage /></Suspense>} />
+        <Route path="/about" element={<Suspense fallback={<PageFallback />}><ComingSoonPage /></Suspense>} />
+        <Route path="/services" element={<Suspense fallback={<PageFallback />}><ComingSoonPage /></Suspense>} />
+        <Route path="/privacy-policy" element={<Suspense fallback={<PageFallback />}><ComingSoonPage /></Suspense>} />
+        <Route path="/terms-of-service" element={<Suspense fallback={<PageFallback />}><ComingSoonPage /></Suspense>} />
+        <Route path="/cookie-settings" element={<Suspense fallback={<PageFallback />}><ComingSoonPage /></Suspense>} />
+        <Route path="*" element={<Suspense fallback={<PageFallback />}><NotFoundPage /></Suspense>} />
       </Routes>
-    </Suspense>
   );
 };
 

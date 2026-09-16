@@ -6,6 +6,10 @@ export function ScrollToTop() {
   const action = useNavigationType();
 
   useEffect(() => {
+    // Ensure any focus mode / modal overlay states from cards are cleared on route switch
+    document.body.classList.remove('is-focused');
+    document.documentElement.classList.remove('is-focused');
+
     // Only scroll to top on explicit navigation, not when pressing back button (POP)
     if (action !== 'POP') {
       const root = document.getElementById('root');

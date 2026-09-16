@@ -1359,3 +1359,17 @@ input[type="radio"]:checked + .toggle-btn:hover { background: #e2e8f0; color: #0
   transition-delay: 0.1s;
 }
 
+@keyframes pageEnter {
+  from {
+    opacity: 0.94;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.page-transition {
+  animation: pageEnter 0.12s ease-out forwards;
+  will-change: opacity;
+}
+
