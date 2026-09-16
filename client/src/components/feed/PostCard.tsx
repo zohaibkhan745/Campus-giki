@@ -24,8 +24,8 @@ const PostCardComponent: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) 
   const { isActive, openCard, closeCard } = useCardFlip(wrapperRef, !needsFlip);
   const { user } = useAuth();
   const queryClient = useQueryClient();
-  const canEditOrDelete = user?.role === 'DSA_ADMIN' || (user?.role === 'SOCIETY' && user.society?.id === item.society?.id);
-  const canEdit = user?.role === 'SOCIETY' && user.society?.id === item.society?.id;
+  const canEditOrDelete = user?.role === 'DSA_ADMIN';
+  const canEdit = user?.role === 'DSA_ADMIN';
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const [dropdownOpen, setDropdownOpen] = useState(false);

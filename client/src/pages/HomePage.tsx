@@ -61,7 +61,7 @@ export const HomePage: React.FC = () => {
                 Nothing here yet
               </h2>
               <p className="text-gray-400 text-[16px] max-w-md mx-auto">
-                Check back soon for new campus events, workshops, and society announcements.
+                Check back soon for new campus events, workshops, and campus announcements.
               </p>
             </div>
           ) : (

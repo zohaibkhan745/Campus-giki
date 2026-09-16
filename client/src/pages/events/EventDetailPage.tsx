@@ -1,6 +1,6 @@
 import { getSocietyLogo } from '@/lib/utils';
 import React from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import {
   Calendar as CalendarIcon,
@@ -26,6 +26,7 @@ import { UploadSignedSlipModal } from '@/components/events/UploadSignedSlipModal
 export const EventDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { user } = useAuth();
   const [isSlipModalOpen, setIsSlipModalOpen] = React.useState(false);
   const [isUploadModalOpen, setIsUploadModalOpen] = React.useState(false);
@@ -38,6 +39,34 @@ export const EventDetailPage: React.FC = () => {
     queryKey: ['event', id],
     queryFn: () => eventService.getEventById(id!),
     enabled: !!id,
+    initialData: () => {
+      if (!id) return undefined;
+      // 1. Check existing direct cache
+      const cached = queryClient.getQueryData<any>(['event', id]);
+      if (cached) return cached;
+      // 2. Check campus feed cache
+      const feedData = queryClient.getQueryData<any>(['campusFeed']);
+      if (feedData?.items) {
+        const found = feedData.items.find(
+          (it: any) => it.id === id || it.item?.id === id
+        );
+        if (found) return found.type === 'event' && found.item ? found.item : found;
+      }
+      // 3. Check upcoming events cache
+      const upcoming = queryClient.getQueryData<any>(['events', 'upcoming']);
+      if (upcoming?.items) {
+        const found = upcoming.items.find((e: any) => e.id === id);
+        if (found) return found;
+      }
+      // 4. Check general events cache
+      const generalEvents = queryClient.getQueryData<any>(['events']);
+      if (generalEvents?.items) {
+        const found = generalEvents.items.find((e: any) => e.id === id);
+        if (found) return found;
+      }
+      return undefined;
+    },
+    staleTime: 1000 * 30,
   });
 
   if (isLoading) {
@@ -67,7 +96,7 @@ export const EventDetailPage: React.FC = () => {
     (user?.role === 'SOCIETY' && user.society?.id === eventItem.societyId);
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6 text-left pt-10 sm:pt-14 pb-8 px-4">
+    <div className="page-transition max-w-4xl mx-auto space-y-6 text-left pt-10 sm:pt-14 pb-8 px-4">
       {/* Top Back Navigation Link */}
       <div className="flex items-center justify-between">
         <button
@@ -122,10 +151,10 @@ export const EventDetailPage: React.FC = () => {
                 href={eventItem.registrationLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-vast-ink hover:opacity-90 text-white rounded-inputs text-sm font-bold transition-all shadow-md shrink-0 cursor-pointer"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-white hover:bg-gray-100 text-black rounded-inputs text-sm font-bold transition-all shadow-md hover:shadow-lg active:scale-95 shrink-0 cursor-pointer"
               >
                 <span>Register for Event</span>
-                <ExternalLink className="w-4 h-4" />
+                <ExternalLink className="w-4 h-4 text-black" />
               </a>
             )}
           </div>
@@ -245,9 +274,9 @@ export const EventDetailPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setIsSlipModalOpen(true)}
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-vast-ink hover:opacity-90 text-white rounded-inputs text-xs font-bold transition-all shadow-sm cursor-pointer"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-white hover:bg-gray-100 text-black rounded-inputs text-xs font-bold transition-all shadow-sm active:scale-95 cursor-pointer"
                 >
-                  <FileText className="w-4 h-4" />
+                  <FileText className="w-4 h-4 text-black" />
                   <span>View / Print Permission Slip</span>
                 </button>
 
@@ -286,6 +315,21 @@ export const EventDetailPage: React.FC = () => {
             </h3>
             <Link
               to={`/societies/${eventItem.societyId}`}
+              onMouseEnter={() => {
+                if (eventItem.society) {
+                  queryClient.setQueryData(['publicSociety', eventItem.societyId], (prev: any) => prev || eventItem.society);
+                }
+              }}
+              onTouchStart={() => {
+                if (eventItem.society) {
+                  queryClient.setQueryData(['publicSociety', eventItem.societyId], (prev: any) => prev || eventItem.society);
+                }
+              }}
+              onClick={() => {
+                if (eventItem.society) {
+                  queryClient.setQueryData(['publicSociety', eventItem.societyId], (prev: any) => prev || eventItem.society);
+                }
+              }}
               className="flex items-center justify-between p-4 bg-transparent hover:bg-lumen-stone rounded-cards border border-vast-ink/20 transition-all group"
             >
               <div className="flex items-center gap-3">
