@@ -22,6 +22,7 @@ import { EventDetailSkeleton } from '@/components/events/EventDetailSkeleton';
 import { Alert } from '@/components/ui/Alert';
 import { VenuePermissionSlipModal } from '@/components/events/VenuePermissionSlipModal';
 import { UploadSignedSlipModal } from '@/components/events/UploadSignedSlipModal';
+import { ErrorState } from '@/components/ui/ErrorState';
 
 export const EventDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -35,6 +36,8 @@ export const EventDetailPage: React.FC = () => {
     data: eventItem,
     isLoading,
     isError,
+    error,
+    refetch,
   } = useQuery({
     queryKey: ['event', id],
     queryFn: () => eventService.getEventById(id!),
@@ -75,14 +78,24 @@ export const EventDetailPage: React.FC = () => {
 
   if (isError || !eventItem) {
     return (
-      <div className="max-w-md mx-auto py-12 space-y-4 text-center">
-        <Link
-          to="/societies"
-          className="fixed top-4 left-4 sm:top-6 sm:left-6 z-[100] inline-flex items-center justify-center w-10 h-10 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white rounded-full transition-all cursor-pointer shadow-lg"
-          title="Go Back"
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </Link>
+      <div className="max-w-2xl mx-auto py-16 px-4">
+        <ErrorState
+          error={error}
+          title={isError ? undefined : 'Event Not Found'}
+          description={
+            isError
+              ? undefined
+              : "This campus event may have concluded, been rescheduled, or the link might be outdated."
+          }
+          badge={isError ? undefined : 'Event Unavailable'}
+          onRetry={isError ? () => refetch() : undefined}
+          actionText="Try Reconnecting"
+          secondaryAction={{
+            label: 'Browse Upcoming Events',
+            to: '/upcoming-events',
+          }}
+          showBackAction
+        />
       </div>
     );
   }
@@ -139,32 +152,6 @@ export const EventDetailPage: React.FC = () => {
         <div className="space-y-4 border-b border-vast-ink/20 pb-6">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="space-y-2">
-              {targetSocietyId && eventItem.society && (
-                <Link
-                  to={`/societies/${targetSocietyId}`}
-                  className="inline-flex items-center gap-2.5 py-1 px-3 rounded-full bg-white/5 hover:bg-white/10 border border-white/15 transition-all text-left group/soc"
-                  onClick={() => {
-                    queryClient.setQueryData(['publicSociety', targetSocietyId], (prev: any) => prev || eventItem.society);
-                  }}
-                  onMouseEnter={() => {
-                    queryClient.setQueryData(['publicSociety', targetSocietyId], (prev: any) => prev || eventItem.society);
-                  }}
-                  onTouchStart={() => {
-                    queryClient.setQueryData(['publicSociety', targetSocietyId], (prev: any) => prev || eventItem.society);
-                  }}
-                >
-                  <img
-                    src={getSocietyLogo(eventItem.society.logoUrl)}
-                    alt={eventItem.society.name}
-                    className="w-5 h-5 rounded-full object-cover border border-white/20"
-                    onError={(e) => { e.currentTarget.src = '/default-society.jpg'; }}
-                  />
-                  <span className="text-xs font-bold text-gray-200 group-hover/soc:text-blue-400 transition-colors">
-                    {eventItem.society.name}
-                  </span>
-                </Link>
-              )}
-
               <h1 className="text-2xl sm:text-3xl font-extrabold text-vast-ink">
                 {eventItem.title}
               </h1>

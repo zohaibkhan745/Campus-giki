@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
-import { Loader2, ArrowRight } from 'lucide-react';
+import { Loader2, Calendar } from 'lucide-react';
 import { eventService } from '@/services/event.service';
 import { EventCard } from '@/components/feed/EventCard';
-import { Link } from 'react-router-dom';
+import { ErrorState } from '@/components/ui/ErrorState';
+import { EmptyState } from '@/components/ui/EmptyState';
 
 export const UpcomingEventsPage: React.FC = () => {
   const [visibleEventsCount, setVisibleEventsCount] = useState(8);
 
-  const { data: listEventsData, isLoading } = useQuery({
+  const { data: listEventsData, isLoading, isError, error, refetch } = useQuery({
     queryKey: ['events', 'upcoming'],
     queryFn: () => eventService.getAllPublicEvents({ from: new Date().toISOString(), limit: 50, page: 1 }),
     placeholderData: keepPreviousData,
@@ -36,14 +37,29 @@ export const UpcomingEventsPage: React.FC = () => {
           <div className="flex justify-center p-20">
             <Loader2 className="w-10 h-10 animate-spin text-white/50" />
           </div>
+        ) : isError ? (
+          <ErrorState
+            error={error}
+            onRetry={refetch}
+            secondaryAction={{
+              label: 'Browse Calendar',
+              to: '/events',
+            }}
+          />
         ) : visibleEvents.length === 0 ? (
-          <div className="flex flex-col items-center justify-center p-20 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md text-center">
-            <h3 className="text-xl font-bold text-white mb-2">No Upcoming Events</h3>
-            <p className="text-gray-400">There are currently no events scheduled for the future.</p>
-            <Link to="/events" className="mt-6 text-white font-bold hover:underline flex items-center gap-2">
-              View past events on calendar <ArrowRight className="w-4 h-4" />
-            </Link>
-          </div>
+          <EmptyState
+            icon={Calendar}
+            title="No Upcoming Events Scheduled"
+            description="There are currently no public events scheduled for the near future. Check out the full calendar or explore student societies."
+            action={{
+              label: 'Explore Full Calendar',
+              to: '/events',
+            }}
+            secondaryAction={{
+              label: 'Campus Societies',
+              to: '/societies',
+            }}
+          />
         ) : (
           <>
             <div className="cards-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 w-full mx-auto">

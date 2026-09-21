@@ -28,6 +28,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
 import { Alert } from "@/components/ui/Alert";
 import { EventMediaUploader } from "@/components/common/EventMediaUploader";
+import { ErrorState } from "@/components/ui/ErrorState";
 import type { AxiosError } from "axios";
 
 export const EditEventPage: React.FC = () => {
@@ -41,6 +42,8 @@ export const EditEventPage: React.FC = () => {
     data: eventData,
     isLoading: isLoadingEvent,
     isError,
+    error: queryError,
+    refetch: refetchEvent,
   } = useQuery({
     queryKey: ["event", id],
     queryFn: () => eventService.getEventById(id!),
@@ -198,15 +201,24 @@ export const EditEventPage: React.FC = () => {
 
   if (isError || !eventData) {
     return (
-      <div className="max-w-md mx-auto py-12 space-y-4 text-center">
-        null /* Removed error alert */
-        <Link
-          to="/dashboard"
-          className="fixed top-4 left-4 sm:top-6 sm:left-6 z-[100] inline-flex items-center justify-center w-10 h-10 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white rounded-full transition-all cursor-pointer shadow-lg"
-          title="Go Back"
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </Link>
+      <div className="max-w-2xl mx-auto py-16 px-4">
+        <ErrorState
+          error={queryError}
+          title={isError ? undefined : 'Event Not Found'}
+          description={
+            isError
+              ? undefined
+              : 'The event you are attempting to edit could not be found or has been removed.'
+          }
+          badge={isError ? undefined : 'Event Unavailable'}
+          onRetry={isError ? () => refetchEvent() : undefined}
+          actionText="Try Reconnecting"
+          secondaryAction={{
+            label: 'Return to Dashboard',
+            to: '/dashboard',
+          }}
+          showBackAction
+        />
       </div>
     );
   }

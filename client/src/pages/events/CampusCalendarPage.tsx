@@ -2,13 +2,15 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { Calendar as CalendarIcon, Loader2 } from 'lucide-react';
+import { Calendar as CalendarIcon, Loader2, RefreshCw, AlertCircle } from 'lucide-react';
 import { CustomDropdown } from '@/components/ui/CustomDropdown';
 import { eventService } from '@/services/event.service';
 import { societyService } from '@/services/society.service';
 import { EventCard } from '@/components/feed/EventCard';
 import { CalendarEventModal } from '@/components/calendar/CalendarEventModal';
 import { useDebounce } from '@/hooks/useDebounce';
+import { ErrorState } from '@/components/ui/ErrorState';
+import { EmptyState } from '@/components/ui/EmptyState';
 
 export const CampusCalendarPage: React.FC = () => {
   const navigate = useNavigate();
@@ -41,7 +43,13 @@ export const CampusCalendarPage: React.FC = () => {
   const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
   const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
 
-  const { data: calendarEventsData, isLoading: isCalendarLoading } = useQuery({
+  const {
+    data: calendarEventsData,
+    isLoading: isCalendarLoading,
+    isError: isCalendarError,
+    error: calendarError,
+    refetch: refetchCalendar,
+  } = useQuery({
     queryKey: ['publicCalendarEvents', startOfMonth.toISOString(), endOfMonth.toISOString(), selectedSociety, debouncedSearch],
     queryFn: () => eventService.getAllPublicEvents({ 
       from: new Date(currentDate.getFullYear(), currentDate.getMonth(), -7).toISOString(), 
@@ -75,7 +83,13 @@ export const CampusCalendarPage: React.FC = () => {
     return { from: today.toISOString(), to: undefined };
   }, [listFilter]);
   
-  const { data: listEventsData, isLoading: isListLoading } = useQuery({
+  const {
+    data: listEventsData,
+    isLoading: isListLoading,
+    isError: isListError,
+    error: listError,
+    refetch: refetchList,
+  } = useQuery({
     queryKey: ['publicListEvents', listFilter, selectedSociety !== 'all' ? selectedSociety : ''],
     queryFn: () => eventService.getAllPublicEvents({ 
       from: filterDates.from, 
@@ -88,6 +102,12 @@ export const CampusCalendarPage: React.FC = () => {
   
   const eventsList = listEventsData?.items || [];
   const visibleEvents = eventsList.slice(0, visibleEventsCount);
+
+  const handleClearFilters = () => {
+    setSearchQuery('');
+    setSelectedSociety('all');
+    setListFilter('upcoming');
+  };
 
   // Calendar logic
   const year = currentDate.getFullYear();
@@ -355,6 +375,23 @@ export const CampusCalendarPage: React.FC = () => {
           </div>
         </div>
 
+        {/* Calendar Sync Error Notification */}
+        {isCalendarError && (
+          <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/25 text-amber-200 text-xs sm:text-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-lg">
+            <div className="flex items-center gap-2.5">
+              <AlertCircle className="w-5 h-5 text-amber-400 shrink-0" />
+              <span>Unable to sync latest calendar events from the campus server. Displaying cached view.</span>
+            </div>
+            <button
+              onClick={() => refetchCalendar()}
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 font-bold text-xs transition-colors self-start sm:self-auto cursor-pointer"
+            >
+              <RefreshCw className="w-3.5 h-3.5" />
+              <span>Retry Sync</span>
+            </button>
+          </div>
+        )}
+
         {/* Calendar Card Grid */}
         <div className="calendar-card">
           <div className="weekdays">
@@ -423,10 +460,28 @@ export const CampusCalendarPage: React.FC = () => {
           
           {isListLoading ? (
             <div className="flex justify-center p-10"><Loader2 className="w-8 h-8 animate-spin text-white/50" /></div>
+          ) : isListError ? (
+            <ErrorState
+              error={listError}
+              onRetry={refetchList}
+              compact
+            />
           ) : visibleEvents.length === 0 ? (
-            <div className="bg-transparent p-10 rounded-xl border border-white/10 text-center text-gray-400">
-              No events scheduled for the current filter.
-            </div>
+            <EmptyState
+              icon={CalendarIcon}
+              title="No Events Found"
+              description={
+                searchQuery || selectedSociety !== 'all' || listFilter !== 'upcoming'
+                  ? 'No campus events match your active filters or selected timeline.'
+                  : 'There are currently no campus events scheduled for this view.'
+              }
+              onClearFilters={
+                searchQuery || selectedSociety !== 'all' || listFilter !== 'upcoming'
+                  ? handleClearFilters
+                  : undefined
+              }
+              compact
+            />
           ) : (
             <>
               <div className="cards-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 w-full mx-auto">
