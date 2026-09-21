@@ -16,6 +16,7 @@ import { Info, FileText } from 'lucide-react';
 import { VenuePermissionSlipModal } from '@/components/events/VenuePermissionSlipModal';
 import { UploadSignedSlipModal } from '@/components/events/UploadSignedSlipModal';
 import { DashboardAboutModal } from '@/components/dashboard/DashboardAboutModal';
+import { ErrorState } from '@/components/ui';
 import type { EventItem } from '@/types/event.types';
 import {
   UserCheck,
@@ -176,7 +177,7 @@ export const DashboardPage: React.FC = () => {
   const [isAboutModalOpen, setIsAboutModalOpen] = useState(false);
 
   // Single aggregated dashboard query
-  const { data: dashboardData, isLoading } = useQuery({
+  const { data: dashboardData, isLoading, isError, error, refetch } = useQuery({
     queryKey: ['societyDashboard'],
     queryFn: societyService.getDashboard,
     enabled: user?.role === 'SOCIETY',
@@ -195,6 +196,27 @@ export const DashboardPage: React.FC = () => {
   // If STUDENT, render dedicated Student Dashboard
   if (user?.role === 'STUDENT') {
     return <StudentDashboardView user={user} logout={logout} />;
+  }
+
+  // Society Loading State
+  if (user?.role === 'SOCIETY' && isLoading) {
+    return <DashboardSkeleton />;
+  }
+
+  // Society Error State (Backend down / network error / 500)
+  if (user?.role === 'SOCIETY' && isError) {
+    return (
+      <div className="max-w-4xl mx-auto py-12 px-4">
+        <ErrorState
+          error={error}
+          onRetry={refetch}
+          secondaryAction={{
+            label: 'View Home Feed',
+            href: '/',
+          }}
+        />
+      </div>
+    );
   }
 
   const profile = dashboardData?.profile;
@@ -222,14 +244,10 @@ export const DashboardPage: React.FC = () => {
   );
 
   // First-login redirect if profile setup incomplete
-  if (user?.role === 'SOCIETY' && !isLoading) {
+  if (user?.role === 'SOCIETY') {
     if (!profile || !profile.isSetupComplete) {
       return <Navigate to="/society/setup" replace />;
     }
-  }
-
-  if (user?.role === 'SOCIETY' && isLoading) {
-    return <DashboardSkeleton />;
   }
 
   
