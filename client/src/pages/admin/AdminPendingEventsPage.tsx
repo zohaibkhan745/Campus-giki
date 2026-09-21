@@ -25,6 +25,8 @@ import { societyService } from '@/services/society.service';
 import { Alert } from '@/components/ui/Alert';
 import { CustomDropdown } from '@/components/ui/CustomDropdown';
 import { CustomDatePicker } from '@/components/ui/date-picker';
+import { ErrorState } from '@/components/ui/ErrorState';
+import { EmptyState } from '@/components/ui/EmptyState';
 import type { EventItem } from '@/types/event.types';
 
 export const AdminPendingEventsPage: React.FC = () => {
@@ -99,6 +101,8 @@ export const AdminPendingEventsPage: React.FC = () => {
     data,
     isLoading,
     isError,
+    error,
+    refetch,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage
@@ -206,26 +210,37 @@ export const AdminPendingEventsPage: React.FC = () => {
         </div>
       </div>
 
-      {null}
-
       {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4">
           <div className="space-y-4"><div className="h-6 w-48 bg-white/10 rounded animate-pulse"></div><div className="h-[380px] bg-white/5 rounded-[22px] animate-pulse border border-white/10"></div></div>
           <div className="space-y-4"><div className="h-6 w-48 bg-white/10 rounded animate-pulse"></div><div className="h-[380px] bg-white/5 rounded-[22px] animate-pulse border border-white/10"></div></div>
         </div>
+      ) : isError ? (
+        <ErrorState
+          error={error}
+          onRetry={refetch}
+          compact
+        />
       ) : events.length === 0 ? (
-        <div className="bg-white/[0.08] backdrop-blur-[20px] p-12 rounded-[18px] border border-white/20 text-center space-y-3">
-          <Calendar className="w-12 h-12 text-gray-400 mx-auto" />
-          <h3 className="font-bold text-white text-base">No pending events found</h3>
-        </div>
+        <EmptyState
+          icon={Calendar}
+          title="No Pending Events Found"
+          description={
+            searchQuery || societyFilter || fromDate || toDate || typeToggle !== 'all'
+              ? 'No pending event proposals match your current filters.'
+              : 'There are currently no events pending review.'
+          }
+          onClearFilters={
+            searchQuery || societyFilter || fromDate || toDate || typeToggle !== 'all'
+              ? handleClearFilters
+              : undefined
+          }
+          compact
+        />
       ) : (
         <div className="space-y-4 pt-4">
           <h2 className="text-2xl font-bold text-white border-b-2 border-white/10 pb-3">Pending Events ({events.length})</h2>
-          {events.length === 0 ? (
-            <p className="text-sm text-gray-400 italic">No pending events match the filters.</p>
-          ) : (
-            <EventGrid events={events} reviewUrlBase="/admin/events" />
-          )}
+          <EventGrid events={events} reviewUrlBase="/admin/events" />
         </div>
       )}
 

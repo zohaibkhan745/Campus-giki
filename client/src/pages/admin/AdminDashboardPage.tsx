@@ -30,6 +30,8 @@ import { usePendingCounts } from '@/hooks/usePendingCounts';
 import { BannerHeader } from '@/components/layout/BannerHeader';
 import { CustomDropdown } from '@/components/ui/CustomDropdown';
 import { EventGrid } from '@/components/admin/FlippableAdminEventCard';
+import { ErrorState } from '@/components/ui/ErrorState';
+import { EmptyState } from '@/components/ui/EmptyState';
 
 export const AdminDashboardPage: React.FC = () => {
   const { user, logout } = useAuth();
@@ -39,6 +41,7 @@ export const AdminDashboardPage: React.FC = () => {
     data,
     isLoading,
     isError,
+    error: dashboardError,
     refetch,
   } = useQuery({
     queryKey: ['adminDashboard'],
@@ -49,7 +52,13 @@ export const AdminDashboardPage: React.FC = () => {
   const stats = data?.statistics;
   
   const [statusFilter, setStatusFilter] = useState<string>('PENDING_ADMIN');
-  const { data: eventsData, isLoading: eventsLoading } = useQuery({
+  const {
+    data: eventsData,
+    isLoading: eventsLoading,
+    isError: isEventsError,
+    error: eventsError,
+    refetch: refetchEvents,
+  } = useQuery({
     queryKey: ['dashboardEvents', statusFilter],
     queryFn: () => adminService.getAllEvents({ status: statusFilter as any, limit: 4 }),
     staleTime: 30000,
@@ -99,15 +108,12 @@ export const AdminDashboardPage: React.FC = () => {
       </div>
 
       {isError && (
-        <div className="space-y-3">
-          null /* Removed error alert */
-          <button
-            onClick={() => refetch()}
-            className="text-xs text-ember-glow hover:underline font-semibold"
-          >
-            Retry
-          </button>
-        </div>
+        <ErrorState
+          error={dashboardError}
+          onRetry={refetch}
+          compact
+          className="mb-4"
+        />
       )}
 
       {/* 2. Command Center */}
@@ -198,11 +204,23 @@ export const AdminDashboardPage: React.FC = () => {
                 </div>
               ))}
             </div>
+          ) : isEventsError ? (
+            <ErrorState
+              error={eventsError}
+              onRetry={refetchEvents}
+              compact
+            />
           ) : pendingEvents.length === 0 ? (
-            <div className="bg-transparent p-10 rounded-[18px] border border-white/20 text-center text-gray-400 space-y-3 flex flex-col items-center">
-              <Shield className="w-12 h-12 text-gray-400 opacity-30" />
-              <p className="font-bold text-sm">You're all caught up! No events pending review.</p>
-            </div>
+            <EmptyState
+              icon={Shield}
+              title="You're All Caught Up"
+              description={
+                statusFilter === 'CHANGES_REQUESTED'
+                  ? 'No events currently under requested revisions.'
+                  : 'No event proposals are pending DSA administrative review.'
+              }
+              compact
+            />
           ) : (
             <EventGrid events={pendingEvents.slice(0, 4)} reviewUrlBase="/admin/events" />
           )}

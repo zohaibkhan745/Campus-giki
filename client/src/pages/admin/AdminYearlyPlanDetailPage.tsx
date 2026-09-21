@@ -18,6 +18,7 @@ import { yearlyPlanService } from '@/services/yearly-plan.service';
 import type { ReviewYearlyPlanPayload } from '@/services/yearly-plan.service';
 import { FeedbackHistory } from '@/components/shared/FeedbackHistory';
 import { SmokeyCanvasBackground } from '@/components/ui/SmokeyCanvasBackground';
+import { ErrorState } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { globalNotification } from '@/contexts/NotificationContext';
 
@@ -32,6 +33,8 @@ export const AdminYearlyPlanDetailPage: React.FC = () => {
     data: plan,
     isLoading,
     isError,
+    error,
+    refetch,
   } = useQuery({
     queryKey: ['adminYearlyPlanDetail', id],
     queryFn: () => adminService.getYearlyPlanDetailById(id!),
@@ -88,14 +91,24 @@ export const AdminYearlyPlanDetailPage: React.FC = () => {
 
   if (isError || !plan) {
     return (
-      <div className="min-h-screen w-screen bg-gray-950 flex flex-col justify-center items-center py-12 space-y-4 text-center m-0">
-        <p className="text-red-500 font-bold">Failed to load plan</p>
-        <button
-          onClick={() => navigate('/admin/yearly-plans')}
-          className="inline-flex items-center gap-2 text-white bg-white/10 px-4 py-2 rounded-xl"
-        >
-          <ArrowLeft className="w-4 h-4" /> Go Back
-        </button>
+      <div className="min-h-screen w-full bg-gray-950 flex flex-col justify-center items-center py-12 px-4 text-center m-0">
+        <div className="w-full max-w-2xl">
+          <ErrorState
+            error={error}
+            title={isError ? undefined : 'Yearly Plan Not Found'}
+            message={
+              isError
+                ? undefined
+                : 'The requested annual calendar plan could not be found or may have been deleted.'
+            }
+            badge={isError ? undefined : 'Plan Unavailable'}
+            onRetry={isError ? () => refetch() : undefined}
+            secondaryAction={{
+              label: 'Back to Yearly Plans',
+              to: '/admin/yearly-plans',
+            }}
+          />
+        </div>
       </div>
     );
   }

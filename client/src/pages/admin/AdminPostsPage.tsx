@@ -27,6 +27,8 @@ import { CustomDropdown } from '@/components/ui/CustomDropdown';
 import { CustomDatePicker } from '@/components/ui/date-picker';
 import { Alert } from '@/components/ui/Alert';
 import { PostCreateModal } from '@/components/feed/PostCreateModal';
+import { ErrorState } from '@/components/ui/ErrorState';
+import { EmptyState } from '@/components/ui/EmptyState';
 import type { AxiosError } from 'axios';
 
 const postSchema = z.object({
@@ -61,6 +63,8 @@ export const AdminPostsPage: React.FC = () => {
     data,
     isLoading,
     isError,
+    error,
+    refetch,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage
@@ -244,23 +248,39 @@ export const AdminPostsPage: React.FC = () => {
 
       {isLoading ? (
         <div className="flex justify-center p-12">
-          <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
+          <Loader2 className="w-8 h-8 animate-spin text-white/50" />
         </div>
+      ) : isError ? (
+        <ErrorState
+          error={error}
+          onRetry={refetch}
+          compact
+        />
       ) : posts.length === 0 ? (
-        <div className="bg-white/[0.08] backdrop-blur-[20px] p-12 rounded-[18px] border border-white/20 shadow-[0_12px_40px_rgba(0,0,0,0.4)] flex flex-col items-center justify-center text-center space-y-3">
-          <div className="p-4 bg-transparent rounded-full border border-white/10 shadow-sm">
-            <MessageSquare className="w-8 h-8 text-gray-400" />
-          </div>
-          <h3 className="text-lg font-extrabold text-white">No posts found</h3>
-          <p className="text-sm text-gray-400 max-w-sm">
-            There are no posts matching your current filters.
-          </p>
-          {(typeFilter !== 'all' || societyFilter) && (
-            <Button onClick={handleClearFilters} variant="outline" className="mt-2 text-white border-white/20 hover:bg-white/10">
-              Clear Filters
-            </Button>
-          )}
-        </div>
+        <EmptyState
+          icon={MessageSquare}
+          title="No Posts Found"
+          description={
+            typeFilter !== 'all' || societyFilter || dateFrom || dateTo
+              ? 'There are no campus posts matching your current filters.'
+              : 'No campus announcements or posts have been created yet.'
+          }
+          onClearFilters={
+            typeFilter !== 'all' || societyFilter || dateFrom || dateTo
+              ? handleClearFilters
+              : undefined
+          }
+          action={
+            !(typeFilter !== 'all' || societyFilter || dateFrom || dateTo)
+              ? {
+                  label: 'Create Announcement',
+                  onClick: () => setIsModalOpen(true),
+                  icon: Plus,
+                }
+              : undefined
+          }
+          compact
+        />
       ) : (
         <div className="cards-container">
           {posts.map((post: any) => {

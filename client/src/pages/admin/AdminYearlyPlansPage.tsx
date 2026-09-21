@@ -25,6 +25,8 @@ import { adminService } from '@/services/admin.service';
 import { YearlyPlanCard } from '@/components/yearly-plan/YearlyPlanCard';
 import type { PlanStatus } from '@/types/yearly-plan.types';
 import { Alert } from '@/components/ui/Alert';
+import { ErrorState } from '@/components/ui/ErrorState';
+import { EmptyState } from '@/components/ui/EmptyState';
 
 export const AdminYearlyPlansPage: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -41,6 +43,7 @@ export const AdminYearlyPlansPage: React.FC = () => {
     data: plansData,
     isLoading,
     isError,
+    error,
     refetch,
   } = useQuery({
     queryKey: ['adminYearlyPlans', page, statusFilter, yearFilter, debouncedSearch],
@@ -186,19 +189,6 @@ export const AdminYearlyPlansPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Error Callout */}
-      {isError && (
-        <div className="space-y-3">
-          null /* Removed error alert */
-          <button
-            onClick={() => refetch()}
-            className="text-xs text-white hover:underline font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 rounded"
-          >
-            Retry Loading Records
-          </button>
-        </div>
-      )}
-
       {/* Records Table View */}
       {isLoading ? (
         <div className="space-y-4">
@@ -208,21 +198,35 @@ export const AdminYearlyPlansPage: React.FC = () => {
               className="bg-transparent p-5 rounded-cards border border-white/10 space-y-3 animate-pulse"
             >
               <div className="flex justify-between items-center">
-                <div className="h-5 bg-white/5 rounded w-1/3" />
-                <div className="h-6 bg-white/5 rounded w-24" />
+                <div className="h-5 bg-white/10 rounded w-1/3" />
+                <div className="h-6 bg-white/10 rounded w-24" />
               </div>
-              <div className="h-4 bg-white/5 rounded w-1/2" />
+              <div className="h-4 bg-white/10 rounded w-1/2" />
             </div>
           ))}
         </div>
+      ) : isError ? (
+        <ErrorState
+          error={error}
+          onRetry={refetch}
+          compact
+        />
       ) : plans.length === 0 ? (
-        <div className="bg-transparent p-12 rounded-cards border border-white/10 text-center space-y-3">
-          <Shield className="w-12 h-12 text-gray-400 mx-auto" />
-          <h3 className="font-bold text-white text-base">No Yearly Plan Records Found</h3>
-          <p className="text-xs text-gray-400 max-w-sm mx-auto">
-            No society yearly calendar records match the selected filters.
-          </p>
-        </div>
+        <EmptyState
+          icon={FileText}
+          title="No Yearly Plan Records Found"
+          description={
+            statusFilter || yearFilter || searchQuery
+              ? 'No society yearly calendar records match your active search filters.'
+              : 'No society yearly calendar plans have been submitted yet.'
+          }
+          onClearFilters={
+            statusFilter || yearFilter || searchQuery
+              ? handleClearFilters
+              : undefined
+          }
+          compact
+        />
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {plans.map((plan) => (

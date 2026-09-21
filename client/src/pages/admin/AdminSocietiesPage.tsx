@@ -37,6 +37,8 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { OnboardSocietyModal } from '@/components/ui/OnboardSocietyModal';
 import { Alert } from '@/components/ui/Alert';
+import { ErrorState } from '@/components/ui/ErrorState';
+import { EmptyState } from '@/components/ui/EmptyState';
 import type { AxiosError } from 'axios';
 
 export const AdminSocietiesPage: React.FC = () => {
@@ -91,6 +93,7 @@ export const AdminSocietiesPage: React.FC = () => {
     data: societiesData,
     isLoading,
     isError,
+    error,
     refetch,
   } = useQuery({
     queryKey: ['adminSocietiesList', page, statusFilter, categoryFilter, debouncedSearch],
@@ -255,14 +258,33 @@ export const AdminSocietiesPage: React.FC = () => {
 
         {isLoading ? (
           <div className="p-8 text-center text-slate-400 font-semibold animate-pulse">Loading societies...</div>
+        ) : isError ? (
+          <ErrorState
+            error={error}
+            onRetry={refetch}
+            compact
+          />
         ) : societies.length === 0 ? (
-          <div className="p-12 flex flex-col items-center justify-center text-center">
-            <Building2 className="w-12 h-12 text-slate-500 mb-4" />
-            <h3 className="text-lg font-bold text-white mb-1">No Societies Found</h3>
-            <p className="text-sm text-slate-400 font-medium max-w-md">
-              No campus societies match the selected filters.
-            </p>
-          </div>
+          <EmptyState
+            icon={Building2}
+            title="No Societies Found"
+            description={
+              statusFilter || categoryFilter || searchQuery
+                ? "No campus societies match the selected filters."
+                : "No campus societies are currently registered in the system."
+            }
+            onClearFilters={
+              statusFilter || categoryFilter || searchQuery
+                ? () => {
+                    setStatusFilter('');
+                    setCategoryFilter('');
+                    setSearchQuery('');
+                    setPage(1);
+                  }
+                : undefined
+            }
+            compact
+          />
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full border-collapse text-left min-w-[900px]">

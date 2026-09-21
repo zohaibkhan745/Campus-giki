@@ -10,6 +10,8 @@ import { ConfirmModal } from '@/components/ui/ConfirmModal';
 import { Input } from '@/components/ui/Input';
 import { Alert } from '@/components/ui/Alert';
 import { CustomDropdown } from '@/components/ui/CustomDropdown';
+import { ErrorState } from '@/components/ui/ErrorState';
+import { EmptyState } from '@/components/ui/EmptyState';
 import type { AxiosError } from 'axios';
 
 export const AdminAdvisorsPage: React.FC = () => {
@@ -51,7 +53,13 @@ const deleteMutation = useMutation({
     designation: '',
   });
 
-  const { data: advisors = [], isLoading } = useQuery({
+  const {
+    data: advisors = [],
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useQuery({
     queryKey: ['availableAdvisors'],
     queryFn: adminService.getAvailableAdvisors,
   });
@@ -129,16 +137,33 @@ const deleteMutation = useMutation({
 
         {isLoading ? (
           <div className="p-8 text-center text-slate-400 font-semibold animate-pulse">Loading advisors...</div>
-        ) : advisors.length === 0 ? (
-          <div className="p-12 flex flex-col items-center justify-center text-center">
-            <div className="w-16 h-16 bg-white/5 rounded-full border border-white/10 flex items-center justify-center mb-4">
-              <UserCircle2 className="w-8 h-8 text-slate-500" />
-            </div>
-            <h3 className="text-lg font-bold text-white mb-1">No Advisors Found</h3>
-            <p className="text-sm text-slate-400 font-medium max-w-md">
-              There are no faculty advisors in the system. Create one to assign them to societies.
-            </p>
-          </div>
+        ) : isError ? (
+          <ErrorState
+            error={error}
+            onRetry={refetch}
+            compact
+          />
+        ) : advisors.filter((a: AdvisorOption) => ((a.user?.fullName || '') + (a.user?.email || '')).toLowerCase().includes(searchQuery.toLowerCase())).length === 0 ? (
+          <EmptyState
+            icon={UserCircle2}
+            title="No Advisors Found"
+            description={
+              searchQuery
+                ? `No faculty advisors match your search query "${searchQuery}".`
+                : 'There are no faculty advisors registered in the system.'
+            }
+            onClearFilters={searchQuery ? () => setSearchQuery('') : undefined}
+            action={
+              !searchQuery
+                ? {
+                    label: 'Onboard New Advisor',
+                    onClick: () => setIsModalOpen(true),
+                    icon: UserPlus,
+                  }
+                : undefined
+            }
+            compact
+          />
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full border-collapse text-left min-w-[800px]">
@@ -149,11 +174,11 @@ const deleteMutation = useMutation({
                   <th className="p-[15px] text-slate-400 text-[13px] uppercase tracking-[1px] border-b border-white/10 w-[25%]">Email</th>
                   <th className="p-[15px] text-slate-400 text-[13px] uppercase tracking-[1px] border-b border-white/10 w-[15%]">Faculty</th>
                   <th className="p-[15px] text-slate-400 text-[13px] uppercase tracking-[1px] border-b border-white/10 w-[20%]">Assigned Societies</th>
-                    <th className="p-[15px] text-slate-400 text-[13px] uppercase tracking-[1px] border-b border-white/10 w-[10%] text-center">Actions</th>
+                  <th className="p-[15px] text-slate-400 text-[13px] uppercase tracking-[1px] border-b border-white/10 w-[10%] text-center">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {advisors.filter((a: AdvisorOption) => ((a.user?.fullName || '').toLowerCase() + (a.user?.email || '').toLowerCase()).includes(searchQuery.toLowerCase())).map((advisor: AdvisorOption, index: number) => (
+                {advisors.filter((a: AdvisorOption) => ((a.user?.fullName || '') + (a.user?.email || '')).toLowerCase().includes(searchQuery.toLowerCase())).map((advisor: AdvisorOption, index: number) => (
                   <tr key={advisor.id} className="hover:bg-white/[0.03] transition-colors group">
                     <td className="py-[18px] px-[15px] text-[15px] border-b border-white/5 text-slate-200 group-last:border-b-0">
                       {String(index + 1).padStart(2, '0')}
@@ -205,7 +230,7 @@ const deleteMutation = useMutation({
             </h3>
 
             {formError && (
-              null /* Removed error alert */
+              <Alert variant="error" message={formError} className="mb-4" />
             )}
 
             <form onSubmit={handleCreateSubmit} className="space-y-4">
