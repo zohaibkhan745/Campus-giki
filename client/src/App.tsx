@@ -10,6 +10,8 @@ import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { AppRoutes } from '@/routes/AppRoutes';
 import { ScrollToTop } from '@/components/ScrollToTop';
 
+import { OfflineBanner } from '@/components/ui/OfflineBanner';
+
 export const App: React.FC = () => {
   return (
     <QueryClientProvider client={queryClient}>
@@ -18,6 +20,7 @@ export const App: React.FC = () => {
           <NotificationProvider>
           <ErrorBoundary>
             <BrowserRouter>
+              <OfflineBanner />
               <ScrollToTop />
               <AppRoutes />
               
