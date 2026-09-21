@@ -135,12 +135,6 @@ export const LoginPage: React.FC = () => {
                     {!loginMutation.isPending && <ArrowRight className="ml-2 w-5 h-5 transform group-hover:translate-x-1 transition-transform" />}
                 </button>
             </form>
-            
-            <div className="pt-5 border-t border-gray-400/30">
-                <p className="text-center text-xs text-gray-400 leading-relaxed">
-                    Authorized personnel only. Society accounts are provisioned via DSA invitation.
-                </p>
-            </div>
         </div>
     </main>
   );
