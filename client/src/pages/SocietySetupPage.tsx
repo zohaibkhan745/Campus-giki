@@ -163,13 +163,22 @@ export const SocietySetupPage: React.FC = () => {
     // Auto-generate shortDescription
     const shortDesc = data.longDescription.length > 97 ? data.longDescription.substring(0, 97) + '...' : data.longDescription;
     
+    // Only include core roles if a name is actually provided
+    const coreRolesList = [
+      data.vp ? { ...data.vp, role: 'Vice President' } : null,
+      data.ec ? { ...data.ec, role: 'Event Coordinator' } : null,
+      data.gs ? { ...data.gs, role: 'General Secretary' } : null,
+      data.treasurer ? { ...data.treasurer, role: 'Treasurer' } : null,
+      data.dl ? { ...data.dl, role: 'Director Liaison' } : null,
+    ].filter((m): m is NonNullable<typeof m> => Boolean(m && m.name && m.name.trim() !== ''));
+
+    const otherList = (data.otherMembers || []).filter(
+      (m) => Boolean(m && m.name && m.name.trim() !== ''),
+    );
+
     // Assemble executive council JSON string
     const councilArray = [
-      { ...data.vp, role: 'Vice President' },
-      { ...data.ec, role: 'Event Coordinator' },
-      { ...data.gs, role: 'General Secretary' },
-      { ...data.treasurer, role: 'Treasurer' },
-      { ...data.dl, role: 'Director Liaison' },
+      ...coreRolesList,
       // Preserve existing other members from database, and append any newly added ones from the form
       ...(mySociety?.executiveCouncil ? (() => {
         try {
@@ -178,11 +187,16 @@ export const SocietySetupPage: React.FC = () => {
           return c.filter((m: any) => !coreRoles.includes(m.role));
         } catch { return []; }
       })() : []),
-      ...(data.otherMembers || [])
+      ...otherList,
     ];
 
     const submitPayload: any = {
       ...data,
+      presidentName: data.presidentName?.trim() || null,
+      presidentRegNum: data.presidentRegNum?.trim() || null,
+      presidentFaculty: data.presidentFaculty?.trim() || null,
+      presidentContact: data.presidentContact?.trim() || null,
+      presidentEmail: data.presidentEmail?.trim() || null,
       shortDescription: shortDesc,
       executiveCouncil: JSON.stringify(councilArray),
     };
@@ -192,7 +206,7 @@ export const SocietySetupPage: React.FC = () => {
     delete submitPayload.ec;
     delete submitPayload.gs;
     delete submitPayload.treasurer;
-      delete submitPayload.dl;
+    delete submitPayload.dl;
     delete submitPayload.otherMembers;
 
     setupMutation.mutate(submitPayload);
@@ -203,12 +217,47 @@ export const SocietySetupPage: React.FC = () => {
   }
 
   const onFormError = (formErrors: any) => {
-    if (formErrors.name || formErrors.shortform || formErrors.description || formErrors.logoUrl) {
+    const infoErrorKeys = [
+      'name',
+      'type',
+      'categoryId',
+      'longDescription',
+      'logoUrl',
+      'bannerUrl',
+      'instagram',
+      'facebook',
+      'linkedin',
+      'website',
+      'email',
+    ];
+    const hasInfoErrors = infoErrorKeys.some((k) => Boolean(formErrors[k]));
+    const councilErrorKeys = [
+      'presidentName',
+      'presidentRegNum',
+      'presidentFaculty',
+      'presidentContact',
+      'presidentEmail',
+      'vp',
+      'gs',
+      'ec',
+      'treasurer',
+      'dl',
+      'otherMembers',
+    ];
+    const hasCouncilErrors = councilErrorKeys.some((k) => Boolean(formErrors[k]));
+
+    if (hasInfoErrors) {
       setActiveTab('info');
-      globalNotification.triggerFailed('Please fill out all required society info.');
-    } else {
+      const firstKey = infoErrorKeys.find((k) => Boolean(formErrors[k]));
+      const errorMsg = firstKey && formErrors[firstKey]?.message
+        ? formErrors[firstKey].message
+        : 'Please fill out all required society info.';
+      globalNotification.triggerFailed(errorMsg);
+    } else if (hasCouncilErrors) {
       setActiveTab('council');
-      globalNotification.triggerFailed('Executive members info not provided or invalid.');
+      globalNotification.triggerFailed('Please check executive council members information.');
+    } else {
+      globalNotification.triggerFailed('Please check the form inputs.');
     }
   };
 
@@ -364,21 +413,26 @@ export const SocietySetupPage: React.FC = () => {
         <div className={activeTab === 'council' ? 'block space-y-8' : 'hidden'}>
           {/* Executive Posts Section */}
           <div className="bg-[#1e2025]/50 border border-white/10 p-6 sm:p-8 rounded-3xl space-y-8 shadow-xl">
-            <h3 className="text-xl font-bold text-white flex items-center gap-2 border-b border-white/10 pb-4">
-              <User className="w-5 h-5 text-gray-400" /> Executive Posts
-            </h3>
+            <div>
+              <h3 className="text-xl font-bold text-white flex items-center gap-2 border-b border-white/10 pb-4">
+                <User className="w-5 h-5 text-gray-400" /> Executive Council (Optional)
+              </h3>
+              <p className="text-xs text-gray-400 mt-2">
+                Executive members can be filled now or updated anytime later from your society dashboard.
+              </p>
+            </div>
             
             {/* President */}
             <div className="space-y-4">
               <h4 className="text-md font-bold text-white uppercase tracking-wider">
                 PRESIDENT</h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                <Input label="Full Name *" placeholder="Full Name" {...register('presidentName')} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^a-zA-Z.,\- ]/g, '') }} error={errors.presidentName?.message} />
-                <Input label="Reg Number *" placeholder="e.g. 2023123" {...register('presidentRegNum')} maxLength={7} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '').slice(0, 7) }} error={errors.presidentRegNum?.message} />
-                <Input label="Contact Number *" placeholder="e.g. 03001234567" {...register('presidentContact')} maxLength={11} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '').slice(0, 11) }} error={errors.presidentContact?.message} />
-                <Input label="Email Address *" type="email" placeholder="president@giki.edu.pk" {...register('presidentEmail')}  error={errors.presidentEmail?.message} />
+                <Input label="Full Name" placeholder="Full Name" {...register('presidentName')} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^a-zA-Z.,\- ]/g, '') }} error={errors.presidentName?.message} />
+                <Input label="Reg Number" placeholder="e.g. 2023123 (7 digits)" {...register('presidentRegNum')} maxLength={7} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '').slice(0, 7) }} error={errors.presidentRegNum?.message} />
+                <Input label="Contact Number" placeholder="e.g. 03001234567 (11 digits)" {...register('presidentContact')} maxLength={11} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '').slice(0, 11) }} error={errors.presidentContact?.message} />
+                <Input label="Email Address" type="email" placeholder="president@giki.edu.pk" {...register('presidentEmail')}  error={errors.presidentEmail?.message} />
                 <div>
-                  <label className="block text-[11px] font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Faculty *</label>
+                  <label className="block text-[11px] font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Faculty</label>
                   <CustomDropdown value={watch('presidentFaculty')} onChange={(e: any) => setValue('presidentFaculty', e.target.value)} options={[ { value: 'FCSE', label: 'FCSE' }, { value: 'FEE', label: 'FEE' }, { value: 'FME', label: 'FME' }, { value: 'FCVE', label: 'FCVE' }, { value: 'FCME', label: 'FCME' }, { value: 'FMTE', label: 'FMTE' }, { value: 'FES', label: 'FES' }, { value: 'FBS', label: 'FBS' }, { value: 'MGS', label: 'MGS' } ]} placeholder="Select Faculty" />
                   {errors.presidentFaculty?.message && <p className="text-red-400 text-xs mt-1 font-medium">{errors.presidentFaculty.message}</p>}
                 </div>
@@ -392,12 +446,12 @@ export const SocietySetupPage: React.FC = () => {
               <h4 className="text-md font-bold text-white uppercase tracking-wider">
                 VICE PRESIDENT</h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                <Input label="Full Name *" placeholder="Full Name" {...register('vp.name')} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^a-zA-Z.,\- ]/g, '') }} error={errors.vp?.name?.message} />
-                <Input label="Reg Number *" placeholder="e.g. 2023123" {...register('vp.regNum')} maxLength={7} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '').slice(0, 7) }} error={errors.vp?.regNum?.message} />
-                <Input label="Contact Number *" placeholder="e.g. 03001234567" {...register('vp.contact')} maxLength={11} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '').slice(0, 11) }} error={errors.vp?.contact?.message} />
-                <Input label="Email Address *" type="email" placeholder="vp@giki.edu.pk" {...register('vp.email')}  error={errors.vp?.email?.message} />
+                <Input label="Full Name" placeholder="Full Name" {...register('vp.name')} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^a-zA-Z.,\- ]/g, '') }} error={errors.vp?.name?.message} />
+                <Input label="Reg Number" placeholder="e.g. 2023123 (7 digits)" {...register('vp.regNum')} maxLength={7} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '').slice(0, 7) }} error={errors.vp?.regNum?.message} />
+                <Input label="Contact Number" placeholder="e.g. 03001234567 (11 digits)" {...register('vp.contact')} maxLength={11} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '').slice(0, 11) }} error={errors.vp?.contact?.message} />
+                <Input label="Email Address" type="email" placeholder="vp@giki.edu.pk" {...register('vp.email')}  error={errors.vp?.email?.message} />
                 <div>
-                  <label className="block text-[11px] font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Faculty *</label>
+                  <label className="block text-[11px] font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Faculty</label>
                   <CustomDropdown value={watch('vp.faculty')} onChange={(e: any) => setValue('vp.faculty', e.target.value)} options={[ { value: 'FCSE', label: 'FCSE' }, { value: 'FEE', label: 'FEE' }, { value: 'FME', label: 'FME' }, { value: 'FCVE', label: 'FCVE' }, { value: 'FCME', label: 'FCME' }, { value: 'FMTE', label: 'FMTE' }, { value: 'FES', label: 'FES' }, { value: 'FBS', label: 'FBS' }, { value: 'MGS', label: 'MGS' } ]} placeholder="Select Faculty" />
                   {errors.vp?.faculty?.message && <p className="text-red-400 text-xs mt-1 font-medium">{errors.vp.faculty.message}</p>}
                 </div>
@@ -411,12 +465,12 @@ export const SocietySetupPage: React.FC = () => {
               <h4 className="text-md font-bold text-white uppercase tracking-wider">
                 EVENT COORDINATOR</h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                <Input label="Full Name *" placeholder="Full Name" {...register('ec.name')} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^a-zA-Z.,\- ]/g, '') }} error={errors.ec?.name?.message} />
-                <Input label="Reg Number *" placeholder="e.g. 2023123" {...register('ec.regNum')} maxLength={7} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '').slice(0, 7) }} error={errors.ec?.regNum?.message} />
-                <Input label="Contact Number *" placeholder="e.g. 03001234567" {...register('ec.contact')} maxLength={11} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '').slice(0, 11) }} error={errors.ec?.contact?.message} />
-                <Input label="Email Address *" type="email" placeholder="ec@giki.edu.pk" {...register('ec.email')}  error={errors.ec?.email?.message} />
+                <Input label="Full Name" placeholder="Full Name" {...register('ec.name')} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^a-zA-Z.,\- ]/g, '') }} error={errors.ec?.name?.message} />
+                <Input label="Reg Number" placeholder="e.g. 2023123 (7 digits)" {...register('ec.regNum')} maxLength={7} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '').slice(0, 7) }} error={errors.ec?.regNum?.message} />
+                <Input label="Contact Number" placeholder="e.g. 03001234567 (11 digits)" {...register('ec.contact')} maxLength={11} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '').slice(0, 11) }} error={errors.ec?.contact?.message} />
+                <Input label="Email Address" type="email" placeholder="ec@giki.edu.pk" {...register('ec.email')}  error={errors.ec?.email?.message} />
                 <div>
-                  <label className="block text-[11px] font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Faculty *</label>
+                  <label className="block text-[11px] font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Faculty</label>
                   <CustomDropdown value={watch('ec.faculty')} onChange={(e: any) => setValue('ec.faculty', e.target.value)} options={[ { value: 'FCSE', label: 'FCSE' }, { value: 'FEE', label: 'FEE' }, { value: 'FME', label: 'FME' }, { value: 'FCVE', label: 'FCVE' }, { value: 'FCME', label: 'FCME' }, { value: 'FMTE', label: 'FMTE' }, { value: 'FES', label: 'FES' }, { value: 'FBS', label: 'FBS' }, { value: 'MGS', label: 'MGS' } ]} placeholder="Select Faculty" />
                   {errors.ec?.faculty?.message && <p className="text-red-400 text-xs mt-1 font-medium">{errors.ec.faculty.message}</p>}
                 </div>
@@ -430,12 +484,12 @@ export const SocietySetupPage: React.FC = () => {
               <h4 className="text-md font-bold text-white uppercase tracking-wider">
                 GENERAL SECRETARY</h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                <Input label="Full Name *" placeholder="Full Name" {...register('gs.name')} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^a-zA-Z.,\- ]/g, '') }} error={errors.gs?.name?.message} />
-                <Input label="Reg Number *" placeholder="e.g. 2023123" {...register('gs.regNum')} maxLength={7} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '').slice(0, 7) }} error={errors.gs?.regNum?.message} />
-                <Input label="Contact Number *" placeholder="e.g. 03001234567" {...register('gs.contact')} maxLength={11} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '').slice(0, 11) }} error={errors.gs?.contact?.message} />
-                <Input label="Email Address *" type="email" placeholder="gs@giki.edu.pk" {...register('gs.email')}  error={errors.gs?.email?.message} />
+                <Input label="Full Name" placeholder="Full Name" {...register('gs.name')} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^a-zA-Z.,\- ]/g, '') }} error={errors.gs?.name?.message} />
+                <Input label="Reg Number" placeholder="e.g. 2023123 (7 digits)" {...register('gs.regNum')} maxLength={7} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '').slice(0, 7) }} error={errors.gs?.regNum?.message} />
+                <Input label="Contact Number" placeholder="e.g. 03001234567 (11 digits)" {...register('gs.contact')} maxLength={11} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '').slice(0, 11) }} error={errors.gs?.contact?.message} />
+                <Input label="Email Address" type="email" placeholder="gs@giki.edu.pk" {...register('gs.email')}  error={errors.gs?.email?.message} />
                 <div>
-                  <label className="block text-[11px] font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Faculty *</label>
+                  <label className="block text-[11px] font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Faculty</label>
                   <CustomDropdown value={watch('gs.faculty')} onChange={(e: any) => setValue('gs.faculty', e.target.value)} options={[ { value: 'FCSE', label: 'FCSE' }, { value: 'FEE', label: 'FEE' }, { value: 'FME', label: 'FME' }, { value: 'FCVE', label: 'FCVE' }, { value: 'FCME', label: 'FCME' }, { value: 'FMTE', label: 'FMTE' }, { value: 'FES', label: 'FES' }, { value: 'FBS', label: 'FBS' }, { value: 'MGS', label: 'MGS' } ]} placeholder="Select Faculty" />
                   {errors.gs?.faculty?.message && <p className="text-red-400 text-xs mt-1 font-medium">{errors.gs.faculty.message}</p>}
                 </div>
@@ -449,12 +503,12 @@ export const SocietySetupPage: React.FC = () => {
               <h4 className="text-md font-bold text-white uppercase tracking-wider">
                 TREASURER</h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                <Input label="Full Name *" placeholder="Full Name" {...register('treasurer.name')} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^a-zA-Z.,\- ]/g, '') }} error={errors.treasurer?.name?.message} />
-                <Input label="Reg Number *" placeholder="e.g. 2023123" {...register('treasurer.regNum')} maxLength={7} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '').slice(0, 7) }} error={errors.treasurer?.regNum?.message} />
-                <Input label="Contact Number *" placeholder="e.g. 03001234567" {...register('treasurer.contact')} maxLength={11} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '').slice(0, 11) }} error={errors.treasurer?.contact?.message} />
-                <Input label="Email Address *" type="email" placeholder="treasurer@giki.edu.pk" {...register('treasurer.email')}  error={errors.treasurer?.email?.message} />
+                <Input label="Full Name" placeholder="Full Name" {...register('treasurer.name')} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^a-zA-Z.,\- ]/g, '') }} error={errors.treasurer?.name?.message} />
+                <Input label="Reg Number" placeholder="e.g. 2023123 (7 digits)" {...register('treasurer.regNum')} maxLength={7} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '').slice(0, 7) }} error={errors.treasurer?.regNum?.message} />
+                <Input label="Contact Number" placeholder="e.g. 03001234567 (11 digits)" {...register('treasurer.contact')} maxLength={11} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '').slice(0, 11) }} error={errors.treasurer?.contact?.message} />
+                <Input label="Email Address" type="email" placeholder="treasurer@giki.edu.pk" {...register('treasurer.email')}  error={errors.treasurer?.email?.message} />
                 <div>
-                  <label className="block text-[11px] font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Faculty *</label>
+                  <label className="block text-[11px] font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Faculty</label>
                   <CustomDropdown value={watch('treasurer.faculty')} onChange={(e: any) => setValue('treasurer.faculty', e.target.value)} options={[ { value: 'FCSE', label: 'FCSE' }, { value: 'FEE', label: 'FEE' }, { value: 'FME', label: 'FME' }, { value: 'FCVE', label: 'FCVE' }, { value: 'FCME', label: 'FCME' }, { value: 'FMTE', label: 'FMTE' }, { value: 'FES', label: 'FES' }, { value: 'FBS', label: 'FBS' }, { value: 'MGS', label: 'MGS' } ]} placeholder="Select Faculty" />
                   {errors.treasurer?.faculty?.message && <p className="text-red-400 text-xs mt-1 font-medium">{errors.treasurer.faculty.message}</p>}
                 </div>
@@ -468,12 +522,12 @@ export const SocietySetupPage: React.FC = () => {
               <h4 className="text-md font-bold text-white uppercase tracking-wider">
                 DIRECTOR LIAISON</h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                <Input label="Full Name *" placeholder="Full Name" {...register('dl.name')} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^a-zA-Z.,\- ]/g, '') }} error={errors.dl?.name?.message} />
-                <Input label="Reg Number *" placeholder="e.g. 2023123" {...register('dl.regNum')} maxLength={7} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '').slice(0, 7) }} error={errors.dl?.regNum?.message} />
-                <Input label="Contact Number *" placeholder="e.g. 03001234567" {...register('dl.contact')} maxLength={11} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '').slice(0, 11) }} error={errors.dl?.contact?.message} />
-                <Input label="Email Address *" type="email" placeholder="dl@giki.edu.pk" {...register('dl.email')}  error={errors.dl?.email?.message} />
+                <Input label="Full Name" placeholder="Full Name" {...register('dl.name')} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^a-zA-Z.,\- ]/g, '') }} error={errors.dl?.name?.message} />
+                <Input label="Reg Number" placeholder="e.g. 2023123 (7 digits)" {...register('dl.regNum')} maxLength={7} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '').slice(0, 7) }} error={errors.dl?.regNum?.message} />
+                <Input label="Contact Number" placeholder="e.g. 03001234567 (11 digits)" {...register('dl.contact')} maxLength={11} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '').slice(0, 11) }} error={errors.dl?.contact?.message} />
+                <Input label="Email Address" type="email" placeholder="dl@giki.edu.pk" {...register('dl.email')}  error={errors.dl?.email?.message} />
                 <div>
-                  <label className="block text-[11px] font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Faculty *</label>
+                  <label className="block text-[11px] font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Faculty</label>
                   <CustomDropdown value={watch('dl.faculty')} onChange={(e: any) => setValue('dl.faculty', e.target.value)} options={[ { value: 'FCSE', label: 'FCSE' }, { value: 'FEE', label: 'FEE' }, { value: 'FME', label: 'FME' }, { value: 'FCVE', label: 'FCVE' }, { value: 'FCME', label: 'FCME' }, { value: 'FMTE', label: 'FMTE' }, { value: 'FES', label: 'FES' }, { value: 'FBS', label: 'FBS' }, { value: 'MGS', label: 'MGS' } ]} placeholder="Select Faculty" />
                   {errors.dl?.faculty?.message && <p className="text-red-400 text-xs mt-1 font-medium">{errors.dl.faculty.message}</p>}
                 </div>

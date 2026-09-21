@@ -18,14 +18,66 @@ const optionalEmail = z
     { message: 'Must be a valid email address' },
   );
 
-export const executiveMemberSchema = z.object({
-  role: z.string().min(1, 'Role is required'),
-  name: z.string().regex(/^[a-zA-Z., \\-]+$/, 'Only letters, spaces, dots, commas, and dashes allowed').min(1, 'Name is required'),
-  regNum: z.string().regex(/^\d{7}$/, 'Must be exactly 7 digits'),
-  faculty: z.string().min(1, 'Faculty is required'),
-  contact: z.string().regex(/^\d{11}$/, 'Must be exactly 11 digits'),
-  email: z.string().email('Invalid email address'),
-});
+export const executiveMemberSchema = z
+  .object({
+    role: z.string().optional().or(z.literal('')),
+    name: z.string().optional().or(z.literal('')),
+    regNum: z.string().optional().or(z.literal('')),
+    faculty: z.string().optional().or(z.literal('')),
+    contact: z.string().optional().or(z.literal('')),
+    email: z.string().optional().or(z.literal('')),
+  })
+  .superRefine((data, ctx) => {
+    const name = data.name?.trim() || '';
+    const regNum = data.regNum?.trim() || '';
+    const contact = data.contact?.trim() || '';
+    const email = data.email?.trim() || '';
+    const faculty = data.faculty?.trim() || '';
+
+    // If completely empty, it's valid (optional member)
+    const isStarted = Boolean(name || regNum || contact || email || faculty);
+    if (!isStarted) {
+      return;
+    }
+
+    if (!name) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Name is required if member is entered',
+        path: ['name'],
+      });
+    } else if (!/^[a-zA-Z., \-]+$/.test(name)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Only letters, spaces, dots, commas, and dashes allowed',
+        path: ['name'],
+      });
+    }
+
+    if (regNum && !/^\d{7}$/.test(regNum)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Must be exactly 7 digits',
+        path: ['regNum'],
+      });
+    }
+
+    if (contact && !/^\d{11}$/.test(contact)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Must be exactly 11 digits',
+        path: ['contact'],
+      });
+    }
+
+    if (email && !z.string().email().safeParse(email).success) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Invalid email address',
+        path: ['email'],
+      });
+    }
+  });
 
 export const societySetupSchema = z.object({
   name: z
@@ -45,11 +97,32 @@ export const societySetupSchema = z.object({
   linkedin: optionalUrl,
   website: optionalUrl,
   email: optionalEmail,
-  presidentName: z.string().regex(/^[a-zA-Z., \\\-]+$/, 'Only letters, spaces, dots, commas, and dashes allowed').min(1, 'President name is required'),
-  presidentRegNum: z.string().regex(/^\d{7}$/, 'Must be exactly 7 digits').optional().or(z.literal('')),
-  presidentFaculty: z.string().min(1, 'Faculty is required'),
-  presidentContact: z.string().regex(/^\d{11}$/, 'Must be exactly 11 digits').optional().or(z.literal('')),
-  presidentEmail: z.string().email('Invalid email address'),
+  presidentName: z
+    .string()
+    .optional()
+    .or(z.literal(''))
+    .refine(
+      (val) => !val || val.trim() === '' || /^[a-zA-Z., \-]+$/.test(val),
+      { message: 'Only letters, spaces, dots, commas, and dashes allowed' },
+    ),
+  presidentRegNum: z
+    .string()
+    .optional()
+    .or(z.literal(''))
+    .refine(
+      (val) => !val || val.trim() === '' || /^\d{7}$/.test(val),
+      { message: 'Must be exactly 7 digits' },
+    ),
+  presidentFaculty: z.string().optional().or(z.literal('')),
+  presidentContact: z
+    .string()
+    .optional()
+    .or(z.literal(''))
+    .refine(
+      (val) => !val || val.trim() === '' || /^\d{11}$/.test(val),
+      { message: 'Must be exactly 11 digits' },
+    ),
+  presidentEmail: optionalEmail,
   vp: executiveMemberSchema,
   gs: executiveMemberSchema,
   ec: executiveMemberSchema,
