@@ -29,6 +29,8 @@ import { Alert } from '@/components/ui/Alert';
 import { CustomDropdown } from '@/components/ui/CustomDropdown';
 import { usePendingCounts } from '@/hooks/usePendingCounts';
 import { BannerHeader } from '@/components/layout/BannerHeader';
+import { ErrorState } from '@/components/ui/ErrorState';
+import { EmptyState } from '@/components/ui/EmptyState';
 
 export const AdvisorQueuePage: React.FC = () => {
   const { user, logout } = useAuth();
@@ -50,6 +52,7 @@ export const AdvisorQueuePage: React.FC = () => {
     data: queueData,
     isLoading: isPlansLoading,
     isError: isPlansError,
+    error: plansError,
     refetch: refetchPlans,
   } = useQuery({
     queryKey: ['advisorYearlyPlansQueue', page, statusFilter],
@@ -66,6 +69,7 @@ export const AdvisorQueuePage: React.FC = () => {
     data: eventsData,
     isLoading: isEventsLoading,
     isError: isEventsError,
+    error: eventsError,
     refetch: refetchEvents,
   } = useQuery({
     queryKey: ['advisorEventsQueue', page, statusFilter],
@@ -84,6 +88,7 @@ export const AdvisorQueuePage: React.FC = () => {
   
   const isLoading = activeTab === 'plans' ? isPlansLoading : isEventsLoading;
   const isError = activeTab === 'plans' ? isPlansError : isEventsError;
+  const error = activeTab === 'plans' ? plansError : eventsError;
   const refetch = activeTab === 'plans' ? refetchPlans : refetchEvents;
 
   const handleStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -231,19 +236,6 @@ export const AdvisorQueuePage: React.FC = () => {
         </div>
       </div>
 
-      {/* Error State */}
-      {isError && (
-        <div className="space-y-3">
-          null /* Removed error alert */
-          <button
-            onClick={() => refetch()}
-            className="text-xs text-ember-glow hover:underline font-semibold"
-          >
-            Retry
-          </button>
-        </div>
-      )}
-
       {/* 3. Queue Content */}
       {isLoading ? (
         <div className="space-y-4">
@@ -260,22 +252,26 @@ export const AdvisorQueuePage: React.FC = () => {
             </div>
           ))}
         </div>
+      ) : isError ? (
+        <ErrorState
+          error={error}
+          onRetry={refetch}
+          compact
+        />
       ) : activeTab === 'plans' && plans.length === 0 ? (
-        <div className="bg-white/[0.08] backdrop-blur-[20px] p-12 rounded-[18px] border border-white/20 shadow-[0_12px_40px_rgba(0,0,0,0.4)] text-center space-y-3 flex flex-col items-center">
-          <FileText className="w-12 h-12 text-gray-400 opacity-30" />
-          <h3 className="font-bold text-white text-base">No Yearly Plans Found</h3>
-          <p className="text-xs text-gray-400 max-w-sm">
-            There are no yearly calendar submissions matching your current filter.
-          </p>
-        </div>
+        <EmptyState
+          icon={FileText}
+          title="No Yearly Plans Found"
+          description="There are no yearly calendar submissions matching your current filter criteria."
+          compact
+        />
       ) : activeTab === 'events' && events.length === 0 ? (
-        <div className="bg-white/[0.08] backdrop-blur-[20px] p-12 rounded-[18px] border border-white/20 shadow-[0_12px_40px_rgba(0,0,0,0.4)] text-center space-y-3 flex flex-col items-center">
-          <Calendar className="w-12 h-12 text-gray-400 opacity-30" />
-          <h3 className="font-bold text-white text-base">No Events Found</h3>
-          <p className="text-xs text-gray-400 max-w-sm">
-            There are no events matching your current filter for {assignedSocietyName}.
-          </p>
-        </div>
+        <EmptyState
+          icon={Calendar}
+          title="No Events Found"
+          description={`There are no event proposals matching your current filter for ${assignedSocietyName}.`}
+          compact
+        />
       ) : (
         <div className="space-y-4">
           {activeTab === 'plans' ? (
