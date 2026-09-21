@@ -13,6 +13,8 @@ import {
 } from 'lucide-react';
 import { societyService } from '@/services/society.service';
 import { EventCard } from '@/components/feed/EventCard';
+import { ErrorState } from '@/components/ui/ErrorState';
+import { EmptyState } from '@/components/ui/EmptyState';
 
 const Instagram = ({className}: {className?: string}) => <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>;
 const Facebook = ({className}: {className?: string}) => <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>;
@@ -28,6 +30,8 @@ export const SocietyProfilePage: React.FC = () => {
     data: society,
     isLoading: isLoadingSociety,
     isError: isErrorSociety,
+    error: errorSociety,
+    refetch: refetchSociety,
   } = useQuery({
     queryKey: ['publicSociety', id],
     queryFn: () => societyService.getPublicSocietyById(id!),
@@ -56,7 +60,13 @@ export const SocietyProfilePage: React.FC = () => {
     },
   });
 
-  const { data: eventsData, isLoading: isLoadingEvents } = useQuery({
+  const {
+    data: eventsData,
+    isLoading: isLoadingEvents,
+    isError: isErrorEvents,
+    error: errorEvents,
+    refetch: refetchEvents,
+  } = useQuery({
     queryKey: ['publicSocietyEvents', id],
     queryFn: () => societyService.getPublicSocietyEvents(id!),
     enabled: !!id,
@@ -83,14 +93,24 @@ export const SocietyProfilePage: React.FC = () => {
 
   if (isErrorSociety || !society) {
     return (
-      <div className="max-w-md mx-auto py-12 space-y-4 text-center">
-        <button
-          onClick={() => navigate(-1)}
-          className="fixed top-4 left-4 sm:top-6 sm:left-6 z-[100] inline-flex items-center justify-center w-10 h-10 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white rounded-full transition-all cursor-pointer shadow-lg"
-          title="Go Back"
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </button>
+      <div className="max-w-2xl mx-auto py-16 px-4">
+        <ErrorState
+          error={errorSociety}
+          title={isErrorSociety ? undefined : 'Society Not Found'}
+          description={
+            isErrorSociety
+              ? undefined
+              : "This campus society could not be found or may have been deactivated."
+          }
+          badge={isErrorSociety ? undefined : 'Society Unavailable'}
+          onRetry={isErrorSociety ? () => refetchSociety() : undefined}
+          actionText="Try Reconnecting"
+          secondaryAction={{
+            label: 'Browse Society Directory',
+            to: '/societies',
+          }}
+          showBackAction
+        />
       </div>
     );
   }
@@ -382,14 +402,19 @@ export const SocietyProfilePage: React.FC = () => {
                   <Loader2 className="w-4 h-4 animate-spin" />
                   <span>Loading society events...</span>
                 </div>
+              ) : isErrorEvents ? (
+                <ErrorState
+                  error={errorEvents}
+                  onRetry={refetchEvents}
+                  compact
+                />
               ) : upcomingEvents.length === 0 ? (
-                <div className="bg-white/5 p-8 rounded-2xl border border-white/10 text-center space-y-2">
-                  <CalendarIcon className="w-10 h-10 text-gray-500 mx-auto" />
-                  <h3 className="font-semibold text-white text-sm">No Upcoming Events</h3>
-                  <p className="text-xs text-gray-400">
-                    {society.name} has no scheduled upcoming campus events right now.
-                  </p>
-                </div>
+                <EmptyState
+                  icon={CalendarIcon}
+                  title="No Upcoming Events"
+                  description={`${society.name} has no scheduled upcoming campus events right now. Check out the Executive Council tab or explore other societies.`}
+                  compact
+                />
               ) : (
                 <div className="cards-container">
                   {upcomingEvents.map((event) => (
@@ -413,13 +438,12 @@ export const SocietyProfilePage: React.FC = () => {
           {activeTab === 'past' && (
             <div className="space-y-4">
               {pastEvents.length === 0 ? (
-                <div className="bg-white/5 p-8 rounded-2xl border border-white/10 text-center space-y-2">
-                  <History className="w-10 h-10 text-gray-500 mx-auto" />
-                  <h3 className="font-semibold text-white text-sm">No Past Events</h3>
-                  <p className="text-xs text-gray-400">
-                    No past events recorded for this society.
-                  </p>
-                </div>
+                <EmptyState
+                  icon={History}
+                  title="No Past Events Recorded"
+                  description={`No archive events have been recorded for ${society.name} yet.`}
+                  compact
+                />
               ) : (
                 <div className="cards-container">
                   {pastEvents.map((event) => (

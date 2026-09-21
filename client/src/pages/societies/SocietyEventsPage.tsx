@@ -14,6 +14,8 @@ import { eventService } from '@/services/event.service';
 import { Alert } from '@/components/ui/Alert';
 import { CustomDropdown } from '@/components/ui/CustomDropdown';
 import { EventCard } from '@/components/feed/EventCard';
+import { ErrorState } from '@/components/ui/ErrorState';
+import { EmptyState } from '@/components/ui/EmptyState';
 import type { EventItem } from '@/types/event.types';
 
 export const SocietyEventsPage: React.FC = () => {
@@ -37,6 +39,8 @@ export const SocietyEventsPage: React.FC = () => {
     data: allEvents,
     isLoading,
     isError,
+    error,
+    refetch,
   } = useQuery({
     queryKey: ['mySocietyEventsList'],
     queryFn: () => eventService.getMyEvents(),
@@ -173,48 +177,47 @@ export const SocietyEventsPage: React.FC = () => {
         </div>
       </div>
 
-      {isError && (
-        <Alert variant="error" message="Failed to load events. Please try again." className="mb-6 bg-red-500/10 border-red-500/20 text-red-400" />
-      )}
-
       {isLoading ? (
         <div className="cards-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 w-full mx-auto">
           {[1, 2, 3].map((i) => (
             <div key={i} className="animate-pulse bg-white/5 rounded-[24px] border border-white/10 h-72 w-full backdrop-blur-md"></div>
           ))}
         </div>
+      ) : isError ? (
+        <ErrorState
+          error={error}
+          onRetry={refetch}
+          secondaryAction={{
+            label: 'Create New Event',
+            to: '/events/create',
+          }}
+        />
       ) : (
         <div className="w-full">
           {filteredEvents.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-20 px-4 bg-white/[0.05] border border-white/10 rounded-[24px] backdrop-blur-md text-center space-y-4">
-              <div className="p-4 bg-white/10 rounded-full">
-                <Calendar className="w-10 h-10 text-gray-400" />
-              </div>
-              <div>
-                <h3 className="text-xl font-extrabold text-white">No Events Found</h3>
-                <p className="text-gray-400 mt-2 max-w-sm mx-auto">
-                  {searchQuery || statusFilter !== 'all' || typeToggle !== 'all'
-                    ? "We couldn't find any events matching your current filters."
-                    : "Your society hasn't created any events yet."}
-                </p>
-              </div>
-              {(searchQuery || statusFilter !== 'all' || typeToggle !== 'all') ? (
-                <button
-                  onClick={handleClearFilters}
-                  className="px-6 py-2 mt-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white rounded-xl transition-all text-sm font-semibold"
-                >
-                  Clear all filters
-                </button>
-              ) : (
-                <Link
-                  to="/events/create"
-                  className="px-6 py-2 mt-2 bg-white text-gray-900 hover:bg-gray-200 rounded-xl transition-all text-sm font-semibold inline-flex items-center gap-2"
-                >
-                  <Plus className="w-4 h-4" />
-                  Create Your First Event
-                </Link>
-              )}
-            </div>
+            <EmptyState
+              icon={Calendar}
+              title="No Events Found"
+              description={
+                searchQuery || statusFilter !== 'all' || typeToggle !== 'all'
+                  ? "We couldn't find any events matching your current filters."
+                  : "Your society hasn't created any campus events yet."
+              }
+              onClearFilters={
+                searchQuery || statusFilter !== 'all' || typeToggle !== 'all'
+                  ? handleClearFilters
+                  : undefined
+              }
+              action={
+                !(searchQuery || statusFilter !== 'all' || typeToggle !== 'all')
+                  ? {
+                      label: 'Create Your First Event',
+                      to: '/events/create',
+                      icon: Plus,
+                    }
+                  : undefined
+              }
+            />
           ) : (
             <div className="cards-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 w-full mx-auto">
               {filteredEvents.map((event: EventItem) => (

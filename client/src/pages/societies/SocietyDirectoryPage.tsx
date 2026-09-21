@@ -12,6 +12,8 @@ import { SocietyCardSkeleton } from '@/components/societies/SocietyCardSkeleton'
 import { Alert } from '@/components/ui/Alert';
 import { CustomDropdown } from '@/components/ui/CustomDropdown';
 import { useDebounce } from '@/hooks/useDebounce';
+import { ErrorState } from '@/components/ui/ErrorState';
+import { EmptyState } from '@/components/ui/EmptyState';
 import type { OrganizationType } from '@/types/society.types';
 
 export const SocietyDirectoryPage: React.FC = () => {
@@ -34,6 +36,7 @@ export const SocietyDirectoryPage: React.FC = () => {
     data: directoryData,
     isLoading,
     isError,
+    error,
     refetch,
   } = useQuery({
     queryKey: ['publicSocieties', page, selectedCategory, selectedType, debouncedSearch],
@@ -174,42 +177,37 @@ export const SocietyDirectoryPage: React.FC = () => {
         </div>
       )}
 
-      {/* Error Callout */}
-      {isError && (
-        <div className="space-y-3">
-          null /* Removed error alert */
-          <button
-            onClick={() => refetch()}
-            className="text-sm font-semibold text-white underline hover:no-underline focus:outline-none"
-          >
-            Retry Loading Directory
-          </button>
-        </div>
-      )}
-
-      {/* Directory Grid View */}
+      {/* Directory Content Views */}
       {isLoading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
           {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
             <SocietyCardSkeleton key={i} />
           ))}
         </div>
+      ) : isError ? (
+        <ErrorState
+          error={error}
+          onRetry={refetch}
+          secondaryAction={{
+            label: 'Upcoming Events',
+            to: '/upcoming-events',
+          }}
+        />
       ) : societies.length === 0 ? (
-        <div className="p-12 rounded-[24px] border border-white/20 bg-white/[0.08] backdrop-blur-[20px] shadow-[0_12px_40px_rgba(0,0,0,0.4)] text-center space-y-4">
-          <Building2 className="w-16 h-16 text-gray-500 mx-auto" />
-          <h3 className="font-semibold text-2xl text-white">No Societies Found</h3>
-          <p className="text-gray-400 max-w-sm mx-auto">
-            We couldn't find any active communities matching your selected filters.
-          </p>
-          {(selectedCategory || selectedType || searchQuery) && (
-            <button
-              onClick={handleClearFilters}
-              className="px-6 py-3 bg-white/5 text-white border border-white/10 rounded-xl text-sm font-bold hover:bg-white/10 transition-colors mt-4"
-            >
-              Clear Search Filters
-            </button>
-          )}
-        </div>
+        <EmptyState
+          icon={Building2}
+          title="No Societies Found"
+          description={
+            selectedCategory || selectedType || searchQuery
+              ? "We couldn't find any active student societies, clubs, or teams matching your selected filters."
+              : 'There are currently no student societies listed in the directory.'
+          }
+          onClearFilters={
+            selectedCategory || selectedType || searchQuery
+              ? handleClearFilters
+              : undefined
+          }
+        />
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
           {societies.map((society) => (
