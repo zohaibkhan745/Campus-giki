@@ -175,6 +175,8 @@ export const DashboardPage: React.FC = () => {
     title: string;
   } | null>(null);
   const [isAboutModalOpen, setIsAboutModalOpen] = useState(false);
+  const [selectedSlipEvent, setSelectedSlipEvent] = useState<EventItem | null>(null);
+  const [selectedUploadEvent, setSelectedUploadEvent] = useState<EventItem | null>(null);
 
   // Single aggregated dashboard query
   const { data: dashboardData, isLoading, isError, error, refetch } = useQuery({
@@ -228,9 +230,6 @@ export const DashboardPage: React.FC = () => {
 
   const changesRequestedEventsCount = pendingEvents.filter(e => e.approvalStatus === 'CHANGES_REQUESTED' || e.approvalStatus === 'APPROVED' || e.approvalStatus === 'REJECTED').length;
   const changesRequestedPlanCount = (yearlyPlan?.status === 'CHANGES_REQUESTED' || yearlyPlan?.editRequestStatus === 'APPROVED' || yearlyPlan?.editRequestStatus === 'REJECTED') ? 1 : 0;
-
-  const [selectedSlipEvent, setSelectedSlipEvent] = useState<EventItem | null>(null);
-  const [selectedUploadEvent, setSelectedUploadEvent] = useState<EventItem | null>(null);
 
   // Filter approved events requiring physical venue clearance slip
   const allApprovedEvents = [
