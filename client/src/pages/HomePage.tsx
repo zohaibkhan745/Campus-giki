@@ -2,12 +2,14 @@ import { useFeed } from '@/hooks/useFeed';
 import { EventCard } from '@/components/feed/EventCard';
 import { PostCard } from '@/components/feed/PostCard';
 import { FeedCardSkeleton } from '@/components/feed/FeedCardSkeleton';
+import { ErrorState } from '@/components/ui/ErrorState';
+import { EmptyState } from '@/components/ui/EmptyState';
 
-import { RefreshCw, AlertCircle } from 'lucide-react';
-import { useState } from 'react';
+import { RefreshCw, Sparkles } from 'lucide-react';
+import React from 'react';
 
 export const HomePage: React.FC = () => {
-  const { items, meta, isLoading, isLoadingMore, error, loadMore: fetchNextPage, refetch } = useFeed(12);
+  const { items, meta, isLoading, isLoadingMore, isError, rawError, loadMore: fetchNextPage, refetch } = useFeed(12);
 
   const handleLoadMore = () => {
     fetchNextPage();
@@ -30,23 +32,6 @@ export const HomePage: React.FC = () => {
             </p>
           </header>
 
-          {/* Error Callout State */}
-          {error && (
-            <div className="bg-[#17181c]/80 backdrop-blur-md border border-white/10 rounded-2xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl">
-              <div className="flex items-center gap-3">
-                <AlertCircle className="w-6 h-6 text-red-400 shrink-0" />
-                <p className="text-[16px] font-medium text-white">{error}</p>
-              </div>
-              <button
-                onClick={refetch}
-                className="inline-flex items-center gap-2 bg-[#2c2f38] border border-white/10 rounded-xl px-4 py-2 text-sm font-semibold text-white hover:bg-white/10 active:scale-95 transition-all shrink-0 cursor-pointer"
-              >
-                <RefreshCw className="w-4 h-4" />
-                <span>Retry Feed</span>
-              </button>
-            </div>
-          )}
-
           {/* Initial Loading State */}
           {isLoading ? (
             <div className="space-y-8">
@@ -54,26 +39,55 @@ export const HomePage: React.FC = () => {
               <FeedCardSkeleton />
               <FeedCardSkeleton />
             </div>
+          ) : isError && items.length === 0 ? (
+            /* Primary Connection Error State - Mutually exclusive from Empty State */
+            <ErrorState
+              error={rawError}
+              onRetry={refetch}
+              secondaryAction={{
+                label: 'View Campus Calendar',
+                to: '/events',
+              }}
+            />
           ) : items.length === 0 ? (
-            /* Empty State */
-            <div className="bg-[#17181c]/80 backdrop-blur-md border border-white/10 rounded-2xl p-16 text-center space-y-3 shadow-xl">
-              <h2 className="font-semibold text-2xl text-white">
-                Nothing here yet
-              </h2>
-              <p className="text-gray-400 text-[16px] max-w-md mx-auto">
-                Check back soon for new campus events, workshops, and campus announcements.
-              </p>
-            </div>
+            /* True Empty State */
+            <EmptyState
+              icon={Sparkles}
+              title="Campus Feed is Quiet"
+              description="No announcements or society events have been published to the feed yet. Explore upcoming campus events or connect with student societies."
+              action={{
+                label: 'Upcoming Events',
+                to: '/upcoming-events',
+              }}
+              secondaryAction={{
+                label: 'Browse Societies',
+                to: '/societies',
+              }}
+            />
           ) : (
             /* Feed Items Stack */
-            <div className="cards-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 w-full mx-auto">
-              {items.map((item) =>
-                item.type === 'event' ? (
-                  <EventCard key={`event-${item.id}`} item={item}  />
-                ) : (
-                  <PostCard key={`post-${item.id}`} item={item} />
-                ),
+            <div className="space-y-6">
+              {/* If there's an error while older items exist, show an unobtrusive notice */}
+              {isError && (
+                <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-200 text-xs sm:text-sm flex items-center justify-between gap-3">
+                  <span>Unable to refresh latest campus feed. Displaying cached stories.</span>
+                  <button
+                    onClick={refetch}
+                    className="px-3 py-1 bg-amber-500/20 hover:bg-amber-500/30 rounded-lg font-bold text-amber-300 transition-colors cursor-pointer"
+                  >
+                    Retry
+                  </button>
+                </div>
               )}
+              <div className="cards-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 w-full mx-auto">
+                {items.map((item) =>
+                  item.type === 'event' ? (
+                    <EventCard key={`event-${item.id}`} item={item} />
+                  ) : (
+                    <PostCard key={`post-${item.id}`} item={item} />
+                  ),
+                )}
+              </div>
             </div>
           )}
 

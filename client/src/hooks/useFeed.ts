@@ -31,7 +31,9 @@ export function useFeed(limit = 6) {
     meta,
     isLoading,
     isLoadingMore: isFetchingNextPage,
+    isError,
     error: errorMessage,
+    rawError: error,
     loadMore: () => {
       if (hasNextPage && !isFetchingNextPage) {
         fetchNextPage();
