@@ -18,6 +18,18 @@ const optionalEmail = z
     { message: 'Must be a valid email address' },
   );
 
+export const isValidPhone = (val?: string | null) => {
+  if (!val || val.trim() === '') return true;
+  const clean = val.trim().replace(/[\s\-()]/g, '');
+  return /^(\+?\d{10,15})$/.test(clean);
+};
+
+export const isValidRegNum = (val?: string | null) => {
+  if (!val || val.trim() === '') return true;
+  const clean = val.trim().replace(/[\s\-]/g, '');
+  return /^\d{7}$/.test(clean);
+};
+
 export const executiveMemberSchema = z
   .object({
     role: z.string().optional().or(z.literal('')),
@@ -54,7 +66,7 @@ export const executiveMemberSchema = z
       });
     }
 
-    if (regNum && !/^\d{7}$/.test(regNum)) {
+    if (regNum && !isValidRegNum(regNum)) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: 'Must be exactly 7 digits',
@@ -62,10 +74,10 @@ export const executiveMemberSchema = z
       });
     }
 
-    if (contact && !/^\d{11}$/.test(contact)) {
+    if (contact && !isValidPhone(contact)) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: 'Must be exactly 11 digits',
+        message: 'Must be a valid phone number (e.g. 03001234567 or +923001234567)',
         path: ['contact'],
       });
     }
@@ -110,7 +122,7 @@ export const societySetupSchema = z.object({
     .optional()
     .or(z.literal(''))
     .refine(
-      (val) => !val || val.trim() === '' || /^\d{7}$/.test(val),
+      isValidRegNum,
       { message: 'Must be exactly 7 digits' },
     ),
   presidentFaculty: z.string().optional().or(z.literal('')),
@@ -119,8 +131,8 @@ export const societySetupSchema = z.object({
     .optional()
     .or(z.literal(''))
     .refine(
-      (val) => !val || val.trim() === '' || /^\d{11}$/.test(val),
-      { message: 'Must be exactly 11 digits' },
+      isValidPhone,
+      { message: 'Must be a valid phone number (e.g. 03001234567 or +923001234567)' },
     ),
   presidentEmail: optionalEmail,
   vp: executiveMemberSchema,
