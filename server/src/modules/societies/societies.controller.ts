@@ -8,6 +8,7 @@ import {
   Param,
   HttpCode,
   HttpStatus,
+  Header,
   ParseUUIDPipe,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam } from '@nestjs/swagger';
@@ -35,6 +36,7 @@ export class SocietiesController {
 
   @Get()
   @HttpCode(HttpStatus.OK)
+  @Header('Cache-Control', 'public, max-age=60, stale-while-revalidate=120')
   @ApiOperation({
     summary: 'Public Society Directory (Paginated, Category & Search Filtered)',
   })
@@ -95,6 +97,7 @@ export class SocietiesController {
 
   @Get(':id')
   @HttpCode(HttpStatus.OK)
+  @Header('Cache-Control', 'public, max-age=60, stale-while-revalidate=120')
   @ApiOperation({ summary: 'Get public society profile details by ID' })
   @ApiParam({ name: 'id', description: 'Society UUID' })
   @ApiResponse({
@@ -114,6 +117,7 @@ export class SocietiesController {
 
   @Get(':id/events')
   @HttpCode(HttpStatus.OK)
+  @Header('Cache-Control', 'public, max-age=60, stale-while-revalidate=120')
   @ApiOperation({ summary: 'Get public events hosted by society (Split into upcoming and past)' })
   @ApiParam({ name: 'id', description: 'Society UUID' })
   @ApiResponse({
@@ -133,6 +137,7 @@ export class SocietiesController {
 
   @Get(':id/posts')
   @HttpCode(HttpStatus.OK)
+  @Header('Cache-Control', 'public, max-age=60, stale-while-revalidate=120')
   @ApiOperation({ summary: 'Get public posts/announcements published by society' })
   @ApiParam({ name: 'id', description: 'Society UUID' })
   async getPublicSocietyPosts(@Param('id', ParseUUIDPipe) id: string) {

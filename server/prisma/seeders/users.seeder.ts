@@ -8,12 +8,13 @@ export async function seedUsers(
   console.log('  -> Seeding DSA Admin user...');
   const admin = await prisma.user.upsert({
     where: { email: 'admin.dsa@giki.edu.pk' },
-    update: {},
+    update: { dsaRole: 'DIRECTOR' },
     create: {
       email: 'admin.dsa@giki.edu.pk',
       password: defaultPasswordHash,
       fullName: 'Dean Student Affair',
       role: Role.DSA_ADMIN,
+      dsaRole: 'DIRECTOR',
     },
   });
 

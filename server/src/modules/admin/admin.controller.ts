@@ -21,12 +21,15 @@ import { OnboardSocietyResponseDto } from './dto/onboard-society-response.dto';
 import { QueryAdminSocietiesDto } from './dto/query-admin-societies.dto';
 import { UpdateSocietyAdminDto } from './dto/update-society-admin.dto';
 import { CreateAdvisorDto } from './dto/create-advisor.dto';
+import { CreateStaffDto } from './dto/create-staff.dto';
 import { QueryAdminEventsDto } from './dto/query-admin-events.dto';
 import { AdminDashboardResponseDto } from './dto/admin-dashboard-response.dto';
 import { AdminPendingSummaryDto } from './dto/admin-pending-summary.dto';
 import { AdminUpdateYearlyPlanDto } from './dto/admin-update-yearly-plan.dto';
 import { VerifyVenueClearanceDto } from './dto/verify-venue-clearance.dto';
 import { Auth } from '../../core/decorators/auth.decorator';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { UserProfileDto } from '../auth/dto/auth-response.dto';
 
 @ApiTags('DSA Administration')
 @Controller('admin')
@@ -91,6 +94,45 @@ export class AdminController {
     return this.adminService.deleteAdvisor(id);
   }
 
+  @Get('staff')
+  @Auth(Role.DSA_ADMIN)
+  @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({
+    summary: 'DSA Staff Management: Get all DSA and DDSA administrative accounts (Director Only)',
+  })
+  async getStaffList(@CurrentUser() user: UserProfileDto) {
+    return this.adminService.getStaffList(user.id);
+  }
+
+  @Post('staff')
+  @Auth(Role.DSA_ADMIN)
+  @HttpCode(HttpStatus.CREATED)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({
+    summary: 'DSA Staff Management: Director invites a new DDSA staff account',
+  })
+  async createStaff(
+    @CurrentUser() user: UserProfileDto,
+    @Body() dto: CreateStaffDto,
+  ) {
+    return this.adminService.createStaff(dto, user.id);
+  }
+
+  @Delete('staff/:id')
+  @Auth(Role.DSA_ADMIN)
+  @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({
+    summary: 'DSA Staff Management: Director deletes a DDSA staff account',
+  })
+  async deleteStaff(
+    @CurrentUser() user: UserProfileDto,
+    @Param('id') id: string,
+  ) {
+    return this.adminService.deleteStaff(id, user.id);
+  }
+
   @Get('events')
   @Auth(Role.DSA_ADMIN)
   @HttpCode(HttpStatus.OK)
@@ -119,6 +161,26 @@ export class AdminController {
   })
   async getAllSocieties(@Query() query: QueryAdminSocietiesDto) {
     return this.adminService.getAllSocietiesAdmin(query);
+  }
+
+  @Get('societies/:id')
+  @Auth(Role.DSA_ADMIN)
+  @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({
+    summary: 'DSA Management: Get full society details including advisor, EC members, events and yearly plans',
+  })
+  @ApiParam({ name: 'id', description: 'Society UUID' })
+  @ApiResponse({
+    status: 200,
+    description: 'Full society details returned successfully',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Society not found',
+  })
+  async getSocietyById(@Param('id', ParseUUIDPipe) id: string) {
+    return this.adminService.getSocietyByIdAdmin(id);
   }
 
   @Post('societies')

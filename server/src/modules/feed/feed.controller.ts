@@ -1,4 +1,4 @@
-import { Controller, Get, Query, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Query, HttpCode, HttpStatus, Header } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { FeedService } from './feed.service';
 import { QueryFeedDto } from './dto/query-feed.dto';
@@ -11,6 +11,7 @@ export class FeedController {
 
   @Get()
   @HttpCode(HttpStatus.OK)
+  @Header('Cache-Control', 'public, max-age=15, stale-while-revalidate=45')
   @ApiOperation({
     summary: 'Get merged public campus feed of events and announcement posts (chronological)',
   })

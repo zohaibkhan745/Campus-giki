@@ -3,6 +3,7 @@ import {
   NotFoundException,
   ConflictException,
   BadRequestException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { PrismaService } from '../../core/database/prisma.service';
 import { QueryAdminYearlyPlansDto } from './dto/query-admin-plans.dto';
@@ -15,13 +16,14 @@ import { QueryAdminEventsDto, EventTimeType } from './dto/query-admin-events.dto
 import { AdminUpdateYearlyPlanDto } from './dto/admin-update-yearly-plan.dto';
 import { AdminDashboardResponseDto } from './dto/admin-dashboard-response.dto';
 import { AdminPendingSummaryDto } from './dto/admin-pending-summary.dto';
-import { Prisma, Role, PlanStatus } from '@prisma/client';
+import { Prisma, Role, PlanStatus, DsaRole } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 
 import { ConfigService } from '@nestjs/config';
 import { EmailService } from '../email/email.service';
 import { CreateAdvisorDto } from './dto/create-advisor.dto';
+import { CreateStaffDto } from './dto/create-staff.dto';
 
 @Injectable()
 export class AdminService {
@@ -319,33 +321,41 @@ export class AdminService {
   }
 
   /**
-   * DSA creates a new faculty advisor
+   * DSA creates a new faculty advisor via secure email activation invitation.
    */
   async createAdvisor(dto: CreateAdvisorDto) {
+    const email = dto.email.toLowerCase().trim();
     const existingUser = await this.prisma.user.findUnique({
-      where: { email: dto.email.toLowerCase() },
+      where: { email },
     });
 
     if (existingUser) {
-      throw new ConflictException(`User with email ${dto.email} already exists`);
+      throw new ConflictException(`User with email ${email} already exists`);
     }
 
-    const hashedPassword = await bcrypt.hash(dto.password, 10);
+    const rawToken = crypto.randomBytes(32).toString('hex');
+    const hashedToken = crypto.createHash('sha256').update(rawToken).digest('hex');
+    const tokenExpires = new Date(Date.now() + 48 * 60 * 60 * 1000); // 48 hours
+    const initialPlaceholderPass = await bcrypt.hash(crypto.randomBytes(16).toString('hex'), 10);
 
-    return this.prisma.$transaction(async (prisma) => {
+    const advisor = await this.prisma.$transaction(async (prisma) => {
       const user = await prisma.user.create({
         data: {
-          fullName: dto.fullName,
-          email: dto.email.toLowerCase(),
-          password: hashedPassword,
-          role: 'ADVISOR',
+          fullName: dto.fullName.trim(),
+          email,
+          password: initialPlaceholderPass,
+          role: Role.ADVISOR,
+          isActive: true,
+          isEmailVerified: false,
+          verificationToken: hashedToken,
+          verificationExpires: tokenExpires,
         },
       });
 
-      const advisor = await prisma.advisor.create({
+      return prisma.advisor.create({
         data: {
-          department: dto.department,
-          designation: dto.designation,
+          department: dto.department.trim(),
+          designation: dto.designation.trim(),
           userId: user.id,
         },
         include: {
@@ -358,9 +368,135 @@ export class AdminService {
           },
         },
       });
-
-      return advisor;
     });
+
+    const clientUrl = this.configService.get<string>('CLIENT_URL') || 'http://localhost:5173';
+    const activationUrl = `${clientUrl}/activate-advisor?token=${rawToken}&email=${encodeURIComponent(email)}`;
+
+    this.emailService
+      .sendAdvisorActivationEmail(email, dto.fullName.trim(), activationUrl)
+      .catch((err) => console.error('Failed to send advisor activation email:', err));
+
+    return {
+      ...advisor,
+      activationEmailSent: true,
+    };
+  }
+
+  /**
+   * DSA Staff Management: Returns list of all DSA and DDSA administrative accounts.
+   */
+  async getStaffList(currentUserId: string) {
+    const caller = await this.prisma.user.findUnique({ where: { id: currentUserId } });
+    if (!caller || caller.dsaRole !== DsaRole.DIRECTOR) {
+      throw new ForbiddenException(
+        'Access denied: Only the Director of Student Affairs (DSA) can view DDSA staff accounts.',
+      );
+    }
+
+    const staff = await this.prisma.user.findMany({
+      where: { role: Role.DSA_ADMIN },
+      select: {
+        id: true,
+        fullName: true,
+        email: true,
+        dsaRole: true,
+        role: true,
+        isActive: true,
+        isEmailVerified: true,
+        createdAt: true,
+      },
+      orderBy: [{ dsaRole: 'asc' }, { fullName: 'asc' }],
+    });
+
+    return staff;
+  }
+
+  /**
+   * DSA Staff Management: Director creates a new DDSA staff member with an invitation link.
+   */
+  async createStaff(dto: CreateStaffDto, currentUserId: string) {
+    const caller = await this.prisma.user.findUnique({ where: { id: currentUserId } });
+    if (!caller || caller.dsaRole !== DsaRole.DIRECTOR) {
+      throw new ForbiddenException(
+        'Access denied: Only the Director of Student Affairs (DSA) can invite DDSA staff accounts.',
+      );
+    }
+
+    const email = dto.email.toLowerCase().trim();
+    const existing = await this.prisma.user.findUnique({ where: { email } });
+    if (existing) {
+      throw new ConflictException(`An account with email '${email}' already exists.`);
+    }
+
+    const rawToken = crypto.randomBytes(32).toString('hex');
+    const hashedToken = crypto.createHash('sha256').update(rawToken).digest('hex');
+    const tokenExpires = new Date(Date.now() + 48 * 60 * 60 * 1000);
+    const initialPlaceholderPass = await bcrypt.hash(crypto.randomBytes(16).toString('hex'), 10);
+
+    const user = await this.prisma.user.create({
+      data: {
+        fullName: dto.fullName.trim(),
+        email,
+        password: initialPlaceholderPass,
+        role: Role.DSA_ADMIN,
+        dsaRole: DsaRole.DEPUTY_DIRECTOR,
+        isActive: true,
+        isEmailVerified: false,
+        verificationToken: hashedToken,
+        verificationExpires: tokenExpires,
+      },
+      select: {
+        id: true,
+        fullName: true,
+        email: true,
+        role: true,
+        dsaRole: true,
+        isActive: true,
+        createdAt: true,
+      },
+    });
+
+    const clientUrl = this.configService.get<string>('CLIENT_URL') || 'http://localhost:5173';
+    const activationUrl = `${clientUrl}/activate-advisor?token=${rawToken}&email=${encodeURIComponent(email)}`;
+
+    this.emailService
+      .sendDdsaInvitationEmail(email, dto.fullName.trim(), activationUrl)
+      .catch((err) => console.error('Failed to dispatch DDSA invitation email:', err));
+
+    return {
+      ...user,
+      invitationEmailSent: true,
+    };
+  }
+
+  /**
+   * DSA Staff Management: Director deactivates/deletes a DDSA staff account.
+   */
+  async deleteStaff(staffId: string, currentUserId: string) {
+    const caller = await this.prisma.user.findUnique({ where: { id: currentUserId } });
+    if (!caller || caller.dsaRole !== DsaRole.DIRECTOR) {
+      throw new ForbiddenException(
+        'Access denied: Only the Director of Student Affairs (DSA) can delete DDSA staff accounts.',
+      );
+    }
+
+    if (staffId === currentUserId) {
+      throw new BadRequestException('You cannot delete your own administrative account.');
+    }
+
+    const target = await this.prisma.user.findUnique({ where: { id: staffId } });
+    if (!target || target.role !== Role.DSA_ADMIN) {
+      throw new NotFoundException('Administrative staff account not found.');
+    }
+
+    if (target.dsaRole === DsaRole.DIRECTOR) {
+      throw new BadRequestException('Primary Director accounts cannot be deleted.');
+    }
+
+    await this.prisma.user.delete({ where: { id: staffId } });
+
+    return { message: 'DDSA staff account deleted successfully', id: staffId };
   }
 
   /**
@@ -614,6 +750,90 @@ export class AdminService {
         hasNextPage: page < totalPages,
         hasPreviousPage: page > 1,
       },
+    };
+  }
+
+  /**
+   * DSA Society Details Query: Full society profile details including EC members, advisor, and contact info.
+   */
+  async getSocietyByIdAdmin(id: string) {
+    const society = await this.prisma.society.findUnique({
+      where: { id },
+      include: {
+        category: true,
+        advisor: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                fullName: true,
+                email: true,
+                avatarUrl: true,
+              },
+            },
+          },
+        },
+        user: {
+          select: {
+            id: true,
+            email: true,
+            fullName: true,
+            isActive: true,
+            avatarUrl: true,
+            createdAt: true,
+            updatedAt: true,
+          },
+        },
+        events: {
+          select: {
+            id: true,
+            title: true,
+            eventDate: true,
+            startTime: true,
+            endTime: true,
+            venue: true,
+            approvalStatus: true,
+            isPublished: true,
+            coverImageUrl: true,
+          },
+          orderBy: { eventDate: 'desc' },
+          take: 6,
+        },
+        yearlyPlans: {
+          select: {
+            id: true,
+            year: true,
+            status: true,
+            createdAt: true,
+            updatedAt: true,
+          },
+          orderBy: { year: 'desc' },
+          take: 3,
+        },
+        _count: {
+          select: {
+            events: true,
+            yearlyPlans: true,
+          },
+        },
+      },
+    });
+
+    if (!society) {
+      throw new NotFoundException(`Society with ID '${id}' was not found`);
+    }
+
+    let status = AdminSocietyStatus.ACTIVE;
+    if (!society.user.isActive) {
+      status = AdminSocietyStatus.INACTIVE;
+    } else if (!society.isSetupComplete) {
+      status = AdminSocietyStatus.UNCONFIGURED;
+    }
+
+    return {
+      ...society,
+      status,
+      presidentEmail: society.presidentEmail || society.user.email,
     };
   }
 

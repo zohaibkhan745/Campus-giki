@@ -32,7 +32,11 @@ export class PostsService {
       include: {
         author: {
           select: {
+            id: true,
+            fullName: true,
+            email: true,
             role: true,
+            avatarUrl: true,
             society: {
               select: { id: true, name: true, logoUrl: true, category: true },
             },
@@ -107,7 +111,11 @@ export class PostsService {
         include: {
           author: {
             select: {
+              id: true,
+              fullName: true,
+              email: true,
               role: true,
+              avatarUrl: true,
               society: {
                 select: { id: true, name: true, logoUrl: true, category: true },
               },
@@ -142,7 +150,11 @@ export class PostsService {
         include: {
           author: {
             select: {
+              id: true,
+              fullName: true,
+              email: true,
               role: true,
+              avatarUrl: true,
               society: {
                 select: { id: true, name: true, logoUrl: true, category: true },
               },

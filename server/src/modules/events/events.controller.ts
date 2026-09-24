@@ -9,6 +9,7 @@ import {
   Query,
   HttpCode,
   HttpStatus,
+  Header,
   ParseUUIDPipe,
   UseInterceptors,
   UploadedFile,
@@ -42,6 +43,7 @@ export class EventsController {
 
   @Get()
   @HttpCode(HttpStatus.OK)
+  @Header('Cache-Control', 'public, max-age=30, stale-while-revalidate=60')
   @ApiOperation({
     summary: 'Public Campus Events Directory / Calendar Feed (Filtered by date range from & to)',
   })
@@ -101,6 +103,7 @@ export class EventsController {
 
   @Get(':id')
   @HttpCode(HttpStatus.OK)
+  @Header('Cache-Control', 'public, max-age=30, stale-while-revalidate=60')
   @ApiOperation({ summary: 'Get single event by UUID' })
   @ApiParam({ name: 'id', description: 'Event UUID' })
   @ApiResponse({

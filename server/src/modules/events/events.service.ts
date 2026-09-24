@@ -14,6 +14,8 @@ import { Society, Event, Prisma, EventApprovalStatus, VenueClearanceStatus } fro
 import { UploadsService } from '../uploads/uploads.service';
 import { validateExecutiveCouncil } from '../../common/utils/council.util';
 import { FeedService } from '../feed/feed.service';
+import { EmailService } from '../email/email.service';
+import { RedisService } from '../../core/redis/redis.service';
 
 export interface SocietyEventsGroupDto {
   upcoming: EventResponseDto[];
@@ -34,19 +36,39 @@ export interface PaginatedEventsResponseDto {
 
 @Injectable()
 export class EventsService {
+  private static readonly REDIS_EVENTS_TTL = 60; // 60s cache for public event listings
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly uploadsService: UploadsService,
+    private readonly emailService: EmailService,
+    private readonly redis: RedisService,
   ) {}
 
   /**
+   * Invalidates public events and feed caches across all replicas.
+   */
+  private invalidateCache(): void {
+    FeedService.invalidate();
+    void this.redis.invalidatePattern('events:public:*');
+  }
+
+  /**
    * Public Events Query: Returns events filtered by date range [from, to] and category.
-   * Leverages PostgreSQL @@index([eventDate]) and @@index([isPublished]).
+   * Cached in Redis for 60s. Leverages PostgreSQL indexes.
    */
   async getAllPublicEvents(query: QueryEventsDto): Promise<PaginatedEventsResponseDto> {
     const page = Math.max(1, query.page || 1);
     const limit = Math.min(200, Math.max(1, query.limit || 20));
     const skip = (page - 1) * limit;
+
+    const cacheKey = `events:public:${page}:${limit}:${query.from || ''}:${query.to || ''}:${query.category || ''}:${query.societyId || ''}`;
+
+    // 1. Try Redis cache
+    const cached = await this.redis.get<PaginatedEventsResponseDto>(cacheKey);
+    if (cached) {
+      return cached;
+    }
 
     const whereClause: Prisma.EventWhereInput = {
       isPublished: true,
@@ -124,7 +146,7 @@ export class EventsService {
 
     const totalPages = Math.ceil(total / limit) || 1;
 
-    return {
+    const result: PaginatedEventsResponseDto = {
       items,
       meta: {
         total,
@@ -135,6 +157,10 @@ export class EventsService {
         hasPreviousPage: page > 1,
       },
     };
+
+    void this.redis.set(cacheKey, result, EventsService.REDIS_EVENTS_TTL);
+
+    return result;
   }
 
   /**
@@ -287,7 +313,12 @@ export class EventsService {
       },
     });
 
-    FeedService.invalidate();
+    this.invalidateCache();
+
+    if (submitForApproval) {
+      this.notifyAdvisorOfEventSubmission(event.id, society.id);
+    }
+
     return event;
   }
 
@@ -370,9 +401,20 @@ export class EventsService {
     userRole: string,
     reason: string,
   ): Promise<EventResponseDto> {
-    await this.validateEventOwnership(id, userId, userRole);
+    const { event } = await this.validateEventOwnership(id, userId, userRole);
 
-    const event = await this.prisma.event.update({
+    const isPublishedEvent =
+      event.isPublished ||
+      event.approvalStatus === EventApprovalStatus.APPROVED ||
+      event.approvalStatus === EventApprovalStatus.PUBLISHED;
+
+    if (userRole !== 'DSA_ADMIN' && isPublishedEvent) {
+      throw new ForbiddenException(
+        'Published events cannot be requested for edit. If changes are necessary, you may delete the event and submit a revised proposal.',
+      );
+    }
+
+    const updated = await this.prisma.event.update({
       where: { id },
       data: {
         editRequestStatus: 'PENDING',
@@ -380,7 +422,7 @@ export class EventsService {
       },
       include: { society: true },
     });
-    return event;
+    return updated;
   }
 
   async resolveEditRequest(id: string, status: 'APPROVED' | 'REJECTED'): Promise<EventResponseDto> {
@@ -401,6 +443,17 @@ export class EventsService {
     userRole?: string,
   ): Promise<EventResponseDto> {
     const { event } = await this.validateEventOwnership(eventId, userId, userRole);
+
+    const isPublishedEvent =
+      event.isPublished ||
+      event.approvalStatus === EventApprovalStatus.APPROVED ||
+      event.approvalStatus === EventApprovalStatus.PUBLISHED;
+
+    if (userRole !== 'DSA_ADMIN' && isPublishedEvent) {
+      throw new ForbiddenException(
+        'Published events cannot be edited by the society. If changes are necessary, you may delete the event and submit a revised proposal.',
+      );
+    }
 
     const targetStartTime = dto.startTime || event.startTime;
     const targetEndTime = dto.endTime || event.endTime;
@@ -453,7 +506,16 @@ export class EventsService {
       },
     });
 
-    FeedService.invalidate();
+    this.invalidateCache();
+
+    if (dto.submitForApproval === true) {
+      if (updated.approvalStatus === 'PENDING_ADVISOR') {
+        this.notifyAdvisorOfEventSubmission(updated.id, updated.society.id);
+      } else if (updated.approvalStatus === 'PENDING_ADMIN') {
+        this.notifyDsaOfEventForwarded(updated.id, updated.society.id, 'Faculty Advisor');
+      }
+    }
+
     return updated;
   }
 
@@ -478,7 +540,7 @@ export class EventsService {
       event.videoUrl ? this.uploadsService.deleteImage(event.videoUrl) : null,
     ].filter(Boolean) as Promise<boolean>[]);
 
-    FeedService.invalidate();
+    this.invalidateCache();
     return {
       message: 'Event deleted successfully',
       id: eventId,
@@ -495,7 +557,15 @@ export class EventsService {
   ): Promise<EventResponseDto> {
     const event = await this.prisma.event.findUnique({
       where: { id: eventId },
-      include: { society: { include: { advisor: true } } },
+      include: {
+        society: {
+          include: {
+            advisor: {
+              include: { user: { select: { fullName: true } } },
+            },
+          },
+        },
+      },
     });
 
     if (!event) {
@@ -520,7 +590,35 @@ export class EventsService {
       },
     });
 
-    return updated; // Typecasting for brevity here, normally you would map to EventResponseDto precisely
+    if (dto.status === EventApprovalStatus.PENDING_ADMIN) {
+      const advisorName = event.society.advisor.user.fullName || 'Faculty Advisor';
+      this.notifyDsaOfEventForwarded(eventId, updated.society.id, advisorName);
+      this.notifySocietyOfEventUpdate(
+        updated.society.id,
+        eventId,
+        'FORWARDED_TO_DSA',
+        'Faculty Advisor',
+        dto.comments,
+      );
+    } else if (dto.status === EventApprovalStatus.CHANGES_REQUESTED) {
+      this.notifySocietyOfEventUpdate(
+        updated.society.id,
+        eventId,
+        'CHANGES_REQUESTED',
+        'Faculty Advisor',
+        dto.comments,
+      );
+    } else if (dto.status === EventApprovalStatus.REJECTED) {
+      this.notifySocietyOfEventUpdate(
+        updated.society.id,
+        eventId,
+        'REJECTED',
+        'Faculty Advisor',
+        dto.comments,
+      );
+    }
+
+    return updated;
   }
 
   /**
@@ -557,7 +655,33 @@ export class EventsService {
       },
     });
 
-    FeedService.invalidate();
+    if (isApproved) {
+      this.notifySocietyOfEventUpdate(
+        updated.society.id,
+        eventId,
+        'APPROVED',
+        'DSA Directorate',
+        dto.comments,
+      );
+    } else if (dto.status === EventApprovalStatus.CHANGES_REQUESTED) {
+      this.notifySocietyOfEventUpdate(
+        updated.society.id,
+        eventId,
+        'CHANGES_REQUESTED',
+        'DSA Directorate',
+        dto.comments,
+      );
+    } else if (dto.status === EventApprovalStatus.REJECTED) {
+      this.notifySocietyOfEventUpdate(
+        updated.society.id,
+        eventId,
+        'REJECTED',
+        'DSA Directorate',
+        dto.comments,
+      );
+    }
+
+    this.invalidateCache();
     return updated;
   }
 
@@ -640,5 +764,118 @@ export class EventsService {
     }
 
     return event;
+  }
+
+  /**
+   * Helper: Dispatches notification to society's assigned Faculty Advisor.
+   */
+  private async notifyAdvisorOfEventSubmission(eventId: string, societyId: string) {
+    try {
+      const society = await this.prisma.society.findUnique({
+        where: { id: societyId },
+        include: {
+          advisor: {
+            include: {
+              user: { select: { fullName: true, email: true } },
+            },
+          },
+        },
+      });
+
+      const event = await this.prisma.event.findUnique({
+        where: { id: eventId },
+      });
+
+      if (society?.advisor?.user?.email && event) {
+        const dateStr = new Date(event.eventDate).toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric',
+        });
+        await this.emailService.sendEventSubmittedForAdvisorEmail({
+          advisorEmail: society.advisor.user.email,
+          advisorName: society.advisor.user.fullName,
+          societyName: society.name,
+          eventTitle: event.title,
+          eventDate: `${dateStr} (${event.startTime} - ${event.endTime})`,
+          venue: event.venue,
+          eventId: event.id,
+        });
+      }
+    } catch (err) {
+      console.warn('Failed to notify advisor of event submission:', err);
+    }
+  }
+
+  /**
+   * Helper: Dispatches notification to DSA administration when an event is approved by Advisor.
+   */
+  private async notifyDsaOfEventForwarded(eventId: string, societyId: string, advisorName: string) {
+    try {
+      const [dsaUsers, society, event] = await Promise.all([
+        this.prisma.user.findMany({
+          where: { role: 'DSA_ADMIN', isActive: true },
+          select: { email: true },
+        }),
+        this.prisma.society.findUnique({ where: { id: societyId } }),
+        this.prisma.event.findUnique({ where: { id: eventId } }),
+      ]);
+
+      const dsaEmails = dsaUsers.map((u) => u.email).filter(Boolean);
+      if (dsaEmails.length > 0 && society && event) {
+        const dateStr = new Date(event.eventDate).toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric',
+        });
+        await this.emailService.sendEventForwardedToDsaEmail({
+          dsaEmails,
+          advisorName,
+          societyName: society.name,
+          eventTitle: event.title,
+          eventDate: `${dateStr} (${event.startTime} - ${event.endTime})`,
+          venue: event.venue,
+          eventId: event.id,
+        });
+      }
+    } catch (err) {
+      console.warn('Failed to notify DSA of forwarded event:', err);
+    }
+  }
+
+  /**
+   * Helper: Dispatches status update notification to the Society email.
+   */
+  private async notifySocietyOfEventUpdate(
+    societyId: string,
+    eventId: string,
+    status: 'APPROVED' | 'CHANGES_REQUESTED' | 'REJECTED' | 'FORWARDED_TO_DSA',
+    reviewerRole: 'Faculty Advisor' | 'DSA Directorate',
+    comments?: string | null,
+  ) {
+    try {
+      const [society, event] = await Promise.all([
+        this.prisma.society.findUnique({
+          where: { id: societyId },
+          include: { user: { select: { email: true } } },
+        }),
+        this.prisma.event.findUnique({ where: { id: eventId } }),
+      ]);
+
+      const targetEmail = society?.email || society?.user?.email;
+      if (targetEmail && event && society) {
+        await this.emailService.sendEventStatusUpdateToSocietyEmail({
+          societyEmail: targetEmail,
+          societyName: society.name,
+          eventTitle: event.title,
+          status,
+          reviewerRole,
+          comments,
+          eventId: event.id,
+        });
+      }
+    } catch (err) {
+      console.warn('Failed to notify society of event status update:', err);
+    }
   }
 }

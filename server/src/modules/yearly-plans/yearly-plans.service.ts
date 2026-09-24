@@ -12,10 +12,15 @@ import { ReviewYearlyPlanDto, ReviewDecision } from './dto/review-yearly-plan.dt
 import { YearlyPlanResponseDto } from './dto/yearly-plan-response.dto';
 import { PlanStatus, Society, Role } from '@prisma/client';
 import { validateExecutiveCouncil } from '../../common/utils/council.util';
+import { EmailService } from '../email/email.service';
 
 @Injectable()
 export class YearlyPlansService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly emailService: EmailService,
+  ) {}
+
 
   /**
    * Helper: Validates that the authenticated user owns an active setup society.
@@ -72,8 +77,8 @@ export class YearlyPlansService {
       }
     }
 
-    return this.prisma.$transaction(async (tx) => {
-      const plan = await tx.yearlyPlan.create({
+    const plan = await this.prisma.$transaction(async (tx) => {
+      const created = await tx.yearlyPlan.create({
         data: {
           year: dto.year,
           status: dto.status || PlanStatus.DRAFT,
@@ -106,8 +111,14 @@ export class YearlyPlansService {
         },
       });
 
-      return plan;
+      return created;
     });
+
+    if (plan.status === PlanStatus.PENDING_ADVISOR) {
+      this.notifyAdvisorOfYearlyPlanSubmission(plan.id, society.id, plan.year, plan.plannedEvents.length);
+    }
+
+    return plan;
   }
 
   /**
@@ -192,7 +203,7 @@ export class YearlyPlansService {
       throw new ForbiddenException('Cannot edit a plan that is currently pending review.');
     }
 
-    return this.prisma.$transaction(async (tx) => {
+    const updated = await this.prisma.$transaction(async (tx) => {
       // If events array is provided, replace old planned events
       if (dto.events) {
         for (const e of dto.events) {
@@ -247,6 +258,12 @@ export class YearlyPlansService {
 
       return updated;
     });
+
+    if (updated.status === PlanStatus.PENDING_ADVISOR) {
+      this.notifyAdvisorOfYearlyPlanSubmission(updated.id, society.id, updated.year, updated.plannedEvents.length);
+    }
+
+    return updated;
   }
 
   /**
@@ -263,7 +280,9 @@ export class YearlyPlansService {
       include: {
         society: {
           include: {
-            advisor: true,
+            advisor: {
+              include: { user: { select: { fullName: true } } },
+            },
           },
         },
       },
@@ -339,6 +358,46 @@ export class YearlyPlansService {
       },
     });
 
+    if (role === Role.ADVISOR) {
+      if (newStatus === PlanStatus.PENDING_ADMIN) {
+        const advisorName = plan.society.advisor?.user?.fullName || 'Faculty Advisor';
+        this.notifyDsaOfYearlyPlanForwarded(planId, updated.society.id, updated.year, advisorName);
+        this.notifySocietyOfYearlyPlanUpdate(
+          updated.society.id,
+          updated.year,
+          'FORWARDED_TO_DSA',
+          'Faculty Advisor',
+          dto.comment,
+        );
+      } else if (newStatus === PlanStatus.CHANGES_REQUESTED) {
+        this.notifySocietyOfYearlyPlanUpdate(
+          updated.society.id,
+          updated.year,
+          'CHANGES_REQUESTED',
+          'Faculty Advisor',
+          dto.comment,
+        );
+      }
+    } else if (role === Role.DSA_ADMIN) {
+      if (newStatus === PlanStatus.APPROVED) {
+        this.notifySocietyOfYearlyPlanUpdate(
+          updated.society.id,
+          updated.year,
+          'APPROVED',
+          'DSA Directorate',
+          dto.comment,
+        );
+      } else if (newStatus === PlanStatus.CHANGES_REQUESTED) {
+        this.notifySocietyOfYearlyPlanUpdate(
+          updated.society.id,
+          updated.year,
+          'CHANGES_REQUESTED',
+          'DSA Directorate',
+          dto.comment,
+        );
+      }
+    }
+
     return updated;
   }
 
@@ -353,7 +412,7 @@ export class YearlyPlansService {
       throw new ForbiddenException('Access denied: You do not own this yearly plan resource');
     }
 
-    return this.prisma.yearlyPlan.update({
+    const updated = await this.prisma.yearlyPlan.update({
       where: { id },
       data: {
         editRequestStatus: 'PENDING',
@@ -372,10 +431,18 @@ export class YearlyPlansService {
         },
       },
     });
+
+    // Notify DSA administration of the incoming edit request
+    this.notifyDsaOfYearlyPlanEditRequested(id, plan.society.name, plan.year, reason);
+
+    return updated;
   }
 
   async resolveEditRequest(id: string, status: 'APPROVED' | 'REJECTED') {
-    const plan = await this.prisma.yearlyPlan.findUnique({ where: { id } });
+    const plan = await this.prisma.yearlyPlan.findUnique({
+      where: { id },
+      include: { society: true },
+    });
     if (!plan) throw new NotFoundException('Plan not found');
 
     const updateData: any = {
@@ -388,7 +455,7 @@ export class YearlyPlansService {
       updateData.editRequestReason = null;
     }
 
-    return this.prisma.yearlyPlan.update({
+    const updated = await this.prisma.yearlyPlan.update({
       where: { id },
       data: updateData,
       include: {
@@ -404,5 +471,169 @@ export class YearlyPlansService {
         },
       },
     });
+
+    // Notify Society of DSA's decision on the edit request
+    this.notifySocietyOfYearlyPlanEditResolved(plan.societyId, plan.year, status);
+
+    return updated;
+  }
+
+  /**
+   * Helper: Dispatches notification to DSA when a Society requests edit access for a yearly plan.
+   */
+  private async notifyDsaOfYearlyPlanEditRequested(
+    planId: string,
+    societyName: string,
+    year: number,
+    reason: string,
+  ) {
+    try {
+      const dsaUsers = await this.prisma.user.findMany({
+        where: { role: Role.DSA_ADMIN, isActive: true },
+        select: { email: true },
+      });
+
+      const dsaEmails = dsaUsers.map((u) => u.email).filter(Boolean);
+      if (dsaEmails.length > 0) {
+        await this.emailService.sendYearlyPlanEditRequestedToDsaEmail({
+          dsaEmails,
+          societyName,
+          year,
+          reason,
+          planId,
+        });
+      }
+    } catch (err) {
+      console.warn('Failed to notify DSA of yearly plan edit request:', err);
+    }
+  }
+
+  /**
+   * Helper: Dispatches decision notification to the Society when their edit request is resolved.
+   */
+  private async notifySocietyOfYearlyPlanEditResolved(
+    societyId: string,
+    year: number,
+    status: 'APPROVED' | 'REJECTED',
+  ) {
+    try {
+      const society = await this.prisma.society.findUnique({
+        where: { id: societyId },
+        include: { user: { select: { email: true } } },
+      });
+
+      const targetEmail = society?.email || society?.user?.email;
+      if (targetEmail && society) {
+        await this.emailService.sendYearlyPlanEditRequestResolvedToSocietyEmail({
+          societyEmail: targetEmail,
+          societyName: society.name,
+          year,
+          status,
+        });
+      }
+    } catch (err) {
+      console.warn('Failed to notify society of yearly plan edit decision:', err);
+    }
+  }
+
+  /**
+   * Helper: Dispatches notification to society's assigned Faculty Advisor for yearly plan review.
+   */
+  private async notifyAdvisorOfYearlyPlanSubmission(
+    planId: string,
+    societyId: string,
+    year: number,
+    eventsCount: number,
+  ) {
+    try {
+      const society = await this.prisma.society.findUnique({
+        where: { id: societyId },
+        include: {
+          advisor: {
+            include: {
+              user: { select: { fullName: true, email: true } },
+            },
+          },
+        },
+      });
+
+      if (society?.advisor?.user?.email) {
+        await this.emailService.sendYearlyPlanSubmittedForAdvisorEmail({
+          advisorEmail: society.advisor.user.email,
+          advisorName: society.advisor.user.fullName,
+          societyName: society.name,
+          year,
+          eventsCount,
+          planId,
+        });
+      }
+    } catch (err) {
+      console.warn('Failed to notify advisor of yearly plan submission:', err);
+    }
+  }
+
+  /**
+   * Helper: Dispatches notification to DSA administration when an annual calendar is approved by Advisor.
+   */
+  private async notifyDsaOfYearlyPlanForwarded(
+    planId: string,
+    societyId: string,
+    year: number,
+    advisorName: string,
+  ) {
+    try {
+      const [dsaUsers, society] = await Promise.all([
+        this.prisma.user.findMany({
+          where: { role: 'DSA_ADMIN', isActive: true },
+          select: { email: true },
+        }),
+        this.prisma.society.findUnique({ where: { id: societyId } }),
+      ]);
+
+      const dsaEmails = dsaUsers.map((u) => u.email).filter(Boolean);
+      if (dsaEmails.length > 0 && society) {
+        await this.emailService.sendYearlyPlanForwardedToDsaEmail({
+          dsaEmails,
+          advisorName,
+          societyName: society.name,
+          year,
+          planId,
+        });
+      }
+    } catch (err) {
+      console.warn('Failed to notify DSA of yearly plan forwarding:', err);
+    }
+  }
+
+  /**
+   * Helper: Dispatches decision notification to the Society email.
+   */
+  private async notifySocietyOfYearlyPlanUpdate(
+    societyId: string,
+    year: number,
+    status: 'APPROVED' | 'CHANGES_REQUESTED' | 'FORWARDED_TO_DSA',
+    reviewerRole: 'Faculty Advisor' | 'DSA Directorate',
+    comments?: string | null,
+  ) {
+    try {
+      const society = await this.prisma.society.findUnique({
+        where: { id: societyId },
+        include: { user: { select: { email: true } } },
+      });
+
+      const targetEmail = society?.email || society?.user?.email;
+      if (targetEmail && society) {
+        await this.emailService.sendYearlyPlanStatusUpdateToSocietyEmail({
+          societyEmail: targetEmail,
+          societyName: society.name,
+          year,
+          status,
+          reviewerRole,
+          comments,
+        });
+      }
+    } catch (err) {
+      console.warn('Failed to notify society of yearly plan update:', err);
+    }
   }
 }
