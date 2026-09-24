@@ -12,6 +12,7 @@ import {
   Loader2,
   Send,
   AlertCircle,
+  Printer,
 } from 'lucide-react';
 import { adminService } from '@/services/admin.service';
 import { yearlyPlanService } from '@/services/yearly-plan.service';
@@ -21,6 +22,7 @@ import { SmokeyCanvasBackground } from '@/components/ui/SmokeyCanvasBackground';
 import { ErrorState } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { globalNotification } from '@/contexts/NotificationContext';
+import { YearlyPlanPrintModal } from '@/components/calendar/YearlyPlanPrintModal';
 
 export const AdminYearlyPlanDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -28,6 +30,7 @@ export const AdminYearlyPlanDetailPage: React.FC = () => {
   const queryClient = useQueryClient();
   const [comment, setComment] = useState('');
   const [commentError, setCommentError] = useState(false);
+  const [isPrintModalOpen, setIsPrintModalOpen] = useState(false);
 
   const {
     data: plan,
@@ -129,25 +132,40 @@ export const AdminYearlyPlanDetailPage: React.FC = () => {
           <ArrowLeft className="w-5 h-5" />
         </button>
 
-        <div className="flex flex-col gap-3">
-          <span className="inline-block w-fit px-3 py-1 rounded-md text-xs font-semibold bg-gray-800 text-gray-400">
-            {plan.status.replace('_', ' ')}
-          </span>
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-full bg-[#007ebb] p-1 flex items-center justify-center border-2 border-white/80 shrink-0 shadow-lg overflow-hidden">
-              {plan.society?.logoUrl ? (
-                <img src={getSocietyLogo(plan.society.logoUrl)} className="w-full h-full rounded-full object-cover bg-white" alt="logo" onError={(e) => { e.currentTarget.src = '/default-society.jpg'; }} />
-              ) : (
-                <div className="w-full h-full rounded-full border border-white/70 flex flex-col items-center justify-center select-none bg-[#007ebb]">
-                  <span className="text-white text-xs font-bold leading-none">{plan.society?.name?.substring(0,3).toLowerCase() || 'SOC'}</span>
-                  <span className="text-white text-[7px] uppercase font-semibold mt-0.5">Chapter</span>
-                </div>
-              )}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex flex-col gap-3">
+            <span className="inline-block w-fit px-3 py-1 rounded-md text-xs font-semibold bg-gray-800 text-gray-400">
+              {plan.status.replace('_', ' ')}
+            </span>
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 rounded-full bg-[#007ebb] p-1 flex items-center justify-center border-2 border-white/80 shrink-0 shadow-lg overflow-hidden">
+                {plan.society?.logoUrl ? (
+                  <img src={getSocietyLogo(plan.society.logoUrl)} className="w-full h-full rounded-full object-cover bg-white" alt="logo" onError={(e) => { e.currentTarget.src = '/default-society.jpg'; }} />
+                ) : (
+                  <div className="w-full h-full rounded-full border border-white/70 flex flex-col items-center justify-center select-none bg-[#007ebb]">
+                    <span className="text-white text-xs font-bold leading-none">{plan.society?.name?.substring(0,3).toLowerCase() || 'SOC'}</span>
+                    <span className="text-white text-[7px] uppercase font-semibold mt-0.5">Chapter</span>
+                  </div>
+                )}
+              </div>
+              <div className="flex flex-col">
+                <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">{plan.society?.name}</h1>
+                <p className="text-sm text-gray-400">Annual Calendar Plan for Year <span className="font-bold text-white">{plan.year}</span></p>
+              </div>
             </div>
-            <div className="flex flex-col">
-              <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">{plan.society?.name}</h1>
-              <p className="text-sm text-gray-400">Annual Calendar Plan for Year <span className="font-bold text-white">{plan.year}</span></p>
-            </div>
+          </div>
+
+          <div className="flex items-center gap-2.5 shrink-0 self-start sm:self-center">
+            <Button
+              type="button"
+              variant="outline"
+              size="md"
+              className="bg-white/10 hover:bg-white/20 border-white/20 text-white font-bold shadow-lg flex items-center gap-2 cursor-pointer"
+              onClick={() => setIsPrintModalOpen(true)}
+              leftIcon={<Printer className="w-4 h-4 text-blue-400" />}
+            >
+              Print / Save PDF
+            </Button>
           </div>
         </div>
 
@@ -333,6 +351,13 @@ export const AdminYearlyPlanDetailPage: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Yearly Plan Print / PDF Modal */}
+      <YearlyPlanPrintModal
+        isOpen={isPrintModalOpen}
+        onClose={() => setIsPrintModalOpen(false)}
+        plan={plan}
+      />
     </div>
   );
 };

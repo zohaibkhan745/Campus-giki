@@ -55,7 +55,7 @@ export const CampusCalendarPage: React.FC = () => {
       from: new Date(currentDate.getFullYear(), currentDate.getMonth(), -7).toISOString(), 
       to: new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 7).toISOString(), 
       societyId: selectedSociety !== 'all' ? selectedSociety : undefined, 
-      limit: 150 
+      limit: 100 
     }),
     placeholderData: keepPreviousData,
   });
@@ -95,7 +95,7 @@ export const CampusCalendarPage: React.FC = () => {
       from: filterDates.from, 
       to: filterDates.to, 
       societyId: selectedSociety !== 'all' ? selectedSociety : undefined, 
-      limit: 150 
+      limit: 40 
     }),
     placeholderData: keepPreviousData,
   });
