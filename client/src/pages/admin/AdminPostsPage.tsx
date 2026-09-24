@@ -20,10 +20,8 @@ import {
   AlertTriangle
 } from 'lucide-react';
 import { postService, type PostItem } from '@/services/post.service';
-import { societyService } from '@/services/society.service';
 import { Button } from '@/components/ui/Button';
 import { PostCard } from '@/components/feed/PostCard';
-import { CustomDropdown } from '@/components/ui/CustomDropdown';
 import { CustomDatePicker } from '@/components/ui/date-picker';
 import { Alert } from '@/components/ui/Alert';
 import { PostCreateModal } from '@/components/feed/PostCreateModal';
@@ -42,8 +40,6 @@ export const AdminPostsPage: React.FC = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
-  const [typeFilter, setTypeFilter] = useState<'all' | 'global' | 'society'>('all');
-  const [societyFilter, setSocietyFilter] = useState<string>('');
   const [dateFrom, setDateFrom] = useState<string>('');
   const [dateTo, setDateTo] = useState<string>('');
   const [serverError, setServerError] = useState<string | null>(null);
@@ -51,13 +47,6 @@ export const AdminPostsPage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingPost, setEditingPost] = useState<PostItem | null>(null);
   const [postToDelete, setPostToDelete] = useState<string | null>(null);
-
-  // Query societies list for dropdown filter
-  const { data: societiesData } = useQuery({
-    queryKey: ['publicSocietiesList'],
-    queryFn: () => societyService.getPublicSocieties({ limit: 100 }),
-  });
-  const societies = societiesData?.items || [];
 
   const {
     data,
@@ -69,13 +58,11 @@ export const AdminPostsPage: React.FC = () => {
     hasNextPage,
     isFetchingNextPage
   } = useInfiniteQuery({
-    queryKey: ['adminPosts', typeFilter, societyFilter, dateFrom, dateTo],
+    queryKey: ['adminPosts', dateFrom, dateTo],
     initialPageParam: 1,
     queryFn: ({ pageParam = 1 }) => postService.getAllPosts({
       page: pageParam,
       limit: 6,
-      type: typeFilter !== 'all' ? typeFilter : undefined,
-      societyId: societyFilter || undefined,
       from: dateFrom || undefined,
       to: dateTo || undefined
     }),
@@ -162,11 +149,8 @@ export const AdminPostsPage: React.FC = () => {
   };
 
   const handleClearFilters = () => {
-    setTypeFilter('all');
-    setSocietyFilter('');
     setDateFrom('');
     setDateTo('');
-    /* reset handled by queryKey */
   };
 
   return (
@@ -197,50 +181,32 @@ export const AdminPostsPage: React.FC = () => {
 
       {/* Filter Toolbar */}
       <div className="relative z-[200] bg-white/[0.08] backdrop-blur-[20px] p-5 rounded-[18px] border border-white/20 shadow-[0_12px_40px_rgba(0,0,0,0.4)] w-full">
-        <div className="flex flex-col md:flex-row items-center gap-4">
-          {/* Type Filter */}
-          <CustomDropdown 
-            options={[
-              { value: 'all', label: 'All Posts' },
-              { value: 'global', label: 'Admin' },
-              { value: 'society', label: 'Societies' }
-            ]}
-            value={typeFilter}
-            onChange={(e: any) => {
-              const val = e.target.value;
-              setTypeFilter(val as any);
-              if (val === 'global') setSocietyFilter('');
-              /* reset handled by queryKey */
-            }}
-            className="w-full md:flex-1 shrink-0"
-          />
+        <div className="flex flex-col sm:flex-row items-center gap-4">
+          <div className="w-full sm:flex-1 shrink-0">
+            <CustomDatePicker
+              value={dateFrom}
+              max={dateTo}
+              onChange={(val: string) => setDateFrom(val)}
+              placeholder="From Date"
+            />
+          </div>
+          <div className="w-full sm:flex-1 shrink-0">
+            <CustomDatePicker
+              value={dateTo}
+              min={dateFrom}
+              onChange={(val: string) => setDateTo(val)}
+              placeholder="To Date"
+            />
+          </div>
 
-          {/* Society Dropdown */}
-          <CustomDropdown 
-            options={[
-              { value: '', label: 'All Societies' },
-              ...societies.map((soc: any) => ({ value: soc.id, label: soc.name }))
-            ]}
-            value={societyFilter}
-            onChange={(e: any) => {
-              setSocietyFilter(e.target.value);
-              setTypeFilter('society');
-              /* reset handled by queryKey */
-            }}
-            disabled={typeFilter === 'global'}
-            className="w-full md:flex-1"
-          />
-
-          <div className="w-full md:flex-1 shrink-0"><CustomDatePicker value={dateFrom} max={dateTo} onChange={(val: string) => { setDateFrom(val); /* reset handled by queryKey */ }} placeholder="From Date" /></div>
-          <div className="w-full md:flex-1 shrink-0"><CustomDatePicker value={dateTo} min={dateFrom} onChange={(val: string) => { setDateTo(val); /* reset handled by queryKey */ }} placeholder="To Date" /></div>
-
-          {(typeFilter !== 'all' || societyFilter || dateFrom || dateTo) && (
+          {(dateFrom || dateTo) && (
             <button
               onClick={handleClearFilters}
-              className="p-2 text-gray-400 hover:text-white bg-white/5 rounded-[14px] transition-colors shrink-0"
+              className="p-2.5 text-gray-400 hover:text-white bg-white/5 hover:bg-white/10 rounded-[14px] transition-colors shrink-0 flex items-center gap-1.5 text-xs font-semibold cursor-pointer"
               title="Clear filters"
             >
               <FilterX className="w-4 h-4" />
+              <span>Clear</span>
             </button>
           )}
         </div>
@@ -261,17 +227,17 @@ export const AdminPostsPage: React.FC = () => {
           icon={MessageSquare}
           title="No Posts Found"
           description={
-            typeFilter !== 'all' || societyFilter || dateFrom || dateTo
-              ? 'There are no campus posts matching your current filters.'
+            dateFrom || dateTo
+              ? 'There are no campus posts matching your selected dates.'
               : 'No campus announcements or posts have been created yet.'
           }
           onClearFilters={
-            typeFilter !== 'all' || societyFilter || dateFrom || dateTo
+            dateFrom || dateTo
               ? handleClearFilters
               : undefined
           }
           action={
-            !(typeFilter !== 'all' || societyFilter || dateFrom || dateTo)
+            !(dateFrom || dateTo)
               ? {
                   label: 'Create Announcement',
                   onClick: () => setIsModalOpen(true),
@@ -284,19 +250,20 @@ export const AdminPostsPage: React.FC = () => {
       ) : (
         <div className="cards-container">
           {posts.map((post: any) => {
-            const isAdmin = post.author.role === 'DSA_ADMIN';
+            const isAdmin = post.author?.role === 'DSA_ADMIN';
             const isOwnPost = isAdmin; // Since we are viewing as Admin
             
             // Format post for PostCard if needed. PostFeedItem requires society, if Admin, inject dummy society
             const feedItem = {
               ...post,
-              society: post.author.society || {
+              isAdminPost: isAdmin,
+              society: post.author?.society || {
                 id: 'admin',
-                name: 'GIKI Administration',
-                description: 'Dean Student Affair',
-                logoUrl: '',
+                name: post.author?.fullName || 'Dean Student Affairs',
+                description: 'Directorate of Student Affairs',
+                logoUrl: post.author?.avatarUrl || '/default-dsa.png',
                 coverUrl: '',
-                email: 'dsa@giki.edu.pk',
+                email: post.author?.email || 'dsa@giki.edu.pk',
                 status: 'ACTIVE'
               }
             };

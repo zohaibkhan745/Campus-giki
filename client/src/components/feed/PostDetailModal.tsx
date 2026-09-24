@@ -47,10 +47,15 @@ export const PostDetailModal: React.FC<PostDetailModalProps> = ({ item, onClose 
     }, 180);
   };
 
+  const isDsaPost = item.isAdminPost || item.society?.id === 'admin' || item.society?.id === 'giki-admin';
   const coverImage = resolveImageUrl(item.imageUrl);
-  const logoImage = getSocietyLogo(item.society?.logoUrl);
-  const authorName = item.isAdminPost ? 'Dean Student Affairs (DSA)' : (item.society?.name || 'Society');
-  const societyId = item.society?.id;
+  const logoImage = isDsaPost
+    ? (item.society?.logoUrl ? resolveImageUrl(item.society.logoUrl) : '/default-dsa.png')
+    : getSocietyLogo(item.society?.logoUrl);
+  const authorName = isDsaPost
+    ? (item.society?.name || 'Dean Student Affairs (DSA)')
+    : (item.society?.name || 'Society');
+  const societyId = isDsaPost ? undefined : item.society?.id;
 
   const formattedDate = new Date(item.createdAt).toLocaleDateString('en-US', {
     month: 'short',
@@ -101,7 +106,7 @@ export const PostDetailModal: React.FC<PostDetailModalProps> = ({ item, onClose 
                   alt={authorName}
                   className="w-full h-full object-cover"
                   onError={(e) => {
-                    e.currentTarget.src = '/default-society.jpg';
+                    e.currentTarget.src = isDsaPost ? '/default-dsa.png' : '/default-society.jpg';
                   }}
                 />
               </Link>
@@ -112,7 +117,7 @@ export const PostDetailModal: React.FC<PostDetailModalProps> = ({ item, onClose 
                   alt={authorName}
                   className="w-full h-full object-cover"
                   onError={(e) => {
-                    e.currentTarget.src = '/default-society.jpg';
+                    e.currentTarget.src = isDsaPost ? '/default-dsa.png' : '/default-society.jpg';
                   }}
                 />
               </div>

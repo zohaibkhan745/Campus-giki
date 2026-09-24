@@ -1,6 +1,6 @@
 import React from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { api } from '@/lib/api';
+import { postService } from '@/services/post.service';
 import { PostCreateModal } from './PostCreateModal';
 
 interface MakeAnnouncementDialogProps {
@@ -16,12 +16,13 @@ export const MakeAnnouncementDialog: React.FC<MakeAnnouncementDialogProps> = ({
 
   const createPostMutation = useMutation({
     meta: { notify: true },
-    mutationFn: async (data: { content: string; imageUrl?: string; videoUrl?: string }) => {
-      const response = await api.post('/posts', data);
-      return response.data;
+    mutationFn: async (data: { title: string; content: string; imageUrl?: string; videoUrl?: string }) => {
+      return postService.createPost(data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['campusFeed'] });
+      queryClient.invalidateQueries({ queryKey: ['adminPosts'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboardPosts'] });
       onClose();
     },
   });

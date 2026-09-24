@@ -1,7 +1,7 @@
-import { resolveImageUrl } from '@/lib/utils';
+import { resolveImageUrl, getSocietyLogo } from '@/lib/utils';
 import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Image as ImageIcon, Loader2 } from 'lucide-react';
+import { X, Image as ImageIcon, Loader2, Shield } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { getMediaUrl } from '@/lib/api';
 import { uploadService } from '@/services/upload.service';
@@ -110,9 +110,14 @@ export const PostCreateModal: React.FC<PostCreateModalProps> = ({
 
   if (!isOpen) return null;
 
-  const displayName = user?.society?.name || user?.fullName || 'Society Member';
-  const displayAvatar = user?.society?.logoUrl || user?.avatarUrl;
-  const initialLetter = displayName.charAt(0).toUpperCase();
+  const isAdmin = user?.role === 'DSA_ADMIN';
+  const displayName = isAdmin
+    ? (user?.fullName || 'Dean Student Affairs')
+    : (user?.society?.name || user?.fullName || 'Society Member');
+  const displayAvatar = isAdmin
+    ? (user?.avatarUrl ? resolveImageUrl(user.avatarUrl) : '/default-dsa.png')
+    : (user?.society?.logoUrl ? getSocietyLogo(user.society.logoUrl) : (user?.avatarUrl ? resolveImageUrl(user.avatarUrl) : '/default-society.jpg'));
+  const fallbackAvatar = isAdmin ? '/default-dsa.png' : '/default-society.jpg';
 
   return typeof document !== "undefined" ? createPortal(
     <div className="modal-overlay active">
@@ -129,23 +134,39 @@ export const PostCreateModal: React.FC<PostCreateModalProps> = ({
         />
 
         <div>
-          <div className="flex items-center justify-between pb-2">
+          <div className="flex items-center justify-between pb-3 border-b border-white/10 mb-3">
             <div className="flex items-center gap-3">
-              {displayAvatar ? (
-                <img
-                  src={resolveImageUrl(displayAvatar)}
-                  alt={displayName}
-                  className="w-11 h-11 rounded-full object-cover border border-vast-ink/20 shadow-sm"
-                />
-              ) : (
-                <div className="w-11 h-11 rounded-full bg-slate-800 text-white font-bold flex items-center justify-center text-lg shadow-sm">
-                  {initialLetter}
-                </div>
-              )}
-              <h3 className="text-base font-semibold text-white leading-tight">
-                {displayName}
-              </h3>
+              <img
+                src={displayAvatar}
+                alt={displayName}
+                className="w-11 h-11 rounded-full object-cover border border-white/20 shadow-sm"
+                onError={(e) => {
+                  e.currentTarget.src = fallbackAvatar;
+                }}
+              />
+              <div className="flex flex-col text-left">
+                <h3 className="text-base font-semibold text-white leading-tight">
+                  {displayName}
+                </h3>
+                {isAdmin ? (
+                  <span className="text-xs text-indigo-300 font-semibold flex items-center gap-1 mt-0.5">
+                    <Shield className="w-3 h-3" /> Directorate of Student Affairs
+                  </span>
+                ) : (
+                  <span className="text-xs text-gray-400 font-medium mt-0.5">
+                    {(user?.society as any)?.category?.name || 'Society Announcement'}
+                  </span>
+                )}
+              </div>
             </div>
+            <button
+              type="button"
+              onClick={onClose}
+              className="text-gray-400 hover:text-white p-1 rounded-lg hover:bg-white/10 transition-colors cursor-pointer"
+              aria-label="Close dialog"
+            >
+              <X className="w-5 h-5" />
+            </button>
           </div>
 
           {uploadError && (

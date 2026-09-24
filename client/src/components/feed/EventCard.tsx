@@ -7,8 +7,12 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useQueryClient } from '@tanstack/react-query';
 import { eventService } from '@/services/event.service';
 import { globalNotification } from '@/contexts/NotificationContext';
-import { VenuePermissionSlipModal } from '@/components/events/VenuePermissionSlipModal';
-import { UploadSignedSlipModal } from '@/components/events/UploadSignedSlipModal';
+const VenuePermissionSlipModal = React.lazy(() =>
+  import('@/components/events/VenuePermissionSlipModal').then((m) => ({ default: m.VenuePermissionSlipModal })),
+);
+const UploadSignedSlipModal = React.lazy(() =>
+  import('@/components/events/UploadSignedSlipModal').then((m) => ({ default: m.UploadSignedSlipModal })),
+);
 import { Loader2 } from 'lucide-react';
 
 interface EventCardProps {
@@ -29,10 +33,18 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
   const logoImage = getSocietyLogo(item.society?.logoUrl);
   const authorName = item.society?.name || 'Society';
 
-  const canEditOrDelete = user?.role === 'DSA_ADMIN' || (user?.role === 'SOCIETY' && user.society?.id === item.society?.id);
-  const canEdit = user?.role === 'SOCIETY' && user.society?.id === item.society?.id;
-  const isMySociety = user?.role === 'SOCIETY' && user.society?.id === item.society?.id;
   const isApproved = (item as any).approvalStatus === 'APPROVED' || (item as any).approvalStatus === 'PUBLISHED';
+  const isPublished = isApproved || Boolean((item as any).isPublished);
+
+  const isMySociety = user?.role === 'SOCIETY' && user.society?.id === item.society?.id;
+  const isDsaAdmin = user?.role === 'DSA_ADMIN';
+
+  // Published events cannot be edited by the society; DSA Admin can still edit
+  const canEdit = isDsaAdmin || (isMySociety && !isPublished);
+
+  // Both DSA Admin and the owning society CAN delete (even when published)
+  const canDelete = isDsaAdmin || isMySociety;
+  const canEditOrDelete = canEdit || canDelete;
 
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -68,6 +80,32 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
     const rect = e.currentTarget.getBoundingClientRect();
     setDropdownPos({ top: rect.bottom + 8, left: rect.left });
     setDropdownOpen(true);
+  };
+
+  const handleDelete = async (e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    setIsDeleting(true);
+    try {
+      await eventService.deleteEvent(item.id);
+      setShowDeleteConfirm(false);
+      globalNotification.triggerSuccess?.('Event deleted successfully');
+      queryClient.invalidateQueries({ queryKey: ['campusFeed'] });
+      queryClient.invalidateQueries({ queryKey: ['myEvents'] });
+      queryClient.invalidateQueries({ queryKey: ['publicEvents'] });
+      queryClient.invalidateQueries({ queryKey: ['events'] });
+      queryClient.invalidateQueries({ queryKey: ['societyEvents'] });
+      queryClient.invalidateQueries({ queryKey: ['societyDashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['adminEvents'] });
+      queryClient.invalidateQueries({ queryKey: ['mySocietyEventsList'] });
+      if (onDelete) onDelete();
+    } catch {
+      globalNotification.triggerFailed?.('Failed to delete event');
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   const formattedDate = new Date(item.createdAt).toLocaleDateString('en-US', {
@@ -431,7 +469,7 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
                         </button>
                       </>
                     )}
-                    {canEditOrDelete && (
+                    {canDelete && (
                       <button
                         className="card-dropdown-item delete"
                         onClick={(e) => {
@@ -452,22 +490,73 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
       </div>
 
       {isVenueSlipOpen && (
-        <VenuePermissionSlipModal
-          isOpen={isVenueSlipOpen}
-          onClose={() => setIsVenueSlipOpen(false)}
-          event={item as any}
-          societyName={item.society.name}
-          societyLogo={item.society.logoUrl}
-        />
+        <React.Suspense fallback={null}>
+          <VenuePermissionSlipModal
+            isOpen={isVenueSlipOpen}
+            onClose={() => setIsVenueSlipOpen(false)}
+            event={item as any}
+            societyName={item.society.name}
+            societyLogo={item.society.logoUrl}
+          />
+        </React.Suspense>
       )}
 
       {isUploadSlipOpen && (
-        <UploadSignedSlipModal
-          isOpen={isUploadSlipOpen}
-          onClose={() => setIsUploadSlipOpen(false)}
-          event={item as any}
-        />
+        <React.Suspense fallback={null}>
+          <UploadSignedSlipModal
+            isOpen={isUploadSlipOpen}
+            onClose={() => setIsUploadSlipOpen(false)}
+            event={item as any}
+          />
+        </React.Suspense>
       )}
+
+      {showDeleteConfirm &&
+        createPortal(
+          <div
+            className="fixed inset-0 z-[999999] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
+            onClick={(e) => {
+              e.stopPropagation();
+              if (!isDeleting) setShowDeleteConfirm(false);
+            }}
+          >
+            <div
+              className="bg-[#18191f] border border-white/20 rounded-2xl p-6 max-w-sm w-full text-center shadow-2xl relative"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h3 className="text-lg font-bold text-white mb-2">Delete Event?</h3>
+              <p className="text-xs text-gray-400 mb-6 leading-relaxed">
+                Are you sure you want to permanently delete <strong className="text-white">&quot;{item.title}&quot;</strong>? This action cannot be undone.
+              </p>
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  disabled={isDeleting}
+                  className="flex-1 py-2.5 px-4 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition-all disabled:opacity-50 cursor-pointer"
+                  onClick={() => setShowDeleteConfirm(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  disabled={isDeleting}
+                  className="flex-1 py-2.5 px-4 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold transition-all flex items-center justify-center gap-1.5 disabled:opacity-50 cursor-pointer shadow-lg shadow-red-900/30"
+                  onClick={handleDelete}
+                >
+                  {isDeleting ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      <span>Deleting...</span>
+                    </>
+                  ) : (
+                    <span>Delete</span>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>,
+          document.body
+        )}
     </article>
   );
 };

@@ -8,7 +8,9 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useQueryClient } from '@tanstack/react-query';
 import { postService } from '@/services/post.service';
 import { globalNotification } from '@/contexts/NotificationContext';
-import { PostDetailModal } from './PostDetailModal';
+const PostDetailModal = React.lazy(() =>
+  import('./PostDetailModal').then((m) => ({ default: m.PostDetailModal })),
+);
 
 interface PostCardProps {
   item: PostFeedItem;
@@ -32,10 +34,15 @@ const PostCardComponent: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) 
   const canEditOrDelete = user?.role === 'DSA_ADMIN';
   const canEdit = user?.role === 'DSA_ADMIN';
 
+  const isDsaPost = item.isAdminPost || item.society?.id === 'admin' || item.society?.id === 'giki-admin';
   const coverImage = resolveImageUrl(item.imageUrl);
-  const logoImage = getSocietyLogo(item.society?.logoUrl);
-  const authorName = item.isAdminPost ? 'Dean Student Affairs' : item.society?.name;
-  const societyId = item.society?.id;
+  const logoImage = isDsaPost
+    ? (item.society?.logoUrl ? resolveImageUrl(item.society.logoUrl) : '/default-dsa.png')
+    : getSocietyLogo(item.society?.logoUrl);
+  const authorName = isDsaPost
+    ? (item.society?.name || 'Dean Student Affairs')
+    : (item.society?.name || 'Society');
+  const societyId = isDsaPost ? undefined : item.society?.id;
 
   const formattedDate = new Date(item.createdAt).toLocaleDateString('en-US', {
     month: 'short',
@@ -177,7 +184,7 @@ const PostCardComponent: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) 
                   decoding="async"
                   className="w-full h-full object-cover"
                   onError={(e) => {
-                    e.currentTarget.src = '/default-society.jpg';
+                    e.currentTarget.src = isDsaPost ? '/default-dsa.png' : '/default-society.jpg';
                   }}
                 />
               </Link>
@@ -190,7 +197,7 @@ const PostCardComponent: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) 
                   decoding="async"
                   className="w-full h-full object-cover"
                   onError={(e) => {
-                    e.currentTarget.src = '/default-society.jpg';
+                    e.currentTarget.src = isDsaPost ? '/default-dsa.png' : '/default-society.jpg';
                   }}
                 />
               </div>
@@ -209,7 +216,7 @@ const PostCardComponent: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) 
                 <span className="text-white text-[14px] font-bold leading-tight truncate">{authorName}</span>
               )}
               <span className="text-gray-400 text-[12px] font-medium leading-none mt-0.5 truncate">
-                @{(item.society as any)?.username || item.society?.name?.toLowerCase().replace(/\s+/g, '') || 'dsa'}
+                {isDsaPost ? '@dsa.giki' : `@${(item.society as any)?.username || item.society?.name?.toLowerCase().replace(/\s+/g, '') || 'society'}`}
               </span>
             </div>
           </div>
@@ -291,7 +298,9 @@ const PostCardComponent: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) 
 
       {/* Detail Modal */}
       {isDetailOpen && (
-        <PostDetailModal item={item} onClose={() => setIsDetailOpen(false)} />
+        <React.Suspense fallback={null}>
+          <PostDetailModal item={item} onClose={() => setIsDetailOpen(false)} />
+        </React.Suspense>
       )}
 
       {/* Delete Confirmation Modal */}

@@ -10,7 +10,11 @@ export interface PostItem {
   createdAt: string;
   updatedAt: string;
   author: {
+    id?: string;
+    fullName?: string;
+    email?: string;
     role: string;
+    avatarUrl?: string | null;
     society?: {
       id: string;
       name: string;
