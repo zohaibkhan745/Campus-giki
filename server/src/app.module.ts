@@ -3,6 +3,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { Module } from '@nestjs/common';
 import { AppConfigModule } from './core/config/config.module';
 import { PrismaModule } from './core/database/prisma.module';
+import { RedisModule } from './core/redis/redis.module';
 import { HealthModule } from './modules/health/health.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { CategoriesModule } from './modules/categories/categories.module';
@@ -22,11 +23,14 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
   imports: [
     AppConfigModule,
     PrismaModule,
+    RedisModule,
     EmailModule,
     ThrottlerModule.forRoot([
       {
+        name: 'default',
         ttl: 60000,
-        limit: 120,
+        // Generous quota for campus network (5,000+ students & faculty sharing campus NAT IP)
+        limit: parseInt(process.env.THROTTLE_LIMIT || '3000', 10),
       },
     ]),
     ServeStaticModule.forRoot({

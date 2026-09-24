@@ -50,14 +50,15 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.15.1",
     "compression": "^1.8.2",
+    "ioredis": "^6.0.0",
     "joi": "^18.2.3",
     "nodemailer": "^9.0.3",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
+    "prisma": "^6.19.3",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
-    "sharp": "^0.35.3",
-    "prisma": "^6.19.3"
+    "sharp": "^0.35.3"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
@@ -68,6 +69,7 @@
     "@types/bcrypt": "^6.0.0",
     "@types/compression": "^1.8.1",
     "@types/express": "^5.0.0",
+    "@types/ioredis": "^4.28.10",
     "@types/jest": "^30.0.0",
     "@types/node": "^24.0.0",
     "@types/passport-jwt": "^4.0.1",

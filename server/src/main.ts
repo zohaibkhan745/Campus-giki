@@ -1,4 +1,5 @@
 import { NestFactory } from '@nestjs/core';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import { ValidationPipe, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AppModule } from './app.module';
@@ -10,7 +11,10 @@ import { setupSwagger } from './core/swagger/swagger.config';
 
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+
+  // Trust Nginx reverse proxy headers (X-Forwarded-For, X-Real-IP)
+  app.set('trust proxy', true);
 
   // NOTE: Gzip compression is handled by Nginx reverse proxy in production.
   // Removed app.use(compression()) to avoid double-compression CPU waste.

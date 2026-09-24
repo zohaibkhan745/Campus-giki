@@ -21,7 +21,27 @@ services:
       - campus-network
 
   # ==========================================
-  # 2. NestJS Backend API Service
+  # 2. Redis In-Memory Cache Service
+  # ==========================================
+  redis:
+    image: redis:7-alpine
+    container_name: campus-giki-redis
+    restart: unless-stopped
+    command: >
+      redis-server --maxmemory 256mb
+                   --maxmemory-policy allkeys-lru
+                   --save ""
+                   --appendonly no
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - campus-network
+
+  # ==========================================
+  # 3. NestJS Backend API Service
   # ==========================================
   server:
     build:
@@ -32,12 +52,18 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     environment:
       NODE_ENV: ${NODE_ENV:-production}
       PORT: 5000
       API_PREFIX: ${API_PREFIX:-api/v1}
       CORS_ORIGIN: "*"
       SWAGGER_ENABLED: ${SWAGGER_ENABLED:-false}
+      THROTTLE_LIMIT: ${THROTTLE_LIMIT:-3000}
+      REDIS_HOST: ${REDIS_HOST:-redis}
+      REDIS_PORT: ${REDIS_PORT:-6379}
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
       DATABASE_URL: postgresql://${POSTGRES_USER:-campus_admin}:${POSTGRES_PASSWORD:-campus_secure_password_here}@postgres:5432/${POSTGRES_DB:-campus_giki}?schema=public&connection_limit=20&pool_timeout=10
       JWT_SECRET: ${JWT_SECRET:-super_secret_jwt_production_encryption_key_change_me!}
       JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-1d}

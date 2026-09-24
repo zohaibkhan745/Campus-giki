@@ -27,3 +27,8 @@ export * from './logger/logger.service';
 export * from './config/app.config';
 export * from './config/env.schema';
 export * from './config/config.module';
+
+// Core Redis Cache
+export * from './redis/redis.service';
+export * from './redis/redis.module';
+
