@@ -1,10 +1,12 @@
 export type Role = 'STUDENT' | 'SOCIETY' | 'ADVISOR' | 'DSA_ADMIN';
+export type DsaRole = 'DIRECTOR' | 'DEPUTY_DIRECTOR';
 
 export interface UserProfile {
   id: string;
   email: string;
   fullName: string;
   role: Role;
+  dsaRole?: DsaRole | null;
   isActive: boolean;
   avatarUrl?: string | null;
   advisor?: {
@@ -45,4 +47,20 @@ export interface ActivateSocietyPayload {
   presidentName: string;
   presidentRegNum: string;
   presidentContact: string;
+}
+
+export interface ActivateAdvisorPayload {
+  token: string;
+  email: string;
+  password: string;
+}
+
+export interface ForgotPasswordPayload {
+  email: string;
+}
+
+export interface ResetPasswordPayload {
+  token: string;
+  email: string;
+  password: string;
 }

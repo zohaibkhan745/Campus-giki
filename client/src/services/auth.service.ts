@@ -4,6 +4,9 @@ import type {
   LoginPayload,
   RegisterStudentPayload,
   ActivateSocietyPayload,
+  ActivateAdvisorPayload,
+  ForgotPasswordPayload,
+  ResetPasswordPayload,
   UserProfile,
 } from '@/types/auth.types';
 
@@ -18,6 +21,18 @@ export const authService = {
 
   async activateSociety(payload: ActivateSocietyPayload): Promise<AuthResponse> {
     return api.post('/auth/activate-society', payload);
+  },
+
+  async activateAdvisor(payload: ActivateAdvisorPayload): Promise<AuthResponse> {
+    return api.post('/auth/activate-advisor', payload);
+  },
+
+  async forgotPassword(payload: ForgotPasswordPayload): Promise<{ message: string }> {
+    return api.post('/auth/forgot-password', payload);
+  },
+
+  async resetPassword(payload: ResetPasswordPayload): Promise<{ message: string }> {
+    return api.post('/auth/reset-password', payload);
   },
 
   async getProfile(): Promise<UserProfile> {
