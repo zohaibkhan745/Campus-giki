@@ -52,7 +52,6 @@ export const CreateSocietyPage: React.FC = () => {
     mode: 'onTouched',
     defaultValues: {
       name: '',
-      shortform: '',
       presidentName: '',
       categoryId: '',
       presidentEmail: '',
@@ -79,15 +78,6 @@ export const CreateSocietyPage: React.FC = () => {
     },
   });
 
-  
-  const [sameAsFullName, setSameAsFullName] = useState(false);
-  const watchName = watch('name');
-
-  useEffect(() => {
-    if (sameAsFullName) {
-      setValue('shortform', watchName || '', { shouldValidate: true });
-    }
-  }, [watchName, sameAsFullName, setValue]);
   const categoryId = watch('categoryId');
   const advisorId = watch('advisorId');
   
@@ -121,11 +111,7 @@ export const CreateSocietyPage: React.FC = () => {
       </div>
 
       {/* Header Banner */}
-      
-        <h1 className="font-extrabold text-5xl sm:text-6xl text-white tracking-tight leading-tight mb-8">Onboard New Campus Society</h1>
-
-
-      {null}
+      <h1 className="font-extrabold text-5xl sm:text-6xl text-white tracking-tight leading-tight mb-8">Onboard New Campus Society</h1>
 
       {/* Onboarding Form */}
       <form onSubmit={handleSubmit(onSubmit)} className="bg-white/[0.08] backdrop-blur-[20px] p-6 sm:p-8 rounded-[18px] border border-white/20 space-y-6 shadow-[0_12px_40px_rgba(0,0,0,0.4)]" noValidate>
@@ -137,28 +123,22 @@ export const CreateSocietyPage: React.FC = () => {
             {...register('name')}
           />
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Input
-                  label="Short Form *"
-                  placeholder="e.g. ACM"
-                  error={errors.shortform?.message}
-                  disabled={sameAsFullName}
-                  {...register('shortform')}
-                />
-                <label className="flex items-center gap-2 cursor-pointer ml-1 text-sm text-gray-400">
-                  <input type="checkbox" className="rounded border-gray-600 bg-gray-800" checked={sameAsFullName} onChange={(e) => setSameAsFullName(e.target.checked)} />
-                  Same as full name
-                </label>
-              </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Input
+              label="President Name *"
+              placeholder="e.g. John Doe"
+              error={errors.presidentName?.message}
+              {...register('presidentName')}
+            />
 
-              <Input
-                label="President Name *"
-                placeholder="e.g. John Doe"
-                error={errors.presidentName?.message}
-                {...register('presidentName')}
-              />
-            </div>
+            <Input
+              label="Official Society Email *"
+              type="email"
+              placeholder="e.g. acm@giki.edu.pk"
+              error={errors.presidentEmail?.message}
+              {...register('presidentEmail')}
+            />
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-1">
@@ -193,14 +173,6 @@ export const CreateSocietyPage: React.FC = () => {
               )}
             </div>
           </div>
-
-          <Input
-            label="Society Email *"
-            type="email"
-            placeholder="e.g. acm.giki@gmail.com"
-            error={errors.presidentEmail?.message}
-            {...register('presidentEmail')}
-          />
         </div>
 
         <div className="pt-2">

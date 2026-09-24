@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { Trash, UserPlus, Trash2, UserCircle2, ArrowLeft } from 'lucide-react';
+import { Trash, UserPlus, Trash2, UserCircle2, ArrowLeft, Mail } from 'lucide-react';
 import { adminService, type AdvisorOption, type CreateAdvisorPayload } from '@/services/admin.service';
 import { Button } from '@/components/ui/Button';
 import { ConfirmModal } from '@/components/ui/ConfirmModal';
@@ -92,7 +92,7 @@ const deleteMutation = useMutation({
 
   const handleCreateSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.fullName || !formData.email || !formData.password || !formData.department || !formData.designation) {
+    if (!formData.fullName || !formData.email || !formData.department || !formData.designation) {
       setFormError('All fields are required.');
       return;
     }
@@ -253,15 +253,12 @@ const deleteMutation = useMutation({
                 required
               />
 
-              <Input
-                label="Temporary Password"
-                name="password"
-                type="password"
-                placeholder="Minimum 6 characters"
-                value={formData.password}
-                onChange={handleInputChange}
-                required
-              />
+              <div className="p-3 bg-blue-500/10 border border-blue-500/25 rounded-xl text-xs text-blue-300 flex items-start gap-2.5">
+                <Mail className="w-4 h-4 shrink-0 text-blue-400 mt-0.5" />
+                <span className="leading-relaxed">
+                  An official activation link will be sent to the professor's email. They will click the link to securely set their password and access their assigned society's pending plans and events.
+                </span>
+              </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5 flex flex-col">

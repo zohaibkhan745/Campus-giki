@@ -66,7 +66,7 @@ export interface AdminSocietyItem {
   hasWarning: boolean;
   status: AdminSocietyStatusType;
   presidentEmail: string;
-    avatarUrl?: string | null;
+  avatarUrl?: string | null;
   category?: {
     id: string;
     name: string;
@@ -79,9 +79,93 @@ export interface AdminSocietyItem {
     user: {
       fullName: string;
       email: string;
-    avatarUrl?: string | null;
+      avatarUrl?: string | null;
     };
   } | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ExecutiveCouncilMember {
+  name: string;
+  role: string;
+  faculty?: string;
+  email?: string;
+  contact?: string;
+  regNum?: string;
+}
+
+export interface AdminSocietyDetail {
+  id: string;
+  name: string;
+  shortform?: string | null;
+  shortDescription?: string | null;
+  longDescription?: string | null;
+  logoUrl?: string | null;
+  bannerUrl?: string | null;
+  instagram?: string | null;
+  facebook?: string | null;
+  linkedin?: string | null;
+  website?: string | null;
+  email?: string | null;
+  presidentName?: string | null;
+  presidentRegNum?: string | null;
+  presidentFaculty?: string | null;
+  presidentContact?: string | null;
+  presidentEmail: string;
+  executiveCouncil?: string | null;
+  hasWarning: boolean;
+  isSetupComplete: boolean;
+  type: string;
+  status: AdminSocietyStatusType;
+  category?: {
+    id: string;
+    name: string;
+    slug: string;
+  } | null;
+  advisor?: {
+    id: string;
+    designation: string;
+    department: string;
+    phoneNumber?: string | null;
+    user?: {
+      id: string;
+      fullName: string;
+      email: string;
+      avatarUrl?: string | null;
+    } | null;
+  } | null;
+  user?: {
+    id: string;
+    email: string;
+    fullName: string;
+    isActive: boolean;
+    avatarUrl?: string | null;
+    createdAt: string;
+    updatedAt: string;
+  } | null;
+  events?: Array<{
+    id: string;
+    title: string;
+    eventDate: string;
+    startTime: string;
+    endTime: string;
+    venue: string;
+    approvalStatus: string;
+    isPublished: boolean;
+    coverImageUrl?: string | null;
+  }>;
+  yearlyPlans?: Array<{
+    id: string;
+    year: number;
+    status: string;
+    createdAt: string;
+    updatedAt: string;
+  }>;
+  _count?: {
+    events: number;
+    yearlyPlans: number;
+  };
   createdAt: string;
   updatedAt: string;
 }
@@ -305,6 +389,10 @@ export const adminService = {
     return api.get('/admin/societies', { params });
   },
 
+  async getSocietyById(id: string): Promise<AdminSocietyDetail> {
+    return api.get(`/admin/societies/${id}`);
+  },
+
   async onboardSociety(payload: OnboardSocietyPayload): Promise<OnboardSocietyResult> {
     return api.post('/admin/societies', payload);
   },
@@ -372,6 +460,27 @@ export const adminService = {
     pendingPlansCount: number;
   }> {
     return api.get('/admin/pending-summary');
+  },
+
+  async getStaffList(): Promise<Array<{
+    id: string;
+    fullName: string;
+    email: string;
+    role: string;
+    dsaRole: 'DIRECTOR' | 'DEPUTY_DIRECTOR';
+    isActive: boolean;
+    isEmailVerified: boolean;
+    createdAt: string;
+  }>> {
+    return api.get('/admin/staff');
+  },
+
+  async createStaff(payload: { fullName: string; email: string }) {
+    return api.post('/admin/staff', payload);
+  },
+
+  async deleteStaff(id: string): Promise<{ message: string; id: string }> {
+    return api.delete(`/admin/staff/${id}`);
   },
 };
 
