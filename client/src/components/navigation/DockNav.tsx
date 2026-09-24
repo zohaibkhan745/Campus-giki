@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Home, CalendarDays, Menu } from 'lucide-react';
 import { UpcomingEventIcon } from '@/components/icons/UpcomingEventIcon';
@@ -130,52 +130,6 @@ export const DockNav: React.FC = () => {
     }
   };
 
-  // Idle background pre-warming for instant 0ms tab switches
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      try {
-        queryClient.prefetchInfiniteQuery({
-          queryKey: ['campusFeed', 12],
-          queryFn: ({ pageParam = 1 }) => feedService.getFeed({ page: pageParam, limit: 12 }),
-          initialPageParam: 1,
-        });
-
-        queryClient.prefetchQuery({
-          queryKey: ['events', 'upcoming'],
-          queryFn: () => eventService.getAllPublicEvents({ from: new Date().toISOString(), limit: 50, page: 1 }),
-        });
-
-        queryClient.prefetchQuery({
-          queryKey: ['publicSocieties', 1, '', '', ''],
-          queryFn: () => societyService.getPublicSocieties({ page: 1, limit: 100 }),
-        });
-        queryClient.prefetchQuery({
-          queryKey: ['categories'],
-          queryFn: societyService.getCategories,
-        });
-
-        const now = new Date();
-        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-        const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-        queryClient.prefetchQuery({
-          queryKey: ['publicCalendarEvents', startOfMonth.toISOString(), endOfMonth.toISOString(), 'all', ''],
-          queryFn: () => eventService.getAllPublicEvents({ 
-            from: new Date(now.getFullYear(), now.getMonth(), -7).toISOString(), 
-            to: new Date(now.getFullYear(), now.getMonth() + 1, 7).toISOString(), 
-            limit: 150 
-          }),
-        });
-        queryClient.prefetchQuery({
-          queryKey: ['societiesListForFilter'],
-          queryFn: () => societyService.getPublicSocieties({ limit: 100 }),
-        });
-      } catch {
-        // Non-blocking
-      }
-    }, 600);
-
-    return () => clearTimeout(timer);
-  }, [queryClient]);
 
   // Dynamically resolve navigation links based on user authentication state
   const visibleNavLinks = useMemo(

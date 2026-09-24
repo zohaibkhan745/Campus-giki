@@ -14,7 +14,10 @@ import {
   Save,
   Loader2,
   ShieldCheck,
+  Lock,
+  Trash2,
 } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 import { eventService } from "@/services/event.service";
 import {
   eventFormSchema,
@@ -34,8 +37,10 @@ import type { AxiosError } from "axios";
 export const EditEventPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const queryClient = useQueryClient();
   const [serverError, setServerError] = useState<string | null>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   // Query existing event data
   const {
@@ -147,10 +152,26 @@ export const EditEventPage: React.FC = () => {
   });
 
   const isEditLocked =
+    user?.role !== "DSA_ADMIN" &&
     (eventData?.approvalStatus === "APPROVED" ||
       eventData?.approvalStatus === "PUBLISHED" ||
       eventData?.approvalStatus === "PENDING_ADMIN") &&
     (eventData as any)?.editRequestStatus !== "APPROVED";
+
+  const deleteMutation = useMutation({
+    mutationFn: () => eventService.deleteEvent(id!),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["myEvents"] });
+      queryClient.invalidateQueries({ queryKey: ["publicEvents"] });
+      queryClient.invalidateQueries({ queryKey: ["events"] });
+      queryClient.invalidateQueries({ queryKey: ["societyEvents"] });
+      queryClient.invalidateQueries({ queryKey: ["societyDashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["adminEvents"] });
+      queryClient.invalidateQueries({ queryKey: ["adminEventsList"] });
+      queryClient.invalidateQueries({ queryKey: ["campusFeed"] });
+      navigate("/dashboard", { replace: true });
+    },
+  });
 
   const updateMutation = useMutation({
     meta: { notify: true },
@@ -219,6 +240,136 @@ export const EditEventPage: React.FC = () => {
           }}
           showBackAction
         />
+      </div>
+    );
+  }
+
+  const isPublished =
+    Boolean(eventData.isPublished) ||
+    eventData.approvalStatus === "APPROVED" ||
+    eventData.approvalStatus === "PUBLISHED";
+  const isSociety = user?.role === "SOCIETY";
+  const isSocietyPublishedLocked = isSociety && isPublished;
+
+  if (isSocietyPublishedLocked) {
+    return (
+      <div className="max-w-2xl mx-auto py-12 px-4 space-y-6 text-left">
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => navigate(-1)}
+            className="inline-flex items-center justify-center w-10 h-10 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white rounded-full transition-all cursor-pointer shadow-lg shrink-0"
+            title="Go Back"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </button>
+          <div>
+            <h1 className="text-2xl font-bold text-white">Event Locked</h1>
+            <p className="text-xs text-gray-400">Published Campus Event</p>
+          </div>
+        </div>
+
+        <div className="p-8 rounded-3xl bg-gradient-to-b from-amber-500/10 via-black/40 to-black/60 border border-amber-500/30 text-white space-y-6 shadow-2xl backdrop-blur-xl">
+          <div className="flex items-start gap-4">
+            <div className="p-3.5 rounded-2xl bg-amber-500/20 text-amber-400 border border-amber-500/30 shrink-0">
+              <Lock className="w-7 h-7" />
+            </div>
+            <div className="space-y-1.5 flex-1">
+              <h2 className="text-lg font-extrabold text-white">Published Events Cannot Be Edited</h2>
+              <p className="text-xs text-amber-200/90 leading-relaxed">
+                This event has been approved and published on the official campus calendar. To maintain calendar integrity and avoid miscommunication with attendees, societies cannot modify event details once published.
+              </p>
+            </div>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-black/40 border border-white/10 space-y-2 text-xs">
+            <div className="flex items-center justify-between border-b border-white/10 pb-2">
+              <span className="text-gray-400">Event Title:</span>
+              <span className="font-bold text-white text-right">{eventData.title}</span>
+            </div>
+            <div className="flex items-center justify-between border-b border-white/10 pb-2">
+              <span className="text-gray-400">Event Date:</span>
+              <span className="font-semibold text-gray-200">
+                {new Date(eventData.eventDate).toLocaleDateString(undefined, {
+                  weekday: 'short',
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric',
+                })}
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-gray-400">Venue:</span>
+              <span className="font-semibold text-gray-200">{eventData.venue}</span>
+            </div>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-blue-500/10 border border-blue-500/20 text-xs text-blue-200 leading-relaxed">
+            <strong>Need to make changes?</strong> You may delete this event and submit a revised version for approval.
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-3 pt-2">
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full border-white/20 text-white hover:bg-white/10"
+              onClick={() => navigate('/dashboard')}
+            >
+              Back to Dashboard
+            </Button>
+            <Button
+              type="button"
+              className="w-full bg-red-600 hover:bg-red-700 text-white border border-red-500/30"
+              onClick={() => setShowDeleteConfirm(true)}
+              isLoading={deleteMutation.isPending}
+              leftIcon={<Trash2 className="w-4 h-4" />}
+            >
+              Delete Event
+            </Button>
+          </div>
+        </div>
+
+        {/* Delete Confirmation Modal */}
+        {showDeleteConfirm && (
+          <div
+            className="fixed inset-0 z-[999999] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
+            onClick={() => !deleteMutation.isPending && setShowDeleteConfirm(false)}
+          >
+            <div
+              className="bg-[#18191f] border border-white/20 rounded-2xl p-6 max-w-sm w-full text-center shadow-2xl relative"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h3 className="text-lg font-bold text-white mb-2">Delete Event?</h3>
+              <p className="text-xs text-gray-400 mb-6 leading-relaxed">
+                Are you sure you want to permanently delete <strong className="text-white">&quot;{eventData.title}&quot;</strong>? This action cannot be undone.
+              </p>
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  disabled={deleteMutation.isPending}
+                  className="flex-1 py-2.5 px-4 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition-all disabled:opacity-50 cursor-pointer"
+                  onClick={() => setShowDeleteConfirm(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  disabled={deleteMutation.isPending}
+                  className="flex-1 py-2.5 px-4 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold transition-all flex items-center justify-center gap-1.5 disabled:opacity-50 cursor-pointer shadow-lg shadow-red-900/30"
+                  onClick={() => deleteMutation.mutate()}
+                >
+                  {deleteMutation.isPending ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      <span>Deleting...</span>
+                    </>
+                  ) : (
+                    <span>Delete</span>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     );
   }

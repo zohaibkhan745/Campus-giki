@@ -1,6 +1,6 @@
 import React from 'react';
 import { createPortal } from 'react-dom';
-import { AlertTriangle, X } from 'lucide-react';
+import { AlertTriangle, X, CheckCircle2 } from 'lucide-react';
 
 interface ConfirmModalProps {
   isOpen: boolean;
@@ -11,6 +11,7 @@ interface ConfirmModalProps {
   confirmText?: string;
   cancelText?: string;
   isLoading?: boolean;
+  variant?: 'danger' | 'warning' | 'success';
 }
 
 export const ConfirmModal: React.FC<ConfirmModalProps> = ({
@@ -21,7 +22,8 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
   message,
   confirmText = 'Confirm',
   cancelText = 'Cancel',
-  isLoading = false
+  isLoading = false,
+  variant = 'danger',
 }) => {
   if (!isOpen) return null;
 
@@ -39,9 +41,21 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
         >
           <X className="w-5 h-5" />
         </button>
-        <div className="flex items-center gap-3 text-red-400">
-          <div className="p-2.5 rounded-full bg-red-500/20 border border-red-500/30">
-            <AlertTriangle className="w-6 h-6" />
+        <div className={`flex items-center gap-3 ${
+          variant === 'success' ? 'text-emerald-400' : variant === 'warning' ? 'text-amber-400' : 'text-red-400'
+        }`}>
+          <div className={`p-2.5 rounded-full border ${
+            variant === 'success'
+              ? 'bg-emerald-500/20 border-emerald-500/30 text-emerald-400'
+              : variant === 'warning'
+              ? 'bg-amber-500/20 border-amber-500/30 text-amber-400'
+              : 'bg-red-500/20 border-red-500/30 text-red-400'
+          }`}>
+            {variant === 'success' ? (
+              <CheckCircle2 className="w-6 h-6" />
+            ) : (
+              <AlertTriangle className="w-6 h-6" />
+            )}
           </div>
           <h3 className="text-xl font-bold">{title}</h3>
         </div>
@@ -59,9 +73,15 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
           <button
             onClick={onConfirm}
             disabled={isLoading}
-            className="px-5 py-2.5 rounded-xl border border-red-500/50 bg-red-500 text-white hover:bg-red-600 transition-colors text-sm font-semibold flex items-center gap-2"
+            className={`px-5 py-2.5 rounded-xl border text-white transition-colors text-sm font-semibold flex items-center gap-2 ${
+              variant === 'success'
+                ? 'border-emerald-500/50 bg-emerald-600 hover:bg-emerald-500'
+                : variant === 'warning'
+                ? 'border-amber-500/50 bg-amber-600 hover:bg-amber-500'
+                : 'border-red-500/50 bg-red-600 hover:bg-red-500'
+            }`}
           >
-            {isLoading ? <span className="animate-pulse">Deleting...</span> : confirmText}
+            {isLoading ? <span className="animate-pulse">Processing...</span> : confirmText}
           </button>
         </div>
       </div>

@@ -1,7 +1,7 @@
 import { getSocietyLogo, getSocietyBanner } from '@/lib/utils';
 import React, { useState } from 'react';
 import { useQuery, useQueryClient, keepPreviousData } from '@tanstack/react-query';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import {
   Calendar as CalendarIcon,
   History,
@@ -9,8 +9,10 @@ import {
   ArrowLeft,
   AlertCircle,
   Tag,
-    Globe,
+  Globe,
+  Camera,
 } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
 import { societyService } from '@/services/society.service';
 import { EventCard } from '@/components/feed/EventCard';
 import { ErrorState } from '@/components/ui/ErrorState';
@@ -24,6 +26,7 @@ export const SocietyProfilePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<'upcoming' | 'past' | 'council'>('upcoming');
 
   const {
@@ -324,8 +327,19 @@ export const SocietyProfilePage: React.FC = () => {
           </div>
         </div>
 
-        <div className="society-profile-container">
+        <div className="society-profile-container group/avatar relative">
           <img src={getSocietyLogo(society.logoUrl)} alt="Society Logo" className="society-profile-img" onError={(e) => { e.currentTarget.src = '/default-society.jpg'; }} />
+          {((user?.role === 'SOCIETY' && user.society?.id === society.id) || user?.role === 'DSA_ADMIN') && (
+            <Link
+              to="/society/setup"
+              className="absolute inset-0 rounded-full bg-black/50 opacity-0 group-hover/avatar:opacity-100 transition-opacity flex items-center justify-center text-white backdrop-blur-[2px] cursor-pointer"
+              aria-label="Change society logo"
+            >
+              <div className="w-12 h-12 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center text-white transition-all shadow-md">
+                <Camera className="w-6 h-6 text-white" />
+              </div>
+            </Link>
+          )}
         </div>
 
         {/* Society Name */}

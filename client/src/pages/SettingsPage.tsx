@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { authService } from '@/services/auth.service';
 import { useMutation } from '@tanstack/react-query';
-import { Shield, KeyRound, User, Briefcase, Building2, Check, ArrowLeft, Image } from 'lucide-react';
+import { Shield, KeyRound, User, Briefcase, Building2, Check, ArrowLeft, Image, Camera } from 'lucide-react';
 import { Input } from '@/components/ui/Input';
 import { CustomDropdown } from '@/components/ui/CustomDropdown';
 import { Button } from '@/components/ui/Button';
 import { Alert } from '@/components/ui/Alert';
+import { ImageUploader } from '@/components/common/ImageUploader';
 import { useNavigate } from 'react-router-dom';
 import type { AxiosError } from 'axios';
 
@@ -19,6 +20,15 @@ export const SettingsPage: React.FC = () => {
   const [avatarUrl, setAvatarUrl] = useState(user?.avatarUrl || '');
   const [faculty, setFaculty] = useState(user?.advisor?.department || '');
   const [designation, setDesignation] = useState(user?.advisor?.designation || '');
+
+  useEffect(() => {
+    if (user) {
+      setFullName(user.fullName || '');
+      setAvatarUrl(user.avatarUrl || '');
+      setFaculty(user.advisor?.department || '');
+      setDesignation(user.advisor?.designation || '');
+    }
+  }, [user]);
 
   // Password State
   const [currentPassword, setCurrentPassword] = useState('');
@@ -136,21 +146,55 @@ export const SettingsPage: React.FC = () => {
                 <User className="w-5 h-5 text-white" />
                 General Information
               </h3>
+
+              {/* Profile Alerts */}
+              {profileSuccess && (
+                <Alert
+                  variant="success"
+                  message="Profile updated successfully!"
+                  className="mb-4"
+                />
+              )}
+              {profileError && (
+                <Alert
+                  variant="error"
+                  message={profileError}
+                  className="mb-4"
+                />
+              )}
               
-              <div className="space-y-4">
-                <div className="space-y-1">
-                  <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Account Email</label>
-                  <div className="w-full bg-[#111111] text-gray-400 text-sm rounded-lg border border-white/10 px-4 py-3 cursor-not-allowed">
-                    {user.email}
+              <div className="space-y-6">
+                {/* Profile Picture & Account Information */}
+                <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 pb-2">
+                  <div className="shrink-0 flex flex-col items-center">
+                    <ImageUploader
+                      label="Profile Picture"
+                      value={avatarUrl}
+                      onChange={(url) => setAvatarUrl(url)}
+                      folder="avatars"
+                      shape="circle"
+                      fallbackImage={isAdvisor ? '/default-advisor.jpg' : '/default-dsa.png'}
+                      className="w-28 h-28 sm:w-32 sm:h-32 rounded-full"
+                    />
+                  </div>
+
+                  <div className="flex-1 w-full space-y-4">
+                    <div className="space-y-1">
+                      <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Account Email</label>
+                      <div className="w-full bg-[#111111] text-gray-400 text-sm rounded-lg border border-white/10 px-4 py-3 cursor-not-allowed">
+                        {user.email}
+                      </div>
+                    </div>
+
+                    <Input
+                      label="Full Name"
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                      placeholder="e.g. Dr. John Doe"
+                      required
+                    />
                   </div>
                 </div>
-
-                <Input
-                  label="Full Name"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  required
-                />
 
                 {isAdvisor && (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -191,6 +235,22 @@ export const SettingsPage: React.FC = () => {
                 <KeyRound className="w-5 h-5 text-white" />
                 Security & Password
               </h3>
+
+              {/* Password Alerts */}
+              {passwordSuccess && (
+                <Alert
+                  variant="success"
+                  message="Password updated successfully!"
+                  className="mb-4"
+                />
+              )}
+              {passwordError && (
+                <Alert
+                  variant="error"
+                  message={passwordError}
+                  className="mb-4"
+                />
+              )}
 
               <div className="space-y-4">
                 <Input

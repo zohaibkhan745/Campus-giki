@@ -71,7 +71,7 @@ export const AdminDashboardPage: React.FC = () => {
 
   return (
     <div className="w-full">
-      <BannerHeader title={user?.fullName || "Dean Student Affairs"} logoUrl={user?.avatarUrl ? resolveImageUrl(user.avatarUrl) : "/default-dsa.png"} fallbackImage="/default-dsa.png" />
+      <BannerHeader title={user?.fullName || "Dean Student Affairs"} logoUrl={user?.avatarUrl ? resolveImageUrl(user.avatarUrl) : "/default-dsa.png"} fallbackImage="/default-dsa.png" editUrl="/settings" />
       <div className="w-full max-w-[1440px] mx-auto space-y-6 text-left py-4 px-4">
         {/* Actions Row */}
         <div className="flex justify-end mb-4">
@@ -83,6 +83,15 @@ export const AdminDashboardPage: React.FC = () => {
             <UserPlus className="w-4 h-4" />
             <span>Onboard Society</span>
           </Link>
+          {user?.dsaRole === 'DIRECTOR' && (
+            <Link
+              to="/admin/staff"
+              className="flex justify-center items-center gap-1.5 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-sm font-bold transition-colors shadow-lg shadow-indigo-600/30"
+            >
+              <Users className="w-4 h-4" />
+              <span>DDSA Staff</span>
+            </Link>
+          )}
           <button
             onClick={() => setIsAnnouncementDialogOpen(true)}
             className="flex justify-center items-center gap-1.5 px-4 py-2.5 bg-white hover:bg-gray-100 text-gray-900 rounded-xl text-sm font-bold transition-colors shadow-lg"
@@ -170,16 +179,21 @@ export const AdminDashboardPage: React.FC = () => {
 
       
 
-      <div className="flex flex-col gap-6 mt-8">
-        {/* Pending Events */}
+      <div className="flex flex-col gap-10 mt-8">
+        {/* 1. Pending Event Proposals for DSA Review */}
         <div className="space-y-4">
-          <div className="flex items-center justify-between border-b-2 border-white/10 pb-3">
-            <div className="flex items-center gap-2 font-extrabold text-lg text-white">
-              <Clock className="w-5 h-5 text-white" />
-              <h3>Pending Review ({pendingEvents.length})</h3>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b-2 border-white/10 pb-3 gap-3">
+            <div>
+              <div className="flex items-center gap-2 font-extrabold text-lg text-white">
+                <MicVocal className="w-5 h-5 text-indigo-400" />
+                <h3>Pending Event Proposals for Review ({pendingEvents.length})</h3>
+              </div>
+              <p className="text-xs text-gray-400 mt-0.5">
+                Review and approve society event proposals submitted for administrative clearance
+              </p>
             </div>
             
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
               <CustomDropdown 
                 className="w-auto min-w-[200px]"
                 value={statusFilter}
@@ -189,8 +203,8 @@ export const AdminDashboardPage: React.FC = () => {
                   { value: 'CHANGES_REQUESTED', label: 'Changes Requested' }
                 ]}
               />
-              <Link to="/admin/events/pending" className="whitespace-nowrap px-4 py-2 bg-white text-gray-900 border border-transparent rounded-xl text-sm font-bold shadow-md hover:bg-gray-100 transition-all">
-                View All
+              <Link to="/admin/events" className="whitespace-nowrap px-4 py-2 bg-white text-gray-900 border border-transparent rounded-xl text-sm font-bold shadow-md hover:bg-gray-100 transition-all">
+                View All Events
               </Link>
             </div>
           </div>
@@ -213,7 +227,7 @@ export const AdminDashboardPage: React.FC = () => {
           ) : pendingEvents.length === 0 ? (
             <EmptyState
               icon={Shield}
-              title="You're All Caught Up"
+              title="No Event Proposals Pending Review"
               description={
                 statusFilter === 'CHANGES_REQUESTED'
                   ? 'No events currently under requested revisions.'
@@ -225,8 +239,7 @@ export const AdminDashboardPage: React.FC = () => {
             <EventGrid events={pendingEvents.slice(0, 4)} reviewUrlBase="/admin/events" />
           )}
         </div>
-
-        </div>
+      </div>
 
         <MakeAnnouncementDialog
         isOpen={isAnnouncementDialogOpen}

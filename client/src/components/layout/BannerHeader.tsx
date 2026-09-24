@@ -1,5 +1,6 @@
 import { getSocietyLogo, getSocietyBanner } from '@/lib/utils';
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Building2, User, Globe } from 'lucide-react';
 const Instagram = ({className}: {className?: string}) => <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>;
 const Facebook = ({className}: {className?: string}) => <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>;
@@ -13,6 +14,7 @@ interface BannerHeaderProps {
   bannerUrl?: string | null;
   logoUrl?: string | null;
   fallbackImage?: string;
+  editUrl?: string;
 }
 
 export const BannerHeader: React.FC<BannerHeaderProps> = ({
@@ -22,6 +24,7 @@ export const BannerHeader: React.FC<BannerHeaderProps> = ({
   logoUrl,
   fallbackImage = '/default-society.jpg',
   socials,
+  editUrl,
 }) => {
   const { user } = useAuth();
   
@@ -157,8 +160,15 @@ export const BannerHeader: React.FC<BannerHeaderProps> = ({
         <img src={getSocietyBanner(bannerUrl)} alt="Banner Image" className="shared-banner-img" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/default-banner.png'; }} />
 
         {/* Profile Circle */}
-        <div className="shared-profile-container">
+        <div className="shared-profile-container group/avatar relative">
           <img src={logoUrl || fallbackImage} alt="Logo" className="shared-profile-img" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = fallbackImage; }} />
+          {editUrl && (
+            <Link
+              to={editUrl}
+              className="absolute inset-0 rounded-full cursor-pointer hover:bg-black/15 transition-all"
+              aria-label="Settings"
+            />
+          )}
         </div>
 
         {/* Name */}

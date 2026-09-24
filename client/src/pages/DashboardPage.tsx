@@ -9,13 +9,23 @@ import { EventCard } from '@/components/feed/EventCard';
 import { societyService } from '@/services/society.service';
 import { DashboardSkeleton } from '@/components/dashboard/DashboardSkeleton';
 import { DeleteEventDialog } from '@/components/events/DeleteEventDialog';
-import { AdminDashboardPage } from '@/pages/admin/AdminDashboardPage';
-import { AdvisorQueuePage } from '@/pages/advisor/AdvisorQueuePage';
+const AdminDashboardPage = React.lazy(() =>
+  import('@/pages/admin/AdminDashboardPage').then((m) => ({ default: m.AdminDashboardPage })),
+);
+const AdvisorQueuePage = React.lazy(() =>
+  import('@/pages/advisor/AdvisorQueuePage').then((m) => ({ default: m.AdvisorQueuePage })),
+);
 import { BannerHeader } from '@/components/layout/BannerHeader';
 import { Info, FileText } from 'lucide-react';
-import { VenuePermissionSlipModal } from '@/components/events/VenuePermissionSlipModal';
-import { UploadSignedSlipModal } from '@/components/events/UploadSignedSlipModal';
-import { DashboardAboutModal } from '@/components/dashboard/DashboardAboutModal';
+const VenuePermissionSlipModal = React.lazy(() =>
+  import('@/components/events/VenuePermissionSlipModal').then((m) => ({ default: m.VenuePermissionSlipModal })),
+);
+const UploadSignedSlipModal = React.lazy(() =>
+  import('@/components/events/UploadSignedSlipModal').then((m) => ({ default: m.UploadSignedSlipModal })),
+);
+const DashboardAboutModal = React.lazy(() =>
+  import('@/components/dashboard/DashboardAboutModal').then((m) => ({ default: m.DashboardAboutModal })),
+);
 import { ErrorState } from '@/components/ui';
 import type { EventItem } from '@/types/event.types';
 import {
@@ -187,12 +197,20 @@ export const DashboardPage: React.FC = () => {
 
   // If DSA_ADMIN, render central DSA Dashboard
   if (user?.role === 'DSA_ADMIN') {
-    return <AdminDashboardPage />;
+    return (
+      <React.Suspense fallback={<DashboardSkeleton />}>
+        <AdminDashboardPage />
+      </React.Suspense>
+    );
   }
 
   // If ADVISOR, render central Advisor Queue Dashboard
   if (user?.role === 'ADVISOR') {
-    return <AdvisorQueuePage />;
+    return (
+      <React.Suspense fallback={<DashboardSkeleton />}>
+        <AdvisorQueuePage />
+      </React.Suspense>
+    );
   }
 
   // If STUDENT, render dedicated Student Dashboard
@@ -253,9 +271,15 @@ export const DashboardPage: React.FC = () => {
 
   return (
     <div className="w-full">
-      <BannerHeader title={profile?.name || user?.fullName || 'User'} subtitle={profile?.advisor?.user ? `Advisor: ${profile.advisor.user.fullName}` : undefined} logoUrl={getSocietyLogo(profile?.logoUrl)} bannerUrl={getSocietyBanner(profile?.bannerUrl)} socials={{ instagram: profile?.instagram, facebook: profile?.facebook, linkedin: profile?.linkedin, website: profile?.website }} />
+      <BannerHeader 
+        title={profile?.name || user?.fullName || 'User'} 
+        subtitle={profile?.advisor?.user ? `Advisor: ${profile.advisor.user.fullName}` : undefined} 
+        logoUrl={getSocietyLogo(profile?.logoUrl)} 
+        bannerUrl={getSocietyBanner(profile?.bannerUrl)} 
+        socials={{ instagram: profile?.instagram, facebook: profile?.facebook, linkedin: profile?.linkedin, website: profile?.website }} 
+        editUrl="/society/setup"
+      />
       <div className="space-y-6 text-left py-4 px-4">
-        {/* Actions Row */}
         <div className="flex justify-end mb-4">
           <div className="grid grid-cols-3 md:flex md:flex-wrap lg:flex-nowrap md:justify-end gap-2 md:gap-3 w-full md:w-auto shrink-0 mt-4 md:mt-0">
           <button
@@ -496,24 +520,32 @@ export const DashboardPage: React.FC = () => {
         onClose={() => setDeleteTarget(null)}
       />
 
-        {isAboutModalOpen && <DashboardAboutModal onClose={() => setIsAboutModalOpen(false)} profile={profile} />}
+        {isAboutModalOpen && (
+          <React.Suspense fallback={null}>
+            <DashboardAboutModal onClose={() => setIsAboutModalOpen(false)} profile={profile} />
+          </React.Suspense>
+        )}
 
         {selectedSlipEvent && (
-          <VenuePermissionSlipModal
-            isOpen={!!selectedSlipEvent}
-            onClose={() => setSelectedSlipEvent(null)}
-            event={selectedSlipEvent}
-            societyName={profile?.name}
-            societyLogo={profile?.logoUrl}
-          />
+          <React.Suspense fallback={null}>
+            <VenuePermissionSlipModal
+              isOpen={!!selectedSlipEvent}
+              onClose={() => setSelectedSlipEvent(null)}
+              event={selectedSlipEvent}
+              societyName={profile?.name}
+              societyLogo={profile?.logoUrl}
+            />
+          </React.Suspense>
         )}
 
         {selectedUploadEvent && (
-          <UploadSignedSlipModal
-            isOpen={!!selectedUploadEvent}
-            onClose={() => setSelectedUploadEvent(null)}
-            event={selectedUploadEvent}
-          />
+          <React.Suspense fallback={null}>
+            <UploadSignedSlipModal
+              isOpen={!!selectedUploadEvent}
+              onClose={() => setSelectedUploadEvent(null)}
+              event={selectedUploadEvent}
+            />
+          </React.Suspense>
         )}
       </div>
     </div>

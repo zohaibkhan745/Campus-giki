@@ -31,7 +31,7 @@ export const AdminEventsPage: React.FC = () => {
   const navigate = useNavigate();
   const rawType = searchParams.get('type');
 
-  let defaultType: 'all' | 'this_week' | 'this_month' | 'upcoming' | 'past' = 'upcoming';
+  let defaultType: 'all' | 'this_week' | 'this_month' | 'upcoming' | 'past' = 'all';
   let defaultFrom = '';
   let defaultTo = '';
 
@@ -50,7 +50,7 @@ export const AdminEventsPage: React.FC = () => {
     const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
     defaultFrom = startOfMonth.toISOString().split('T')[0];
     defaultTo = endOfMonth.toISOString().split('T')[0];
-  } else if (rawType === 'upcoming' || rawType === 'past') {
+  } else if (rawType === 'upcoming' || rawType === 'past' || rawType === 'all') {
     defaultType = rawType;
   }
 
@@ -167,10 +167,10 @@ export const AdminEventsPage: React.FC = () => {
 
         <div className="flex flex-col md:flex-row flex-wrap items-center gap-4 pt-4 border-t border-white/10 mt-2">
           
-          <CustomDropdown className="w-full md:flex-1 shrink-0" icon={<Calendar className="w-4 h-4" />} options={[{ value: 'upcoming', label: 'Upcoming Events' }, { value: 'past', label: 'Past Events' }, { value: 'all', label: 'All Event Timings' }]}
+          <CustomDropdown className="w-full md:flex-1 shrink-0" icon={<Calendar className="w-4 h-4" />} options={[{ value: 'all', label: 'All Event Timings' }, { value: 'upcoming', label: 'Upcoming Events' }, { value: 'past', label: 'Past Events' }]}
             value={typeToggle}
             onChange={(e: any) => { setTypeToggle(e.target.value); setFromDate(''); setToDate(''); }}
-            placeholder="Event Timeline"
+            placeholder="All Event Timings"
           />
           <CustomDropdown className="w-full md:flex-1 shrink-0" icon={<Filter className="w-4 h-4" />} options={[{ value: "", label: "All Statuses" },
               { value: 'PENDING_ADMIN', label: 'Pending Review' },

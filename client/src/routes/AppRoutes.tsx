@@ -9,13 +9,15 @@ import { PublicOnlyRoute } from '@/routes/PublicOnlyRoute';
 // UI components for Suspense Fallback
 import { Loader2 } from 'lucide-react';
 
-// Core Public Pages (Eagerly imported for instant tab switching and smooth transitions)
+// Core Public Pages (Eagerly imported for instant 0ms dock tab switching without fallback spinners)
 import { HomePage } from '@/pages/HomePage';
 import { UpcomingEventsPage } from '@/pages/events/UpcomingEventsPage';
 import { CampusCalendarPage } from '@/pages/events/CampusCalendarPage';
 import { SocietyDirectoryPage } from '@/pages/societies/SocietyDirectoryPage';
-import { SocietyProfilePage } from '@/pages/societies/SocietyProfilePage';
-import { EventDetailPage } from '@/pages/events/EventDetailPage';
+
+// Code-split Secondary Pages (Loaded on-demand to keep initial bundle light)
+const SocietyProfilePage = React.lazy(() => import('@/pages/societies/SocietyProfilePage').then(m => ({ default: m.SocietyProfilePage })));
+const EventDetailPage = React.lazy(() => import('@/pages/events/EventDetailPage').then(m => ({ default: m.EventDetailPage })));
 
 export const PageFallback = () => (
   <div className="flex-1 flex flex-col items-center justify-center min-h-[50vh] space-y-4">
@@ -40,6 +42,7 @@ const AdvisorEventReviewPage = React.lazy(() => import('@/pages/advisor/AdvisorE
 const AdminYearlyPlansPage = React.lazy(() => import('@/pages/admin/AdminYearlyPlansPage').then(m => ({ default: m.AdminYearlyPlansPage })));
 const AdminYearlyPlanDetailPage = React.lazy(() => import('@/pages/admin/AdminYearlyPlanDetailPage').then(m => ({ default: m.AdminYearlyPlanDetailPage })));
 const AdminSocietiesPage = React.lazy(() => import('@/pages/admin/AdminSocietiesPage').then(m => ({ default: m.AdminSocietiesPage })));
+const AdminSocietyDetailPage = React.lazy(() => import('@/pages/admin/AdminSocietyDetailPage').then(m => ({ default: m.AdminSocietyDetailPage })));
 const CreateSocietyPage = React.lazy(() => import('@/pages/admin/CreateSocietyPage').then(m => ({ default: m.CreateSocietyPage })));
 const AdminEventsPage = React.lazy(() => import('@/pages/admin/AdminEventsPage').then(m => ({ default: m.AdminEventsPage })));
 const AdminPendingEventsPage = React.lazy(() => import('@/pages/admin/AdminPendingEventsPage').then(m => ({ default: m.AdminPendingEventsPage })));
@@ -50,6 +53,10 @@ const NotFoundPage = React.lazy(() => import('@/pages/NotFoundPage').then(m => (
 const ComingSoonPage = React.lazy(() => import('@/pages/ComingSoonPage').then(m => ({ default: m.ComingSoonPage })));
 const SocietyEventsPage = React.lazy(() => import('@/pages/societies/SocietyEventsPage').then(m => ({ default: m.SocietyEventsPage })));
 const SettingsPage = React.lazy(() => import('@/pages/SettingsPage').then(m => ({ default: m.SettingsPage })));
+const ForgotPasswordPage = React.lazy(() => import('@/pages/auth/ForgotPasswordPage').then(m => ({ default: m.ForgotPasswordPage })));
+const ResetPasswordPage = React.lazy(() => import('@/pages/auth/ResetPasswordPage').then(m => ({ default: m.ResetPasswordPage })));
+const ActivateAdvisorPage = React.lazy(() => import('@/pages/auth/ActivateAdvisorPage').then(m => ({ default: m.ActivateAdvisorPage })));
+const AdminStaffPage = React.lazy(() => import('@/pages/admin/AdminStaffPage').then(m => ({ default: m.AdminStaffPage })));
 
 export const AppRoutes: React.FC = () => {
   return (
@@ -75,6 +82,9 @@ export const AppRoutes: React.FC = () => {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<Navigate to="/login" replace />} />
           <Route path="/activate-society" element={<ActivateSocietyPage />} />
+          <Route path="/activate-advisor" element={<ActivateAdvisorPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
         </Route>
 
         {/* Society Role Specific Routes */}
@@ -115,6 +125,7 @@ export const AppRoutes: React.FC = () => {
         >
           <Route path="/admin/societies" element={<AdminSocietiesPage />} />
           <Route path="/admin/societies/create" element={<CreateSocietyPage />} />
+          <Route path="/admin/societies/:id" element={<AdminSocietyDetailPage />} />
           <Route path="/admin/yearly-plans" element={<AdminYearlyPlansPage />} />
           <Route path="/admin/yearly-plans/:id" element={<AdminYearlyPlanDetailPage />} />
           <Route path="/admin/events" element={<AdminEventsPage />} />
@@ -122,6 +133,7 @@ export const AppRoutes: React.FC = () => {
           <Route path="/admin/events/:id" element={<AdminEventReviewPage />} />
           <Route path="/admin/posts" element={<AdminPostsPage />} />
           <Route path="/admin/advisors" element={<AdminAdvisorsPage />} />
+          <Route path="/admin/staff" element={<AdminStaffPage />} />
         </Route>
 
         {/* General Authenticated Protected Routes */}
