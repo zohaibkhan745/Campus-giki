@@ -1,5 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { Role } from '@prisma/client';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Role, DsaRole } from '@prisma/client';
 
 export class UserProfileDto {
   @ApiProperty({ example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
@@ -11,8 +11,14 @@ export class UserProfileDto {
   @ApiProperty({ example: 'John Doe' })
   fullName: string;
 
+  @ApiPropertyOptional({ example: '/uploads/avatars/avatar-123.webp', nullable: true })
+  avatarUrl?: string | null;
+
   @ApiProperty({ enum: Role, example: Role.STUDENT })
   role: Role;
+
+  @ApiPropertyOptional({ enum: DsaRole, example: DsaRole.DIRECTOR })
+  dsaRole?: DsaRole | null;
 
   @ApiProperty({ example: true })
   isActive: boolean;

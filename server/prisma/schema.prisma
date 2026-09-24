@@ -21,6 +21,11 @@ enum Role {
   DSA_ADMIN
 }
 
+enum DsaRole {
+  DIRECTOR
+  DEPUTY_DIRECTOR
+}
+
 enum PlanStatus {
   DRAFT
   PENDING_ADVISOR
@@ -69,6 +74,9 @@ model User {
   isEmailVerified     Boolean   @default(false)
   verificationToken   String?   @unique
   verificationExpires DateTime?
+  dsaRole             DsaRole?  @default(DEPUTY_DIRECTOR)
+  resetPasswordToken  String?   @unique
+  resetPasswordExpires DateTime?
   avatarUrl           String?
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
@@ -80,6 +88,7 @@ model User {
 
   @@index([role])
   @@index([verificationToken])
+  @@index([resetPasswordToken])
 }
 
 model Category {

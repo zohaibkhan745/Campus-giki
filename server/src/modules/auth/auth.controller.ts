@@ -11,18 +11,20 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Role } from '@prisma/client';
-import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
+import { Throttle } from '@nestjs/throttler';
 import { AuthService } from './auth.service';
 import { RegisterStudentDto } from './dto/register-student.dto';
 import { LoginDto } from './dto/login.dto';
 import { ActivateSocietyDto } from './dto/activate-society.dto';
+import { ActivateAdvisorDto } from './dto/activate-advisor.dto';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 import { AuthResponseDto, UserProfileDto } from './dto/auth-response.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { CurrentUser } from './decorators/current-user.decorator';
 import { Auth } from '../../core/decorators/auth.decorator';
 
 @ApiTags('Auth')
-@UseGuards(ThrottlerGuard)
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -40,7 +42,7 @@ export class AuthController {
     );
   }
 
-  @Throttle({ default: { limit: 5, ttl: 60000 } })
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
   @Post('login')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Authenticate user with email and password' })
@@ -76,6 +78,51 @@ export class AuthController {
   })
   async activateSociety(@Body() dto: ActivateSocietyDto): Promise<AuthResponseDto> {
     return this.authService.activateSociety(dto);
+  }
+
+  @Throttle({ default: { limit: 3, ttl: 60000 } })
+  @Post('activate-advisor')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Activate nominated faculty advisor account using single-use token' })
+  @ApiResponse({
+    status: 200,
+    description: 'Faculty advisor account activated successfully, returns access token',
+    type: AuthResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid or expired activation link',
+  })
+  async activateAdvisor(@Body() dto: ActivateAdvisorDto): Promise<AuthResponseDto> {
+    return this.authService.activateAdvisor(dto);
+  }
+
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
+  @Post('forgot-password')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Request a password reset link sent via email' })
+  @ApiResponse({
+    status: 200,
+    description: 'Password reset email dispatched if account exists',
+  })
+  async forgotPassword(@Body() dto: ForgotPasswordDto): Promise<{ message: string }> {
+    return this.authService.forgotPassword(dto);
+  }
+
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
+  @Post('reset-password')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Reset password using the single-use email token' })
+  @ApiResponse({
+    status: 200,
+    description: 'Password reset successfully',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid or expired token',
+  })
+  async resetPassword(@Body() dto: ResetPasswordDto): Promise<{ message: string }> {
+    return this.authService.resetPassword(dto);
   }
 
   @Get('profile')
