@@ -1,0 +1,56 @@
+/* ==========================================================================
+   GLOBAL PRINT STYLESHEET
+   Handles print view rendering for Venue Permission Slips, Yearly Plans, etc.
+   ========================================================================== */
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  #venue-slip-printable,
+  #venue-slip-printable *,
+  #yearly-plan-printable,
+  #yearly-plan-printable * {
+    visibility: visible;
+  }
+
+  #venue-slip-printable {
+    position: fixed !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    min-height: 100% !important;
+    margin: 0 !important;
+    padding: 15mm !important;
+    background: white !important;
+    color: black !important;
+    transform: none !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  #yearly-plan-printable {
+    position: fixed !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    min-height: 100% !important;
+    margin: 0 !important;
+    padding: 12mm !important;
+    background: white !important;
+    color: black !important;
+    transform: none !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  tr {
+    page-break-inside: avoid;
+  }
+
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+}

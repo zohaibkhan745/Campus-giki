@@ -1,0 +1,126 @@
+/* ==========================================================================
+   SEMANTIC DESIGN TOKENS (HCI Ergonomics & WCAG AA/AAA Compliance)
+   ========================================================================== */
+
+:root,
+:root.dark,
+[data-theme="dark"] {
+  /* Surfaces & Canvases */
+  --bg-canvas: #090a0f;
+  --bg-canvas-subtle: #0f121a;
+  --bg-surface: #131622;
+  --bg-surface-hover: #1b2030;
+  --bg-surface-elevated: #181c2b;
+  --bg-surface-glass: rgba(19, 22, 34, 0.8);
+  --bg-surface-glass-border: rgba(255, 255, 255, 0.14);
+
+  /* Typography / Foreground */
+  --text-primary: #f3f4f6;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+  --text-inverse: #090a0f;
+
+  /* Borders & Dividers */
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-medium: rgba(255, 255, 255, 0.16);
+  --border-strong: rgba(255, 255, 255, 0.32);
+
+  /* Brand Accents */
+  --brand-primary: #3b82f6;
+  --brand-primary-hover: #2563eb;
+  --brand-secondary: #6366f1;
+  --brand-accent: #ffa946;
+
+  /* Legacy design tokens mapped dynamically */
+  --color-lavender-whisper: #2a2235;
+  --color-forest-ink: #4ade80;
+  --color-ember-glow: #ffa946;
+  --color-vast-ink: #f3f4f6;
+  --color-lumen-cream: rgba(17, 19, 24, 0.65);
+  --color-lumen-stone: rgba(44, 47, 56, 0.7);
+  --color-fog: #9ca3af;
+  --color-charcoal: #e5e7eb;
+  --color-pure-white: #ffffff;
+  --color-border-soft: rgba(255, 255, 255, 0.08);
+  --color-border-mid: rgba(255, 255, 255, 0.15);
+
+  /* Shadows & Depth */
+  --shadow-elevation-1: 0 4px 16px rgba(0, 0, 0, 0.35);
+  --shadow-elevation-2: 0 12px 36px rgba(0, 0, 0, 0.55);
+  --shadow-modal: 0 25px 50px -12px rgba(0, 0, 0, 0.75);
+
+  /* Scrollbars */
+  --scrollbar-track: rgba(30, 41, 59, 0.5);
+  --scrollbar-thumb: rgba(255, 255, 255, 0.35);
+  --scrollbar-thumb-hover: rgba(255, 255, 255, 0.65);
+}
+
+:root.light,
+[data-theme="light"] {
+  /* Surfaces & Canvases */
+  --bg-canvas: #f8fafc;
+  --bg-canvas-subtle: #f1f5f9;
+  --bg-surface: #ffffff;
+  --bg-surface-hover: #f1f5f9;
+  --bg-surface-elevated: #ffffff;
+  --bg-surface-glass: rgba(255, 255, 255, 0.88);
+  --bg-surface-glass-border: rgba(0, 0, 0, 0.09);
+
+  /* Typography / Foreground */
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --text-inverse: #ffffff;
+
+  /* Borders & Dividers */
+  --border-subtle: rgba(0, 0, 0, 0.08);
+  --border-medium: rgba(0, 0, 0, 0.14);
+  --border-strong: rgba(0, 0, 0, 0.28);
+
+  /* Brand Accents */
+  --brand-primary: #2563eb;
+  --brand-primary-hover: #1d4ed8;
+  --brand-secondary: #4f46e5;
+  --brand-accent: #ea580c;
+
+  /* Legacy design tokens mapped dynamically */
+  --color-lavender-whisper: #f1f0f5;
+  --color-forest-ink: #16a34a;
+  --color-ember-glow: #ea580c;
+  --color-vast-ink: #0f172a;
+  --color-lumen-cream: rgba(255, 255, 255, 0.9);
+  --color-lumen-stone: #f8fafc;
+  --color-fog: #64748b;
+  --color-charcoal: #334155;
+  --color-pure-white: #ffffff;
+  --color-border-soft: rgba(0, 0, 0, 0.08);
+  --color-border-mid: rgba(0, 0, 0, 0.14);
+
+  /* Shadows & Depth */
+  --shadow-elevation-1: 0 4px 16px rgba(0, 0, 0, 0.06);
+  --shadow-elevation-2: 0 12px 32px rgba(0, 0, 0, 0.09);
+  --shadow-modal: 0 25px 50px -12px rgba(0, 0, 0, 0.18);
+
+  /* Scrollbars */
+  --scrollbar-track: rgba(226, 232, 240, 0.7);
+  --scrollbar-thumb: rgba(148, 163, 184, 0.6);
+  --scrollbar-thumb-hover: rgba(100, 116, 139, 0.85);
+}
+
+:root {
+  /* Shape & Radii */
+  --radius-cards: 32px;
+  --radius-badges: 9999px;
+  --radius-inputs: 12px;
+  --radius-buttons: 12px;
+
+  /* Type Scale Clamped Values */
+  --text-caption: 14px;
+  --text-body-sm: 16px;
+  --text-body: 20px;
+  --text-subheading: clamp(20px, 4vw, 24px);
+  --text-heading-sm: clamp(24px, 5vw, 32px);
+  --text-heading: clamp(32px, 6vw, 48px);
+  --text-heading-lg: clamp(40px, 8vw, 64px);
+  --text-display: clamp(64px, 12vw, 120px);
+}

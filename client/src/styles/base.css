@@ -1,0 +1,137 @@
+/* ==========================================================================
+   BASE RESETS, ELEMENTS & GLOBAL SCROLLBARS
+   ========================================================================== */
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: var(--bg-canvas);
+  color: var(--text-primary);
+  overflow-x: hidden;
+  text-align: left;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+@layer base {
+  article,
+  section,
+  aside,
+  header,
+  footer,
+  div[class~="rounded-cards"],
+  div[class~="border-vast-ink"],
+  div[class~="border-2"] {
+    border-color: var(--border-subtle);
+  }
+
+  input,
+  select,
+  textarea {
+    border-color: var(--border-medium);
+    background-color: var(--bg-surface);
+    color: var(--text-primary);
+  }
+
+  option {
+    background-color: var(--bg-surface-elevated);
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+
+  input:focus,
+  select:focus,
+  textarea:focus {
+    border-color: var(--border-strong);
+  }
+}
+
+/* --- Global Custom Scrollbars --- */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 10px;
+  margin: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 10px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-corner {
+  display: none;
+}
+
+/* Compact Scrollbars for Pickers & Nested Lists */
+.picker-list,
+.mini-list,
+.scroll-list,
+.dropdown-list,
+.scroll-area {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) transparent;
+}
+
+.picker-list::-webkit-scrollbar,
+.mini-list::-webkit-scrollbar,
+.scroll-list::-webkit-scrollbar,
+.dropdown-list::-webkit-scrollbar,
+.scroll-area::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.picker-list::-webkit-scrollbar-track,
+.mini-list::-webkit-scrollbar-track,
+.scroll-list::-webkit-scrollbar-track,
+.dropdown-list::-webkit-scrollbar-track,
+.scroll-area::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 2px;
+}
+
+.picker-list::-webkit-scrollbar-thumb,
+.mini-list::-webkit-scrollbar-thumb,
+.scroll-list::-webkit-scrollbar-thumb,
+.dropdown-list::-webkit-scrollbar-thumb,
+.scroll-area::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 9999px;
+}
+
+.picker-list::-webkit-scrollbar-thumb:hover,
+.mini-list::-webkit-scrollbar-thumb:hover,
+.scroll-list::-webkit-scrollbar-thumb:hover,
+.dropdown-list::-webkit-scrollbar-thumb:hover,
+.scroll-area::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
+
+/* Hidden / Transparent Scrollbars */
+.transparent-scrollbar::-webkit-scrollbar,
+.no-scrollbar::-webkit-scrollbar {
+  width: 0px;
+  height: 0px;
+  background: transparent;
+}
+
+.transparent-scrollbar,
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+

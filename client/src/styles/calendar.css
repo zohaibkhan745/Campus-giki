@@ -1,0 +1,166 @@
+/* ==========================================================================
+   CAMPUS CALENDAR & EVENTS CALENDAR GRID
+   ========================================================================== */
+
+.campus-calendar-glass-btn {
+  background: var(--bg-surface-glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: var(--text-primary);
+  border: 1px solid var(--border-medium);
+  border-radius: 8px;
+  padding: 7px 12px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.campus-calendar-glass-btn:hover {
+  background: var(--bg-surface-hover);
+  border-color: var(--border-strong);
+}
+
+.campus-calendar-search-input {
+  width: 100%;
+  background: var(--bg-surface-glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border-medium);
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: var(--text-primary);
+  outline: none;
+  font-size: 0.9rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.campus-calendar-search-input::placeholder {
+  color: var(--text-muted);
+}
+
+.campus-calendar-search-input:focus {
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.campus-calendar-card {
+  background: var(--bg-surface-glass);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-medium);
+  box-shadow: var(--shadow-elevation-1);
+  border-radius: 14px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.campus-calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  background: var(--bg-surface-subtle);
+  border-bottom: 1px solid var(--border-subtle);
+  padding: 12px 0;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.campus-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.campus-calendar-day-cell {
+  min-height: 105px;
+  border-right: 1px solid var(--border-subtle);
+  border-bottom: 1px solid var(--border-subtle);
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow: hidden;
+  background: var(--bg-surface-glass);
+  transition: background-color 0.15s ease;
+}
+
+.campus-calendar-day-cell:nth-child(7n) {
+  border-right: none;
+}
+
+.campus-calendar-day-cell:hover {
+  background: var(--bg-surface-hover);
+}
+
+.campus-calendar-day-number {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+
+.campus-calendar-day-cell.other-month {
+  background: var(--bg-surface-subtle);
+  opacity: 0.55;
+}
+
+.campus-calendar-day-cell.other-month .campus-calendar-day-number {
+  color: var(--text-muted);
+}
+
+.campus-calendar-day-cell.today .campus-calendar-day-number {
+  background: var(--text-primary);
+  color: var(--bg-canvas);
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+.campus-calendar-event-tag {
+  font-size: 0.75rem;
+  padding: 3px 6px;
+  border-radius: 4px;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 600;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.campus-calendar-event-tag:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.1);
+}
+
+.event-blue { background: #2563eb; }
+.event-magenta { background: #db2777; }
+.event-green { background: #16a34a; }
+.event-orange { background: #ea580c; }
+.event-red { background: #dc2626; }
+
+@media (max-width: 768px) {
+  .campus-calendar-day-cell { min-height: 70px; padding: 4px 2px; gap: 2px; }
+  .campus-calendar-day-number { font-size: 0.75rem; }
+  .campus-calendar-day-cell.today .campus-calendar-day-number { width: 20px; height: 20px; font-size: 0.7rem; }
+  .campus-calendar-event-tag { font-size: 0.65rem; padding: 2px 4px; border-radius: 2px; }
+}
+
+@media (max-width: 480px) {
+  .campus-calendar-weekdays div { font-size: 0.75rem; }
+  .campus-calendar-day-cell { min-height: 55px; }
+  .campus-calendar-event-tag { font-size: 0.6rem; padding: 1px 3px; }
+}

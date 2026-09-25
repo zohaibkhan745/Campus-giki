@@ -1,0 +1,274 @@
+/* ==========================================================================
+   BANNER & PROFILE HEADER STYLES
+   Used across Dashboard, Society Profile, Advisor Queue, and Admin Dashboard
+   ========================================================================== */
+
+.shared-banner {
+  width: 100vw;
+  max-width: 100vw;
+  height: 320px;
+  position: relative;
+  background-color: var(--bg-surface-elevated, #1a1d24);
+  border-radius: 0;
+  overflow: visible;
+  margin-left: -50vw;
+  left: 50%;
+  margin-top: -2rem;
+}
+
+.shared-banner-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  display: block;
+}
+
+.shared-banner::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.88) 0%,
+    rgba(0, 0, 0, 0.35) 45%,
+    rgba(0, 0, 0, 0.15) 100%
+  );
+  z-index: 2;
+  pointer-events: none;
+}
+
+.shared-profile-container {
+  position: absolute;
+  left: 48px;
+  bottom: -90px;
+  z-index: 20;
+}
+
+.shared-profile-img {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  border: 5px solid var(--bg-canvas, #ffffff);
+  object-fit: cover;
+  background-color: var(--bg-surface-elevated, #2a2d36);
+  display: block;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+}
+
+.shared-profile-fallback {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  border: 5px solid var(--bg-canvas, #ffffff);
+  background-color: var(--bg-surface-elevated, #2a2d36);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  color: var(--text-secondary);
+}
+
+.shared-name-text {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: calc(100% - 496px);
+  text-align: center;
+  word-wrap: break-word;
+  font-size: 30px;
+  line-height: 1.2;
+  font-weight: 700;
+  color: #ffffff;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.75);
+  pointer-events: none;
+  z-index: 10;
+}
+
+.shared-content-spacer {
+  height: 110px;
+  width: 100%;
+}
+
+/* Society Profile Content Section & About Typography */
+.society-content-section {
+  padding-top: 110px;
+  padding-left: 48px;
+  padding-right: 48px;
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
+.society-about-heading {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+  letter-spacing: -0.01em;
+}
+
+.society-about-text {
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+/* Backward-compatible aliases for legacy society-banner selectors */
+.society-banner {
+  composes: shared-banner;
+  width: 100vw;
+  max-width: 100vw;
+  height: 320px;
+  position: relative;
+  background-color: var(--bg-surface-elevated, #1a1d24);
+  border-radius: 0;
+  overflow: visible;
+  margin-left: -50vw;
+  left: 50%;
+  margin-top: -2rem;
+}
+
+.society-banner-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+.society-banner::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.88) 0%,
+    rgba(0, 0, 0, 0.35) 45%,
+    rgba(0, 0, 0, 0.15) 100%
+  );
+  z-index: 2;
+  pointer-events: none;
+}
+
+.society-profile-container {
+  position: absolute;
+  bottom: -90px;
+  left: 48px;
+  z-index: 20;
+}
+
+.society-profile-img {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  border: 5px solid var(--bg-canvas, #ffffff);
+  object-fit: cover;
+  background-color: var(--bg-surface-elevated, #2a2d36);
+  display: block;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+}
+
+.society-profile-fallback {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  border: 5px solid var(--bg-canvas, #ffffff);
+  background-color: var(--bg-surface-elevated, #2a2d36);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  color: var(--text-secondary);
+}
+
+.society-name-text {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: calc(100% - 496px);
+  text-align: center;
+  word-wrap: break-word;
+  font-size: 30px;
+  line-height: 1.2;
+  font-weight: 700;
+  color: #ffffff;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.75);
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Responsive Media Queries */
+@media (max-width: 900px) {
+  .shared-name-text,
+  .society-name-text {
+    max-width: calc(100% - 496px);
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  .shared-banner,
+  .society-banner {
+    height: 280px;
+  }
+
+  .shared-profile-container,
+  .society-profile-container {
+    top: 45%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    bottom: auto;
+  }
+
+  .shared-profile-img,
+  .shared-profile-fallback,
+  .society-profile-img,
+  .society-profile-fallback {
+    width: 110px;
+    height: 110px;
+    border-width: 3px;
+  }
+
+  .shared-name-text,
+  .society-name-text {
+    top: calc(45% + 65px);
+    bottom: auto;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 90%;
+    font-size: 22px;
+  }
+
+  .shared-content-spacer {
+    height: 20px;
+  }
+
+  .society-content-section {
+    padding-top: 30px;
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .society-about-heading {
+    font-size: 18px;
+  }
+
+  .society-about-text {
+    font-size: 14px;
+  }
+}

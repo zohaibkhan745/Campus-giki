@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400&family=Figtree:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <noscript>
-      <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+      <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400&family=Figtree:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     </noscript>
     <title>GIKI Campus</title>
     <style>
@@ -17,7 +17,8 @@
         padding: 0;
         width: 100%;
         height: 100%;
-        background-color: #0b0c0e;
+        background-color: var(--bg-canvas, #090a0f);
+        color: var(--text-primary, #f3f4f6);
         overflow: hidden;
       }
       #root {
@@ -30,7 +31,7 @@
       }
     </style>
   </head>
-  <body class="relative w-screen h-screen bg-[#0b0c0e] overflow-hidden m-0">
+  <body class="relative w-screen h-screen bg-canvas text-text-primary overflow-hidden m-0">
     <div id="global-focus-backdrop" class="focus-backdrop"></div>
     <div id="modal-root"></div>
     <div id="root" class="absolute inset-0 overflow-y-auto overflow-x-hidden"></div>
