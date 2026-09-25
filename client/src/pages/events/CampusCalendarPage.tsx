@@ -161,187 +161,32 @@ export const CampusCalendarPage: React.FC = () => {
   const isCurrentMonthView = currentDate.getMonth() === today.getMonth() && currentDate.getFullYear() === today.getFullYear(); const isToday = (d: Date) => d.getDate() === today.getDate() && d.getMonth() === today.getMonth() && d.getFullYear() === today.getFullYear();
 
   return (
-    <div className="min-h-screen text-white flex justify-center py-6 px-8 sm:px-10 font-sans relative">
-      
-      <style>{`
-        .glass-btn {
-          background: rgba(255, 255, 255, 0.08);
-          backdrop-filter: blur(12px);
-          -webkit-backdrop-filter: blur(12px);
-          color: #fff;
-          border: 1px solid rgba(255, 255, 255, 0.15);
-          border-radius: 8px;
-          padding: 7px 12px;
-          cursor: pointer;
-          font-size: 0.85rem;
-          transition: all 0.2s ease;
-        }
-        .glass-btn:hover { background: rgba(255, 255, 255, 0.16); border-color: rgba(255, 255, 255, 0.25); }
-        
-        .btn-group {
-          display: flex;
-          background: rgba(255, 255, 255, 0.06);
-          backdrop-filter: blur(12px);
-          -webkit-backdrop-filter: blur(12px);
-          border: 1px solid rgba(255, 255, 255, 0.14);
-          border-radius: 8px;
-          overflow: hidden;
-        }
-        .btn-group .glass-btn { border: none; border-radius: 0; background: transparent; padding: 8px 12px; }
-        .btn-group .glass-btn.active { background: rgba(255, 255, 255, 0.2); }
-        
-        .btn-primary {
-          background: rgba(255, 255, 255, 0.9);
-          color: #000000;
-          font-weight: 600;
-          border: 1px solid rgba(255, 255, 255, 0.3);
-          border-radius: 8px;
-          padding: 8px 14px;
-          cursor: pointer;
-          white-space: nowrap;
-          transition: background 0.2s ease;
-        }
-        .btn-primary:hover { background: #ffffff; }
-        
-        .search-input {
-          width: 100%;
-          background: rgba(255, 255, 255, 0.05);
-          backdrop-filter: blur(12px);
-          -webkit-backdrop-filter: blur(12px);
-          border: 1px solid rgba(255, 255, 255, 0.12);
-          border-radius: 8px;
-          padding: 10px 14px;
-          color: #fff;
-          outline: none;
-          font-size: 0.9rem;
-        }
-        .search-input::placeholder { color: rgba(255, 255, 255, 0.4); }
-        .search-input:focus { border-color: rgba(255, 255, 255, 0.3); }
-        
-        .select-dropdown {
-          background: rgba(30, 30, 35, 0.6);
-          backdrop-filter: blur(12px);
-          -webkit-backdrop-filter: blur(12px);
-          color: #fff;
-          border: 1px solid rgba(255, 255, 255, 0.15);
-          border-radius: 8px;
-          padding: 7px 12px;
-          font-size: 0.85rem;
-          outline: none;
-          cursor: pointer;
-        }
-        .select-dropdown option { background: #18181c; color: #ffffff; }
-        
-        .calendar-card {
-          background: rgba(255, 255, 255, 0.03);
-          backdrop-filter: blur(20px);
-          -webkit-backdrop-filter: blur(20px);
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-          border-radius: 12px;
-          overflow: hidden;
-          width: 100%;
-        }
-        
-        .weekdays {
-          display: grid;
-          grid-template-columns: repeat(7, 1fr);
-          text-align: center;
-          background: rgba(255, 255, 255, 0.02);
-          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-          padding: 10px 0;
-          font-size: 0.85rem;
-          font-weight: 600;
-          color: rgba(255, 255, 255, 0.85);
-        }
-        
-        .cal-grid {
-          display: grid;
-          grid-template-columns: repeat(7, 1fr);
-        }
-        
-        .day-cell {
-          min-height: 105px;
-          border-right: 1px solid rgba(255, 255, 255, 0.06);
-          border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-          padding: 6px;
-          display: flex;
-          flex-direction: column;
-          gap: 4px;
-          overflow: hidden;
-        }
-        .day-cell:nth-child(7n) { border-right: none; }
-        
-        .day-number {
-          font-size: 0.85rem;
-          font-weight: 500;
-          color: rgba(255, 255, 255, 0.9);
-          margin-bottom: 2px;
-        }
-        .day-cell.other-month .day-number { color: rgba(255, 255, 255, 0.25); }
-        .day-cell.today .day-number {
-          background: #ffffff;
-          color: #000000;
-          border-radius: 50%;
-          width: 22px;
-          height: 22px;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          font-weight: 700;
-        }
-        
-        .event-tag {
-          font-size: 0.75rem;
-          padding: 3px 6px;
-          border-radius: 4px;
-          color: #ffffff;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          font-weight: 500;
-          border: 1px solid rgba(255, 255, 255, 0.15);
-          cursor: pointer;
-        }
-        .event-blue { background: rgba(37, 99, 235, 0.55); }
-        .event-magenta { background: rgba(219, 39, 119, 0.55); }
-        .event-green { background: rgba(22, 163, 74, 0.55); }
-        .event-orange { background: rgba(234, 88, 12, 0.55); }
-        .event-red { background: rgba(220, 38, 38, 0.55); }
-        
-        @media (max-width: 768px) {
-          .day-cell { min-height: 70px; padding: 4px 2px; gap: 2px; }
-          .day-number { font-size: 0.75rem; }
-          .day-cell.today .day-number { width: 18px; height: 18px; font-size: 0.7rem; }
-          .event-tag { font-size: 0.65rem; padding: 2px 4px; border-radius: 2px; }
-        }
-        @media (max-width: 480px) {
-          .weekdays div { font-size: 0.75rem; }
-          .day-cell { min-height: 55px; }
-          .event-tag { font-size: 0.6rem; padding: 1px 3px; }
-        }
-      `}</style>
-
+    <div className="min-h-screen text-text-primary flex justify-center py-6 px-8 sm:px-10 font-sans relative">
       <div className="w-full max-w-full flex flex-col gap-6 pb-20">
         
         {/* Page Header */}
-        <h1 className="font-extrabold text-5xl sm:text-6xl text-white tracking-tight leading-tight pb-4">
+        <h1 className="font-extrabold text-5xl sm:text-6xl text-text-primary tracking-tight leading-tight pb-4">
           Events Calendar
         </h1>
         
         {/* Top Navigation */}
         <div className="flex justify-between items-center flex-wrap gap-3">
           <div className="flex items-center gap-2">
-            <h2 className="text-2xl font-bold drop-shadow-md mr-2">
+            <h2 className="text-2xl font-bold text-text-primary drop-shadow-sm mr-2">
               {currentDate.toLocaleString('default', { month: 'long', year: 'numeric' })}
             </h2>
             
-            {isCalendarLoading && <Loader2 className="w-4 h-4 animate-spin ml-2" />}
+            {isCalendarLoading && <Loader2 className="w-4 h-4 animate-spin ml-2 text-text-muted" />}
           </div>
 
           <div className="flex items-center gap-2">
             {user?.role === 'SOCIETY' && (
-              <button className="btn-primary" onClick={() => navigate('/events/create')}>+ New Event</button>
+              <button 
+                className="px-4 py-2 rounded-xl bg-brand-primary text-white font-bold hover:bg-brand-primary-hover shadow-sm transition-all text-sm cursor-pointer" 
+                onClick={() => navigate('/events/create')}
+              >
+                + New Event
+              </button>
             )}
           </div>
         </div>
@@ -351,16 +196,26 @@ export const CampusCalendarPage: React.FC = () => {
           <div className="flex flex-row gap-2.5 flex-1">
             <input 
               type="text" 
-              className="search-input flex-1 min-w-[120px] h-[44px]" 
+              className="campus-calendar-search-input flex-1 min-w-[120px] h-[44px]" 
               placeholder="Search events..." 
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
             />
             
             <div className="flex gap-1 shrink-0 items-center justify-center">
-              <button className="glass-btn flex items-center justify-center" style={{ width: "40px", height: "44px" }} onClick={prevMonth}>&lt;</button>
-              <button className={`glass-btn ${!isCurrentMonthView ? "current-month-btn" : ""}`} onClick={goToday} style={{ width: "135px", height: "44px", ...( !isCurrentMonthView ? { background: "#ffffff", color: "#000000", fontWeight: "600" } : {})}}>Current Month</button>
-              <button className="glass-btn flex items-center justify-center" style={{ width: "40px", height: "44px" }} onClick={nextMonth}>&gt;</button>
+              <button className="campus-calendar-glass-btn" style={{ width: "40px", height: "44px" }} onClick={prevMonth}>&lt;</button>
+              <button 
+                className="campus-calendar-glass-btn" 
+                onClick={goToday} 
+                style={{ 
+                  width: "135px", 
+                  height: "44px", 
+                  ...( !isCurrentMonthView ? { background: "var(--text-primary)", color: "var(--bg-canvas)", fontWeight: "700" } : {})
+                }}
+              >
+                Current Month
+              </button>
+              <button className="campus-calendar-glass-btn" style={{ width: "40px", height: "44px" }} onClick={nextMonth}>&gt;</button>
             </div>
           </div>
 
@@ -377,14 +232,14 @@ export const CampusCalendarPage: React.FC = () => {
 
         {/* Calendar Sync Error Notification */}
         {isCalendarError && (
-          <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/25 text-amber-200 text-xs sm:text-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-lg">
+          <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/25 text-amber-600 dark:text-amber-200 text-xs sm:text-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-lg">
             <div className="flex items-center gap-2.5">
-              <AlertCircle className="w-5 h-5 text-amber-400 shrink-0" />
+              <AlertCircle className="w-5 h-5 text-amber-500 shrink-0" />
               <span>Unable to sync latest calendar events from the campus server. Displaying cached view.</span>
             </div>
             <button
               onClick={() => refetchCalendar()}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 font-bold text-xs transition-colors self-start sm:self-auto cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-700 dark:text-amber-300 font-bold text-xs transition-colors self-start sm:self-auto cursor-pointer"
             >
               <RefreshCw className="w-3.5 h-3.5" />
               <span>Retry Sync</span>
@@ -393,8 +248,8 @@ export const CampusCalendarPage: React.FC = () => {
         )}
 
         {/* Calendar Card Grid */}
-        <div className="calendar-card">
-          <div className="weekdays">
+        <div className="campus-calendar-card">
+          <div className="campus-calendar-weekdays">
             <div>Sun</div>
             <div>Mon</div>
             <div>Tue</div>
@@ -404,13 +259,13 @@ export const CampusCalendarPage: React.FC = () => {
             <div>Sat</div>
           </div>
 
-          <div className="cal-grid">
+          <div className="campus-calendar-grid">
             {cells.map((cell, idx) => {
               const dayEvents = getEventsForDate(cell.fullDate);
-              const cellClasses = `day-cell ${cell.isOtherMonth ? 'other-month' : ''} ${isToday(cell.fullDate) ? 'today' : ''}`;
+              const cellClasses = `campus-calendar-day-cell ${cell.isOtherMonth ? 'other-month' : ''} ${isToday(cell.fullDate) ? 'today' : ''}`;
               return (
                 <div key={idx} className={cellClasses}>
-                  <span className="day-number">{cell.day}</span>
+                  <span className="campus-calendar-day-number">{cell.day}</span>
                   {dayEvents.map(ev => (
                     <div 
                       key={ev.id} 
@@ -421,7 +276,7 @@ export const CampusCalendarPage: React.FC = () => {
                         const color = computedStyle.color;
                         setSelectedEvent({ event: ev, rect, bg, color });
                       }}
-                      className={`event-tag ${getEventColorClass(ev.society?.name || 'A')} ${selectedEvent?.event.id === ev.id ? 'ring-2 ring-white/60 shadow-sm' : ''}`}
+                      className={`campus-calendar-event-tag ${getEventColorClass(ev.society?.name || 'A')} ${selectedEvent?.event.id === ev.id ? 'ring-2 ring-brand-primary shadow-sm' : ''}`}
                       title={ev.title}
                     >
                       {ev.title}
@@ -436,8 +291,7 @@ export const CampusCalendarPage: React.FC = () => {
         {/* Detailed Events List Below Calendar */}
         <div id="events-list" className="pt-8 pb-12">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-            <h2 className="font-eb-garamond text-2xl font-bold text-white flex items-center gap-2">
-              
+            <h2 className="font-eb-garamond text-2xl font-bold text-text-primary flex items-center gap-2">
               Events 
             </h2>
             
@@ -446,10 +300,10 @@ export const CampusCalendarPage: React.FC = () => {
                 <button
                   key={filter}
                   onClick={() => { setListFilter(filter as any); setVisibleEventsCount(8); }}
-                  className={`px-4 py-2 rounded-full font-bold text-sm border transition-all ${
+                  className={`px-4 py-2 rounded-full font-bold text-sm border transition-all cursor-pointer ${
                     listFilter === filter
-                      ? 'bg-white text-gray-900 border-white'
-                      : 'bg-transparent text-gray-300 border-white/20 hover:border-white'
+                      ? 'bg-text-primary text-bg-canvas border-text-primary shadow-sm'
+                      : 'bg-surface-glass text-text-secondary border-border-subtle hover:border-border-strong hover:text-text-primary'
                   }`}
                 >
                   {filter === 'today' ? 'Today' : filter === 'week' ? 'This Week' : filter === 'month' ? 'This Month' : 'All Upcoming'}
@@ -459,7 +313,7 @@ export const CampusCalendarPage: React.FC = () => {
           </div>
           
           {isListLoading ? (
-            <div className="flex justify-center p-10"><Loader2 className="w-8 h-8 animate-spin text-white/50" /></div>
+            <div className="flex justify-center p-10"><Loader2 className="w-8 h-8 animate-spin text-text-muted" /></div>
           ) : isListError ? (
             <ErrorState
               error={listError}
@@ -484,7 +338,7 @@ export const CampusCalendarPage: React.FC = () => {
             />
           ) : (
             <>
-              <div className="cards-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 w-full mx-auto">
+              <div className="cards-container">
                 {visibleEvents.map((event) => (
                   <EventCard key={event.id} item={{ ...event, type: 'event' } as any} />
                 ))}
@@ -494,7 +348,7 @@ export const CampusCalendarPage: React.FC = () => {
                 <div className="mt-8 flex justify-center">
                   <button 
                     onClick={() => setVisibleEventsCount(prev => prev + 8)}
-                    className="glass-btn !px-8 !py-3 !font-bold"
+                    className="campus-calendar-glass-btn !px-8 !py-3 !font-bold"
                   >
                     Load More Events
                   </button>

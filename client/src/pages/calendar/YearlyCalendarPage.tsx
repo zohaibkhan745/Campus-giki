@@ -187,12 +187,12 @@ export const YearlyCalendarPage: React.FC = () => {
         <div>
           <button
             onClick={() => navigate(-1)}
-            className="fixed top-4 left-4 sm:top-6 sm:left-6 z-[100] inline-flex items-center justify-center w-10 h-10 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white rounded-full transition-all cursor-pointer shadow-lg"
+            className="fixed top-4 left-4 sm:top-6 sm:left-6 z-[100] inline-flex items-center justify-center w-10 h-10 bg-surface-glass hover:bg-surface-hover backdrop-blur-md border border-border-medium text-text-primary rounded-full transition-all cursor-pointer shadow-lg"
             title="Go Back"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
-          <h1 className="text-4xl font-extrabold text-white tracking-tight">
+          <h1 className="text-4xl font-extrabold text-text-primary tracking-tight">
             Society Annual Calendar ({currentYear}-{currentYear + 1})
           </h1>
         </div>
@@ -202,10 +202,10 @@ export const YearlyCalendarPage: React.FC = () => {
             <span className={cn(
               "inline-flex items-center gap-1.5 px-3 py-1 backdrop-blur-md border rounded-inputs text-xs font-semibold",
               existingPlan.status === 'APPROVED' ? "bg-emerald-500/10 border-emerald-500/50 text-emerald-400" :
-              existingPlan.status === 'PENDING_ADVISOR' ? "bg-yellow-500/10 border-yellow-500/50 text-yellow-400" :
-              existingPlan.status === 'PENDING_ADMIN' ? "bg-orange-500/10 border-orange-500/50 text-orange-400" :
-              existingPlan.status === 'CHANGES_REQUESTED' ? "bg-red-500/10 border-red-500/50 text-red-400" :
-              "bg-white/10 border-white/20 text-white"
+              existingPlan.status === 'PENDING_ADVISOR' ? "bg-yellow-500/10 border-yellow-500/50 text-yellow-500 dark:text-yellow-400" :
+              existingPlan.status === 'PENDING_ADMIN' ? "bg-orange-500/10 border-orange-500/50 text-orange-500 dark:text-orange-400" :
+              existingPlan.status === 'CHANGES_REQUESTED' ? "bg-red-500/10 border-red-500/50 text-red-500 dark:text-red-400" :
+              "bg-surface-glass border-border-medium text-text-primary"
             )}>
               {isEditRequestPending ? <Clock className="w-3.5 h-3.5" /> : existingPlan.status === 'APPROVED' && <CheckCircle2 className="w-3.5 h-3.5" />}
               {!isEditRequestPending && (existingPlan.status === 'PENDING_ADVISOR' || existingPlan.status === 'PENDING_ADMIN') && <Clock className="w-3.5 h-3.5" />}
@@ -221,7 +221,7 @@ export const YearlyCalendarPage: React.FC = () => {
             </span>
             
             {isReadOnly && (
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-white/5 border border-white/10 rounded-inputs text-white/80 font-medium text-xs font-semibold">
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-surface-glass border border-border-subtle rounded-inputs text-text-secondary font-semibold text-xs">
                 <Lock className="w-3.5 h-3.5 text-red-400" />
                 <span>Read-Only Mode</span>
               </div>
@@ -510,7 +510,7 @@ export const YearlyCalendarPage: React.FC = () => {
             <div className="flex justify-center mt-8">
               <button
                 type="button"
-                className="w-full py-4 border-2 border-dashed border-white/20 rounded-xl text-gray-400 hover:text-white hover:border-white/40 hover:bg-white/5 transition-all font-semibold flex items-center justify-center gap-2"
+                className="w-full py-4 border-2 border-dashed border-border-medium rounded-xl text-text-muted hover:text-text-primary hover:border-border-strong hover:bg-surface-hover transition-all font-semibold flex items-center justify-center gap-2 cursor-pointer"
                 onClick={() => append({ eventName: '', startDate: '', endDate: '', description: '', venue: '', rules: '', societyRules: '', duration: 'One Day Event' })}
                 disabled={isReadOnly || isSaving}
               >+ Add Event Row</button>
@@ -519,10 +519,10 @@ export const YearlyCalendarPage: React.FC = () => {
         </div>
 
         {!isReadOnly ? (
-          <div className="flex flex-col sm:flex-row gap-4 pt-4 border-t border-white/10">
+          <div className="flex flex-col sm:flex-row gap-4 pt-4 border-t border-border-subtle">
             <button
               type="button"
-              className="flex-1 btn-submit-review !bg-white/10 !border !border-white/20 hover:!bg-white/20 !shadow-none"
+              className="flex-1 btn-submit-review !bg-surface-glass !border !border-border-medium hover:!bg-surface-hover !text-text-primary !shadow-none cursor-pointer"
               onClick={handleSubmit(handleSaveDraft)}
               disabled={isSaving}
             >
@@ -531,7 +531,7 @@ export const YearlyCalendarPage: React.FC = () => {
             </button>
             <button
               type="button"
-              className="flex-1 btn-submit-review"
+              className="flex-1 btn-submit-review cursor-pointer"
               onClick={handleSubmit(handleSubmitForReview)}
               disabled={isSaving}
             >
@@ -540,10 +540,10 @@ export const YearlyCalendarPage: React.FC = () => {
             </button>
           </div>
         ) : existingPlan && (
-          <div className="flex flex-col gap-4 pt-4 border-t border-white/10">
+          <div className="flex flex-col gap-4 pt-4 border-t border-border-subtle">
             {existingPlan.status === 'APPROVED' && !isEditRequestPending && (
               <div className="flex flex-col space-y-2">
-                <label className="text-sm font-medium text-gray-300">
+                <label className="text-sm font-medium text-text-secondary">
                   Reason for Edit Request <span className="text-red-500">*</span>
                 </label>
                 <textarea
@@ -554,10 +554,10 @@ export const YearlyCalendarPage: React.FC = () => {
                   }}
                   placeholder="Explain why you need edit access..."
                   className={cn(
-                    "w-full bg-white/5 text-white placeholder:text-gray-500 text-sm rounded-xl border p-3.5 transition-all outline-none resize-none h-24",
+                    "w-full bg-surface-glass text-text-primary placeholder:text-text-muted text-sm rounded-xl border p-3.5 transition-all outline-none resize-none h-24",
                     editReasonError 
                       ? "border-red-500/50 ring-2 ring-red-500/20 focus:border-red-500" 
-                      : "border-white/10 focus:border-white/30 focus:ring-2 focus:ring-white/10"
+                      : "border-border-medium focus:border-border-strong focus:ring-2 focus:ring-brand-primary/20"
                   )}
                 />
                 {editReasonError && (
@@ -568,7 +568,7 @@ export const YearlyCalendarPage: React.FC = () => {
             <div className="flex flex-col sm:flex-row gap-4">
               <button
                 type="button"
-                className={`flex-1 btn-submit-review text-white !shadow-none ${(existingPlan.status !== 'APPROVED' || isEditRequestPending) ? 'opacity-50 cursor-not-allowed !bg-orange-500/50 !border-orange-500/50' : 'hover:!bg-orange-600 !bg-orange-500 !border-orange-500'}`}
+                className={`flex-1 btn-submit-review text-white !shadow-none ${(existingPlan.status !== 'APPROVED' || isEditRequestPending) ? 'opacity-50 cursor-not-allowed !bg-orange-500/50 !border-orange-500/50' : 'hover:!bg-orange-600 !bg-orange-500 !border-orange-500 cursor-pointer'}`}
                 disabled={existingPlan.status !== 'APPROVED' || isEditRequestPending || isSaving}
                 onClick={handleRequestEdit}
               >

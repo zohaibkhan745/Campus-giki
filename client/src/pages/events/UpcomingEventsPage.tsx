@@ -19,15 +19,15 @@ export const UpcomingEventsPage: React.FC = () => {
   const visibleEvents = eventsList.slice(0, visibleEventsCount);
 
   return (
-    <div className="min-h-screen text-white flex justify-center py-6 px-8 sm:px-10 font-sans relative">
+    <div className="min-h-screen text-text-primary flex justify-center py-6 px-8 sm:px-10 font-sans relative">
       <div className="w-full max-w-full flex flex-col gap-6 pb-20">
         
         {/* Page Header */}
         <div className="flex flex-col gap-2 mb-4">
-          <h1 className="font-extrabold text-5xl sm:text-6xl text-white tracking-tight leading-tight flex items-center gap-4">
+          <h1 className="font-extrabold text-5xl sm:text-6xl text-text-primary tracking-tight leading-tight flex items-center gap-4">
             Upcoming Events
           </h1>
-          <p className="text-lg text-gray-400 font-medium max-w-2xl mt-2">
+          <p className="text-lg text-text-secondary font-medium max-w-2xl mt-2">
             Discover and track all the upcoming events, workshops, and activities happening around the campus.
           </p>
         </div>
@@ -35,7 +35,7 @@ export const UpcomingEventsPage: React.FC = () => {
         {/* Events Feed */}
         {isLoading ? (
           <div className="flex justify-center p-20">
-            <Loader2 className="w-10 h-10 animate-spin text-white/50" />
+            <Loader2 className="w-10 h-10 animate-spin text-text-muted" />
           </div>
         ) : isError ? (
           <ErrorState
@@ -62,7 +62,7 @@ export const UpcomingEventsPage: React.FC = () => {
           />
         ) : (
           <>
-            <div className="cards-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 w-full mx-auto">
+            <div className="cards-container">
               {visibleEvents.map((event) => (
                 <EventCard key={event.id} item={{ ...event, type: 'event' } as any} />
               ))}
@@ -72,7 +72,7 @@ export const UpcomingEventsPage: React.FC = () => {
               <div className="mt-12 flex justify-center">
                 <button 
                   onClick={() => setVisibleEventsCount(prev => prev + 4)}
-                  className="px-8 py-3 rounded-xl bg-white/10 hover:bg-white/20 active:scale-[0.98] border border-white/20 text-white font-bold transition-all backdrop-blur-md cursor-pointer"
+                  className="px-8 py-3 rounded-xl bg-surface-glass hover:bg-surface-hover active:scale-[0.98] border border-border-medium text-text-primary font-bold transition-all backdrop-blur-md cursor-pointer"
                 >
                   Load More Events
                 </button>

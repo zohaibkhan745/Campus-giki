@@ -257,38 +257,38 @@ export const EditEventPage: React.FC = () => {
         <div className="flex items-center gap-3">
           <button
             onClick={() => navigate(-1)}
-            className="inline-flex items-center justify-center w-10 h-10 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white rounded-full transition-all cursor-pointer shadow-lg shrink-0"
+            className="inline-flex items-center justify-center w-10 h-10 bg-surface-hover hover:bg-surface backdrop-blur-md border border-border-medium text-text-primary rounded-full transition-all cursor-pointer shadow-elevation-1 shrink-0"
             title="Go Back"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
           <div>
-            <h1 className="text-2xl font-bold text-white">Event Locked</h1>
-            <p className="text-xs text-gray-400">Published Campus Event</p>
+            <h1 className="text-2xl font-bold text-text-primary">Event Locked</h1>
+            <p className="text-xs text-text-secondary">Published Campus Event</p>
           </div>
         </div>
 
-        <div className="p-8 rounded-3xl bg-gradient-to-b from-amber-500/10 via-black/40 to-black/60 border border-amber-500/30 text-white space-y-6 shadow-2xl backdrop-blur-xl">
+        <div className="p-8 rounded-3xl bg-surface-glass border border-amber-500/30 text-text-primary space-y-6 shadow-elevation-1 backdrop-blur-xl">
           <div className="flex items-start gap-4">
-            <div className="p-3.5 rounded-2xl bg-amber-500/20 text-amber-400 border border-amber-500/30 shrink-0">
+            <div className="p-3.5 rounded-2xl bg-amber-500/20 text-amber-500 border border-amber-500/30 shrink-0">
               <Lock className="w-7 h-7" />
             </div>
             <div className="space-y-1.5 flex-1">
-              <h2 className="text-lg font-extrabold text-white">Published Events Cannot Be Edited</h2>
-              <p className="text-xs text-amber-200/90 leading-relaxed">
+              <h2 className="text-lg font-extrabold text-text-primary">Published Events Cannot Be Edited</h2>
+              <p className="text-xs text-text-secondary leading-relaxed">
                 This event has been approved and published on the official campus calendar. To maintain calendar integrity and avoid miscommunication with attendees, societies cannot modify event details once published.
               </p>
             </div>
           </div>
 
-          <div className="p-4 rounded-2xl bg-black/40 border border-white/10 space-y-2 text-xs">
-            <div className="flex items-center justify-between border-b border-white/10 pb-2">
-              <span className="text-gray-400">Event Title:</span>
-              <span className="font-bold text-white text-right">{eventData.title}</span>
+          <div className="p-4 rounded-2xl bg-surface/90 border border-border-subtle space-y-2 text-xs">
+            <div className="flex items-center justify-between border-b border-border-subtle pb-2">
+              <span className="text-text-secondary">Event Title:</span>
+              <span className="font-bold text-text-primary text-right">{eventData.title}</span>
             </div>
-            <div className="flex items-center justify-between border-b border-white/10 pb-2">
-              <span className="text-gray-400">Event Date:</span>
-              <span className="font-semibold text-gray-200">
+            <div className="flex items-center justify-between border-b border-border-subtle pb-2">
+              <span className="text-text-secondary">Event Date:</span>
+              <span className="font-semibold text-text-primary">
                 {new Date(eventData.eventDate).toLocaleDateString(undefined, {
                   weekday: 'short',
                   month: 'short',
@@ -298,12 +298,12 @@ export const EditEventPage: React.FC = () => {
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-gray-400">Venue:</span>
-              <span className="font-semibold text-gray-200">{eventData.venue}</span>
+              <span className="text-text-secondary">Venue:</span>
+              <span className="font-semibold text-text-primary">{eventData.venue}</span>
             </div>
           </div>
 
-          <div className="p-4 rounded-2xl bg-blue-500/10 border border-blue-500/20 text-xs text-blue-200 leading-relaxed">
+          <div className="p-4 rounded-2xl bg-blue-500/10 border border-blue-500/20 text-xs text-blue-500 dark:text-blue-200 leading-relaxed">
             <strong>Need to make changes?</strong> You may delete this event and submit a revised version for approval.
           </div>
 
@@ -311,7 +311,7 @@ export const EditEventPage: React.FC = () => {
             <Button
               type="button"
               variant="outline"
-              className="w-full border-white/20 text-white hover:bg-white/10"
+              className="w-full"
               onClick={() => navigate('/dashboard')}
             >
               Back to Dashboard
@@ -388,15 +388,15 @@ export const EditEventPage: React.FC = () => {
       <div className="flex items-center gap-4">
         <Link
           to="/dashboard"
-          className="p-2 hover:bg-white/10 rounded-full transition-colors text-white"
+          className="p-2 hover:bg-surface-hover rounded-full transition-colors text-text-primary"
         >
           <ArrowLeft className="w-5 h-5" />
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-white mb-1">
+          <h1 className="text-2xl font-bold text-text-primary mb-1">
             Edit Event: {eventData.title}
           </h1>
-          <p className="text-sm text-gray-400">
+          <p className="text-sm text-text-secondary">
             Update your event schedule, venue location, or media resources.
           </p>
         </div>

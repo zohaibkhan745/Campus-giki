@@ -209,15 +209,15 @@ export const CreateEventPage: React.FC = () => {
           <button
             type="button"
             onClick={() => navigate("/dashboard")}
-            className="fixed top-4 left-4 sm:top-6 sm:left-6 z-[100] inline-flex items-center justify-center w-10 h-10 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white rounded-full transition-all cursor-pointer shadow-lg"
+            className="fixed top-4 left-4 sm:top-6 sm:left-6 z-[100] inline-flex items-center justify-center w-10 h-10 bg-surface-hover hover:bg-surface backdrop-blur-md border border-border-medium text-text-primary rounded-full transition-all cursor-pointer shadow-elevation-1"
             title="Go Back"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
-          <h1 className="text-3xl font-extrabold text-white tracking-tight">
+          <h1 className="text-3xl font-extrabold text-text-primary tracking-tight">
             Create New Campus Event
           </h1>
-          <p className="text-sm font-medium text-white/60 mt-1">
+          <p className="text-sm font-medium text-text-secondary mt-1">
             Fill in the details below to list a new event on the campus feed.
           </p>
         </div>
@@ -234,14 +234,14 @@ export const CreateEventPage: React.FC = () => {
       {plannedEvents && plannedEvents.length > 0 && (
         <div className="glass-form-card !py-4">
           <div className="flex items-center gap-2 mb-2">
-            <h3 className="text-white font-bold text-sm">
+            <h3 className="text-text-primary font-bold text-sm">
               Import Event Details
             </h3>
-            <span className="text-[10px] font-extrabold text-white uppercase tracking-wider bg-white/10 px-2.5 py-1 rounded-inputs border border-white/20">
+            <span className="text-[10px] font-extrabold text-text-primary uppercase tracking-wider bg-surface-hover px-2.5 py-1 rounded-inputs border border-border-medium">
               Optional Auto-Fill
             </span>
           </div>
-          <p className="text-xs text-white/60 font-medium mb-3">
+          <p className="text-xs text-text-secondary font-medium mb-3">
             Select a planned event from your annual calendar to automatically
             pre-fill title, date, venue, and description:
           </p>
