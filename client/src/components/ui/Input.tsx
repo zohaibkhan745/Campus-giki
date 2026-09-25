@@ -20,8 +20,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           <label
             htmlFor={inputId}
             className={cn(
-              "block text-xs font-semibold uppercase tracking-wider",
-              variant === 'wispr' ? "text-vast-ink" : "text-vast-ink font-medium"
+              "block text-xs font-semibold uppercase tracking-wider text-text-secondary",
+              variant === 'wispr' && "font-bold"
             )}
           >
             {label}
@@ -31,8 +31,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         <div className="relative flex items-center">
           {leftIcon && (
             <div className={cn(
-              "absolute left-3 pointer-events-none flex items-center justify-center",
-              variant === 'wispr' ? "text-vast-ink" : "text-fog"
+              "absolute left-3 pointer-events-none flex items-center justify-center text-text-muted"
             )}>
               {leftIcon}
             </div>
@@ -44,14 +43,10 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             aria-invalid={!!error}
             aria-describedby={error && inputId ? `${inputId}-error` : undefined}
             className={cn(
-              'w-full text-sm transition-all outline-none',
-              variant === 'default' 
-                ? 'bg-transparent text-vast-ink placeholder:text-fog rounded-inputs border px-3.5 py-2.5 border border-vast-ink/20 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20'
-                : 'bg-transparent text-vast-ink placeholder:text-fog rounded-inputs border border-vast-ink/20 px-3.5 py-2.5 focus:ring-0',
+              'w-full text-sm transition-all outline-none bg-surface text-text-primary placeholder:text-text-muted rounded-inputs border px-3.5 py-2.5 border-border-medium focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20',
               leftIcon && 'pl-10',
               rightIcon && 'pr-10',
-              error && variant === 'default' && 'border-red-500/80 focus:border-red-500 focus:ring-red-500/20',
-              error && variant === 'wispr' && 'border-red-500 focus:ring-0',
+              error && 'border-red-500/80 focus:border-red-500 focus:ring-red-500/20',
               className,
             )}
             {...props}
@@ -59,8 +54,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 
           {rightIcon && (
             <div className={cn(
-              "absolute right-3 flex items-center justify-center",
-              variant === 'wispr' ? "text-vast-ink" : "text-fog"
+              "absolute right-3 flex items-center justify-center text-text-muted"
             )}>
               {rightIcon}
             </div>
@@ -68,7 +62,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         </div>
 
         {error && (
-          <p id={inputId ? `${inputId}-error` : undefined} className="text-xs text-red-400 font-medium">
+          <p id={inputId ? `${inputId}-error` : undefined} className="text-xs text-red-500 font-medium">
             {error}
           </p>
         )}

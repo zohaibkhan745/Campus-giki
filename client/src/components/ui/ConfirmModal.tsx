@@ -33,23 +33,23 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
         className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity" 
         onClick={!isLoading ? onClose : undefined} 
       />
-      <div className="relative w-full max-w-md bg-[rgba(255,255,255,0.08)] backdrop-blur-[25px] border border-white/20 rounded-[18px] shadow-[0_12px_40px_rgba(0,0,0,0.5)] p-6 overflow-hidden flex flex-col gap-4 text-white transform transition-all">
+      <div className="relative w-full max-w-md bg-surface-elevated backdrop-blur-[25px] border border-border-medium rounded-[20px] shadow-modal p-6 overflow-hidden flex flex-col gap-4 text-text-primary transform transition-all">
         <button 
           onClick={onClose}
-          className="absolute top-4 right-4 p-1.5 rounded-full hover:bg-white/10 transition-colors text-white/70 hover:text-white"
+          className="absolute top-4 right-4 p-1.5 rounded-full hover:bg-surface-hover transition-colors text-text-secondary hover:text-text-primary cursor-pointer"
           disabled={isLoading}
         >
           <X className="w-5 h-5" />
         </button>
         <div className={`flex items-center gap-3 ${
-          variant === 'success' ? 'text-emerald-400' : variant === 'warning' ? 'text-amber-400' : 'text-red-400'
+          variant === 'success' ? 'text-emerald-500' : variant === 'warning' ? 'text-amber-500' : 'text-red-500'
         }`}>
           <div className={`p-2.5 rounded-full border ${
             variant === 'success'
-              ? 'bg-emerald-500/20 border-emerald-500/30 text-emerald-400'
+              ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-500'
               : variant === 'warning'
-              ? 'bg-amber-500/20 border-amber-500/30 text-amber-400'
-              : 'bg-red-500/20 border-red-500/30 text-red-400'
+              ? 'bg-amber-500/10 border-amber-500/30 text-amber-500'
+              : 'bg-red-500/10 border-red-500/30 text-red-500'
           }`}>
             {variant === 'success' ? (
               <CheckCircle2 className="w-6 h-6" />
@@ -57,23 +57,23 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
               <AlertTriangle className="w-6 h-6" />
             )}
           </div>
-          <h3 className="text-xl font-bold">{title}</h3>
+          <h3 className="text-xl font-bold text-text-primary">{title}</h3>
         </div>
-        <p className="text-[0.95rem] text-white/85 leading-relaxed">
+        <p className="text-[0.95rem] text-text-secondary leading-relaxed">
           {message}
         </p>
-        <div className="flex justify-end gap-3 mt-4 pt-4 border-t border-white/10">
+        <div className="flex justify-end gap-3 mt-4 pt-4 border-t border-border-subtle">
           <button
             onClick={onClose}
             disabled={isLoading}
-            className="px-5 py-2.5 rounded-xl border border-white/20 hover:bg-white/10 transition-colors text-sm font-semibold"
+            className="px-5 py-2.5 rounded-xl border border-border-medium hover:bg-surface-hover transition-colors text-sm font-semibold text-text-primary cursor-pointer"
           >
             {cancelText}
           </button>
           <button
             onClick={onConfirm}
             disabled={isLoading}
-            className={`px-5 py-2.5 rounded-xl border text-white transition-colors text-sm font-semibold flex items-center gap-2 ${
+            className={`px-5 py-2.5 rounded-xl border text-white transition-colors text-sm font-semibold flex items-center gap-2 cursor-pointer ${
               variant === 'success'
                 ? 'border-emerald-500/50 bg-emerald-600 hover:bg-emerald-500'
                 : variant === 'warning'

@@ -24,21 +24,21 @@ export const Button: React.FC<ButtonProps> = ({
   ...props
 }) => {
   const baseStyles =
-    'inline-flex items-center justify-center font-semibold rounded-inputs transition-all outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.99]';
+    'inline-flex items-center justify-center font-semibold rounded-inputs transition-all outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.99] cursor-pointer';
 
   const variants = {
     primary:
-      'bg-vast-ink hover:opacity-90 text-black border border-blue-500/30 shadow-lg shadow-blue-600/20 focus:ring-blue-500',
+      'bg-vast-ink text-text-inverse hover:opacity-90 border border-brand-primary/30 shadow-md shadow-brand-primary/20 focus:ring-brand-primary',
     secondary:
-      'bg-lumen-stone hover:bg-lavender-whisper text-vast-ink border-2 border-vast-ink focus:ring-slate-500',
+      'bg-surface-hover hover:bg-surface text-text-primary border border-border-medium focus:ring-brand-primary',
     outline:
-      'bg-transparent border-2 border-vast-ink hover:bg-lumen-stone/60 text-vast-ink focus:ring-slate-500',
+      'bg-transparent border border-border-medium hover:bg-surface-hover text-text-primary focus:ring-brand-primary',
     ghost:
-      'bg-transparent hover:bg-lumen-stone/60 text-vast-ink font-medium hover:text-vast-ink focus:ring-slate-500',
+      'bg-transparent hover:bg-surface-hover text-text-secondary hover:text-text-primary font-medium focus:ring-brand-primary',
     destructive:
-      'bg-red-600 hover:bg-red-500 text-white border border-red-500/30 shadow-lg shadow-red-600/20 focus:ring-red-500',
+      'bg-red-600 hover:bg-red-500 text-white border border-red-500/30 shadow-md shadow-red-600/20 focus:ring-red-500',
     wispr:
-      'bg-vast-ink hover:opacity-90 text-black border-2 border-vast-ink rounded-buttons font-figtree transition-opacity font-bold',
+      'bg-text-primary hover:opacity-90 text-text-inverse border border-border-medium rounded-buttons font-figtree transition-opacity font-bold',
   };
 
   const sizes = {

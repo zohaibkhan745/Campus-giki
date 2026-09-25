@@ -130,17 +130,17 @@ export const EventMediaUploader: React.FC<EventMediaUploaderProps> = ({
 
   return (
     <div className="space-y-2 text-left">
-      {label && <label className="block text-sm font-bold text-vast-ink">{label}</label>}
+      {label && <label className="block text-sm font-bold text-text-primary">{label}</label>}
 
       {error && (
-        <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 text-red-600 rounded-inputs text-xs font-semibold">
+        <div className="flex items-center gap-2 p-3 bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 rounded-xl text-xs font-semibold">
           <AlertCircle className="w-4 h-4 shrink-0" />
           <span>{error}</span>
         </div>
       )}
 
       {previewUrl ? (
-        <div className="relative rounded-cards border-2 border-white/20 overflow-hidden bg-black/90 group shadow-sm aspect-square">
+        <div className="relative rounded-2xl border border-border-subtle overflow-hidden bg-black group shadow-sm aspect-square">
           {activeType === 'video' ? (
             <video
               src={resolveImageUrl(previewUrl)}
@@ -174,7 +174,7 @@ export const EventMediaUploader: React.FC<EventMediaUploaderProps> = ({
               )}
             </span>
             {isUploading && (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-500 text-pure-white rounded-full text-xs font-bold shadow-md animate-pulse">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-500 text-white rounded-full text-xs font-bold shadow-md animate-pulse">
                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
                 Uploading...
               </span>
@@ -188,7 +188,7 @@ export const EventMediaUploader: React.FC<EventMediaUploaderProps> = ({
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isUploading}
-                className="px-3 py-1.5 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white rounded-inputs text-xs font-bold transition-all shadow-lg"
+                className="px-3 py-1.5 bg-surface-glass hover:bg-surface-hover backdrop-blur-md border border-border-subtle text-text-primary rounded-xl text-xs font-bold transition-all shadow-md cursor-pointer"
               >
                 Replace
               </button>
@@ -196,7 +196,7 @@ export const EventMediaUploader: React.FC<EventMediaUploaderProps> = ({
                 type="button"
                 onClick={handleClear}
                 disabled={isUploading}
-                className="p-1.5 bg-red-500/20 hover:bg-red-500/40 backdrop-blur-md border border-red-500/30 text-white rounded-inputs transition-all shadow-lg"
+                className="p-1.5 bg-red-500/20 hover:bg-red-500/40 backdrop-blur-md border border-red-500/30 text-white rounded-xl transition-all shadow-md cursor-pointer"
                 title="Remove Media"
               >
                 <X className="w-4 h-4" />
@@ -205,55 +205,39 @@ export const EventMediaUploader: React.FC<EventMediaUploaderProps> = ({
           )}
         </div>
       ) : (
-          <div
-            onDragEnter={handleDrag}
-            onDragOver={handleDrag}
-            onDragLeave={handleDrag}
-            onDrop={handleDrop}
-            onClick={() => !disabled && !isUploading && fileInputRef.current?.click()}
-            className={
-              theme === 'dark'
-                ? `upload-zone aspect-square justify-center ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${dragActive ? '!bg-white/20 !border-white/50 scale-[0.99]' : ''}`
-                : `relative border-2 border-dashed rounded-cards p-6 text-center transition-all flex flex-col items-center justify-center gap-3 aspect-square ${
-                    disabled ? 'opacity-50 cursor-not-allowed border-fog' : 'cursor-pointer'
-                  } ${
-                    dragActive
-                      ? 'border-forest-ink bg-forest-ink/5 scale-[0.99]'
-                      : 'border-vast-ink bg-pure-white hover:bg-lumen-stone'
-                  }`
-            }
-          >
-            {isUploading ? (
-              <div className={`flex flex-col items-center justify-center gap-2 py-4 font-bold text-sm ${theme === 'dark' ? 'text-white' : 'text-vast-ink'}`}>
-                <Loader2 className={`w-8 h-8 animate-spin ${theme === 'dark' ? 'text-white' : 'text-forest-ink'}`} />
-                <span>Uploading media file...</span>
+        <div
+          onDragEnter={handleDrag}
+          onDragOver={handleDrag}
+          onDragLeave={handleDrag}
+          onDrop={handleDrop}
+          onClick={() => !disabled && !isUploading && fileInputRef.current?.click()}
+          className={`relative border-2 border-dashed rounded-2xl p-6 text-center transition-all flex flex-col items-center justify-center gap-3 aspect-square bg-surface-card hover:bg-surface-elevated ${
+            disabled
+              ? 'opacity-50 cursor-not-allowed border-border-subtle'
+              : 'cursor-pointer border-border-subtle hover:border-brand-primary'
+          } ${
+            dragActive
+              ? 'border-brand-primary bg-brand-primary/5 scale-[0.99]'
+              : 'shadow-sm'
+          }`}
+        >
+          {isUploading ? (
+            <div className="flex flex-col items-center justify-center gap-2 py-4 font-bold text-sm text-text-primary">
+              <Loader2 className="w-8 h-8 animate-spin text-brand-primary" />
+              <span>Uploading media file...</span>
+            </div>
+          ) : (
+            <>
+              <div className="p-3.5 bg-brand-primary/10 border border-brand-primary/20 rounded-full text-brand-primary shadow-sm">
+                <UploadCloud className="w-6 h-6" />
               </div>
-            ) : (
-              <>
-                {theme === 'dark' ? (
-                  <>
-                    <div className="upload-icon-circle">
-                      <UploadCloud />
-                    </div>
-                    <div>
-                      <div className="upload-title">Click to upload or drag & drop</div>
-                      <div className="upload-sub">Supports image only (max 8MB)</div>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <div className="p-3.5 bg-lumen-cream border-2 border-vast-ink rounded-full text-vast-ink shadow-sm">
-                      <UploadCloud className="w-6 h-6" />
-                    </div>
-                    <div>
-                      <p className="font-extrabold text-vast-ink text-sm">Click to upload or drag and drop</p>
-                      <p className="text-xs text-fog mt-1 font-medium">JPEG, PNG, GIF (Max 8MB)</p>
-                    </div>
-                  </>
-                )}
-              </>
-            )}
-          </div>
+              <div>
+                <p className="font-extrabold text-text-primary text-sm">Click to upload or drag &amp; drop</p>
+                <p className="text-xs text-text-muted mt-1 font-medium">JPEG, PNG, GIF (Max 8MB)</p>
+              </div>
+            </>
+          )}
+        </div>
       )}
 
       {/* Hidden File Input */}

@@ -10,3 +10,4 @@ export * from './SmokeyCanvasBackground';
 export * from './EmptyState';
 export * from './ErrorState';
 export * from './OfflineBanner';
+export * from './ThemeToggle';

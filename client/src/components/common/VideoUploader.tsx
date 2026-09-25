@@ -91,22 +91,22 @@ export const VideoUploader: React.FC<VideoUploaderProps> = ({
   return (
     <div className={`space-y-2 text-left ${className}`}>
       {label && (
-        <label className="block text-xs font-semibold uppercase tracking-wider text-vast-ink">
+        <label className="block text-xs font-semibold uppercase tracking-wider text-text-primary">
           {label}
         </label>
       )}
 
       {previewUrl ? (
-        <div className="relative group rounded-cards overflow-hidden border-2 border-vast-ink bg-black shadow-md max-h-60 flex items-center justify-center">
+        <div className="relative group rounded-2xl overflow-hidden border border-border-subtle bg-black shadow-md max-h-60 flex items-center justify-center">
           <video
             src={previewUrl}
             controls
-            className="w-full max-h-60 object-contain rounded-cards"
+            className="w-full max-h-60 object-contain rounded-2xl"
           />
           <button
             type="button"
             onClick={handleClear}
-            className="absolute top-2.5 right-2.5 p-2 rounded-full bg-vast-ink/90 text-white hover:bg-red-600 transition-all active:scale-95 shadow-lg flex items-center gap-1.5 text-xs font-bold z-10"
+            className="absolute top-2.5 right-2.5 p-2 rounded-full bg-black/80 text-white hover:bg-red-600 transition-all active:scale-95 shadow-lg flex items-center gap-1.5 text-xs font-bold z-10 cursor-pointer"
             title="Remove video"
           >
             <X className="w-4 h-4" />
@@ -114,7 +114,7 @@ export const VideoUploader: React.FC<VideoUploaderProps> = ({
           </button>
 
           {isUploading && (
-            <div className="absolute inset-0 bg-vast-ink/80 flex flex-col items-center justify-center text-white gap-2 z-20">
+            <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center text-white gap-2 z-20">
               <Loader2 className="w-8 h-8 animate-spin text-white" />
               <span className="text-xs font-bold">Uploading Video File (Max 50MB)...</span>
             </div>
@@ -127,10 +127,10 @@ export const VideoUploader: React.FC<VideoUploaderProps> = ({
           onDragOver={handleDrag}
           onDrop={handleDrop}
           onClick={() => fileInputRef.current?.click()}
-          className={`relative border-2 border-dashed rounded-cards p-6 text-center cursor-pointer transition-all duration-200 bg-pure-white ${
+          className={`relative border-2 border-dashed rounded-2xl p-6 text-center cursor-pointer transition-all duration-200 bg-surface-card hover:bg-surface-elevated ${
             dragActive
-              ? 'border-vast-ink bg-slate-100 scale-[0.99]'
-              : 'border-vast-ink/30 hover:border-vast-ink hover:bg-slate-50/80 shadow-sm'
+              ? 'border-brand-primary bg-brand-primary/5 scale-[0.99]'
+              : 'border-border-subtle hover:border-brand-primary shadow-sm'
           }`}
         >
           <input
@@ -145,14 +145,14 @@ export const VideoUploader: React.FC<VideoUploaderProps> = ({
             }}
           />
           <div className="flex flex-col items-center gap-2.5">
-            <div className="p-3 rounded-full bg-vast-ink text-white shadow-sm flex items-center justify-center">
+            <div className="p-3 rounded-full bg-brand-primary/10 text-brand-primary shadow-sm flex items-center justify-center">
               <Video className="w-6 h-6" />
             </div>
             <div className="space-y-1">
-              <p className="text-sm font-bold text-vast-ink">
+              <p className="text-sm font-bold text-text-primary">
                 <span className="underline underline-offset-2">Click to upload video</span> or drag and drop
               </p>
-              <p className="text-xs text-fog font-medium">
+              <p className="text-xs text-text-muted font-medium">
                 MP4, WebM, MOV or MKV (Max 50MB)
               </p>
             </div>
@@ -161,7 +161,7 @@ export const VideoUploader: React.FC<VideoUploaderProps> = ({
       )}
 
       {error && (
-        <div className="flex items-center gap-1.5 text-red-500 text-xs mt-1.5 bg-red-50 border border-red-200 p-2.5 rounded-inputs font-medium">
+        <div className="flex items-center gap-1.5 text-red-600 dark:text-red-400 text-xs mt-1.5 bg-red-500/10 border border-red-500/20 p-2.5 rounded-xl font-medium">
           <AlertCircle className="w-4 h-4 shrink-0" />
           <span>{error}</span>
         </div>

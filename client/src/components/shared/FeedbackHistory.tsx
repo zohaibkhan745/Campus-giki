@@ -46,24 +46,24 @@ export const FeedbackHistory: React.FC<FeedbackHistoryProps> = ({ rawComments })
       case 'CHANGES_REQUESTED':
         return <AlertCircle className="w-4 h-4 text-amber-500" />;
       default:
-        return <MessageSquare className="w-4 h-4 text-vast-ink" />;
+        return <MessageSquare className="w-4 h-4 text-text-muted" />;
     }
   };
 
   const getStatusColor = (status: string | null) => {
     switch (status) {
       case 'APPROVED':
-        return 'border-emerald-500/20 bg-emerald-500/10 text-emerald-400';
+        return 'border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400';
       case 'CHANGES_REQUESTED':
-        return 'border-red-500/20 bg-red-500/10 text-red-400';
+        return 'border-red-500/20 bg-red-500/10 text-red-600 dark:text-red-400';
       default:
-        return 'border-white/10 bg-white/5 text-gray-300';
+        return 'border-border-subtle bg-surface-elevated/40 text-text-secondary';
     }
   };
 
   return (
     <div className="space-y-3 mt-4">
-      <h3 className="text-sm font-bold text-gray-300 uppercase tracking-wide mb-2">Comments History</h3>
+      <h3 className="text-sm font-bold text-text-muted uppercase tracking-wide mb-2">Comments History</h3>
       <div className="space-y-3">
         {parsed.map((item, idx) => (
           <div 
@@ -78,18 +78,18 @@ export const FeedbackHistory: React.FC<FeedbackHistoryProps> = ({ rawComments })
                   {item.date}
                 </span>
                 {item.role && (
-                  <span className="text-[10px] font-bold text-gray-400 bg-black/20 px-2 py-0.5 rounded-full ml-2">
+                  <span className="text-[10px] font-bold text-text-muted bg-surface-glass px-2 py-0.5 rounded-full ml-2 border border-border-subtle">
                     By {item.role}
                   </span>
                 )}
                 {item.status && (
-                  <span className="ml-auto text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-white/10 text-white tracking-wider">
+                  <span className="ml-auto text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-surface-glass text-text-primary border border-border-subtle tracking-wider">
                     {item.status.replace('_', ' ')}
                   </span>
                 )}
               </div>
             )}
-            <p className="text-sm font-medium whitespace-pre-line leading-relaxed text-gray-300">
+            <p className="text-sm font-medium whitespace-pre-line leading-relaxed text-text-primary">
               {item.text}
             </p>
           </div>

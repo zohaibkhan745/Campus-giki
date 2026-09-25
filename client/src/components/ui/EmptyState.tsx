@@ -38,27 +38,23 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
   return (
     <div
       className={cn(
-        'relative overflow-hidden rounded-[24px] border border-white/10 bg-[#17181c]/80 backdrop-blur-[20px] shadow-[0_12px_40px_rgba(0,0,0,0.4)] text-center transition-all duration-300',
+        'relative overflow-hidden rounded-[24px] border border-border-medium bg-surface-glass backdrop-blur-[20px] shadow-elevation-1 text-center transition-all duration-300',
         compact ? 'p-8 sm:p-10' : 'p-12 sm:p-16',
         className,
       )}
     >
-      {/* Subtle radial ambient glow */}
-      <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-64 h-64 bg-white/[0.03] rounded-full blur-3xl pointer-events-none" />
-
       <div className="relative z-10 flex flex-col items-center max-w-md mx-auto space-y-4">
-        {/* Glowing Icon Badge */}
-        <div className="relative flex items-center justify-center w-16 h-16 rounded-2xl bg-white/[0.06] border border-white/15 shadow-[0_8px_24px_rgba(0,0,0,0.3)] text-gray-300">
-          <div className="absolute inset-0 rounded-2xl bg-gradient-to-b from-white/10 to-transparent pointer-events-none" />
-          <Icon className="w-8 h-8 text-white/80" />
+        {/* Icon Badge */}
+        <div className="relative flex items-center justify-center w-16 h-16 rounded-2xl bg-surface border border-border-medium shadow-sm text-text-primary">
+          <Icon className="w-8 h-8 text-brand-primary" />
         </div>
 
         {/* Text Details */}
         <div className="space-y-2">
-          <h3 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight leading-snug">
+          <h3 className="text-xl sm:text-2xl font-extrabold text-text-primary tracking-tight leading-snug">
             {title}
           </h3>
-          <p className="text-sm sm:text-base text-gray-400 font-medium leading-relaxed">
+          <p className="text-sm sm:text-base text-text-secondary font-medium leading-relaxed">
             {description}
           </p>
         </div>
@@ -68,9 +64,9 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
           <div className="pt-1">
             <button
               onClick={onClearFilters}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold text-gray-300 bg-white/5 hover:bg-white/10 border border-white/15 hover:border-white/30 transition-all cursor-pointer shadow-sm active:scale-95"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold text-text-secondary bg-surface-hover hover:text-text-primary border border-border-medium transition-all cursor-pointer shadow-sm active:scale-95"
             >
-              <FilterX className="w-3.5 h-3.5 text-amber-400" />
+              <FilterX className="w-3.5 h-3.5 text-brand-accent" />
               <span>{clearFiltersLabel}</span>
             </button>
           </div>
@@ -83,7 +79,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
               action.to ? (
                 <Link
                   to={action.to}
-                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-white text-gray-950 hover:bg-gray-200 text-sm font-bold shadow-lg transition-all active:scale-95"
+                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-text-primary text-text-inverse hover:opacity-90 text-sm font-bold shadow-md transition-all active:scale-95"
                 >
                   {action.icon && <action.icon className="w-4 h-4" />}
                   <span>{action.label}</span>
@@ -91,7 +87,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
               ) : (
                 <button
                   onClick={action.onClick}
-                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-white text-gray-950 hover:bg-gray-200 text-sm font-bold shadow-lg transition-all active:scale-95 cursor-pointer"
+                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-text-primary text-text-inverse hover:opacity-90 text-sm font-bold shadow-md transition-all active:scale-95 cursor-pointer"
                 >
                   {action.icon && <action.icon className="w-4 h-4" />}
                   <span>{action.label}</span>
@@ -103,7 +99,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
               secondaryAction.to ? (
                 <Link
                   to={secondaryAction.to}
-                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/15 text-white text-sm font-semibold transition-all active:scale-95"
+                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-surface-hover hover:bg-surface border border-border-medium text-text-primary text-sm font-semibold transition-all active:scale-95"
                 >
                   {secondaryAction.icon && <secondaryAction.icon className="w-4 h-4" />}
                   <span>{secondaryAction.label}</span>
@@ -111,7 +107,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
               ) : (
                 <button
                   onClick={secondaryAction.onClick}
-                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/15 text-white text-sm font-semibold transition-all active:scale-95 cursor-pointer"
+                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-surface-hover hover:bg-surface border border-border-medium text-text-primary text-sm font-semibold transition-all active:scale-95 cursor-pointer"
                 >
                   {secondaryAction.icon && <secondaryAction.icon className="w-4 h-4" />}
                   <span>{secondaryAction.label}</span>
