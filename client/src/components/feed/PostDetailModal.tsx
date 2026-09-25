@@ -85,7 +85,7 @@ export const PostDetailModal: React.FC<PostDetailModalProps> = ({ item, onClose 
         role="dialog"
         aria-modal="true"
         aria-label={item.title || 'Announcement Details'}
-        className={`relative w-full max-w-2xl max-h-[90vh] flex flex-col bg-[#111317] border border-white/15 rounded-[28px] shadow-[0_25px_60px_rgba(0,0,0,0.8)] overflow-hidden transition-all duration-200 ease-out z-10 select-text ${
+        className={`relative w-full max-w-2xl max-h-[90vh] flex flex-col bg-surface-elevated border border-border-medium rounded-[28px] shadow-[0_25px_60px_rgba(0,0,0,0.6)] overflow-hidden transition-all duration-200 ease-out z-10 select-text ${
           isOpen && !isClosing
             ? 'opacity-100 scale-100 translate-y-0'
             : 'opacity-0 scale-[0.96] translate-y-2'
@@ -93,13 +93,13 @@ export const PostDetailModal: React.FC<PostDetailModalProps> = ({ item, onClose 
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header Bar */}
-        <div className="bg-gray-950/95 border-b border-white/10 px-5 py-4 flex items-center justify-between gap-3 shrink-0">
+        <div className="bg-surface/95 border-b border-border-subtle px-5 py-4 flex items-center justify-between gap-3 shrink-0">
           <div className="flex items-center gap-3 min-w-0 flex-1 text-left">
             {societyId ? (
               <Link
                 to={`/societies/${societyId}`}
                 onClick={handleClose}
-                className="w-10 h-10 rounded-full bg-[#007ebb] flex items-center justify-center border border-white/20 shrink-0 overflow-hidden hover:opacity-80 transition-opacity"
+                className="w-10 h-10 rounded-full bg-brand-primary flex items-center justify-center border border-border-medium shrink-0 overflow-hidden hover:opacity-80 transition-opacity"
               >
                 <img
                   src={logoImage}
@@ -111,7 +111,7 @@ export const PostDetailModal: React.FC<PostDetailModalProps> = ({ item, onClose 
                 />
               </Link>
             ) : (
-              <div className="w-10 h-10 rounded-full bg-[#007ebb] flex items-center justify-center border border-white/20 shrink-0 overflow-hidden">
+              <div className="w-10 h-10 rounded-full bg-brand-primary flex items-center justify-center border border-border-medium shrink-0 overflow-hidden">
                 <img
                   src={logoImage}
                   alt={authorName}
@@ -128,15 +128,15 @@ export const PostDetailModal: React.FC<PostDetailModalProps> = ({ item, onClose 
                 <Link
                   to={`/societies/${societyId}`}
                   onClick={handleClose}
-                  className="text-white text-[15px] font-bold leading-tight truncate hover:text-blue-400 transition-colors inline-flex items-center gap-1.5"
+                  className="text-text-primary text-[15px] font-bold leading-tight truncate hover:text-brand-primary transition-colors inline-flex items-center gap-1.5"
                 >
                   <span>{authorName}</span>
-                  <ExternalLink className="w-3.5 h-3.5 text-gray-400 shrink-0" />
+                  <ExternalLink className="w-3.5 h-3.5 text-text-secondary shrink-0" />
                 </Link>
               ) : (
-                <span className="text-white text-[15px] font-bold leading-tight truncate">{authorName}</span>
+                <span className="text-text-primary text-[15px] font-bold leading-tight truncate">{authorName}</span>
               )}
-              <span className="text-gray-400 text-[11px] font-medium whitespace-nowrap mt-0.5">
+              <span className="text-text-secondary text-[11px] font-medium whitespace-nowrap mt-0.5">
                 {formattedDate} • {formattedTime}
               </span>
             </div>
@@ -147,7 +147,7 @@ export const PostDetailModal: React.FC<PostDetailModalProps> = ({ item, onClose 
             <button
               type="button"
               onClick={handleClose}
-              className="p-1.5 text-gray-400 hover:text-white hover:bg-white/10 rounded-full transition-all active:scale-90"
+              className="p-1.5 text-text-secondary hover:text-text-primary hover:bg-surface-hover rounded-full transition-all active:scale-90"
               aria-label="Close dialog"
             >
               <X className="w-5 h-5" />
@@ -156,17 +156,17 @@ export const PostDetailModal: React.FC<PostDetailModalProps> = ({ item, onClose 
         </div>
 
         {/* Scrollable Content Body */}
-        <div className="overflow-y-auto overscroll-contain flex-1 p-6 space-y-5 text-left text-gray-200">
+        <div className="overflow-y-auto overscroll-contain flex-1 p-6 space-y-5 text-left text-text-primary">
           {/* Post Title */}
           {item.title && (
-            <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight leading-snug">
+            <h2 className="text-xl sm:text-2xl font-black text-text-primary tracking-tight leading-snug">
               {item.title}
             </h2>
           )}
 
           {/* Cover Media Image if exists */}
           {coverImage && (
-            <div className="relative w-full max-h-[360px] rounded-2xl overflow-hidden border border-white/10 bg-black/40 flex items-center justify-center">
+            <div className="relative w-full max-h-[360px] rounded-2xl overflow-hidden border border-border-subtle bg-black/40 flex items-center justify-center">
               <img
                 src={coverImage}
                 alt={item.title || 'Announcement Media'}
@@ -178,17 +178,17 @@ export const PostDetailModal: React.FC<PostDetailModalProps> = ({ item, onClose 
           )}
 
           {/* Post Full Text Content */}
-          <div className="text-[15px] sm:text-[16px] text-gray-300 leading-relaxed whitespace-pre-wrap font-normal">
+          <div className="text-[15px] sm:text-[16px] text-text-secondary leading-relaxed whitespace-pre-wrap font-normal">
             {item.content}
           </div>
         </div>
 
         {/* Footer Bar */}
-        <div className="bg-gray-950/95 border-t border-white/10 px-6 py-3.5 flex items-center justify-end gap-3 shrink-0">
+        <div className="bg-surface/95 border-t border-border-subtle px-6 py-3.5 flex items-center justify-end gap-3 shrink-0">
           <button
             type="button"
             onClick={handleClose}
-            className="px-5 py-2 rounded-xl bg-white text-gray-950 font-bold text-sm hover:bg-gray-200 active:scale-95 transition-all shadow-md cursor-pointer"
+            className="px-5 py-2 rounded-xl bg-text-primary text-text-inverse font-bold text-sm hover:opacity-90 active:scale-95 transition-all shadow-md cursor-pointer"
           >
             Close
           </button>

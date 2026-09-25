@@ -162,7 +162,7 @@ export const UploadSignedSlipModal: React.FC<UploadSignedSlipModalProps> = ({
 
   return createPortal(
     <div className="fixed inset-0 z-[999999] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm overflow-y-auto">
-      <div className="relative w-full max-w-lg bg-[#13151b] border border-white/10 text-white rounded-2xl shadow-2xl p-6 my-8 text-left space-y-5">
+      <div className="relative w-full max-w-lg bg-surface-elevated border border-border-medium text-text-primary rounded-2xl shadow-2xl p-6 my-8 text-left space-y-5">
         {/* Hidden File Input */}
         <input
           ref={fileInputRef}

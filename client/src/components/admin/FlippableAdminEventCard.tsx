@@ -21,7 +21,7 @@ export const EventGrid = ({ events, maxItems = 4, reviewUrlBase }: { events: any
       {visible < events.length && (
         <button
           onClick={() => setVisible(v => v + 4)}
-          className="w-full py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-white text-sm font-bold transition-colors"
+          className="w-full py-3 bg-surface hover:bg-surface-hover border border-border-medium rounded-xl text-text-primary text-sm font-bold transition-colors cursor-pointer"
         >
           Load More Events
         </button>

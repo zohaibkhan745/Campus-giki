@@ -107,7 +107,7 @@ export const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
       {/* Pop-up Card Container (Pure GPU Scale & Opacity) */}
       <div
         ref={modalRef}
-        className={`relative z-10 w-full max-w-[540px] h-[560px] max-h-[90vh] sm:max-h-[85vh] rounded-[24px] overflow-hidden flex flex-col border border-white/20 bg-[#121318] shadow-2xl transition-all duration-200 ease-out will-change-[transform,opacity] ${
+        className={`relative z-10 w-full max-w-[540px] h-[560px] max-h-[90vh] sm:max-h-[85vh] rounded-[24px] overflow-hidden flex flex-col border border-border-medium bg-surface-elevated shadow-2xl transition-all duration-200 ease-out will-change-[transform,opacity] ${
           isOpen
             ? 'opacity-100 scale-100 translate-y-0'
             : 'opacity-0 scale-95 translate-y-2'
@@ -126,7 +126,7 @@ export const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
             alt={event.title}
             className="w-full h-full object-cover filter blur-[3px] brightness-[0.35] scale-105"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#121318]/50 via-[#121318]/85 to-[#121318] pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-b from-surface-elevated/50 via-surface-elevated/85 to-surface-elevated pointer-events-none" />
         </div>
 
         {/* Close Button */}

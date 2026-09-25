@@ -152,7 +152,7 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
 
   return (
     <article
-      className="card-wrapper event-card-wrapper group relative flex flex-col w-full h-full rounded-[28px] overflow-hidden border border-border-medium bg-surface shadow-elevation-1 transition-all duration-200 hover:-translate-y-1 hover:border-brand-primary/40 hover:shadow-elevation-2 active:scale-[0.99] cursor-pointer select-none focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
+      className="card-wrapper group relative flex flex-col w-full h-full rounded-[28px] overflow-hidden border border-border-medium bg-surface shadow-elevation-1 transition-all duration-200 hover:-translate-y-1 hover:border-brand-primary/40 hover:shadow-elevation-2 active:scale-[0.99] cursor-pointer select-none focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
       data-type="event"
       data-card-id={item.id}
       onClick={handleCardClick}
@@ -265,7 +265,7 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
         <div className="flex items-center gap-2.5 min-w-0 flex-1">
           <Link
             to={`/societies/${item.society.id}`}
-            className="w-9 h-9 rounded-full bg-[#007ebb] flex items-center justify-center border border-border-medium shrink-0 overflow-hidden hover:opacity-80 transition-opacity"
+            className="w-9 h-9 rounded-full bg-brand-primary flex items-center justify-center border border-border-medium shrink-0 overflow-hidden hover:opacity-80 transition-opacity"
             onClick={(e) => e.stopPropagation()}
           >
             <img
@@ -295,7 +295,7 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
           {reviewUrl ? (
             <Link
               to={reviewUrl}
-              className="px-4 h-[32px] flex items-center justify-center bg-[#ea580c] hover:bg-[#c2410c] active:scale-95 text-white text-[12px] font-bold rounded-lg transition-all border-none shadow-sm pointer-events-auto"
+              className="px-4 h-[32px] flex items-center justify-center bg-brand-accent hover:opacity-90 active:scale-95 text-white text-[12px] font-bold rounded-lg transition-all border-none shadow-sm pointer-events-auto"
               onClick={(e) => e.stopPropagation()}
             >
               Review
@@ -426,18 +426,18 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
             }}
           >
             <div
-              className="bg-[#18191f] border border-white/20 rounded-2xl p-6 max-w-sm w-full text-center shadow-2xl relative"
+              className="bg-surface-elevated border border-border-medium rounded-2xl p-6 max-w-sm w-full text-center shadow-2xl relative"
               onClick={(e) => e.stopPropagation()}
             >
-              <h3 className="text-lg font-bold text-white mb-2">Delete Event?</h3>
-              <p className="text-xs text-gray-400 mb-6 leading-relaxed">
-                Are you sure you want to permanently delete <strong className="text-white">&quot;{item.title}&quot;</strong>? This action cannot be undone.
+              <h3 className="text-lg font-bold text-text-primary mb-2">Delete Event?</h3>
+              <p className="text-xs text-text-secondary mb-6 leading-relaxed">
+                Are you sure you want to permanently delete <strong className="text-text-primary">&quot;{item.title}&quot;</strong>? This action cannot be undone.
               </p>
               <div className="flex gap-3">
                 <button
                   type="button"
                   disabled={isDeleting}
-                  className="flex-1 py-2.5 px-4 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition-all disabled:opacity-50 cursor-pointer"
+                  className="flex-1 py-2.5 px-4 rounded-xl bg-surface-hover hover:bg-surface border border-border-medium text-text-primary text-xs font-bold transition-all disabled:opacity-50 cursor-pointer"
                   onClick={() => setShowDeleteConfirm(false)}
                 >
                   Cancel

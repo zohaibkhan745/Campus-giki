@@ -80,7 +80,7 @@ export const YearlyPlanCard: React.FC<YearlyPlanCardProps> = ({ plan, baseUrl })
           )}
         </div>
 
-        <div className="w-40 h-40 sm:w-48 sm:h-48 rounded-full flex items-center justify-center shadow-xl border-4 border-white overflow-hidden bg-[#0d0d0d] z-20">
+        <div className="w-40 h-40 sm:w-48 sm:h-48 rounded-full flex items-center justify-center shadow-xl border-4 border-white overflow-hidden bg-surface z-20">
           {society.logoUrl ? (
             <img 
               src={getSocietyLogo(society.logoUrl)} 
@@ -97,9 +97,9 @@ export const YearlyPlanCard: React.FC<YearlyPlanCardProps> = ({ plan, baseUrl })
         </div>
       </div>
 
-      <div className="bg-white/5 backdrop-blur-lg border-t border-white/10 p-3.5 sm:p-4 flex items-center justify-between gap-5">
+      <div className="bg-surface/95 backdrop-blur-lg border-t border-border-subtle p-3.5 sm:p-4 flex items-center justify-between gap-5">
         <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1">
-          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#007ebb] flex items-center justify-center border border-white/20 shrink-0 overflow-hidden">
+          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-brand-primary flex items-center justify-center border border-border-medium shrink-0 overflow-hidden">
             {society.logoUrl ? (
               <img 
                 src={getSocietyLogo(society.logoUrl)} 
@@ -112,17 +112,17 @@ export const YearlyPlanCard: React.FC<YearlyPlanCardProps> = ({ plan, baseUrl })
             )}
           </div>
           <div className="flex flex-col min-w-0 flex-1">
-            <span className="text-gray-400 text-xs font-medium leading-none truncate">@{society.name.toLowerCase().replace(/\s+/g, '')}</span>
+            <span className="text-text-secondary text-xs font-medium leading-none truncate">@{society.name.toLowerCase().replace(/\s+/g, '')}</span>
             <div className="flex items-baseline gap-1.5 mt-1.5 min-w-0">
-              <span className="text-xl sm:text-2xl font-black text-white leading-none shrink-0">{(plan as any).totalPlannedEvents || plan.plannedEvents?.length || 0}</span>
-              <span className="text-[10px] sm:text-[11px] font-bold text-gray-300 uppercase tracking-wider truncate">Planned Events</span>
+              <span className="text-xl sm:text-2xl font-black text-text-primary leading-none shrink-0">{(plan as any).totalPlannedEvents || plan.plannedEvents?.length || 0}</span>
+              <span className="text-[10px] sm:text-[11px] font-bold text-text-muted uppercase tracking-wider truncate">Planned Events</span>
             </div>
           </div>
         </div>
 
         <Link 
           to={`${baseUrl}/${plan.id}`}
-          className="flex justify-center items-center gap-1.5 px-3 sm:px-4 py-2 sm:py-2.5 bg-white hover:bg-gray-100 text-gray-900 rounded-xl text-xs sm:text-sm font-bold transition-colors shrink-0 shadow-sm"
+          className="flex justify-center items-center gap-1.5 px-3 sm:px-4 py-2 sm:py-2.5 bg-text-primary hover:opacity-90 text-text-inverse rounded-xl text-xs sm:text-sm font-bold transition-opacity shrink-0 shadow-sm"
         >
           <span className="whitespace-nowrap">View Details</span>
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5 sm:w-4 sm:h-4">

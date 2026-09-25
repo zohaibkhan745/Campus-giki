@@ -110,7 +110,7 @@ export const YearlyPlanPrintModal: React.FC<YearlyPlanPrintModalProps> = ({
   const modalContent = (
     <div className="fixed inset-0 z-[999999] flex flex-col bg-slate-950/95 backdrop-blur-md overflow-hidden text-white font-sans print:bg-white print:static print:inset-auto print:z-0">
       {/* Top Floating Toolbar (Hidden during Print) */}
-      <header className="h-16 bg-[#121620] border-b border-white/10 px-4 sm:px-6 flex items-center justify-between gap-3 shrink-0 z-50 shadow-md print:hidden">
+      <header className="h-16 bg-surface border-b border-border-subtle px-4 sm:px-6 flex items-center justify-between gap-3 shrink-0 z-50 shadow-md print:hidden">
         {/* Left: Document details */}
         <div className="flex items-center gap-3 min-w-0">
           <div className="w-9 h-9 rounded-xl bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-blue-400 shrink-0">

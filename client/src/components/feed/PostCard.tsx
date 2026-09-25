@@ -118,7 +118,7 @@ const PostCardComponent: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) 
   return (
     <>
       <article
-        className="card-wrapper post-card-wrapper group relative flex flex-col w-full h-full rounded-[28px] overflow-hidden border border-border-medium bg-surface shadow-elevation-1 transition-all duration-200 hover:-translate-y-1 hover:border-brand-primary/40 hover:shadow-elevation-2 active:scale-[0.99] cursor-pointer select-none focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
+        className="card-wrapper group relative flex flex-col w-full h-full rounded-[28px] overflow-hidden border border-border-medium bg-surface shadow-elevation-1 transition-all duration-200 hover:-translate-y-1 hover:border-brand-primary/40 hover:shadow-elevation-2 active:scale-[0.99] cursor-pointer select-none focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
         data-type="post"
         data-card-id={item.id}
         onClick={handleCardClick}
@@ -175,7 +175,7 @@ const PostCardComponent: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) 
             {societyId ? (
               <Link
                 to={`/societies/${societyId}`}
-                className="w-9 h-9 rounded-full bg-[#007ebb] flex items-center justify-center border border-border-medium shrink-0 overflow-hidden hover:opacity-80 transition-opacity"
+                className="w-9 h-9 rounded-full bg-brand-primary flex items-center justify-center border border-border-medium shrink-0 overflow-hidden hover:opacity-80 transition-opacity"
                 onClick={(e) => e.stopPropagation()}
               >
                 <img
@@ -190,7 +190,7 @@ const PostCardComponent: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) 
                 />
               </Link>
             ) : (
-              <div className="w-9 h-9 rounded-full bg-[#007ebb] flex items-center justify-center border border-border-medium shrink-0 overflow-hidden">
+              <div className="w-9 h-9 rounded-full bg-brand-primary flex items-center justify-center border border-border-medium shrink-0 overflow-hidden">
                 <img
                   src={logoImage}
                   alt={authorName}

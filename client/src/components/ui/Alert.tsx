@@ -17,16 +17,16 @@ export const Alert: React.FC<AlertProps> = ({
 }) => {
   const styles = {
     error: {
-      container: 'bg-red-50/50 border border-vast-ink border-red-500/25 text-red-400',
-      icon: <AlertCircle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />,
+      container: 'bg-danger/10 border-danger/30 text-danger',
+      icon: <AlertCircle className="w-5 h-5 text-danger shrink-0 mt-0.5" />,
     },
     success: {
-      container: 'bg-emerald-50/50 border border-forest-ink border-emerald-500/25 text-forest-ink',
-      icon: <CheckCircle2 className="w-5 h-5 text-forest-ink shrink-0 mt-0.5" />,
+      container: 'bg-success/10 border-success/30 text-success',
+      icon: <CheckCircle2 className="w-5 h-5 text-success shrink-0 mt-0.5" />,
     },
     info: {
-      container: 'bg-blue-50/50 border border-vast-ink border-blue-500/25 text-vast-ink',
-      icon: <Info className="w-5 h-5 text-vast-ink shrink-0 mt-0.5" />,
+      container: 'bg-info/10 border-info/30 text-info',
+      icon: <Info className="w-5 h-5 text-info shrink-0 mt-0.5" />,
     },
   };
 

@@ -187,7 +187,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
             <button
               type="button"
               onClick={handleClear}
-              className="absolute top-0 right-0 sm:top-0.5 sm:right-0.5 w-8 h-8 rounded-full bg-red-500 hover:bg-red-600 text-white shadow-lg flex items-center justify-center border-2 border-[#121212] hover:scale-110 active:scale-95 transition-all cursor-pointer z-10 opacity-0 group-hover:opacity-100"
+              className="absolute top-0 right-0 sm:top-0.5 sm:right-0.5 w-8 h-8 rounded-full bg-red-500 hover:bg-red-600 text-white shadow-lg flex items-center justify-center border-2 border-surface hover:scale-110 active:scale-95 transition-all cursor-pointer z-10 opacity-0 group-hover:opacity-100"
               aria-label="Remove photo"
             >
               <X className="w-4 h-4 text-white stroke-[2.5]" />
@@ -202,7 +202,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
               e.stopPropagation();
               fileInputRef.current?.click();
             }}
-            className="absolute bottom-0 right-0 sm:bottom-0.5 sm:right-0.5 w-8 h-8 rounded-full bg-white hover:bg-gray-100 text-black shadow-lg flex items-center justify-center border-2 border-[#121212] hover:scale-110 active:scale-95 transition-transform cursor-pointer z-10"
+            className="absolute bottom-0 right-0 sm:bottom-0.5 sm:right-0.5 w-8 h-8 rounded-full bg-white hover:bg-gray-100 text-black shadow-lg flex items-center justify-center border-2 border-surface hover:scale-110 active:scale-95 transition-transform cursor-pointer z-10"
             aria-label="Upload photo"
           >
             <Camera className="w-4 h-4 text-black" />
@@ -211,7 +211,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
 
         {/* Optional helper text outside the circle (rendered only if explicitly provided) */}
         {helperText && (
-          <p className="text-[11px] text-gray-400 font-medium tracking-wide mt-2 text-center">
+          <p className="text-[11px] text-text-secondary font-medium tracking-wide mt-2 text-center">
             {helperText}
           </p>
         )}

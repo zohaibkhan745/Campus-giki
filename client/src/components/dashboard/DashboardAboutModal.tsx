@@ -122,14 +122,14 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ profil
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
 
       {/* Outer Modal Container */}
-      <div className="relative w-full max-w-[1000px] h-full max-h-[90vh] bg-[#0d0d0d] border border-white/10 rounded-3xl shadow-2xl flex flex-col z-10 overflow-hidden">
+      <div className="relative w-full max-w-[1000px] h-full max-h-[90vh] bg-surface-elevated border border-border-medium rounded-3xl shadow-2xl flex flex-col z-10 overflow-hidden">
         {/* Inner Scrollable Container */}
         <div className="w-full h-full overflow-y-auto transparent-scrollbar relative flex-1">
 
           {/* Banner Section */}
-          <div className="relative w-full h-[280px] md:h-[320px] bg-[#1e3c72] shrink-0">
+          <div className="relative w-full h-[280px] md:h-[320px] bg-brand-primary shrink-0">
              <img src={getSocietyBanner(profile.bannerUrl)} alt="Banner" className="w-full h-full object-cover block" />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0d0d0d]/80 via-transparent to-transparent pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-t from-surface-elevated/90 via-transparent to-transparent pointer-events-none" />
             
             {/* Top Right Controls (Close + Tags) */}
             <div className="absolute top-4 right-8 flex flex-col items-end z-[30]">
@@ -158,7 +158,7 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ profil
 
             {/* Profile Logo */}
             <div className="absolute top-[45%] left-[50%] -translate-y-[50%] -translate-x-[50%] md:top-auto md:bottom-[-90px] md:left-[48px] md:translate-x-0 md:translate-y-0 z-[10]">
-              <img src={getSocietyLogo(profile.logoUrl)} alt="Society Logo" className="w-[110px] h-[110px] md:w-[180px] md:h-[180px] rounded-full border-[3px] md:border-[5px] border-[#0d0d0d] object-cover bg-[#0d0d0d] shadow-[0_4px_10px_rgba(0,0,0,0.15)] block" onError={(e) => { e.currentTarget.src = '/default-society.jpg'; }} />
+              <img src={getSocietyLogo(profile.logoUrl)} alt="Society Logo" className="w-[110px] h-[110px] md:w-[180px] md:h-[180px] rounded-full border-[3px] md:border-[5px] border-surface-elevated object-cover bg-surface-elevated shadow-[0_4px_10px_rgba(0,0,0,0.15)] block" onError={(e) => { e.currentTarget.src = '/default-society.jpg'; }} />
             </div>
 
             {/* Society Name */}
@@ -258,21 +258,21 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ profil
       {/* Editing Modal Overlay */}
       {editingMember && (
         <div className="absolute inset-0 bg-black/80 backdrop-blur-sm z-[999999] flex items-center justify-center p-4">
-          <div className="bg-[#0d0d0d] border border-white/10 p-6 rounded-2xl w-full max-w-md shadow-2xl relative z-10 flex flex-col gap-5">
+          <div className="bg-surface-elevated border border-border-medium p-6 rounded-2xl w-full max-w-md shadow-2xl relative z-10 flex flex-col gap-5">
             <div className="flex justify-between items-center">
-              <h3 className="text-lg font-bold text-white">{editingMember.original.isNew ? 'Add Member' : `Edit ${editingMember.original.role}`}</h3>
-              <button onClick={() => setEditingMember(null)} className="p-1.5 text-gray-400 hover:text-white rounded-full hover:bg-white/10"><X className="w-5 h-5"/></button>
+              <h3 className="text-lg font-bold text-text-primary">{editingMember.original.isNew ? 'Add Member' : `Edit ${editingMember.original.role}`}</h3>
+              <button onClick={() => setEditingMember(null)} className="p-1.5 text-text-secondary hover:text-text-primary rounded-full hover:bg-surface-hover"><X className="w-5 h-5"/></button>
             </div>
             
             {!editingMember.confirmDelete ? (
               <div className="space-y-4">
                 <div>
-                  <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Name</label>
-                  <input type="text" value={editingMember.current.name} onChange={e => setEditingMember({...editingMember, current: {...editingMember.current, name: e.target.value}})} className="w-full bg-black/30 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500/50" />
+                  <label className="block text-xs font-bold text-text-secondary uppercase tracking-wider mb-2">Name</label>
+                  <input type="text" value={editingMember.current.name} onChange={e => setEditingMember({...editingMember, current: {...editingMember.current, name: e.target.value}})} className="w-full bg-surface border border-border-medium rounded-xl px-4 py-3 text-text-primary focus:outline-none focus:border-brand-primary" />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Position</label>
-                  <input type="text" value={editingMember.current.role} disabled={UNEDITABLE_ROLES.includes(editingMember.original.role)} onChange={e => setEditingMember({...editingMember, current: {...editingMember.current, role: e.target.value}})} className="w-full bg-black/30 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500/50 disabled:opacity-50 disabled:cursor-not-allowed" />
+                  <label className="block text-xs font-bold text-text-secondary uppercase tracking-wider mb-2">Position</label>
+                  <input type="text" value={editingMember.current.role} disabled={UNEDITABLE_ROLES.includes(editingMember.original.role)} onChange={e => setEditingMember({...editingMember, current: {...editingMember.current, role: e.target.value}})} className="w-full bg-surface border border-border-medium rounded-xl px-4 py-3 text-text-primary focus:outline-none focus:border-brand-primary disabled:opacity-50 disabled:cursor-not-allowed" />
                 </div>
                 
                 <div className="flex justify-end gap-3 pt-2">
