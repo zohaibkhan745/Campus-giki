@@ -71,17 +71,17 @@ export const LoginPage: React.FC = () => {
         
         <div className="text-center space-y-2">
             <Link to="/" className="flex items-center justify-center space-x-3 hover:opacity-80 transition-opacity">
-                <GraduationCap className="w-8 h-8 text-white" />
-                <h1 className="text-3xl font-bold tracking-wide">Campus GIKI</h1>
+                <GraduationCap className="w-8 h-8 text-brand-primary" />
+                <h1 className="text-3xl font-bold tracking-wide text-text-primary">Campus GIKI</h1>
             </Link>
-            <p className="text-gray-300 text-sm font-medium">Centralized Platform for GIKI Students & Societies</p>
+            <p className="text-text-secondary text-sm font-medium">Centralized Platform for GIKI Students & Societies</p>
         </div>
 
-        <div className="w-full max-w-xl p-8 space-y-6 bg-white/10 backdrop-blur-lg rounded-2xl border border-white/20 shadow-2xl">
+        <div className="w-full max-w-xl p-8 space-y-6 bg-surface-glass backdrop-blur-lg rounded-2xl border border-border-medium shadow-elevation-2">
             
             <div className="space-y-1">
-                <h2 className="text-2xl font-bold text-white">Welcome</h2>
-                <p className="text-sm text-gray-300">Sign in to continue</p>
+                <h2 className="text-2xl font-bold text-text-primary">Welcome</h2>
+                <p className="text-sm text-text-secondary">Sign in to continue</p>
             </div>
 
             {serverError && (
@@ -90,51 +90,51 @@ export const LoginPage: React.FC = () => {
             
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" noValidate>
                 <div className="space-y-2">
-                    <label htmlFor="email" className="block text-xs font-bold uppercase tracking-wider text-gray-200">Email Address *</label>
+                    <label htmlFor="email" className="block text-xs font-bold uppercase tracking-wider text-text-secondary">Email Address *</label>
                     <div className="relative">
                         <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                            <Mail className="w-4 h-4 text-gray-400" />
+                            <Mail className="w-4 h-4 text-text-muted" />
                         </div>
                         <input
                             type="email"
                             id="email"
-                            className="w-full pl-10 pr-4 py-3 bg-black/20 border border-gray-500/50 rounded-lg text-sm text-white placeholder-gray-400 focus:outline-none focus:border-white focus:ring-1 focus:ring-white transition-colors"
+                            className="w-full pl-10 pr-4 py-3 bg-surface border border-border-medium rounded-lg text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-colors"
                             placeholder="e.g. acm@giki.edu.pk"
                             {...register('email')}
                         />
-                        {errors.email && <p className="text-red-400 text-xs mt-1 font-semibold">{errors.email.message}</p>}
+                        {errors.email && <p className="text-red-500 text-xs mt-1 font-semibold">{errors.email.message}</p>}
                     </div>
                 </div>
                 
                 <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                        <label htmlFor="password" className="block text-xs font-bold uppercase tracking-wider text-gray-200">Password *</label>
-                        <Link to="/forgot-password" className="text-xs text-blue-400 hover:text-blue-300 font-medium transition-colors">
+                        <label htmlFor="password" className="block text-xs font-bold uppercase tracking-wider text-text-secondary">Password *</label>
+                        <Link to="/forgot-password" className="text-xs text-brand-primary hover:underline font-medium transition-colors">
                             Forgot password?
                         </Link>
                     </div>
                     <div className="relative">
                         <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                            <Lock className="w-4 h-4 text-gray-400" />
+                            <Lock className="w-4 h-4 text-text-muted" />
                         </div>
                         <input
                             type={showPassword ? "text" : "password"}
                             id="password"
-                            className="w-full pl-10 pr-10 py-3 bg-black/20 border border-gray-500/50 rounded-lg text-sm text-white placeholder-gray-400 focus:outline-none focus:border-white focus:ring-1 focus:ring-white transition-colors"
+                            className="w-full pl-10 pr-10 py-3 bg-surface border border-border-medium rounded-lg text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-colors"
                             placeholder="********"
                             {...register('password')}
                         />
-                        <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-white transition-colors">
+                        <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute inset-y-0 right-0 flex items-center pr-3 text-text-muted hover:text-text-primary transition-colors cursor-pointer">
                             {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                         </button>
                     </div>
-                    {errors.password && <p className="text-red-400 text-xs mt-1 font-semibold">{errors.password.message}</p>}
+                    {errors.password && <p className="text-red-500 text-xs mt-1 font-semibold">{errors.password.message}</p>}
                 </div>
 
                 <button
                     type="submit"
                     disabled={loginMutation.isPending}
-                    className="group w-full flex items-center justify-center py-3 px-4 bg-white hover:bg-gray-200 disabled:opacity-50 text-black rounded-lg font-bold focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-white transition-all duration-300"
+                    className="group w-full flex items-center justify-center py-3 px-4 bg-text-primary hover:opacity-90 disabled:opacity-50 text-text-inverse rounded-lg font-bold shadow-md focus:outline-none focus:ring-2 focus:ring-brand-primary transition-all duration-300 cursor-pointer"
                 >
                     {loginMutation.isPending ? 'Signing In...' : 'Sign In'}
                     {!loginMutation.isPending && <ArrowRight className="ml-2 w-5 h-5 transform group-hover:translate-x-1 transition-transform" />}

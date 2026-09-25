@@ -70,8 +70,8 @@ export const RegisterPage: React.FC = () => {
   return (
     <div className="space-y-6 text-left">
       <div className="space-y-1">
-        <h2 className="text-2xl font-extrabold text-vast-ink font-eb-garamond">Create Student Account</h2>
-        <p className="text-sm font-medium text-fog">
+        <h2 className="text-2xl font-extrabold text-text-primary font-eb-garamond">Create Student Account</h2>
+        <p className="text-sm font-medium text-text-muted">
           Join Campus GIKI to discover societies, events & activities
         </p>
       </div>
@@ -113,7 +113,7 @@ export const RegisterPage: React.FC = () => {
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="text-vast-ink hover:text-fog transition-colors focus:outline-none"
+              className="text-text-secondary hover:text-text-primary transition-colors focus:outline-none cursor-pointer"
               tabIndex={-1}
               aria-label={showPassword ? 'Hide password' : 'Show password'}
             >
@@ -135,7 +135,7 @@ export const RegisterPage: React.FC = () => {
             <button
               type="button"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className="text-vast-ink hover:text-fog transition-colors focus:outline-none"
+              className="text-text-secondary hover:text-text-primary transition-colors focus:outline-none cursor-pointer"
               tabIndex={-1}
               aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
             >
@@ -163,11 +163,11 @@ export const RegisterPage: React.FC = () => {
         </Button>
       </form>
 
-      <div className="text-center pt-2 text-sm font-medium text-fog border-t border-vast-ink">
+      <div className="text-center pt-2 text-sm font-medium text-text-muted border-t border-border-subtle">
         Already have a registered account?{' '}
         <Link
           to="/login"
-          className="text-forest-ink hover:text-vast-ink font-semibold transition-colors underline"
+          className="text-brand-primary hover:text-brand-primary-hover font-semibold transition-colors underline"
         >
           Sign in here
         </Link>
