@@ -78,7 +78,7 @@ async function bootstrap() {
     setupSwagger(app, apiPrefix);
   }
 
-  await app.listen(port);
+  await app.listen(port, '0.0.0.0');
 
   logger.log(`==================================================`);
   logger.log(`🚀 Campus GIKI Server running on: http://localhost:${port}/${apiPrefix}`);
