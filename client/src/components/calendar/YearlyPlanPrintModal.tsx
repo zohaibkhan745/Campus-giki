@@ -421,41 +421,9 @@ export const YearlyPlanPrintModal: React.FC<YearlyPlanPrintModalProps> = ({
           </article>
         </div>
       </main>
-
-      {/* Global Print Stylesheet specifically for Yearly Plan Master Sheet */}
-      <style>{`
-        @media print {
-          body * {
-            visibility: hidden;
-          }
-          #yearly-plan-printable, #yearly-plan-printable * {
-            visibility: visible;
-          }
-          #yearly-plan-printable {
-            position: fixed !important;
-            left: 0 !important;
-            top: 0 !important;
-            width: 100% !important;
-            min-height: 100% !important;
-            margin: 0 !important;
-            padding: 12mm !important;
-            background: white !important;
-            color: black !important;
-            transform: none !important;
-            border: none !important;
-            box-shadow: none !important;
-          }
-          tr {
-            page-break-inside: avoid;
-          }
-          @page {
-            size: A4 portrait;
-            margin: 0;
-          }
-        }
-      `}</style>
     </div>
   );
 
   return createPortal(modalContent, document.body);
+
 };

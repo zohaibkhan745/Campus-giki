@@ -123,21 +123,9 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ profil
 
       {/* Outer Modal Container */}
       <div className="relative w-full max-w-[1000px] h-full max-h-[90vh] bg-[#0d0d0d] border border-white/10 rounded-3xl shadow-2xl flex flex-col z-10 overflow-hidden">
-        
-        {/* Dynamic CSS for scrollbar track offset */}
-        <style>{`
-          .transparent-scrollbar::-webkit-scrollbar {
-            width: 0px;
-            background: transparent;
-          }
-          .transparent-scrollbar {
-            scrollbar-width: none;
-            -ms-overflow-style: none;
-          }
-        `}</style>
-
         {/* Inner Scrollable Container */}
         <div className="w-full h-full overflow-y-auto transparent-scrollbar relative flex-1">
+
           {/* Banner Section */}
           <div className="relative w-full h-[280px] md:h-[320px] bg-[#1e3c72] shrink-0">
              <img src={getSocietyBanner(profile.bannerUrl)} alt="Banner" className="w-full h-full object-cover block" />

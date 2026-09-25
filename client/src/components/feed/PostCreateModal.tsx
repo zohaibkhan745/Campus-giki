@@ -134,26 +134,26 @@ export const PostCreateModal: React.FC<PostCreateModalProps> = ({
         />
 
         <div>
-          <div className="flex items-center justify-between pb-3 border-b border-white/10 mb-3">
+          <div className="flex items-center justify-between pb-3 border-b border-border-subtle mb-3">
             <div className="flex items-center gap-3">
               <img
                 src={displayAvatar}
                 alt={displayName}
-                className="w-11 h-11 rounded-full object-cover border border-white/20 shadow-sm"
+                className="w-11 h-11 rounded-full object-cover border border-border-subtle shadow-sm"
                 onError={(e) => {
                   e.currentTarget.src = fallbackAvatar;
                 }}
               />
               <div className="flex flex-col text-left">
-                <h3 className="text-base font-semibold text-white leading-tight">
+                <h3 className="text-base font-semibold text-text-primary leading-tight">
                   {displayName}
                 </h3>
                 {isAdmin ? (
-                  <span className="text-xs text-indigo-300 font-semibold flex items-center gap-1 mt-0.5">
+                  <span className="text-xs text-brand-primary font-semibold flex items-center gap-1 mt-0.5">
                     <Shield className="w-3 h-3" /> Directorate of Student Affairs
                   </span>
                 ) : (
-                  <span className="text-xs text-gray-400 font-medium mt-0.5">
+                  <span className="text-xs text-text-muted font-medium mt-0.5">
                     {(user?.society as any)?.category?.name || 'Society Announcement'}
                   </span>
                 )}
@@ -162,7 +162,7 @@ export const PostCreateModal: React.FC<PostCreateModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="text-gray-400 hover:text-white p-1 rounded-lg hover:bg-white/10 transition-colors cursor-pointer"
+              className="text-text-muted hover:text-text-primary p-1 rounded-lg hover:bg-surface-hover transition-colors cursor-pointer"
               aria-label="Close dialog"
             >
               <X className="w-5 h-5" />
@@ -170,7 +170,7 @@ export const PostCreateModal: React.FC<PostCreateModalProps> = ({
           </div>
 
           {uploadError && (
-            <div className="text-red-500 text-xs my-2 font-medium bg-red-50 p-2.5 rounded-xl border border-red-100">
+            <div className="text-red-600 dark:text-red-400 text-xs my-2 font-medium bg-red-500/10 p-2.5 rounded-xl border border-red-500/20">
               {uploadError}
             </div>
           )}
@@ -181,16 +181,16 @@ export const PostCreateModal: React.FC<PostCreateModalProps> = ({
             className="space-y-3"
           >
             <div className="mb-3">
-              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">
+              <label className="block text-xs font-semibold text-text-muted uppercase tracking-wider mb-1">
                 Heading <span className="text-red-400">*</span>
               </label>
               <input
                 autoFocus
                 value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Enter Heading/Title..."
-              className="w-full text-white text-lg font-bold placeholder:text-gray-400 bg-transparent border-b border-vast-ink/20 outline-none focus:ring-0 px-0 pb-2 mb-2"
-              required
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Enter Heading/Title..."
+                className="w-full text-text-primary text-lg font-bold placeholder:text-text-muted bg-transparent border-b border-border-subtle outline-none focus:ring-0 px-0 pb-2 mb-2"
+                required
               />
             </div>
             <textarea
@@ -198,19 +198,19 @@ export const PostCreateModal: React.FC<PostCreateModalProps> = ({
               onChange={(e) => setContent(e.target.value)}
               placeholder="What's on your mind?"
               rows={4}
-              className="w-full text-white text-base placeholder:text-gray-400 placeholder:font-normal font-normal bg-transparent border-none outline-none focus:ring-0 resize-none p-0 mt-2"
+              className="w-full text-text-primary text-base placeholder:text-text-muted placeholder:font-normal font-normal bg-transparent border-none outline-none focus:ring-0 resize-none p-0 mt-2"
             />
 
             {previewUrl && (
-              <div className="relative rounded-2xl overflow-hidden border border-vast-ink/20 bg-black group aspect-square flex items-center justify-center my-2">
+              <div className="relative rounded-2xl overflow-hidden border border-border-subtle bg-black group aspect-square flex items-center justify-center my-2">
                 <img
-                    src={getMediaUrl(previewUrl)}
+                  src={getMediaUrl(previewUrl)}
                   alt="Attachment preview"
                   className="w-full h-full object-cover"
                 />
 
                 {isUploading && (
-                  <div className="absolute inset-0 bg-slate-950/70 flex flex-col items-center justify-center text-white text-xs font-semibold gap-2 backdrop-blur-[2px]">
+                  <div className="absolute inset-0 bg-black/70 flex flex-col items-center justify-center text-white text-xs font-semibold gap-2 backdrop-blur-[2px]">
                     <Loader2 className="w-7 h-7 animate-spin text-white" />
                     <span>Uploading Image...</span>
                   </div>
@@ -219,7 +219,7 @@ export const PostCreateModal: React.FC<PostCreateModalProps> = ({
                 <button
                   type="button"
                   onClick={handleRemoveMedia}
-                  className="absolute top-2.5 right-2.5 p-2 rounded-full bg-slate-900/80 hover:bg-slate-950 text-white shadow-md transition-all active:scale-95 z-10"
+                  className="absolute top-2.5 right-2.5 p-2 rounded-full bg-black/80 hover:bg-red-600 text-white shadow-md transition-all active:scale-95 z-10 cursor-pointer"
                   title="Remove media"
                 >
                   <X className="w-4 h-4" />
@@ -229,12 +229,12 @@ export const PostCreateModal: React.FC<PostCreateModalProps> = ({
           </form>
         </div>
 
-        <div className="flex items-center justify-between pt-3 mt-4 border-t border-white/20">
+        <div className="flex items-center justify-between pt-3 mt-4 border-t border-border-subtle">
           <div className="flex items-center gap-1">
             <button
               type="button"
               onClick={() => imageInputRef.current?.click()}
-              className="p-2.5 text-white/70 hover:bg-white/10 hover:text-white rounded-full transition-all active:scale-90 flex items-center justify-center cursor-pointer"
+              className="p-2.5 text-text-muted hover:bg-surface-hover hover:text-text-primary rounded-full transition-all active:scale-90 flex items-center justify-center cursor-pointer"
               title="Add Image"
             >
               <ImageIcon className="w-6 h-6 stroke-[1.75]" />
@@ -245,7 +245,7 @@ export const PostCreateModal: React.FC<PostCreateModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="px-5 py-2.5 rounded-xl font-bold text-sm bg-white/10 hover:bg-white/20 active:scale-95 text-white transition-all cursor-pointer"
+              className="px-5 py-2.5 rounded-xl font-bold text-sm bg-surface-elevated hover:bg-surface-hover active:scale-95 text-text-primary border border-border-subtle transition-all cursor-pointer"
             >
               Cancel
             </button>
@@ -253,7 +253,7 @@ export const PostCreateModal: React.FC<PostCreateModalProps> = ({
               type="submit"
               form="post-create-dialog-form"
               disabled={isSubmitting || isUploading}
-              className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl font-bold text-sm bg-white text-gray-950 hover:bg-gray-200 active:scale-95 transition-all shadow-md cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl font-bold text-sm bg-brand-primary hover:bg-brand-primary-hover active:scale-95 text-white transition-all shadow-md cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting ? (
                 <>

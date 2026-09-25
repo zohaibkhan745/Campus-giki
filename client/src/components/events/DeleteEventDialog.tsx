@@ -46,21 +46,21 @@ export const DeleteEventDialog: React.FC<DeleteEventDialogProps> = ({
       aria-modal="true"
       aria-labelledby="delete-dialog-title"
     >
-      <div className="w-full max-w-md bg-lumen-stone border-2 border-vast-ink rounded-cards p-6 shadow-2xl space-y-4 text-left">
+      <div className="w-full max-w-md bg-surface-card border border-border-subtle rounded-2xl p-6 shadow-elevation-3 space-y-4 text-left">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 bg-pure-white border border-vast-ink border border-red-500/20 rounded-inputs text-red-400">
+          <div className="p-2.5 bg-red-500/10 border border-red-500/20 rounded-xl text-red-500 shrink-0">
             <AlertTriangle className="w-6 h-6" />
           </div>
           <div>
-            <h3 id="delete-dialog-title" className="font-bold text-lg text-vast-ink">
+            <h3 id="delete-dialog-title" className="font-bold text-lg text-text-primary">
               Delete Event?
             </h3>
-            <p className="text-xs text-fog">This action cannot be undone.</p>
+            <p className="text-xs text-text-muted">This action cannot be undone.</p>
           </div>
         </div>
 
-        <p className="text-sm text-vast-ink font-medium">
-          Are you sure you want to delete <span className="font-semibold text-white">&quot;{eventTitle}&quot;</span>? All event details will be permanently removed.
+        <p className="text-sm text-text-secondary font-medium">
+          Are you sure you want to delete <span className="font-semibold text-text-primary">&quot;{eventTitle}&quot;</span>? All event details will be permanently removed.
         </p>
 
         <div className="flex items-center justify-end gap-3 pt-2">

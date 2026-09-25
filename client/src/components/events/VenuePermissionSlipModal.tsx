@@ -462,38 +462,9 @@ export const VenuePermissionSlipModal: React.FC<VenuePermissionSlipModalProps> =
           </article>
         </div>
       </main>
-
-      {/* Global Print Stylesheet specifically for Venue Permission Slip */}
-      <style>{`
-        @media print {
-          body * {
-            visibility: hidden;
-          }
-          #venue-slip-printable, #venue-slip-printable * {
-            visibility: visible;
-          }
-          #venue-slip-printable {
-            position: fixed !important;
-            left: 0 !important;
-            top: 0 !important;
-            width: 100% !important;
-            min-height: 100% !important;
-            margin: 0 !important;
-            padding: 15mm !important;
-            background: white !important;
-            color: black !important;
-            transform: none !important;
-            border: none !important;
-            box-shadow: none !important;
-          }
-          @page {
-            size: A4 portrait;
-            margin: 0;
-          }
-        }
-      `}</style>
     </div>
   );
 
   return createPortal(modalContent, document.body);
+
 };

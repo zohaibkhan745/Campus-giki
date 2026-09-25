@@ -14,6 +14,7 @@ const UploadSignedSlipModal = React.lazy(() =>
   import('@/components/events/UploadSignedSlipModal').then((m) => ({ default: m.UploadSignedSlipModal })),
 );
 import { Loader2 } from 'lucide-react';
+import { ConfirmModal } from '@/components/ui/ConfirmModal';
 
 interface EventCardProps {
   item: EventFeedItem;
@@ -151,7 +152,7 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
 
   return (
     <article
-      className="card-wrapper event-card-wrapper group relative flex flex-col w-full h-full rounded-[28px] overflow-hidden border border-white/10 bg-gray-950 shadow-2xl transition-all duration-200 hover:-translate-y-1 hover:border-white/25 hover:shadow-blue-500/10 active:scale-[0.99] cursor-pointer select-none focus:outline-none focus:ring-2 focus:ring-white/30"
+      className="card-wrapper event-card-wrapper group relative flex flex-col w-full h-full rounded-[28px] overflow-hidden border border-border-medium bg-surface shadow-elevation-1 transition-all duration-200 hover:-translate-y-1 hover:border-brand-primary/40 hover:shadow-elevation-2 active:scale-[0.99] cursor-pointer select-none focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
       data-type="event"
       data-card-id={item.id}
       onClick={handleCardClick}
@@ -163,15 +164,15 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
       aria-label={`Event: ${item.title}`}
     >
       {/* Upper Bar Section */}
-      <div className="bg-gray-950/95 border-b border-white/10 px-4 py-3 flex items-center justify-between gap-3 w-full rounded-t-[24px] shrink-0 z-20 relative">
+      <div className="bg-surface/95 border-b border-border-subtle px-4 py-3 flex items-center justify-between gap-3 w-full rounded-t-[24px] shrink-0 z-20 relative">
         <div className="flex flex-col min-w-0 flex-1 text-left">
           <span
-            className="text-white text-[18px] font-black tracking-tight truncate leading-tight group-hover:text-blue-400 transition-colors"
+            className="text-text-primary text-[18px] font-black tracking-tight truncate leading-tight group-hover:text-brand-primary transition-colors"
             title={item.title}
           >
             {item.title}
           </span>
-          <span className="text-gray-400 text-[11px] font-medium whitespace-nowrap mt-0.5">
+          <span className="text-text-secondary text-[11px] font-medium whitespace-nowrap mt-0.5">
             {formattedDate} • {formattedTime}
           </span>
         </div>
@@ -244,123 +245,27 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
       </div>
 
       {/* Delete Confirmation Modal */}
-      {showDeleteConfirm &&
-        createPortal(
-          <div
-            id="delete-confirm-modal"
-            style={{
-              position: 'fixed',
-              inset: 0,
-              zIndex: 100000,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              background: 'rgba(0,0,0,0.4)',
-              backdropFilter: 'blur(8px)',
-            }}
-            onClick={(e) => {
-              e.stopPropagation();
-              setShowDeleteConfirm(false);
-            }}
-          >
-            <div
-              style={{
-                background: 'rgba(25, 27, 34, 0.85)',
-                backdropFilter: 'blur(20px)',
-                border: '1px solid rgba(255,255,255,0.1)',
-                padding: '24px',
-                borderRadius: '24px',
-                maxWidth: '400px',
-                width: '90%',
-                textAlign: 'center',
-                boxShadow: '0 25px 50px rgba(0,0,0,0.5)',
-              }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <h3 style={{ color: '#fff', fontSize: '1.25rem', fontWeight: 700, marginBottom: '12px' }}>Delete Event?</h3>
-              <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.9rem', marginBottom: '24px' }}>
-                Are you sure you want to permanently delete this event? This action cannot be undone.
-              </p>
-              <div style={{ display: 'flex', gap: '12px' }}>
-                <button
-                  type="button"
-                  disabled={isDeleting}
-                  style={{
-                    flex: 1,
-                    padding: '12px',
-                    borderRadius: '12px',
-                    background: '#fff',
-                    color: '#000',
-                    fontWeight: 600,
-                    border: 'none',
-                    cursor: isDeleting ? 'not-allowed' : 'pointer',
-                    opacity: isDeleting ? 0.6 : 1,
-                  }}
-                  onClick={() => setShowDeleteConfirm(false)}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  disabled={isDeleting}
-                  style={{
-                    flex: 1,
-                    padding: '12px',
-                    borderRadius: '12px',
-                    background: '#ff4d4f',
-                    border: '1px solid #ff4d4f',
-                    color: '#fff',
-                    fontWeight: 600,
-                    cursor: isDeleting ? 'not-allowed' : 'pointer',
-                    opacity: isDeleting ? 0.8 : 1,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '6px',
-                  }}
-                  onClick={async () => {
-                    if (isDeleting) return;
-                    setIsDeleting(true);
-                    try {
-                      await eventService.deleteEvent(item.id);
-                      globalNotification.triggerSuccess('Event deleted successfully');
-                      setShowDeleteConfirm(false);
-                      queryClient.invalidateQueries({ queryKey: ['campusFeed'] });
-                      queryClient.invalidateQueries({ queryKey: ['societyDashboard'] });
-                      queryClient.invalidateQueries({ queryKey: ['events'] });
-                      queryClient.invalidateQueries({ queryKey: ['upcomingEvents'] });
-                      if (onDelete) onDelete();
-                    } catch {
-                      globalNotification.triggerFailed('Failed to delete event');
-                    } finally {
-                      setIsDeleting(false);
-                    }
-                  }}
-                >
-                  {isDeleting ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      <span>Deleting...</span>
-                    </>
-                  ) : (
-                    <span>Delete</span>
-                  )}
-                </button>
-              </div>
-            </div>
-          </div>,
-          document.body
-        )}
+      <ConfirmModal
+        isOpen={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        onConfirm={handleDelete}
+        title="Delete Event?"
+        message="Are you sure you want to permanently delete this event? This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+        isLoading={isDeleting}
+        variant="danger"
+      />
 
       {/* Lower Bar Section */}
       <div
-        className="bg-gray-950/95 border-t border-white/10 p-4 flex items-center justify-between gap-3 shrink-0 rounded-b-[24px] relative z-20"
+        className="bg-surface/95 border-t border-border-subtle p-4 flex items-center justify-between gap-3 shrink-0 rounded-b-[24px] relative z-20"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center gap-2.5 min-w-0 flex-1">
           <Link
             to={`/societies/${item.society.id}`}
-            className="w-9 h-9 rounded-full bg-[#007ebb] flex items-center justify-center border border-white/20 shrink-0 overflow-hidden hover:opacity-80 transition-opacity"
+            className="w-9 h-9 rounded-full bg-[#007ebb] flex items-center justify-center border border-border-medium shrink-0 overflow-hidden hover:opacity-80 transition-opacity"
             onClick={(e) => e.stopPropagation()}
           >
             <img
@@ -379,8 +284,8 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
             className="flex flex-col min-w-0 flex-1 text-left hover:opacity-80 transition-opacity"
             onClick={(e) => e.stopPropagation()}
           >
-            <span className="text-white text-[14px] font-bold leading-tight truncate">{authorName}</span>
-            <span className="text-gray-400 text-[12px] font-medium leading-none mt-0.5 truncate">
+            <span className="text-text-primary text-[14px] font-bold leading-tight truncate">{authorName}</span>
+            <span className="text-text-secondary text-[12px] font-medium leading-none mt-0.5 truncate">
               @{(item.society as any)?.username || item.society.name.toLowerCase().replace(/\s+/g, '')}
             </span>
           </Link>
@@ -398,7 +303,7 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
           ) : (
             <button
               type="button"
-              className="px-4 h-[32px] flex items-center justify-center bg-white hover:bg-gray-200 active:scale-95 text-black text-[12px] font-bold rounded-lg transition-all border-none shadow-sm pointer-events-auto cursor-pointer"
+              className="px-4 h-[32px] flex items-center justify-center bg-text-primary hover:opacity-90 active:scale-95 text-text-inverse text-[12px] font-bold rounded-lg transition-all border-none shadow-sm pointer-events-auto cursor-pointer"
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -413,13 +318,13 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
             <div className="menu-container shrink-0 h-full flex items-center">
               <button
                 type="button"
-                className="flex items-center justify-center p-2 rounded-full hover:bg-white/10 active:scale-90 transition-all pointer-events-auto cursor-pointer"
+                className="flex items-center justify-center p-2 rounded-full hover:bg-surface-hover active:scale-90 transition-all pointer-events-auto cursor-pointer text-text-primary"
                 aria-label="Options"
                 ref={buttonRef}
                 onClick={toggleDropdown}
                 style={{ height: '32px', width: '32px', borderRadius: '50%' }}
               >
-                <svg viewBox="0 0 24 24" fill="white" width="16" height="16">
+                <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
                   <circle cx="5" cy="12" r="2.5" />
                   <circle cx="12" cy="12" r="2.5" />
                   <circle cx="19" cy="12" r="2.5" />
