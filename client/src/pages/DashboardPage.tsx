@@ -87,86 +87,86 @@ const StudentDashboardView: React.FC<{ user: any; logout: () => void }> = ({ use
 
       {/* Quick Navigation Hub */}
       <div>
-        <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-          <Sparkles className="w-5 h-5 text-amber-400" />
+        <h2 className="text-xl font-bold text-text-primary mb-4 flex items-center gap-2">
+          <Sparkles className="w-5 h-5 text-amber-500" />
           <span>Campus Quick Links</span>
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <Link
             to="/"
-            className="group p-6 rounded-2xl bg-white/[0.05] hover:bg-white/[0.09] border border-white/10 hover:border-white/20 transition-all flex flex-col justify-between space-y-4"
+            className="group p-6 rounded-2xl bg-surface-glass hover:bg-surface-hover border border-border-medium shadow-elevation-1 transition-all flex flex-col justify-between space-y-4"
           >
-            <div className="p-3 bg-blue-500/15 text-blue-400 rounded-xl w-fit group-hover:scale-110 transition-transform">
+            <div className="p-3 bg-blue-500/15 text-blue-500 rounded-xl w-fit group-hover:scale-110 transition-transform">
               <Megaphone className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-white group-hover:text-blue-400 transition-colors flex items-center justify-between">
+              <h3 className="text-lg font-bold text-text-primary group-hover:text-blue-500 transition-colors flex items-center justify-between">
                 Campus Feed
                 <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
               </h3>
-              <p className="text-xs text-gray-400 mt-1">Live campus announcements from the DSA</p>
+              <p className="text-xs text-text-secondary mt-1">Live campus announcements from the DSA</p>
             </div>
           </Link>
 
           <Link
             to="/upcoming-events"
-            className="group p-6 rounded-2xl bg-white/[0.05] hover:bg-white/[0.09] border border-white/10 hover:border-white/20 transition-all flex flex-col justify-between space-y-4"
+            className="group p-6 rounded-2xl bg-surface-glass hover:bg-surface-hover border border-border-medium shadow-elevation-1 transition-all flex flex-col justify-between space-y-4"
           >
-            <div className="p-3 bg-emerald-500/15 text-emerald-400 rounded-xl w-fit group-hover:scale-110 transition-transform">
+            <div className="p-3 bg-emerald-500/15 text-emerald-500 rounded-xl w-fit group-hover:scale-110 transition-transform">
               <UpcomingEventIcon className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-white group-hover:text-emerald-400 transition-colors flex items-center justify-between">
+              <h3 className="text-lg font-bold text-text-primary group-hover:text-emerald-500 transition-colors flex items-center justify-between">
                 Upcoming Events
                 <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
               </h3>
-              <p className="text-xs text-gray-400 mt-1">Competitions, workshops, and galas</p>
+              <p className="text-xs text-text-secondary mt-1">Competitions, workshops, and galas</p>
             </div>
           </Link>
 
           <Link
             to="/events"
-            className="group p-6 rounded-2xl bg-white/[0.05] hover:bg-white/[0.09] border border-white/10 hover:border-white/20 transition-all flex flex-col justify-between space-y-4"
+            className="group p-6 rounded-2xl bg-surface-glass hover:bg-surface-hover border border-border-medium shadow-elevation-1 transition-all flex flex-col justify-between space-y-4"
           >
-            <div className="p-3 bg-purple-500/15 text-purple-400 rounded-xl w-fit group-hover:scale-110 transition-transform">
+            <div className="p-3 bg-purple-500/15 text-purple-500 rounded-xl w-fit group-hover:scale-110 transition-transform">
               <CalendarDays className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-white group-hover:text-purple-400 transition-colors flex items-center justify-between">
+              <h3 className="text-lg font-bold text-text-primary group-hover:text-purple-500 transition-colors flex items-center justify-between">
                 Campus Calendar
                 <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
               </h3>
-              <p className="text-xs text-gray-400 mt-1">Interactive monthly and weekly schedule</p>
+              <p className="text-xs text-text-secondary mt-1">Interactive monthly and weekly schedule</p>
             </div>
           </Link>
 
           <Link
             to="/societies"
-            className="group p-6 rounded-2xl bg-white/[0.05] hover:bg-white/[0.09] border border-white/10 hover:border-white/20 transition-all flex flex-col justify-between space-y-4"
+            className="group p-6 rounded-2xl bg-surface-glass hover:bg-surface-hover border border-border-medium shadow-elevation-1 transition-all flex flex-col justify-between space-y-4"
           >
-            <div className="p-3 bg-amber-500/15 text-amber-400 rounded-xl w-fit group-hover:scale-110 transition-transform">
+            <div className="p-3 bg-amber-500/15 text-amber-500 rounded-xl w-fit group-hover:scale-110 transition-transform">
               <SocietyIcon className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-white group-hover:text-amber-400 transition-colors flex items-center justify-between">
+              <h3 className="text-lg font-bold text-text-primary group-hover:text-amber-500 transition-colors flex items-center justify-between">
                 Societies Directory
                 <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
               </h3>
-              <p className="text-xs text-gray-400 mt-1">Explore and contact campus societies</p>
+              <p className="text-xs text-text-secondary mt-1">Explore and contact campus societies</p>
             </div>
           </Link>
         </div>
       </div>
 
       {/* Account Info card */}
-      <div className="p-6 rounded-2xl bg-white/[0.04] border border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="p-6 rounded-2xl bg-surface-glass border border-border-medium shadow-elevation-1 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <div className="p-2.5 rounded-xl bg-forest-ink/15 text-forest-ink border border-forest-ink/25">
             <UserCheck className="w-5 h-5" />
           </div>
           <div>
-            <div className="text-sm font-bold text-white">{user?.email}</div>
-            <div className="text-xs text-gray-400">Authenticated Student Account • GIKI Campus Network</div>
+            <div className="text-sm font-bold text-text-primary">{user?.email}</div>
+            <div className="text-xs text-text-secondary">Authenticated Student Account • GIKI Campus Network</div>
           </div>
         </div>
         <div className="flex items-center gap-2 text-xs font-semibold text-forest-ink bg-forest-ink/10 px-3 py-1.5 rounded-lg border border-forest-ink/20">
@@ -309,53 +309,54 @@ export const DashboardPage: React.FC = () => {
       {user?.role === 'SOCIETY' && profile && (
         <>
           {/* 2. Dashboard: Actions & Stats */}
-            <div className="w-full relative z-1 p-6 md:p-8 rounded-[18px] bg-white/[0.08] backdrop-blur-[20px] border border-white/20 shadow-[0_12px_40px_rgba(0,0,0,0.4)] text-white space-y-6">
+          {/* 2. Dashboard: Actions & Stats */}
+            <div className="w-full relative z-1 p-6 md:p-8 rounded-[18px] bg-surface-glass backdrop-blur-xl border border-border-medium shadow-elevation-1 text-text-primary space-y-6">
               
               {/* Create Event */}
               <div>
-                <h3 className="font-extrabold text-lg text-white flex items-center gap-2 mb-4">
+                <h3 className="font-extrabold text-lg text-text-primary flex items-center gap-2 mb-4">
                   Create Event
                 </h3>
                 <div className="grid grid-cols-1 gap-4">
                   <Link
                     to="/events/create"
-                    className="flex flex-col items-center justify-center gap-2 p-4 bg-transparent hover:bg-white/10 text-white rounded-xl font-bold transition-transform hover:-translate-y-1 shadow-[0_4px_12px_rgba(0,0,0,0.2)] border border-white/20"
+                    className="flex flex-col items-center justify-center gap-2 p-4 bg-surface-hover/60 hover:bg-surface-hover text-text-primary rounded-xl font-bold transition-transform hover:-translate-y-1 shadow-elevation-1 border border-border-medium"
                   >
-                    <Plus className="w-6 h-6" />
+                    <Plus className="w-6 h-6 text-brand-primary" />
                     <span>Create Event</span>
                   </Link>
                 </div>
               </div>
 
               {/* Separator Line */}
-              <div className="w-full h-px bg-white/10"></div>
+              <div className="w-full h-px bg-border-subtle"></div>
 
               {/* Manage Events */}
               <div>
-                <h3 className="font-extrabold text-lg text-white flex items-center gap-2 mb-4">
+                <h3 className="font-extrabold text-lg text-text-primary flex items-center gap-2 mb-4">
                   Manage Events
                 </h3>
                 <div className="grid grid-cols-2 gap-4">
                   <Link
                     to="/society/events"
-                    className="relative flex flex-col items-center justify-center gap-2 p-4 bg-transparent hover:bg-white/10 text-white rounded-xl font-bold transition-transform hover:-translate-y-1 shadow-[0_4px_12px_rgba(0,0,0,0.2)] border border-white/20"
+                    className="relative flex flex-col items-center justify-center gap-2 p-4 bg-surface-hover/60 hover:bg-surface-hover text-text-primary rounded-xl font-bold transition-transform hover:-translate-y-1 shadow-elevation-1 border border-border-medium"
                   >
-                    <MicVocal className="w-6 h-6" />
+                    <MicVocal className="w-6 h-6 text-brand-primary" />
                     <span>Events</span>
                     {changesRequestedEventsCount > 0 && (
-                      <span className="absolute -top-2 -right-2 flex items-center justify-center w-6 h-6 bg-red-500 text-pure-white text-xs rounded-full shadow-sm animate-pulse border-2 border-pure-white">
+                      <span className="absolute -top-2 -right-2 flex items-center justify-center w-6 h-6 bg-red-500 text-white text-xs rounded-full shadow-sm animate-pulse border-2 border-surface">
                         {changesRequestedEventsCount > 9 ? '9+' : changesRequestedEventsCount}
                       </span>
                     )}
                   </Link>
                   <Link
                     to="/society/calendar"
-                    className="relative flex flex-col items-center justify-center gap-2 p-4 bg-transparent hover:bg-white/10 text-white rounded-xl font-bold transition-transform hover:-translate-y-1 shadow-[0_4px_12px_rgba(0,0,0,0.2)] border border-white/20"
+                    className="relative flex flex-col items-center justify-center gap-2 p-4 bg-surface-hover/60 hover:bg-surface-hover text-text-primary rounded-xl font-bold transition-transform hover:-translate-y-1 shadow-elevation-1 border border-border-medium"
                   >
-                    <CalendarDays className="w-6 h-6" />
+                    <CalendarDays className="w-6 h-6 text-brand-secondary" />
                     <span>Annual Calendar</span>
                     {changesRequestedPlanCount > 0 && (
-                      <span className="absolute -top-2 -right-2 flex items-center justify-center w-6 h-6 bg-red-500 text-pure-white text-xs rounded-full shadow-sm animate-pulse">
+                      <span className="absolute -top-2 -right-2 flex items-center justify-center w-6 h-6 bg-red-500 text-white text-xs rounded-full shadow-sm animate-pulse">
                         !
                       </span>
                     )}
@@ -366,56 +367,56 @@ export const DashboardPage: React.FC = () => {
 
             {/* Venue Clearance Required Banner */}
             {venueClearancePendingEvents.length > 0 && (
-              <div className="p-6 rounded-[18px] bg-gradient-to-r from-amber-500/15 via-orange-500/10 to-amber-500/5 border border-amber-500/30 text-white space-y-4 shadow-[0_12px_40px_rgba(0,0,0,0.3)]">
+              <div className="p-6 rounded-[18px] bg-surface-glass border border-amber-500/30 text-text-primary space-y-4 shadow-elevation-1">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2.5 font-extrabold text-base text-amber-400">
+                  <div className="flex items-center gap-2.5 font-extrabold text-base text-amber-500">
                     <FileText className="w-5 h-5" />
                     <span>Physical Venue Clearance Required ({venueClearancePendingEvents.length})</span>
                   </div>
-                  <span className="text-xs px-2.5 py-1 bg-amber-500/20 text-amber-300 font-bold rounded-lg border border-amber-500/30">
+                  <span className="text-xs px-2.5 py-1 bg-amber-500/15 text-amber-600 dark:text-amber-400 font-bold rounded-lg border border-amber-500/30">
                     Action Required
                   </span>
                 </div>
-                <p className="text-xs text-amber-200/90 leading-relaxed max-w-3xl">
+                <p className="text-xs text-text-secondary leading-relaxed max-w-3xl">
                   The following approved events require official physical clearance from the <strong>PS to Dean / Dean&apos;s Office</strong> for the allocated venue. Print the official slip, obtain the physical signature and stamp, and upload the signed copy.
                 </p>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
                   {venueClearancePendingEvents.map((ev: any) => (
-                    <div key={ev.id} className="p-4 bg-black/40 backdrop-blur-md rounded-xl border border-white/10 flex flex-col justify-between gap-3">
+                    <div key={ev.id} className="p-4 bg-surface/90 backdrop-blur-md rounded-xl border border-border-subtle flex flex-col justify-between gap-3 shadow-sm">
                       <div>
                         <div className="flex items-center justify-between gap-2">
-                          <h4 className="font-bold text-sm text-white truncate">{ev.title}</h4>
-                          <span className="text-[10px] uppercase font-extrabold px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 shrink-0">
-                            {ev.venueClearanceStatus === 'REJECTED' ? 'Re-upload Required' : 'Awaiting PS to Dean Signature'}
+                          <h4 className="font-bold text-sm text-text-primary truncate">{ev.title}</h4>
+                          <span className="text-[10px] uppercase font-extrabold px-2 py-0.5 rounded bg-amber-500/20 text-amber-600 dark:text-amber-300 shrink-0">
+                            {ev.venueClearanceStatus === 'REJECTED' ? 'Re-upload Required' : 'Awaiting PS Signature'}
                           </span>
                         </div>
-                        <p className="text-xs text-gray-300 mt-1 flex items-center gap-1.5">
-                          <MapPin className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                          <span>Venue: <strong className="text-white">{ev.venue}</strong></span>
+                        <p className="text-xs text-text-secondary mt-1 flex items-center gap-1.5">
+                          <MapPin className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                          <span>Venue: <strong className="text-text-primary">{ev.venue}</strong></span>
                         </p>
-                        <p className="text-[11px] text-gray-400 mt-0.5">
+                        <p className="text-[11px] text-text-muted mt-0.5">
                           {new Date(ev.eventDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })} • {ev.startTime} - {ev.endTime}
                         </p>
                         {ev.venueClearanceNotes && (
-                          <p className="text-[11px] text-red-300 mt-1.5 italic bg-red-950/30 p-1.5 rounded border border-red-500/20">
+                          <p className="text-[11px] text-red-500 mt-1.5 italic bg-red-500/10 p-1.5 rounded border border-red-500/20">
                             DSA Note: {ev.venueClearanceNotes}
                           </p>
                         )}
                       </div>
 
-                      <div className="flex items-center gap-2 pt-2 border-t border-white/10">
+                      <div className="flex items-center gap-2 pt-2 border-t border-border-subtle">
                         <button
                           type="button"
                           onClick={() => setSelectedSlipEvent(ev)}
-                          className="flex-1 py-2 px-3 bg-white/10 hover:bg-white/20 text-white rounded-xl text-xs font-bold transition-colors text-center cursor-pointer"
+                          className="flex-1 py-2 px-3 bg-surface-hover hover:bg-surface text-text-primary border border-border-medium rounded-xl text-xs font-bold transition-colors text-center cursor-pointer"
                         >
                           Print Slip (PDF)
                         </button>
                         <button
                           type="button"
                           onClick={() => setSelectedUploadEvent(ev)}
-                          className="flex-1 py-2 px-3 bg-amber-500 hover:bg-amber-600 text-gray-950 rounded-xl text-xs font-bold transition-colors text-center cursor-pointer"
+                          className="flex-1 py-2 px-3 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-xs font-bold transition-colors text-center cursor-pointer"
                         >
                           Upload Signed Slip
                         </button>
@@ -432,20 +433,20 @@ export const DashboardPage: React.FC = () => {
             {/* Under Review & Revisions Column */}
             <div className="space-y-4">
               <div className="flex items-center justify-between pb-3">
-                <div className="flex items-center gap-2 font-extrabold text-lg text-white">
+                <div className="flex items-center gap-2 font-extrabold text-lg text-text-primary">
                   {changesRequestedEventsCount > 0 ? (
                     <AlertCircle className="w-5 h-5 text-ember-glow animate-pulse" />
                   ) : (
-                    <Clock className="w-5 h-5 text-white" />
+                    <Clock className="w-5 h-5 text-text-secondary" />
                   )}
                   <h3>Under Review & Revisions ({pendingEvents.length})</h3>
                 </div>
               </div>
 
               {pendingEvents.length === 0 ? (
-                <div className="bg-transparent p-10 rounded-[18px] border border-white/20 text-center text-gray-400 space-y-3 flex flex-col items-center">
-                  <Shield className="w-12 h-12 text-gray-400 opacity-30" />
-                  <p className="font-bold text-sm">You're all caught up! No events pending approval or revisions.</p>
+                <div className="bg-surface/50 p-10 rounded-[18px] border border-border-subtle text-center text-text-muted space-y-3 flex flex-col items-center">
+                  <Shield className="w-12 h-12 text-text-muted opacity-30" />
+                  <p className="font-bold text-sm">You&apos;re all caught up! No events pending approval or revisions.</p>
                 </div>
               ) : (
                 <div className="cards-container">
@@ -454,25 +455,24 @@ export const DashboardPage: React.FC = () => {
               )}
             </div>
 
-            <hr className="border-white/10" />
-
+            <hr className="border-border-subtle" />
 
             {/* Next Upcoming Column */}
             <div className="space-y-4">
               <div className="flex items-center justify-between pb-3">
-                <div className="flex items-center gap-2 font-extrabold text-lg text-white">
+                <div className="flex items-center gap-2 font-extrabold text-lg text-text-primary">
                   <UpcomingEventIcon className="w-5 h-5 text-forest-ink" />
                   <h3>Next Upcoming ({upcomingEvents.length})</h3>
                 </div>
                 {/* Fallback to calendar if there's no general events page for societies */}
-                <Link to="/society/calendar" className="px-4 py-2 bg-white text-gray-900 border border-transparent rounded-xl text-sm font-bold shadow-md hover:bg-gray-100 transition-all">
+                <Link to="/society/calendar" className="px-4 py-2 bg-text-primary text-text-inverse border border-transparent rounded-xl text-sm font-bold shadow-sm hover:opacity-90 transition-opacity">
                   View Calendar
                 </Link>
               </div>
 
               {upcomingEvents.length === 0 ? (
-                <div className="bg-transparent p-10 rounded-[18px] border border-white/20 text-center text-gray-400 space-y-3 flex flex-col items-center">
-                  <UpcomingEventIcon className="w-12 h-12 text-gray-400 opacity-30" />
+                <div className="bg-surface/50 p-10 rounded-[18px] border border-border-subtle text-center text-text-muted space-y-3 flex flex-col items-center">
+                  <UpcomingEventIcon className="w-12 h-12 text-text-muted opacity-30" />
                   <p className="font-bold text-sm">No upcoming events scheduled right now.</p>
                 </div>
               ) : (
@@ -487,25 +487,25 @@ export const DashboardPage: React.FC = () => {
 
       {/* Non-society user dashboard fallback */}
       {user?.role !== 'SOCIETY' && (
-        <div className="cards-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 w-full mx-auto">
-          <div className="bg-white/[0.08] backdrop-blur-[20px] shadow-[0_12px_40px_rgba(0,0,0,0.4)] p-6 rounded-[18px] space-y-3 border border-white/20">
+        <div className="cards-container">
+          <div className="bg-surface-glass backdrop-blur-md shadow-card p-6 rounded-2xl space-y-3 border border-border-subtle">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-transparent border border-forest-ink text-forest-ink rounded-xl">
+              <div className="p-2 bg-brand-primary/10 border border-brand-primary/30 text-brand-primary rounded-xl">
                 <UserCheck className="w-6 h-6" />
               </div>
               <div className="flex-1">
-                <h3 className="font-semibold text-white">Session Verified</h3>
-                <p className="text-xs text-gray-400">Authenticated via NestJS JWT Security</p>
+                <h3 className="font-semibold text-text-primary">Session Verified</h3>
+                <p className="text-xs text-text-muted">Authenticated via NestJS JWT Security</p>
               </div>
               <button
                 onClick={logout}
-                className="flex justify-center items-center gap-1.5 px-3 py-1.5 bg-transparent border border-white/10 hover:bg-red-500/20 border border-red-500/20 rounded-xl text-red-400 text-xs font-semibold transition-colors"
+                className="flex justify-center items-center gap-1.5 px-3 py-1.5 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 rounded-xl text-red-500 dark:text-red-400 text-xs font-semibold transition-colors cursor-pointer"
               >
                 <LogOut className="w-4 h-4" />
                 <span>Log out</span>
               </button>
             </div>
-            <p className="text-sm text-white font-medium pt-2">
+            <p className="text-sm text-text-secondary font-medium pt-2">
               Your JWT bearer token is securely stored and verified against PostgreSQL.
             </p>
           </div>

@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { authService } from '@/services/auth.service';
 import { useMutation } from '@tanstack/react-query';
-import { Shield, KeyRound, User, Briefcase, Building2, Check, ArrowLeft, Image, Camera } from 'lucide-react';
+import { KeyRound, User, Check, ArrowLeft, Palette } from 'lucide-react';
 import { Input } from '@/components/ui/Input';
 import { CustomDropdown } from '@/components/ui/CustomDropdown';
 import { Button } from '@/components/ui/Button';
 import { Alert } from '@/components/ui/Alert';
 import { ImageUploader } from '@/components/common/ImageUploader';
+import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { useNavigate } from 'react-router-dom';
 import type { AxiosError } from 'axios';
 
@@ -120,18 +121,36 @@ export const SettingsPage: React.FC = () => {
       <div className="flex items-center justify-between mb-2">
         <button
           onClick={() => navigate(-1)}
-          className="fixed top-4 left-4 sm:top-6 sm:left-6 z-[100] inline-flex items-center justify-center w-10 h-10 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white rounded-full transition-all cursor-pointer shadow-lg"
+          className="fixed top-4 left-4 sm:top-6 sm:left-6 z-[100] inline-flex items-center justify-center w-10 h-10 bg-surface-glass hover:bg-surface-hover backdrop-blur-md border border-border-medium text-text-primary rounded-full transition-all cursor-pointer shadow-elevation-1"
           title="Go Back"
         >
           <ArrowLeft className="w-5 h-5" />
         </button>
       </div>
 
-      <h1 className="font-extrabold text-5xl sm:text-6xl text-white tracking-tight leading-tight mb-8">Personal Profile</h1>
+      <h1 className="font-extrabold text-5xl sm:text-6xl text-text-primary tracking-tight leading-tight mb-8">
+        Personal Profile
+      </h1>
 
       <div className="grid grid-cols-1 gap-6">
-        <div className="relative z-1 w-full p-8 rounded-[18px] bg-white/[0.08] backdrop-blur-[20px] border border-white/20 shadow-[0_12px_40px_rgba(0,0,0,0.4)] text-white space-y-6 text-left">
+        <div className="relative z-1 w-full p-8 rounded-[18px] bg-surface-glass backdrop-blur-[20px] border border-border-medium shadow-elevation-1 text-text-primary space-y-6 text-left">
           
+          {/* Appearance & Theme Section */}
+          <div className="space-y-3 pb-2">
+            <h3 className="font-extrabold text-lg text-text-primary flex items-center gap-2">
+              <Palette className="w-5 h-5 text-brand-primary" />
+              Appearance & Theme
+            </h3>
+            <p className="text-xs text-text-secondary">
+              Customize your viewing experience with system, dark, or light mode.
+            </p>
+            <div className="pt-1">
+              <ThemeToggle variant="segmented" />
+            </div>
+          </div>
+
+          <div className="w-full h-px bg-border-subtle my-6" />
+
           <form onSubmit={(e) => {
             e.preventDefault();
             handleProfileSubmit(e);
@@ -142,8 +161,8 @@ export const SettingsPage: React.FC = () => {
             
             {/* General Section */}
             <div>
-              <h3 className="font-extrabold text-lg text-white flex items-center gap-2 mb-4">
-                <User className="w-5 h-5 text-white" />
+              <h3 className="font-extrabold text-lg text-text-primary flex items-center gap-2 mb-4">
+                <User className="w-5 h-5 text-text-primary" />
                 General Information
               </h3>
 
@@ -180,8 +199,8 @@ export const SettingsPage: React.FC = () => {
 
                   <div className="flex-1 w-full space-y-4">
                     <div className="space-y-1">
-                      <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Account Email</label>
-                      <div className="w-full bg-[#111111] text-gray-400 text-sm rounded-lg border border-white/10 px-4 py-3 cursor-not-allowed">
+                      <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1">Account Email</label>
+                      <div className="w-full bg-surface-hover text-text-muted text-sm rounded-lg border border-border-subtle px-4 py-3 cursor-not-allowed">
                         {user.email}
                       </div>
                     </div>
@@ -199,7 +218,7 @@ export const SettingsPage: React.FC = () => {
                 {isAdvisor && (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-1">
-                      <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Faculty</label>
+                      <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1">Faculty</label>
                       <CustomDropdown
                         options={[ { value: 'FCSE', label: 'FCSE' }, { value: 'FEE', label: 'FEE' }, { value: 'FME', label: 'FME' }, { value: 'FCVE', label: 'FCVE' }, { value: 'FCME', label: 'FCME' }, { value: 'FMTE', label: 'FMTE' }, { value: 'FES', label: 'FES' }, { value: 'FBS', label: 'FBS' }, { value: 'MGS', label: 'MGS' } ]}
                         value={faculty}
@@ -208,7 +227,7 @@ export const SettingsPage: React.FC = () => {
                       />
                     </div>
                     <div className="space-y-1">
-                      <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Designation</label>
+                      <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1">Designation</label>
                       <CustomDropdown
                         options={[
                           { value: 'Lecturer', label: 'Lecturer' },
@@ -227,12 +246,12 @@ export const SettingsPage: React.FC = () => {
             </div>
 
             {/* Mid Line */}
-            <div className="w-full h-px bg-white/10 my-6"></div>
+            <div className="w-full h-px bg-border-subtle my-6" />
 
             {/* Security Section */}
             <div>
-              <h3 className="font-extrabold text-lg text-white flex items-center gap-2 mb-4">
-                <KeyRound className="w-5 h-5 text-white" />
+              <h3 className="font-extrabold text-lg text-text-primary flex items-center gap-2 mb-4">
+                <KeyRound className="w-5 h-5 text-text-primary" />
                 Security & Password
               </h3>
 
@@ -285,7 +304,7 @@ export const SettingsPage: React.FC = () => {
               <Button
                 type="submit"
                 variant="primary"
-                className="w-full sm:w-auto px-8 bg-white text-black hover:bg-white/90"
+                className="w-full sm:w-auto px-8"
                 isLoading={profileMutation.isPending || passwordMutation.isPending}
                 leftIcon={<Check className="w-4 h-4" />}
               >
@@ -298,4 +317,3 @@ export const SettingsPage: React.FC = () => {
     </div>
   );
 };
-

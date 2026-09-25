@@ -163,14 +163,14 @@ export const AdvisorQueuePage: React.FC = () => {
           <div className="grid grid-cols-2 gap-3">
             <button
               onClick={() => { setActiveTab('events'); setPage(1); setStatusFilter('PENDING_ADVISOR'); }}
-              className={`flex flex-col items-center justify-center gap-2 p-4 rounded-xl font-bold transition-all relative ${
+              className={`flex flex-col items-center justify-center gap-2 p-4 rounded-xl font-bold transition-all relative cursor-pointer ${
                 activeTab === 'events'
-                  ? 'bg-white text-gray-900 shadow-sm'
-                  : 'bg-transparent text-gray-300 border border-white/20 hover:bg-white/10'
+                  ? 'bg-surface-elevated text-text-primary shadow-sm border border-border-subtle'
+                  : 'bg-transparent text-text-muted border border-border-subtle hover:bg-surface-hover hover:text-text-primary'
               }`}
             >
               {pendingEventsCount > 0 && (
-                <span className="absolute top-2 right-2 flex items-center justify-center w-5 h-5 bg-ember-glow text-pure-white text-[10px] font-bold rounded-full shadow-sm animate-pulse">
+                <span className="absolute top-2 right-2 flex items-center justify-center w-5 h-5 bg-brand-primary text-white text-[10px] font-bold rounded-full shadow-sm animate-pulse">
                   {pendingEventsCount > 9 ? '9+' : pendingEventsCount}
                 </span>
               )}
@@ -179,14 +179,14 @@ export const AdvisorQueuePage: React.FC = () => {
             </button>
             <button
               onClick={() => { setActiveTab('plans'); setPage(1); setStatusFilter('PENDING_ADVISOR'); }}
-              className={`flex flex-col items-center justify-center gap-2 p-4 rounded-xl font-bold transition-all relative ${
+              className={`flex flex-col items-center justify-center gap-2 p-4 rounded-xl font-bold transition-all relative cursor-pointer ${
                 activeTab === 'plans'
-                  ? 'bg-white text-gray-900 shadow-sm'
-                  : 'bg-transparent text-gray-300 border border-white/20 hover:bg-white/10'
+                  ? 'bg-surface-elevated text-text-primary shadow-sm border border-border-subtle'
+                  : 'bg-transparent text-text-muted border border-border-subtle hover:bg-surface-hover hover:text-text-primary'
               }`}
             >
               {pendingPlansCount > 0 && (
-                <span className="absolute top-2 right-2 flex items-center justify-center w-5 h-5 bg-ember-glow text-pure-white text-[10px] font-bold rounded-full shadow-sm animate-pulse">
+                <span className="absolute top-2 right-2 flex items-center justify-center w-5 h-5 bg-brand-primary text-white text-[10px] font-bold rounded-full shadow-sm animate-pulse">
                   {pendingPlansCount > 9 ? '9+' : pendingPlansCount}
                 </span>
               )}

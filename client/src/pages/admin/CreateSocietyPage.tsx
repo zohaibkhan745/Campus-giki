@@ -192,51 +192,51 @@ export const CreateSocietyPage: React.FC = () => {
       {/* Success Credentials Modal */}
       {provisionedData && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="bg-[#141416] p-6 sm:p-8 rounded-[18px] border border-white/20 max-w-lg w-full space-y-6 shadow-2xl text-left">
+          <div className="bg-surface-card p-6 sm:p-8 rounded-2xl border border-border-subtle max-w-lg w-full space-y-6 shadow-elevation-3 text-left">
             {/* Header */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 flex items-center justify-center bg-forest-ink/10 border-2 border-forest-ink text-forest-ink rounded-full shrink-0">
+                <div className="w-10 h-10 flex items-center justify-center bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 rounded-full shrink-0">
                   <CheckCircle2 className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="font-extrabold text-white text-lg">
+                  <h3 className="font-extrabold text-text-primary text-lg">
                     Society Created
                   </h3>
-                  <p className="text-xs text-gray-400 font-medium">
+                  <p className="text-xs text-text-muted font-medium">
                     {provisionedData.name} has been provisioned successfully.
                   </p>
                 </div>
               </div>
-              <button onClick={() => setProvisionedData(null)} className="p-1 text-gray-400 hover:text-white rounded-full">
+              <button onClick={() => setProvisionedData(null)} className="p-1 text-text-muted hover:text-text-primary rounded-full transition-colors cursor-pointer">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {/* Credential Cards */}
             <div className="space-y-3">
-              <div className="bg-lumen-cream p-4 rounded-inputs border border-white/20 space-y-0.5">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400">Society Name</span>
-                <p className="text-sm font-bold text-white">{provisionedData.name}</p>
+              <div className="bg-surface-elevated/40 p-4 rounded-xl border border-border-subtle space-y-0.5">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-text-muted">Society Name</span>
+                <p className="text-sm font-bold text-text-primary">{provisionedData.name}</p>
               </div>
 
-              <div className="bg-lumen-cream p-4 rounded-inputs border border-white/20 space-y-0.5">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400 flex items-center gap-1">
+              <div className="bg-surface-elevated/40 p-4 rounded-xl border border-border-subtle space-y-0.5">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-text-muted flex items-center gap-1">
                   <Mail className="w-3 h-3" /> Activation Email Dispatched To
                 </span>
-                <p className="text-sm font-bold text-white font-mono">{provisionedData.presidentEmail}</p>
+                <p className="text-sm font-bold text-text-primary font-mono">{provisionedData.presidentEmail}</p>
               </div>
 
               {provisionedData.emailPreviewUrl && (
-                <div className="bg-blue-950 p-4 rounded-inputs border-2 border-blue-600 space-y-1">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-blue-300 flex items-center gap-1">
-                    <Info className="w-3 h-3 text-blue-400" /> Local Test Email Inbox
+                <div className="bg-blue-500/10 p-4 rounded-xl border border-blue-500/30 space-y-1">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 flex items-center gap-1">
+                    <Info className="w-3 h-3 text-blue-500" /> Local Test Email Inbox
                   </span>
                   <a
                     href={provisionedData.emailPreviewUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="text-xs font-semibold text-blue-400 underline hover:text-blue-200 block truncate"
+                    className="text-xs font-semibold text-blue-600 dark:text-blue-400 underline hover:text-blue-500 block truncate"
                   >
                     Open Ethereal Email Preview &rarr;
                   </a>
@@ -245,15 +245,15 @@ export const CreateSocietyPage: React.FC = () => {
             </div>
 
             {/* Delivery Instruction */}
-            <div className="flex items-start gap-2.5 text-xs text-gray-400 bg-lumen-cream border border-white/20/20 p-3 rounded-inputs">
-              <Info className="w-4 h-4 text-ember-glow shrink-0 mt-0.5" />
+            <div className="flex items-start gap-2.5 text-xs text-text-secondary bg-surface-elevated/40 border border-border-subtle p-3 rounded-xl">
+              <Info className="w-4 h-4 text-brand-primary shrink-0 mt-0.5" />
               <p className="leading-relaxed font-medium">
                 An activation link has been sent to the society email. The society president must click the link within 48 hours to set their password.
               </p>
             </div>
 
             {/* Actions */}
-            <div className="flex items-center justify-end gap-3 pt-2 border-t-2 border-vast-ink/10">
+            <div className="flex items-center justify-end gap-3 pt-2 border-t border-border-subtle">
               <Button
                 type="button"
                 variant="primary"

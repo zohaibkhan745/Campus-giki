@@ -15,19 +15,18 @@ export const HomePage: React.FC = () => {
     fetchNextPage();
   };
 
-
   return (
-    <div className="bg-transparent text-gray-200 min-h-screen font-inter">
+    <div className="bg-transparent text-text-primary min-h-screen font-inter">
       <div className="w-full max-w-full px-8 sm:px-10 flex justify-center text-left pt-6">
 
         {/* Left Column: Main Feed */}
         <div className="w-full">
           {/* Page Header */}
-          <header className="space-y-2 pb-4 border-b border-white/10 mb-8">
-            <h1 className="font-extrabold text-5xl sm:text-6xl text-white tracking-tight leading-tight">
+          <header className="space-y-2 pb-4 border-b border-border-subtle mb-8">
+            <h1 className="font-extrabold text-5xl sm:text-6xl text-text-primary tracking-tight leading-tight">
               Campus Feed
             </h1>
-            <p className="text-lg text-gray-400">
+            <p className="text-lg text-text-secondary">
               Live announcements, events, and student society activities at GIKI.
             </p>
           </header>
@@ -69,17 +68,17 @@ export const HomePage: React.FC = () => {
             <div className="space-y-6">
               {/* If there's an error while older items exist, show an unobtrusive notice */}
               {isError && (
-                <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-200 text-xs sm:text-sm flex items-center justify-between gap-3">
+                <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-200 text-xs sm:text-sm flex items-center justify-between gap-3">
                   <span>Unable to refresh latest campus feed. Displaying cached stories.</span>
                   <button
                     onClick={refetch}
-                    className="px-3 py-1 bg-amber-500/20 hover:bg-amber-500/30 rounded-lg font-bold text-amber-300 transition-colors cursor-pointer"
+                    className="px-3 py-1 bg-amber-500/20 hover:bg-amber-500/30 rounded-lg font-bold text-amber-700 dark:text-amber-300 transition-colors cursor-pointer"
                   >
                     Retry
                   </button>
                 </div>
               )}
-              <div className="cards-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 w-full mx-auto">
+              <div className="cards-container">
                 {items.map((item) =>
                   item.type === 'event' ? (
                     <EventCard key={`event-${item.id}`} item={item} />
@@ -97,11 +96,11 @@ export const HomePage: React.FC = () => {
               <button
                 onClick={handleLoadMore}
                 disabled={isLoadingMore}
-                className="inline-flex items-center gap-3 bg-[rgba(255,255,255,0.08)] backdrop-blur-[12px] border border-[rgba(255,255,255,0.15)] rounded-[12px] px-8 py-3 text-[16px] font-semibold text-white hover:bg-[rgba(255,255,255,0.16)] hover:border-[rgba(255,255,255,0.25)] active:scale-[0.98] disabled:opacity-50 transition-all focus:outline-none cursor-pointer"
+                className="inline-flex items-center gap-3 bg-surface-glass backdrop-blur-[12px] border border-border-medium rounded-[12px] px-8 py-3 text-[16px] font-semibold text-text-primary hover:bg-surface-hover hover:border-border-strong active:scale-[0.98] disabled:opacity-50 transition-all focus:outline-none cursor-pointer shadow-elevation-1"
               >
                 {isLoadingMore ? (
                   <>
-                    <RefreshCw className="w-5 h-5 animate-spin text-white" />
+                    <RefreshCw className="w-5 h-5 animate-spin text-brand-primary" />
                     <span>Loading stories...</span>
                   </>
                 ) : (
@@ -115,12 +114,3 @@ export const HomePage: React.FC = () => {
     </div>
   );
 };
-
-
-
-
-
-
-
-
-

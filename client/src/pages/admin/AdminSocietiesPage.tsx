@@ -195,21 +195,21 @@ export const AdminSocietiesPage: React.FC = () => {
     switch (status) {
       case 'ACTIVE':
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 shadow-[0_0_12px_rgba(16,185,129,0.15)]">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
             <CheckCircle2 className="w-3.5 h-3.5" />
             <span>Active</span>
           </span>
         );
       case 'UNCONFIGURED':
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/15 text-amber-400 border border-amber-500/30 shadow-[0_0_12px_rgba(245,158,11,0.15)]">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30">
             <Clock className="w-3.5 h-3.5" />
             <span>Unconfigured</span>
           </span>
         );
       case 'INACTIVE':
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-red-500/15 text-red-400 border border-red-500/30 shadow-[0_0_12px_rgba(239,68,68,0.15)]">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-red-500/15 text-red-600 dark:text-red-400 border border-red-500/30">
             <Ban className="w-3.5 h-3.5" />
             <span>Banned</span>
           </span>
@@ -222,26 +222,26 @@ export const AdminSocietiesPage: React.FC = () => {
       {/* Top Back Navigation */}
       <button
         onClick={() => navigate(-1)}
-        className="fixed top-4 left-4 sm:top-6 sm:left-6 z-[100] inline-flex items-center justify-center w-10 h-10 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white rounded-full transition-all cursor-pointer shadow-lg"
+        className="fixed top-4 left-4 sm:top-6 sm:left-6 z-[100] inline-flex items-center justify-center w-10 h-10 bg-black/40 hover:bg-black/60 backdrop-blur-md border border-white/20 text-white rounded-full transition-all cursor-pointer shadow-lg"
         title="Go Back"
       >
         <ArrowLeft className="w-5 h-5" />
       </button>
 
       {/* Page Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 py-6">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 py-4 sm:py-6">
         <div>
-          <h1 className="font-extrabold text-5xl sm:text-6xl text-white tracking-tight leading-tight">
+          <h1 className="font-extrabold text-4xl sm:text-5xl text-text-primary tracking-tight leading-tight">
             Societies Management
           </h1>
-          <p className="text-gray-400 text-sm mt-2 font-medium">
+          <p className="text-text-secondary text-sm mt-2 font-medium">
             Manage campus student societies, faculty advisor allocations, and account access.
           </p>
         </div>
 
         <button
           onClick={() => setIsAddSocietyModalOpen(true)}
-          className="bg-white text-black border-none py-2.5 px-5 rounded-xl text-sm font-bold cursor-pointer transition-all duration-300 hover:bg-gray-100 hover:-translate-y-0.5 shadow-lg flex items-center gap-2 shrink-0"
+          className="bg-brand-primary text-white border-none py-2.5 px-5 rounded-xl text-sm font-bold cursor-pointer transition-all duration-200 hover:bg-brand-primary-hover hover:-translate-y-0.5 shadow-md flex items-center gap-2 shrink-0"
         >
           <Plus className="w-4 h-4" />
           <span>Onboard Society</span>
@@ -249,13 +249,12 @@ export const AdminSocietiesPage: React.FC = () => {
       </div>
 
       {/* Main Glass Table Container */}
-      <div className="w-full bg-white/[0.08] backdrop-blur-[20px] rounded-[24px] p-6 shadow-[0_12px_40px_rgba(0,0,0,0.4)] border border-white/20">
-        
+      <div className="w-full bg-surface-card backdrop-blur-md rounded-2xl p-4 sm:p-6 shadow-card border border-border-subtle">
         {/* Integrated Filter Bar */}
-        <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 mb-6 pb-4 border-b border-white/10">
+        <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 mb-6 pb-4 border-b border-border-subtle">
           {/* Search Input */}
           <div className="relative flex-1 max-w-md">
-            <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <Search className="w-4 h-4 text-text-muted absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
               type="text"
               placeholder="Search societies by name..."
@@ -264,7 +263,7 @@ export const AdminSocietiesPage: React.FC = () => {
                 setSearchQuery(e.target.value);
                 setPage(1);
               }}
-              className="w-full bg-white/[0.06] hover:bg-white/[0.09] focus:bg-white/[0.1] border border-white/15 focus:border-white/40 rounded-xl pl-10 pr-9 py-2.5 text-sm text-white placeholder-gray-400 focus:outline-none transition-all"
+              className="w-full bg-surface-elevated/60 hover:bg-surface-elevated focus:bg-surface-elevated border border-border-medium focus:border-brand-primary rounded-xl pl-10 pr-9 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:outline-none transition-all"
             />
             {searchQuery && (
               <button
@@ -272,13 +271,14 @@ export const AdminSocietiesPage: React.FC = () => {
                   setSearchQuery('');
                   setPage(1);
                 }}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-primary transition-colors cursor-pointer"
                 title="Clear search"
               >
                 <X className="w-4 h-4" />
               </button>
             )}
           </div>
+
 
           {/* Filter Dropdowns */}
           <div className="flex items-center gap-3 flex-wrap">
@@ -325,7 +325,7 @@ export const AdminSocietiesPage: React.FC = () => {
                   setStatusFilter('');
                   setPage(1);
                 }}
-                className="px-3 py-2 rounded-xl text-xs font-semibold text-gray-300 hover:text-white bg-white/5 hover:bg-white/15 border border-white/10 transition-colors flex items-center gap-1.5 cursor-pointer"
+                className="px-3 py-2 rounded-xl text-xs font-semibold text-text-secondary hover:text-text-primary bg-surface-elevated hover:bg-surface-hover border border-border-subtle transition-colors flex items-center gap-1.5 cursor-pointer"
                 title="Reset filters"
               >
                 <X className="w-3.5 h-3.5" />
@@ -337,7 +337,7 @@ export const AdminSocietiesPage: React.FC = () => {
 
         {/* Table Content */}
         {isLoading ? (
-          <div className="p-12 text-center text-slate-400 font-semibold animate-pulse">
+          <div className="p-12 text-center text-text-muted font-semibold animate-pulse">
             Loading societies...
           </div>
         ) : isError ? (
@@ -368,19 +368,19 @@ export const AdminSocietiesPage: React.FC = () => {
             <table className="w-full border-collapse text-left min-w-[850px]">
               <thead>
                 <tr>
-                  <th className="p-[15px] text-slate-400 text-[13px] uppercase tracking-[1px] border-b border-white/10 w-[7%]">
+                  <th className="p-[15px] text-text-muted text-xs uppercase tracking-wider font-semibold border-b border-border-subtle w-[7%]">
                     Sr.
                   </th>
-                  <th className="p-[15px] text-slate-400 text-[13px] uppercase tracking-[1px] border-b border-white/10 w-[38%]">
+                  <th className="p-[15px] text-text-muted text-xs uppercase tracking-wider font-semibold border-b border-border-subtle w-[38%]">
                     Society
                   </th>
-                  <th className="p-[15px] text-slate-400 text-[13px] uppercase tracking-[1px] border-b border-white/10 w-[28%]">
+                  <th className="p-[15px] text-text-muted text-xs uppercase tracking-wider font-semibold border-b border-border-subtle w-[28%]">
                     Assigned Advisor
                   </th>
-                  <th className="p-[15px] text-slate-400 text-[13px] uppercase tracking-[1px] border-b border-white/10 w-[17%] text-center">
+                  <th className="p-[15px] text-text-muted text-xs uppercase tracking-wider font-semibold border-b border-border-subtle w-[17%] text-center">
                     Status
                   </th>
-                  <th className="p-[15px] text-slate-400 text-[13px] uppercase tracking-[1px] border-b border-white/10 w-[10%] text-center">
+                  <th className="p-[15px] text-text-muted text-xs uppercase tracking-wider font-semibold border-b border-border-subtle w-[10%] text-center">
                     Actions
                   </th>
                 </tr>
@@ -390,37 +390,37 @@ export const AdminSocietiesPage: React.FC = () => {
                   <tr
                     key={society.id}
                     onClick={() => navigate(`/admin/societies/${society.id}`)}
-                    className="hover:bg-white/[0.05] transition-colors group cursor-pointer"
+                    className="hover:bg-surface-hover/50 transition-colors group cursor-pointer"
                   >
                     {/* 1. Sr. */}
-                    <td className="py-[18px] px-[15px] text-[15px] border-b border-white/5 text-slate-300 group-last:border-b-0">
+                    <td className="py-[16px] px-[15px] text-sm border-b border-border-subtle/50 text-text-secondary group-last:border-b-0">
                       {String(index + 1 + (page - 1) * 10).padStart(2, '0')}
                     </td>
 
                     {/* 2. Society Info */}
-                    <td className="py-[18px] px-[15px] text-[15px] border-b border-white/5 text-white group-last:border-b-0">
+                    <td className="py-[16px] px-[15px] text-sm border-b border-border-subtle/50 text-text-primary group-last:border-b-0">
                       <div className="flex items-center gap-3.5">
                         <img
                           src={getSocietyLogo(society.logoUrl)}
                           alt={society.name}
-                          className="w-10 h-10 rounded-full border border-white/20 object-cover shrink-0 bg-white/5 group-hover:scale-105 transition-transform"
+                          className="w-10 h-10 rounded-full border border-border-subtle object-cover shrink-0 bg-surface-elevated group-hover:scale-105 transition-transform"
                           onError={(e) => {
                             e.currentTarget.onerror = null;
                             e.currentTarget.src = '/default-society.jpg';
                           }}
                         />
                         <div className="flex flex-col min-w-0">
-                          <span className="font-bold text-white text-[15px] truncate group-hover:text-blue-300 transition-colors">
+                          <span className="font-bold text-text-primary text-sm truncate group-hover:text-brand-primary transition-colors">
                             {society.name}
                           </span>
                           <div className="flex items-center gap-2 mt-0.5">
                             {society.category && (
-                              <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-white/10 text-gray-300 border border-white/10 shrink-0">
+                              <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-surface-elevated text-text-secondary border border-border-subtle shrink-0">
                                 {society.category.name}
                               </span>
                             )}
                             {society.presidentEmail && (
-                              <span className="text-xs text-gray-400 truncate">
+                              <span className="text-xs text-text-muted truncate">
                                 {society.presidentEmail}
                               </span>
                             )}
@@ -430,43 +430,43 @@ export const AdminSocietiesPage: React.FC = () => {
                     </td>
 
                     {/* 3. Advisor Info */}
-                    <td className="py-[18px] px-[15px] text-[15px] border-b border-white/5 text-slate-300 group-last:border-b-0">
+                    <td className="py-[16px] px-[15px] text-sm border-b border-border-subtle/50 text-text-secondary group-last:border-b-0">
                       {society.advisor ? (
                         <div className="flex items-center gap-2.5">
                           <img
                             src={getAdvisorLogo(society.advisor.user?.avatarUrl)}
                             alt={society.advisor.user?.fullName}
-                            className="w-8 h-8 rounded-full border border-white/20 object-cover shrink-0 bg-white/5"
+                            className="w-8 h-8 rounded-full border border-border-subtle object-cover shrink-0 bg-surface-elevated"
                             onError={(e) => {
                               e.currentTarget.onerror = null;
                               e.currentTarget.src = '/default-advisor.jpg';
                             }}
                           />
                           <div className="flex flex-col min-w-0">
-                            <span className="text-sm font-semibold text-white truncate">
+                            <span className="text-sm font-semibold text-text-primary truncate">
                               {society.advisor.user?.fullName}
                             </span>
-                            <span className="text-xs text-gray-400 font-mono">
+                            <span className="text-xs text-text-muted font-mono">
                               {society.advisor.department}
                             </span>
                           </div>
                         </div>
                       ) : (
-                        <span className="inline-block px-2.5 py-1 rounded-full text-xs font-medium bg-white/5 text-gray-400 border border-white/10 italic">
+                        <span className="inline-block px-2.5 py-1 rounded-full text-xs font-medium bg-surface-elevated text-text-muted border border-border-subtle italic">
                           Unassigned
                         </span>
                       )}
                     </td>
 
                     {/* 4. Status Badge */}
-                    <td className="py-[18px] px-[15px] text-[15px] border-b border-white/5 text-center group-last:border-b-0">
+                    <td className="py-[16px] px-[15px] text-sm border-b border-border-subtle/50 text-center group-last:border-b-0">
                       <div className="flex justify-center">
                         {renderStatusBadge(society.status)}
                       </div>
                     </td>
 
                     {/* 5. Floating 3-Dots Action Menu */}
-                    <td className="py-[18px] px-[15px] text-[15px] border-b border-white/5 text-center group-last:border-b-0">
+                    <td className="py-[16px] px-[15px] text-sm border-b border-border-subtle/50 text-center group-last:border-b-0">
                       <div className="flex justify-center relative society-actions-menu">
                         <button
                           type="button"
@@ -476,8 +476,8 @@ export const AdminSocietiesPage: React.FC = () => {
                           }}
                           className={`p-2 rounded-xl border transition-all cursor-pointer ${
                             openMenuId === society.id
-                              ? 'bg-white/20 border-white/40 text-white shadow-lg'
-                              : 'bg-white/5 hover:bg-white/15 border-white/10 text-gray-300 hover:text-white'
+                              ? 'bg-surface-elevated border-brand-primary text-text-primary shadow-sm'
+                              : 'bg-surface-elevated hover:bg-surface-hover border-border-subtle text-text-secondary hover:text-text-primary'
                           }`}
                           title="Society Actions"
                         >
@@ -487,16 +487,16 @@ export const AdminSocietiesPage: React.FC = () => {
                         {/* Dropdown Popover */}
                         {openMenuId === society.id && (
                           <div
-                            className="absolute right-0 top-full mt-2 w-52 bg-[#181a20]/95 backdrop-blur-2xl border border-white/20 rounded-2xl shadow-[0_16px_40px_rgba(0,0,0,0.6)] py-1.5 z-50 text-left animate-in fade-in zoom-in-95 duration-150"
+                            className="absolute right-0 top-full mt-2 w-52 bg-surface-elevated/95 backdrop-blur-2xl border border-border-subtle rounded-2xl shadow-elevation-2 py-1.5 z-50 text-left animate-in fade-in zoom-in-95 duration-150"
                             onClick={(e) => e.stopPropagation()}
                           >
                             {/* 1. View Full Details */}
                             <Link
                               to={`/admin/societies/${society.id}`}
                               onClick={() => setOpenMenuId(null)}
-                              className="w-full px-4 py-2.5 text-xs font-semibold text-gray-200 hover:text-white hover:bg-white/10 transition-colors flex items-center gap-2.5 cursor-pointer"
+                              className="w-full px-4 py-2.5 text-xs font-semibold text-text-secondary hover:text-text-primary hover:bg-surface-hover transition-colors flex items-center gap-2.5 cursor-pointer"
                             >
-                              <Eye className="w-4 h-4 text-purple-400" />
+                              <Eye className="w-4 h-4 text-purple-500 dark:text-purple-400" />
                               <span>View Full Details</span>
                             </Link>
 
@@ -507,9 +507,9 @@ export const AdminSocietiesPage: React.FC = () => {
                                 setOpenMenuId(null);
                                 handleOpenEdit(society);
                               }}
-                              className="w-full px-4 py-2.5 text-xs font-semibold text-gray-200 hover:text-white hover:bg-white/10 transition-colors flex items-center gap-2.5 cursor-pointer"
+                              className="w-full px-4 py-2.5 text-xs font-semibold text-text-secondary hover:text-text-primary hover:bg-surface-hover transition-colors flex items-center gap-2.5 cursor-pointer"
                             >
-                              <Edit3 className="w-4 h-4 text-blue-400" />
+                              <Edit3 className="w-4 h-4 text-brand-primary" />
                               <span>Edit Society</span>
                             </button>
 
@@ -519,9 +519,9 @@ export const AdminSocietiesPage: React.FC = () => {
                               target="_blank"
                               rel="noopener noreferrer"
                               onClick={() => setOpenMenuId(null)}
-                              className="w-full px-4 py-2.5 text-xs font-semibold text-gray-200 hover:text-white hover:bg-white/10 transition-colors flex items-center gap-2.5 cursor-pointer"
+                              className="w-full px-4 py-2.5 text-xs font-semibold text-text-secondary hover:text-text-primary hover:bg-surface-hover transition-colors flex items-center gap-2.5 cursor-pointer"
                             >
-                              <ExternalLink className="w-4 h-4 text-emerald-400" />
+                              <ExternalLink className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
                               <span>View Public Page</span>
                             </Link>
 
@@ -533,9 +533,9 @@ export const AdminSocietiesPage: React.FC = () => {
                                   setOpenMenuId(null);
                                   setReactivatingSociety(society);
                                 }}
-                                className="w-full px-4 py-2.5 text-xs font-semibold text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10 transition-colors flex items-center gap-2.5 cursor-pointer"
+                                className="w-full px-4 py-2.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10 transition-colors flex items-center gap-2.5 cursor-pointer"
                               >
-                                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                                <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                                 <span>Reactivate Society</span>
                               </button>
                             ) : (
@@ -545,15 +545,15 @@ export const AdminSocietiesPage: React.FC = () => {
                                   setOpenMenuId(null);
                                   setDeactivatingSociety(society);
                                 }}
-                                className="w-full px-4 py-2.5 text-xs font-semibold text-amber-400 hover:text-amber-300 hover:bg-amber-500/10 transition-colors flex items-center gap-2.5 cursor-pointer"
+                                className="w-full px-4 py-2.5 text-xs font-semibold text-amber-600 dark:text-amber-400 hover:bg-amber-500/10 transition-colors flex items-center gap-2.5 cursor-pointer"
                               >
-                                <Ban className="w-4 h-4 text-amber-400" />
+                                <Ban className="w-4 h-4 text-amber-600 dark:text-amber-400" />
                                 <span>Ban Society</span>
                               </button>
                             )}
 
                             {/* Divider */}
-                            <div className="my-1.5 border-t border-white/10" />
+                            <div className="my-1.5 border-t border-border-subtle" />
 
                             {/* 4. Delete */}
                             <button
@@ -562,9 +562,9 @@ export const AdminSocietiesPage: React.FC = () => {
                                 setOpenMenuId(null);
                                 setDeletingSociety(society);
                               }}
-                              className="w-full px-4 py-2.5 text-xs font-semibold text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors flex items-center gap-2.5 cursor-pointer"
+                              className="w-full px-4 py-2.5 text-xs font-semibold text-red-500 dark:text-red-400 hover:bg-red-500/10 transition-colors flex items-center gap-2.5 cursor-pointer"
                             >
-                              <Trash2 className="w-4 h-4 text-red-400" />
+                              <Trash2 className="w-4 h-4 text-red-500 dark:text-red-400" />
                               <span>Delete Society</span>
                             </button>
                           </div>
@@ -580,26 +580,26 @@ export const AdminSocietiesPage: React.FC = () => {
 
         {/* Pagination Controls */}
         {(meta?.totalPages || 1) > 1 && (
-          <div className="flex flex-col sm:flex-row justify-between items-center mt-6 pt-4 border-t border-white/10 gap-3 text-slate-400 text-sm">
-            <span className="text-xs text-gray-400 font-medium">
+          <div className="flex flex-col sm:flex-row justify-between items-center mt-6 pt-4 border-t border-border-subtle gap-3 text-text-muted text-sm">
+            <span className="text-xs text-text-muted font-medium">
               Showing {societies.length} of {meta?.total || societies.length} societies
             </span>
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="px-3 py-1.5 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed font-medium text-xs text-white transition-colors flex items-center gap-1 cursor-pointer"
+                className="px-3 py-1.5 rounded-lg border border-border-subtle bg-surface-elevated hover:bg-surface-hover disabled:opacity-30 disabled:cursor-not-allowed font-medium text-xs text-text-primary transition-colors flex items-center gap-1 cursor-pointer"
               >
                 <ChevronLeft className="w-4 h-4" />
                 <span>Prev</span>
               </button>
-              <span className="px-2 text-xs font-semibold text-slate-300">
+              <span className="px-2 text-xs font-semibold text-text-secondary">
                 Page {page} of {meta?.totalPages || 1}
               </span>
               <button
                 onClick={() => setPage((p) => Math.min(meta?.totalPages || 1, p + 1))}
                 disabled={page === (meta?.totalPages || 1)}
-                className="px-3 py-1.5 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed font-medium text-xs text-white transition-colors flex items-center gap-1 cursor-pointer"
+                className="px-3 py-1.5 rounded-lg border border-border-subtle bg-surface-elevated hover:bg-surface-hover disabled:opacity-30 disabled:cursor-not-allowed font-medium text-xs text-text-primary transition-colors flex items-center gap-1 cursor-pointer"
               >
                 <span>Next</span>
                 <ChevronRight className="w-4 h-4" />
@@ -615,13 +615,13 @@ export const AdminSocietiesPage: React.FC = () => {
           <div className="modal-overlay active">
             <div className="modal-box" style={{ maxWidth: '520px' }}>
               <div className="flex justify-between items-center mb-6">
-                <h3 className="modal-title flex items-center gap-2 m-0">
-                  <Building2 className="w-5 h-5 text-slate-300" />
+                <h3 className="modal-title flex items-center gap-2 m-0 text-text-primary font-bold">
+                  <Building2 className="w-5 h-5 text-brand-primary" />
                   <span>Edit Society & Reassign Advisor</span>
                 </h3>
                 <button
                   onClick={() => setEditingSociety(null)}
-                  className="p-1.5 text-gray-400 hover:text-white rounded-full transition-colors cursor-pointer"
+                  className="p-1.5 text-text-muted hover:text-text-primary rounded-full transition-colors cursor-pointer"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -636,7 +636,7 @@ export const AdminSocietiesPage: React.FC = () => {
                 />
 
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300">
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-text-secondary">
                     Category
                   </label>
                   <CustomDropdown
@@ -648,7 +648,7 @@ export const AdminSocietiesPage: React.FC = () => {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300">
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-text-secondary">
                     Assigned Faculty Advisor
                   </label>
                   <CustomDropdown
@@ -666,13 +666,14 @@ export const AdminSocietiesPage: React.FC = () => {
                 </div>
               </div>
 
-              <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-white/10">
+              <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-border-subtle">
                 <button
                   type="button"
                   className="btn-cancel"
                   style={{ width: 'auto' }}
                   onClick={() => setEditingSociety(null)}
                 >
+
                   Cancel
                 </button>
                 <Button

@@ -94,21 +94,21 @@ export const AdminDashboardPage: React.FC = () => {
           )}
           <button
             onClick={() => setIsAnnouncementDialogOpen(true)}
-            className="flex justify-center items-center gap-1.5 px-4 py-2.5 bg-white hover:bg-gray-100 text-gray-900 rounded-xl text-sm font-bold transition-colors shadow-lg"
+            className="flex justify-center items-center gap-1.5 px-4 py-2.5 bg-text-primary text-text-inverse hover:opacity-90 rounded-xl text-sm font-bold transition-all shadow-md cursor-pointer"
           >
             <Megaphone className="w-4 h-4" />
             <span>Make Post</span>
           </button>
           <Link
             to="/settings"
-            className="flex justify-center items-center gap-1.5 px-4 py-2.5 bg-white hover:bg-gray-100 text-gray-900 rounded-xl text-sm font-bold transition-colors"
+            className="flex justify-center items-center gap-1.5 px-4 py-2.5 bg-surface-hover hover:bg-surface text-text-primary border border-border-medium rounded-xl text-sm font-bold transition-all"
           >
             <Settings className="w-4 h-4" />
             <span>Settings</span>
           </Link>
           <button
             onClick={logout}
-            className="flex justify-center items-center gap-1.5 px-4 py-2.5 bg-red-500 hover:bg-red-600 border-none rounded-xl text-white text-sm font-bold transition-colors"
+            className="flex justify-center items-center gap-1.5 px-4 py-2.5 bg-red-600 hover:bg-red-700 border-none rounded-xl text-white text-sm font-bold transition-colors cursor-pointer"
           >
             <LogOut className="w-4 h-4" />
             <span>Log out</span>
@@ -126,23 +126,23 @@ export const AdminDashboardPage: React.FC = () => {
       )}
 
       {/* 2. Command Center */}
-      <div className="bg-white/[0.08] backdrop-blur-[20px] p-6 rounded-[18px] border border-white/20 shadow-[0_12px_40px_rgba(0,0,0,0.4)] space-y-5">
-        <h3 className="font-extrabold text-lg text-white flex items-center gap-2">Dashboard</h3>
+      <div className="bg-surface-glass backdrop-blur-[20px] p-6 rounded-[18px] border border-border-medium shadow-elevation-1 space-y-5">
+        <h3 className="font-extrabold text-lg text-text-primary flex items-center gap-2">Dashboard</h3>
 
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
           <Link
             to="/admin/societies"
-            className="flex flex-col items-center justify-center gap-2 p-4 bg-transparent hover:bg-white/10 text-white border border-white/20 rounded-xl font-bold transition-transform hover:-translate-y-1 shadow-[0_4px_12px_rgba(0,0,0,0.2)]"
+            className="flex flex-col items-center justify-center gap-2 p-4 bg-surface-hover hover:bg-surface text-text-primary border border-border-medium rounded-xl font-bold transition-transform hover:-translate-y-1 shadow-sm"
           >
             <SocietyIcon className="w-6 h-6" />
             <span>Societies</span>
           </Link>
           <Link
             to="/admin/events"
-            className="flex flex-col items-center justify-center gap-2 p-4 bg-transparent hover:bg-white/10 text-white border border-white/20 rounded-xl font-bold transition-transform hover:-translate-y-1 shadow-[0_4px_12px_rgba(0,0,0,0.2)] relative"
+            className="flex flex-col items-center justify-center gap-2 p-4 bg-surface-hover hover:bg-surface text-text-primary border border-border-medium rounded-xl font-bold transition-transform hover:-translate-y-1 shadow-sm relative"
           >
             {pendingEventsCount > 0 && (
-              <span className="absolute top-2 right-2 flex items-center justify-center w-5 h-5 bg-red-500 text-pure-white text-[10px] font-bold rounded-full shadow-sm animate-pulse">
+              <span className="absolute top-2 right-2 flex items-center justify-center w-5 h-5 bg-red-500 text-white text-[10px] font-bold rounded-full shadow-sm animate-pulse">
                 {pendingEventsCount > 9 ? '9+' : pendingEventsCount}
               </span>
             )}
@@ -151,17 +151,17 @@ export const AdminDashboardPage: React.FC = () => {
           </Link>
           <Link
             to="/admin/posts"
-            className="flex flex-col items-center justify-center gap-2 p-4 bg-transparent hover:bg-white/10 text-white border border-white/20 rounded-xl font-bold transition-transform hover:-translate-y-1 shadow-[0_4px_12px_rgba(0,0,0,0.2)]"
+            className="flex flex-col items-center justify-center gap-2 p-4 bg-surface-hover hover:bg-surface text-text-primary border border-border-medium rounded-xl font-bold transition-transform hover:-translate-y-1 shadow-sm"
           >
             <MessageSquare className="w-6 h-6" />
             <span>Posts</span>
           </Link>
           <Link
             to="/admin/yearly-plans"
-            className="flex flex-col items-center justify-center gap-2 p-4 bg-transparent hover:bg-white/10 text-white border border-white/20 rounded-xl font-bold transition-transform hover:-translate-y-1 shadow-[0_4px_12px_rgba(0,0,0,0.2)] relative"
+            className="flex flex-col items-center justify-center gap-2 p-4 bg-surface-hover hover:bg-surface text-text-primary border border-border-medium rounded-xl font-bold transition-transform hover:-translate-y-1 shadow-sm relative"
           >
             {pendingPlansCount > 0 && (
-              <span className="absolute top-2 right-2 flex items-center justify-center w-5 h-5 bg-red-500 text-pure-white text-[10px] font-bold rounded-full shadow-sm animate-pulse">
+              <span className="absolute top-2 right-2 flex items-center justify-center w-5 h-5 bg-red-500 text-white text-[10px] font-bold rounded-full shadow-sm animate-pulse">
                 {pendingPlansCount > 9 ? '9+' : pendingPlansCount}
               </span>
             )}
@@ -169,7 +169,7 @@ export const AdminDashboardPage: React.FC = () => {
             <span>Yearly Plans</span>
           </Link>
           <Link
-            to="/admin/advisors" className="col-span-2 md:col-span-1 flex flex-col items-center justify-center gap-2 p-4 bg-transparent hover:bg-white/10 text-white border border-white/20 rounded-xl font-bold transition-transform hover:-translate-y-1 shadow-[0_4px_12px_rgba(0,0,0,0.2)]"
+            to="/admin/advisors" className="col-span-2 md:col-span-1 flex flex-col items-center justify-center gap-2 p-4 bg-surface-hover hover:bg-surface text-text-primary border border-border-medium rounded-xl font-bold transition-transform hover:-translate-y-1 shadow-sm"
           >
             <Users className="w-6 h-6" />
             <span>Advisors</span>
