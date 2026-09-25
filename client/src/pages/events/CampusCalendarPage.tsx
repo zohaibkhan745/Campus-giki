@@ -203,19 +203,14 @@ export const CampusCalendarPage: React.FC = () => {
             />
             
             <div className="flex gap-1 shrink-0 items-center justify-center">
-              <button className="campus-calendar-glass-btn" style={{ width: "40px", height: "44px" }} onClick={prevMonth}>&lt;</button>
+              <button className="campus-calendar-glass-btn w-10 h-11" onClick={prevMonth}>&lt;</button>
               <button 
-                className="campus-calendar-glass-btn" 
+                className={`campus-calendar-glass-btn w-[135px] h-11 ${!isCurrentMonthView ? 'bg-text-primary text-text-inverse font-bold' : ''}`}
                 onClick={goToday} 
-                style={{ 
-                  width: "135px", 
-                  height: "44px", 
-                  ...( !isCurrentMonthView ? { background: "var(--text-primary)", color: "var(--bg-canvas)", fontWeight: "700" } : {})
-                }}
               >
                 Current Month
               </button>
-              <button className="campus-calendar-glass-btn" style={{ width: "40px", height: "44px" }} onClick={nextMonth}>&gt;</button>
+              <button className="campus-calendar-glass-btn w-10 h-11" onClick={nextMonth}>&gt;</button>
             </div>
           </div>
 

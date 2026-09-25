@@ -335,18 +335,18 @@ export const EditEventPage: React.FC = () => {
             onClick={() => !deleteMutation.isPending && setShowDeleteConfirm(false)}
           >
             <div
-              className="bg-[#18191f] border border-white/20 rounded-2xl p-6 max-w-sm w-full text-center shadow-2xl relative"
+              className="bg-surface-elevated border border-border-medium rounded-2xl p-6 max-w-sm w-full text-center shadow-2xl relative"
               onClick={(e) => e.stopPropagation()}
             >
-              <h3 className="text-lg font-bold text-white mb-2">Delete Event?</h3>
-              <p className="text-xs text-gray-400 mb-6 leading-relaxed">
-                Are you sure you want to permanently delete <strong className="text-white">&quot;{eventData.title}&quot;</strong>? This action cannot be undone.
+              <h3 className="text-lg font-bold text-text-primary mb-2">Delete Event?</h3>
+              <p className="text-xs text-text-secondary mb-6 leading-relaxed">
+                Are you sure you want to permanently delete <strong className="text-text-primary">&quot;{eventData.title}&quot;</strong>? This action cannot be undone.
               </p>
               <div className="flex gap-3">
                 <button
                   type="button"
                   disabled={deleteMutation.isPending}
-                  className="flex-1 py-2.5 px-4 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition-all disabled:opacity-50 cursor-pointer"
+                  className="flex-1 py-2.5 px-4 rounded-xl bg-surface-hover hover:bg-surface border border-border-medium text-text-primary text-xs font-bold transition-all disabled:opacity-50 cursor-pointer"
                   onClick={() => setShowDeleteConfirm(false)}
                 >
                   Cancel
@@ -477,19 +477,15 @@ export const EditEventPage: React.FC = () => {
               />
             </div>
             {errors.title?.message && (
-              <span className="error-text !block">{errors.title.message}</span>
+              <span className="error-text">{errors.title.message}</span>
             )}
           </div>
 
           <div className="field-group">
             <label className="field-label">Event Description *</label>
-            <div
-              className={cn("input-box", errors.description && "error")}
-              style={{ alignItems: "flex-start" }}
-            >
+            <div className={cn("input-box", errors.description && "error")}>
               <svg
-                className="input-icon"
-                style={{ marginTop: "2px" }}
+                className="input-icon mt-0.5"
                 viewBox="0 0 24 24"
               >
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -505,7 +501,7 @@ export const EditEventPage: React.FC = () => {
               ></textarea>
             </div>
             {errors.description?.message && (
-              <span className="error-text !block">
+              <span className="error-text">
                 {errors.description.message}
               </span>
             )}
@@ -562,7 +558,7 @@ export const EditEventPage: React.FC = () => {
                 )}
               />
               {errors.eventDate?.message && (
-                <span className="error-text !block">
+                <span className="error-text">
                   {errors.eventDate.message}
                 </span>
               )}
@@ -595,7 +591,7 @@ export const EditEventPage: React.FC = () => {
                 )}
               />
               {errors.startTime?.message && (
-                <span className="error-text !block">
+                <span className="error-text">
                   {errors.startTime.message}
                 </span>
               )}
@@ -615,7 +611,7 @@ export const EditEventPage: React.FC = () => {
                 )}
               />
               {errors.endTime?.message && (
-                <span className="error-text !block">
+                <span className="error-text">
                   {errors.endTime.message}
                 </span>
               )}
@@ -672,10 +668,7 @@ export const EditEventPage: React.FC = () => {
             />
 
             {isCustomVenue && (
-              <div
-                className={cn("input-box", errors.venue && "error")}
-                style={{ marginTop: "10px" }}
-              >
+              <div className={cn("input-box mt-2.5", errors.venue && "error")}>
                 <input
                   type="text"
                   placeholder="Enter custom venue"
@@ -685,7 +678,7 @@ export const EditEventPage: React.FC = () => {
               </div>
             )}
             {errors.venue?.message && (
-              <span className="error-text !block">{errors.venue.message}</span>
+              <span className="error-text">{errors.venue.message}</span>
             )}
           </div>
         </div>
@@ -720,7 +713,7 @@ export const EditEventPage: React.FC = () => {
                 )}
               />
               {errors.eventType?.message && (
-                <span className="error-text !block">
+                <span className="error-text">
                   {errors.eventType.message}
                 </span>
               )}
@@ -773,7 +766,7 @@ export const EditEventPage: React.FC = () => {
                 />
               </div>
               {errors.inChargeName?.message && (
-                <span className="error-text !block">
+                <span className="error-text">
                   {errors.inChargeName.message}
                 </span>
               )}
@@ -800,7 +793,7 @@ export const EditEventPage: React.FC = () => {
                 />
               </div>
               {errors.inChargeRegNum?.message && (
-                <span className="error-text !block">
+                <span className="error-text">
                   {errors.inChargeRegNum.message}
                 </span>
               )}
@@ -827,7 +820,7 @@ export const EditEventPage: React.FC = () => {
                 />
               </div>
               {errors.inChargeContact?.message && (
-                <span className="error-text !block">
+                <span className="error-text">
                   {errors.inChargeContact.message}
                 </span>
               )}
@@ -877,7 +870,7 @@ export const EditEventPage: React.FC = () => {
               />
             </div>
             {errors.registrationLink?.message && (
-              <span className="error-text !block">
+              <span className="error-text">
                 {errors.registrationLink.message}
               </span>
             )}

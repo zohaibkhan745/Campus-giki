@@ -232,7 +232,7 @@ export const CreateEventPage: React.FC = () => {
       )}
 
       {plannedEvents && plannedEvents.length > 0 && (
-        <div className="glass-form-card !py-4">
+        <div className="bg-surface-glass border border-border-medium rounded-cards p-6 backdrop-blur-[20px] shadow-elevation-1">
           <div className="flex items-center gap-2 mb-2">
             <h3 className="text-text-primary font-bold text-sm">
               Import Event Details
@@ -291,19 +291,15 @@ export const CreateEventPage: React.FC = () => {
               />
             </div>
             {errors.title?.message && (
-              <span className="error-text !block">{errors.title.message}</span>
+              <span className="error-text">{errors.title.message}</span>
             )}
           </div>
 
           <div className="field-group">
             <label className="field-label">Event Description *</label>
-            <div
-              className={cn("input-box", errors.description && "error")}
-              style={{ alignItems: "flex-start" }}
-            >
+            <div className={cn("input-box", errors.description && "error")}>
               <svg
-                className="input-icon"
-                style={{ marginTop: "2px" }}
+                className="input-icon mt-0.5"
                 viewBox="0 0 24 24"
               >
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -319,7 +315,7 @@ export const CreateEventPage: React.FC = () => {
               ></textarea>
             </div>
             {errors.description?.message && (
-              <span className="error-text !block">
+              <span className="error-text">
                 {errors.description.message}
               </span>
             )}
@@ -376,7 +372,7 @@ export const CreateEventPage: React.FC = () => {
                 )}
               />
               {errors.eventDate?.message && (
-                <span className="error-text !block">
+                <span className="error-text">
                   {errors.eventDate.message}
                 </span>
               )}
@@ -409,7 +405,7 @@ export const CreateEventPage: React.FC = () => {
                 )}
               />
               {errors.startTime?.message && (
-                <span className="error-text !block">
+                <span className="error-text">
                   {errors.startTime.message}
                 </span>
               )}
@@ -429,7 +425,7 @@ export const CreateEventPage: React.FC = () => {
                 )}
               />
               {errors.endTime?.message && (
-                <span className="error-text !block">
+                <span className="error-text">
                   {errors.endTime.message}
                 </span>
               )}
@@ -486,10 +482,7 @@ export const CreateEventPage: React.FC = () => {
             />
 
             {isCustomVenue && (
-              <div
-                className={cn("input-box", errors.venue && "error")}
-                style={{ marginTop: "10px" }}
-              >
+              <div className={cn("input-box mt-2.5", errors.venue && "error")}>
                 <input
                   type="text"
                   placeholder="Enter custom venue"
@@ -499,7 +492,7 @@ export const CreateEventPage: React.FC = () => {
               </div>
             )}
             {errors.venue?.message && (
-              <span className="error-text !block">{errors.venue.message}</span>
+              <span className="error-text">{errors.venue.message}</span>
             )}
           </div>
         </div>
@@ -534,7 +527,7 @@ export const CreateEventPage: React.FC = () => {
                 )}
               />
               {errors.eventType?.message && (
-                <span className="error-text !block">
+                <span className="error-text">
                   {errors.eventType.message}
                 </span>
               )}
@@ -587,7 +580,7 @@ export const CreateEventPage: React.FC = () => {
                 />
               </div>
               {errors.inChargeName?.message && (
-                <span className="error-text !block">
+                <span className="error-text">
                   {errors.inChargeName.message}
                 </span>
               )}
@@ -614,7 +607,7 @@ export const CreateEventPage: React.FC = () => {
                 />
               </div>
               {errors.inChargeRegNum?.message && (
-                <span className="error-text !block">
+                <span className="error-text">
                   {errors.inChargeRegNum.message}
                 </span>
               )}
@@ -641,7 +634,7 @@ export const CreateEventPage: React.FC = () => {
                 />
               </div>
               {errors.inChargeContact?.message && (
-                <span className="error-text !block">
+                <span className="error-text">
                   {errors.inChargeContact.message}
                 </span>
               )}
@@ -694,7 +687,7 @@ export const CreateEventPage: React.FC = () => {
               />
             </div>
             {errors.registrationLink?.message && (
-              <span className="error-text !block">
+              <span className="error-text">
                 {errors.registrationLink.message}
               </span>
             )}

@@ -243,7 +243,7 @@ export const YearlyCalendarPage: React.FC = () => {
       )}
 
       {existingPlan?.advisorComments && (
-        <div className="glass-form-card !p-5">
+        <div className="bg-surface-glass border border-border-medium rounded-cards p-5 backdrop-blur-[20px] shadow-elevation-1">
           <FeedbackHistory rawComments={existingPlan.advisorComments} />
           {isChangesRequested && (
             <div className="p-3 bg-red-500/10 border border-red-500/30 text-red-400 rounded-inputs text-xs font-semibold shadow-sm flex items-center gap-2 mt-4">
@@ -292,13 +292,13 @@ export const YearlyCalendarPage: React.FC = () => {
           <div className="section-divider"></div>
 
           {errors.events?.root?.message && (
-            <p className="error-text !block mb-4">{errors.events.root.message}</p>
+            <p className="error-text mb-4">{errors.events.root.message}</p>
           )}
 
           <div className="flex flex-col gap-6">
             {fields.map((field, index) => (
               <div key={field.id} className="relative space-y-4">
-                {index > 0 && <hr className="border-t border-white/10 my-8" />}
+                {index > 0 && <hr className="border-t border-border-medium my-8" />}
                 
                 <div className={watch(`events.${index}.duration`) === 'One Day Event' ? 'field-grid-3' : 'field-grid-2'}>
                   <div className="field-group">
@@ -306,7 +306,7 @@ export const YearlyCalendarPage: React.FC = () => {
                     <div className={cn("input-box", errors.events?.[index]?.eventName && "error")}>
                       <input type="text" placeholder="e.g. Annual Hackathon" disabled={isReadOnly || isSaving} {...register(`events.${index}.eventName`)} />
                     </div>
-                    {errors.events?.[index]?.eventName?.message && <span className="error-text !block">{errors.events[index]?.eventName?.message}</span>}
+                    {errors.events?.[index]?.eventName?.message && <span className="error-text">{errors.events[index]?.eventName?.message}</span>}
                   </div>
 
                   <div className="field-group">
@@ -375,7 +375,7 @@ export const YearlyCalendarPage: React.FC = () => {
                             />
                           )}
                         />
-                        {errors.events?.[index]?.startDate?.message && <span className="error-text !block">{errors.events[index]?.startDate?.message}</span>}
+                        {errors.events?.[index]?.startDate?.message && <span className="error-text">{errors.events[index]?.startDate?.message}</span>}
                       </div>
 
                       {watch(`events.${index}.duration`) !== 'One Day Event' && (
@@ -395,7 +395,7 @@ export const YearlyCalendarPage: React.FC = () => {
                               />
                             )}
                           />
-                          {errors.events?.[index]?.endDate?.message && <span className="error-text !block">{errors.events[index]?.endDate?.message}</span>}
+                          {errors.events?.[index]?.endDate?.message && <span className="error-text">{errors.events[index]?.endDate?.message}</span>}
                         </div>
                       )}
                     </div>
@@ -464,7 +464,7 @@ export const YearlyCalendarPage: React.FC = () => {
                         />
                       )}
                     />
-                    {errors.events?.[index]?.venue?.message && <span className="error-text !block">{errors.events[index]?.venue?.message}</span>}
+                    {errors.events?.[index]?.venue?.message && <span className="error-text">{errors.events[index]?.venue?.message}</span>}
                   </div>
                 </div>
 
@@ -479,13 +479,13 @@ export const YearlyCalendarPage: React.FC = () => {
 
                 <div className="field-group">
                   <label className="field-label">DESCRIPTION</label>
-                  <div className={cn("input-box", errors.events?.[index]?.description && "error")} style={{alignItems:"flex-start", height: "auto"}}>
+                  <div className={cn("input-box", errors.events?.[index]?.description && "error")}>
                     <textarea 
-                      placeholder="Enter description..." 
-                      disabled={isReadOnly || isSaving} 
-                      {...register(`events.${index}.description`)} 
-                      rows={2}
-                      style={{height: "60px"}}
+                       placeholder="Enter description..." 
+                       disabled={isReadOnly || isSaving} 
+                       {...register(`events.${index}.description`)} 
+                       rows={2}
+                       className="h-[60px]"
                     ></textarea>
                   </div>
                 </div>
@@ -522,7 +522,7 @@ export const YearlyCalendarPage: React.FC = () => {
           <div className="flex flex-col sm:flex-row gap-4 pt-4 border-t border-border-subtle">
             <button
               type="button"
-              className="flex-1 btn-submit-review !bg-surface-glass !border !border-border-medium hover:!bg-surface-hover !text-text-primary !shadow-none cursor-pointer"
+              className="flex-1 inline-flex items-center justify-center font-semibold rounded-inputs px-5 py-3.5 bg-surface-glass border border-border-medium hover:bg-surface-hover text-text-primary transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               onClick={handleSubmit(handleSaveDraft)}
               disabled={isSaving}
             >
@@ -568,7 +568,7 @@ export const YearlyCalendarPage: React.FC = () => {
             <div className="flex flex-col sm:flex-row gap-4">
               <button
                 type="button"
-                className={`flex-1 btn-submit-review text-white !shadow-none ${(existingPlan.status !== 'APPROVED' || isEditRequestPending) ? 'opacity-50 cursor-not-allowed !bg-orange-500/50 !border-orange-500/50' : 'hover:!bg-orange-600 !bg-orange-500 !border-orange-500 cursor-pointer'}`}
+                className={`flex-1 inline-flex items-center justify-center font-semibold rounded-inputs px-5 py-3.5 text-white transition-all duration-200 ${(existingPlan.status !== 'APPROVED' || isEditRequestPending) ? 'opacity-50 cursor-not-allowed bg-warning/50 border border-warning/50' : 'hover:bg-warning-hover bg-warning border border-warning cursor-pointer'}`}
                 disabled={existingPlan.status !== 'APPROVED' || isEditRequestPending || isSaving}
                 onClick={handleRequestEdit}
               >

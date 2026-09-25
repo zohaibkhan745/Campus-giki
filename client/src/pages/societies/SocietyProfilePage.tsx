@@ -158,7 +158,7 @@ export const SocietyProfilePage: React.FC = () => {
               </span>
             )}
             {(!society.type || society.type === 'SOCIETY') && (
-              <span className="inline-flex items-center px-3 py-1 bg-[#1e3c72]/80 text-white border border-blue-400 rounded-full text-xs font-bold shadow-sm backdrop-blur-sm">
+              <span className="inline-flex items-center px-3 py-1 bg-brand-primary/80 text-white border border-brand-primary/50 rounded-full text-xs font-bold shadow-sm backdrop-blur-sm">
                 Society
               </span>
             )}
