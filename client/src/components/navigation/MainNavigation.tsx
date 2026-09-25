@@ -31,25 +31,25 @@ export const MainNavigation: React.FC = () => {
     switch (role) {
       case 'DSA_ADMIN':
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-purple-100 text-purple-700 border border-purple-300 rounded-full text-[10px] font-extrabold uppercase tracking-wider">
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20 rounded-full text-[10px] font-extrabold uppercase tracking-wider">
             <Shield className="w-3 h-3" /> Admin
           </span>
         );
       case 'ADVISOR':
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-amber-100 text-amber-700 border border-amber-300 rounded-full text-[10px] font-extrabold uppercase tracking-wider">
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 rounded-full text-[10px] font-extrabold uppercase tracking-wider">
             <GraduationCap className="w-3 h-3" /> Advisor
           </span>
         );
       case 'SOCIETY':
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-100 text-blue-700 border border-blue-300 rounded-full text-[10px] font-extrabold uppercase tracking-wider">
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 rounded-full text-[10px] font-extrabold uppercase tracking-wider">
             <Building2 className="w-3 h-3" /> Society
           </span>
         );
       default:
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-100 text-emerald-700 border border-emerald-300 rounded-full text-[10px] font-extrabold uppercase tracking-wider">
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 rounded-full text-[10px] font-extrabold uppercase tracking-wider">
             Student
           </span>
         );
@@ -58,8 +58,8 @@ export const MainNavigation: React.FC = () => {
 
   return (
     <>
-      {/* Desktop Borderless Instagram-Inspired Left Sidebar Navigation */}
-      <aside className="hidden md:flex flex-col w-20 lg:w-60 shrink-0 sticky top-0 h-[100dvh] py-6 px-3 lg:px-5 font-figtree select-none z-40 bg-lumen-cream transition-all">
+      {/* Desktop Borderless Left Sidebar Navigation */}
+      <aside className="hidden md:flex flex-col w-20 lg:w-60 shrink-0 sticky top-0 h-[100dvh] py-6 px-3 lg:px-5 font-figtree select-none z-40 bg-surface-glass backdrop-blur-md border-r border-border-subtle transition-all">
         <div className="flex flex-col h-full justify-between overflow-y-auto">
           
           {/* Top Section: Brand & Vertical Icon Nav Stack */}
@@ -67,22 +67,22 @@ export const MainNavigation: React.FC = () => {
             {/* GIKI Brand Logo */}
             <Link
               to="/"
-              className="flex items-center gap-3 px-2 py-1 rounded-full hover:bg-lumen-stone transition-all group"
+              className="flex items-center gap-3 px-2 py-1 rounded-full hover:bg-surface-hover transition-all group"
               title="GIKI Campus Home"
             >
               <img
                 src="/giki-logo.png"
                 alt="GIKI Logo"
-                className="w-10 h-10 object-cover scale-[1.6] rounded-full group-hover:scale-[1.7] transition-transform shrink-0 mix-blend-multiply"
+                className="w-10 h-10 object-cover scale-[1.6] rounded-full group-hover:scale-[1.7] transition-transform shrink-0"
               />
               <div className="text-left hidden lg:block">
-                <h1 className="font-eb-garamond font-bold text-xl text-vast-ink leading-none">
+                <h1 className="font-eb-garamond font-bold text-xl text-text-primary leading-none">
                   GIKI Campus
                 </h1>
               </div>
             </Link>
 
-            {/* Icon Navigation Stack (Borderless, Flat Pill Active States) */}
+            {/* Icon Navigation Stack */}
             <nav className="space-y-2">
               {navLinks.map((link) => {
                 const isActive =
@@ -99,15 +99,15 @@ export const MainNavigation: React.FC = () => {
                     title={link.label}
                     className={`flex items-center justify-center lg:justify-start gap-4 px-3.5 py-3 rounded-full transition-all relative ${
                       isActive
-                        ? 'bg-white text-black shadow-sm'
-                        : 'text-vast-ink hover:bg-lumen-stone'
+                        ? 'bg-surface-elevated text-brand-primary font-bold shadow-sm border border-border-subtle'
+                        : 'text-text-secondary hover:text-text-primary hover:bg-surface-hover'
                     }`}
                   >
                     <Icon className="w-6 h-6 shrink-0" strokeWidth={isActive ? 2.5 : 2} />
                     <span className="hidden lg:inline text-sm font-extrabold">{link.label}</span>
 
                     {link.path === '/dashboard' && totalPending > 0 && (
-                      <span className="flex items-center justify-center w-5 h-5 bg-ember-glow text-pure-white text-[10px] font-extrabold rounded-full shrink-0 shadow-sm animate-pulse border border-pure-white absolute -top-1 -right-1 lg:static lg:ml-auto">
+                      <span className="flex items-center justify-center w-5 h-5 bg-brand-primary text-text-inverse text-[10px] font-extrabold rounded-full shrink-0 shadow-sm animate-pulse border border-border-subtle absolute -top-1 -right-1 lg:static lg:ml-auto">
                         {totalPending > 9 ? '9+' : totalPending}
                       </span>
                     )}
@@ -123,14 +123,14 @@ export const MainNavigation: React.FC = () => {
       </aside>
 
       {/* Mobile Top Navigation Header */}
-      <div className="md:hidden sticky top-0 z-40 bg-lumen-cream border-b-2 border-vast-ink px-4 py-3 font-figtree shadow-sm flex items-center justify-between">
+      <div className="md:hidden sticky top-0 z-40 bg-surface-glass backdrop-blur-md border-b border-border-subtle px-4 py-3 font-figtree shadow-sm flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2">
           <img
             src="/giki-logo.png"
             alt="GIKI Logo"
-            className="w-8 h-8 object-cover scale-[1.6] rounded-full shrink-0 mix-blend-multiply"
+            className="w-8 h-8 object-cover scale-[1.6] rounded-full shrink-0"
           />
-          <span className="font-eb-garamond font-bold text-lg text-vast-ink">
+          <span className="font-eb-garamond font-bold text-lg text-text-primary">
             GIKI Campus
           </span>
         </Link>
@@ -140,7 +140,7 @@ export const MainNavigation: React.FC = () => {
             {getRoleBadge(user.role)}
             <button
               onClick={logout}
-              className="p-1.5 text-vast-ink hover:bg-lumen-stone rounded-inputs border border-vast-ink/20"
+              className="p-1.5 text-text-secondary hover:text-text-primary hover:bg-surface-hover rounded-xl border border-border-subtle cursor-pointer"
               title="Log Out"
             >
               <LogOut className="w-4 h-4 text-red-500" />
@@ -151,7 +151,7 @@ export const MainNavigation: React.FC = () => {
 
       {/* Mobile Bottom Navigation Bar (Instagram Style) */}
       <div className="md:hidden fixed bottom-4 left-4 right-4 z-50 font-figtree">
-        <nav className="flex items-center justify-between bg-pure-white shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-vast-ink/10 rounded-[32px] px-4 py-2">
+        <nav className="flex items-center justify-between bg-surface-glass backdrop-blur-lg shadow-elevation-3 border border-border-subtle rounded-full px-4 py-2">
           {navLinks.map((link) => {
             const isActive =
               link.path === '/'
@@ -169,20 +169,20 @@ export const MainNavigation: React.FC = () => {
                 <div
                   className={`relative flex items-center justify-center w-14 h-8 rounded-full transition-colors ${
                     isActive
-                      ? 'bg-vast-ink text-black'
-                      : 'text-vast-ink/60 hover:text-vast-ink'
+                      ? 'bg-brand-primary/10 text-brand-primary'
+                      : 'text-text-muted hover:text-text-primary'
                   }`}
                 >
                   <Icon className="w-5 h-5" strokeWidth={isActive ? 2.5 : 2} />
                   {link.path === '/dashboard' && totalPending > 0 && (
-                    <span className="absolute -top-1 -right-1 flex items-center justify-center w-4 h-4 bg-ember-glow text-pure-white text-[9px] font-bold rounded-full shadow-sm">
+                    <span className="absolute -top-1 -right-1 flex items-center justify-center w-4 h-4 bg-brand-primary text-text-inverse text-[9px] font-bold rounded-full shadow-sm">
                       {totalPending > 9 ? '9+' : totalPending}
                     </span>
                   )}
                 </div>
                 <span
                   className={`text-[11px] font-bold transition-colors ${
-                    isActive ? 'text-vast-ink font-extrabold' : 'text-vast-ink/60'
+                    isActive ? 'text-brand-primary font-extrabold' : 'text-text-muted'
                   }`}
                 >
                   {link.label}

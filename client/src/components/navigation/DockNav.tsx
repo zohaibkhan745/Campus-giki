@@ -8,6 +8,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { feedService } from '@/services/feed.service';
 import { eventService } from '@/services/event.service';
 import { societyService } from '@/services/society.service';
+import { ThemeToggle } from '@/components/ui/ThemeToggle';
 
 /**
  * Dock Navigation Specification
@@ -139,12 +140,11 @@ export const DockNav: React.FC = () => {
 
   if (isHidden) return null;
 
-
   return (
     <nav
       id="dock"
       aria-label="Bottom Navigation Dock"
-      className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 px-3.5 py-2.5 rounded-full bg-[#121318]/90 backdrop-blur-xl border border-white/15 shadow-[0_12px_36px_rgba(0,0,0,0.6)] transition-all duration-300"
+      className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 px-3.5 py-2.5 rounded-full bg-surface-glass backdrop-blur-xl border border-border-medium shadow-[0_12px_36px_rgba(0,0,0,0.18)] dark:shadow-[0_12px_36px_rgba(0,0,0,0.6)] transition-all duration-300"
     >
       {visibleNavLinks.map((item) => {
         const active = isNavItemActive(item, location.pathname);
@@ -158,12 +158,12 @@ export const DockNav: React.FC = () => {
             onTouchStart={() => handlePrefetch(item.path)}
             className={`group relative flex items-center justify-center w-11 h-11 sm:w-12 sm:h-12 rounded-full transition-all duration-200 ease-out ${
               active
-                ? 'bg-white text-gray-950 shadow-[0_4px_16px_rgba(255,255,255,0.25)] scale-105'
-                : 'text-gray-300 hover:text-white hover:bg-white/15 hover:scale-110 hover:-translate-y-0.5 active:scale-95'
+                ? 'bg-text-primary text-text-inverse shadow-[0_4px_16px_rgba(0,0,0,0.15)] dark:shadow-[0_4px_16px_rgba(255,255,255,0.25)] scale-105'
+                : 'text-text-secondary hover:text-text-primary hover:bg-surface-hover hover:scale-110 hover:-translate-y-0.5 active:scale-95'
             }`}
           >
             {/* Tooltip */}
-            <span className="absolute -top-10 left-1/2 -translate-x-1/2 px-2.5 py-1 text-[11px] font-semibold tracking-wide text-white bg-gray-950/90 border border-white/15 rounded-lg shadow-xl backdrop-blur-md opacity-0 pointer-events-none transition-all duration-150 group-hover:opacity-100 group-hover:-translate-y-1 whitespace-nowrap">
+            <span className="absolute -top-10 left-1/2 -translate-x-1/2 px-2.5 py-1 text-[11px] font-semibold tracking-wide text-text-primary bg-surface-elevated border border-border-medium rounded-lg shadow-xl backdrop-blur-md opacity-0 pointer-events-none transition-all duration-150 group-hover:opacity-100 group-hover:-translate-y-1 whitespace-nowrap">
               {item.label}
             </span>
 
@@ -174,6 +174,12 @@ export const DockNav: React.FC = () => {
           </Link>
         );
       })}
+
+      {/* Visual Separator */}
+      <div className="w-px h-6 bg-border-medium mx-0.5 shrink-0" aria-hidden="true" />
+
+      {/* Ergonomic One-Click Theme Toggle */}
+      <ThemeToggle />
     </nav>
   );
 };
