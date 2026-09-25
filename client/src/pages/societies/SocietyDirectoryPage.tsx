@@ -1,7 +1,7 @@
-import { getSocietyLogo, getSocietyBanner } from '@/lib/utils';
+import { getSocietyLogo } from '@/lib/utils';
 import React, { useState } from 'react';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import {
   Building2,
   Search,
@@ -9,7 +9,6 @@ import {
 } from 'lucide-react';
 import { societyService } from '@/services/society.service';
 import { SocietyCardSkeleton } from '@/components/societies/SocietyCardSkeleton';
-import { Alert } from '@/components/ui/Alert';
 import { CustomDropdown } from '@/components/ui/CustomDropdown';
 import { useDebounce } from '@/hooks/useDebounce';
 import { ErrorState } from '@/components/ui/ErrorState';
@@ -76,28 +75,27 @@ export const SocietyDirectoryPage: React.FC = () => {
   };
 
   return (
-    <div className="w-full max-w-full px-8 sm:px-10 mx-auto space-y-8 text-left py-8">
+    <div className="w-full max-w-full px-6 sm:px-10 mx-auto space-y-8 text-left py-6">
       {/* Header Banner */}
-      <div className="space-y-4">
-        <h1 className="font-extrabold text-5xl sm:text-6xl text-white tracking-tight leading-tight">
+      <div className="space-y-3">
+        <h1 className="font-extrabold text-4xl sm:text-5xl text-text-primary tracking-tight leading-tight">
           Explore Campus GIKI Societies
         </h1>
-        <p className="text-lg text-gray-400 max-w-2xl">
+        <p className="text-base sm:text-lg text-text-secondary max-w-2xl leading-relaxed">
           Discover student societies, competition project teams, and special interest clubs active at GIKI.
         </p>
       </div>
 
       {/* Controls Row */}
       <div className="flex flex-col md:flex-row items-center gap-4 w-full">
-        
         {/* Primary Type Filter Tabs */}
-        <div className="flex flex-wrap items-center gap-2 p-1.5 bg-white/[0.08] backdrop-blur-[20px] border border-white/20 rounded-[18px] w-full md:w-auto shadow-[0_12px_40px_rgba(0,0,0,0.4)]">
+        <div className="flex flex-wrap items-center gap-1.5 p-1.5 bg-surface-glass backdrop-blur-md border border-border-subtle rounded-2xl w-full md:w-auto shadow-elevation-1">
           <button
             onClick={() => handleTypeChange('')}
-            className={`px-4 py-2 text-xs sm:text-sm font-extrabold rounded-xl transition-all ${
+            className={`px-4 py-2 text-xs sm:text-sm font-bold rounded-xl transition-all cursor-pointer ${
               selectedType === ''
-                ? 'bg-white text-gray-900 shadow-sm'
-                : 'text-gray-300 hover:bg-white/10'
+                ? 'bg-surface-elevated text-text-primary shadow-sm border border-border-subtle'
+                : 'text-text-secondary hover:text-text-primary hover:bg-surface-hover'
             }`}
           >
             All Societies
@@ -105,10 +103,10 @@ export const SocietyDirectoryPage: React.FC = () => {
 
           <button
             onClick={() => handleTypeChange('SOCIETY')}
-            className={`px-4 py-2 text-xs sm:text-sm font-extrabold rounded-xl transition-all ${
+            className={`px-4 py-2 text-xs sm:text-sm font-bold rounded-xl transition-all cursor-pointer ${
               selectedType === 'SOCIETY'
-                ? 'bg-white text-gray-900 shadow-sm'
-                : 'text-gray-300 hover:bg-white/10'
+                ? 'bg-surface-elevated text-text-primary shadow-sm border border-border-subtle'
+                : 'text-text-secondary hover:text-text-primary hover:bg-surface-hover'
             }`}
           >
             Societies
@@ -116,10 +114,10 @@ export const SocietyDirectoryPage: React.FC = () => {
 
           <button
             onClick={() => handleTypeChange('CLUB')}
-            className={`px-4 py-2 text-xs sm:text-sm font-extrabold rounded-xl transition-all ${
+            className={`px-4 py-2 text-xs sm:text-sm font-bold rounded-xl transition-all cursor-pointer ${
               selectedType === 'CLUB'
-                ? 'bg-white text-gray-900 shadow-sm'
-                : 'text-gray-300 hover:bg-white/10'
+                ? 'bg-surface-elevated text-text-primary shadow-sm border border-border-subtle'
+                : 'text-text-secondary hover:text-text-primary hover:bg-surface-hover'
             }`}
           >
             Clubs
@@ -127,10 +125,10 @@ export const SocietyDirectoryPage: React.FC = () => {
 
           <button
             onClick={() => handleTypeChange('TEAM')}
-            className={`px-4 py-2 text-xs sm:text-sm font-extrabold rounded-xl transition-all ${
+            className={`px-4 py-2 text-xs sm:text-sm font-bold rounded-xl transition-all cursor-pointer ${
               selectedType === 'TEAM'
-                ? 'bg-white text-gray-900 shadow-sm'
-                : 'text-gray-300 hover:bg-white/10'
+                ? 'bg-surface-elevated text-text-primary shadow-sm border border-border-subtle'
+                : 'text-text-secondary hover:text-text-primary hover:bg-surface-hover'
             }`}
           >
             Teams
@@ -139,37 +137,38 @@ export const SocietyDirectoryPage: React.FC = () => {
 
         {/* Search Input */}
         <div className="relative w-full md:flex-1 flex items-center">
-          <div className="absolute left-4 text-gray-400 pointer-events-none flex items-center justify-center z-10">
-            <Search className="w-5 h-5 text-white" />
+          <div className="absolute left-4 text-text-muted pointer-events-none flex items-center justify-center z-10">
+            <Search className="w-5 h-5 text-text-muted" />
           </div>
           <input
             type="text"
             placeholder="Search by organization name..."
             value={searchQuery}
             onChange={handleSearchChange}
-            className="w-full bg-white/[0.08] backdrop-blur-[20px] text-white placeholder:text-gray-300 text-sm rounded-[18px] border border-white/20 px-4 py-[14px] pl-12 transition-all outline-none focus:ring-2 focus:ring-white/40 shadow-[0_12px_40px_rgba(0,0,0,0.4)]"
+            className="w-full bg-surface-glass backdrop-blur-md text-text-primary placeholder:text-text-muted text-sm rounded-2xl border border-border-subtle px-4 py-3 pl-12 transition-all outline-none focus:ring-2 focus:ring-brand-primary/30 focus:border-border-strong shadow-elevation-1"
           />
         </div>
 
         {/* Category Dropdown Filter */}
         <div className="w-full md:w-auto shrink-0 flex items-center">
-          <CustomDropdown value={selectedCategory} 
-            onChange={(e: any) => handleCategoryChange(e.target.value)} 
-            placeholder="All Domains" 
+          <CustomDropdown
+            value={selectedCategory}
+            onChange={(e: any) => handleCategoryChange(e.target.value)}
+            placeholder="All Domains"
             options={[
               { value: '', label: 'All Domains' },
-              ...categories.map(c => ({ value: c.slug, label: c.name }))
+              ...categories.map((c) => ({ value: c.slug, label: c.name })),
             ]}
-            className="w-full md:w-[180px]"
+            className="w-full md:w-[190px]"
           />
         </div>
       </div>
-      
+
       {(selectedCategory || selectedType || searchQuery) && (
         <div className="flex justify-end">
           <button
             onClick={handleClearFilters}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-extrabold text-gray-300 bg-transparent rounded-lg border border-white/20 hover:bg-red-500/20 hover:text-red-400 hover:border-red-500/50 transition-colors focus:outline-none shadow-sm"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-text-secondary bg-surface-glass rounded-xl border border-border-subtle hover:bg-red-500/10 hover:text-red-500 hover:border-red-500/30 transition-colors focus:outline-none shadow-sm cursor-pointer"
           >
             <FilterX className="w-4 h-4" />
             Clear Filters
@@ -179,7 +178,7 @@ export const SocietyDirectoryPage: React.FC = () => {
 
       {/* Directory Content Views */}
       {isLoading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8">
           {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
             <SocietyCardSkeleton key={i} />
           ))}
@@ -209,72 +208,73 @@ export const SocietyDirectoryPage: React.FC = () => {
           }
         />
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8">
           {societies.map((society) => (
             <div
               key={society.id}
               onClick={() => navigate(`/societies/${society.id}`)}
               className="relative group cursor-pointer h-full"
             >
-              {/* Ambient Dark Greenish Glow Layer */}
-              <div className="absolute -inset-0.5 bg-white rounded-3xl blur-lg opacity-0 group-hover:opacity-90 transition-all duration-500 group-hover:duration-200"></div>
-              
-              {/* Main Card Container */}
-              <div className="relative h-full flex flex-col bg-zinc-900 rounded-3xl shadow-2xl shadow-black/80 overflow-hidden transition-all duration-500 ease-out hover:-translate-y-1 hover:scale-[1.015] border border-zinc-800/80 group-hover:border-emerald-950/40">
-                
-                <div className="relative overflow-hidden group/img image-container">
-                  {true ? (
-                    <img 
-                      src={getSocietyLogo(society.logoUrl)} 
-                      alt={society.name} 
-                      className="w-full aspect-square object-cover transition-transform duration-700 ease-out group-hover/img:scale-[1.04]"
-                      onError={(e) => { e.currentTarget.src = '/default-society.jpg'; }}
-                    />
-                  ) : (
-                    <div className="w-full aspect-square flex items-center justify-center transition-transform duration-700 ease-out group-hover/img:scale-[1.04] text-gray-600 bg-zinc-800">
-                      <Building2 className="w-16 h-16" />
-                    </div>
-                  )}
-                  
-                  <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/70 to-transparent pointer-events-none"></div>
-                  
-                  <div className="absolute top-6 left-6 pr-20 max-w-full">
-                    <h2 className="text-3xl font-extrabold text-white leading-tight line-clamp-3 drop-shadow-[0_4px_8px_rgba(0,0,0,1)]">{society.name}</h2>
-                  </div>
+              {/* Subtle ambient hover glow */}
+              <div className="absolute -inset-0.5 bg-brand-primary/15 rounded-3xl blur-lg opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none"></div>
 
-                  
+              {/* Main Card Container */}
+              <div className="relative h-full flex flex-col bg-surface-card rounded-3xl shadow-card group-hover:shadow-card-hover overflow-hidden transition-all duration-300 ease-out hover:-translate-y-1 border border-border-subtle group-hover:border-border-medium">
+                <div className="relative overflow-hidden group/img image-container">
+                  <img
+                    src={getSocietyLogo(society.logoUrl)}
+                    alt={society.name}
+                    className="w-full aspect-square object-cover transition-transform duration-500 ease-out group-hover/img:scale-[1.03]"
+                    onError={(e) => {
+                      e.currentTarget.src = '/default-society.jpg';
+                    }}
+                  />
+
+                  <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/80 via-black/40 to-transparent pointer-events-none" />
+
+                  <div className="absolute top-5 left-5 pr-14 max-w-full">
+                    <h2 className="text-2xl sm:text-3xl font-extrabold text-white leading-tight line-clamp-3 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
+                      {society.name}
+                    </h2>
+                  </div>
                 </div>
-                
-                <div className="p-4 flex items-center justify-between bg-zinc-900 flex-1 gap-3">
+
+                <div className="p-4 flex items-center justify-between bg-surface-card flex-1 gap-3 border-t border-border-subtle">
                   <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-8 h-8 rounded-full overflow-hidden transition-transform duration-500 hover:scale-110 ring-2 ring-zinc-700 flex-shrink-0 bg-zinc-800 flex items-center justify-center">
-                      {true ? (
-                        <img 
-                          src={getSocietyLogo(society.logoUrl)} 
-                          alt="Avatar" 
-                          className="w-full h-full object-cover"
-                          onError={(e) => { e.currentTarget.src = '/default-society.jpg'; }}
-                        />
-                      ) : (
-                        <Building2 className="w-4 h-4 text-gray-500" />
-                      )}
+                    <div className="w-8 h-8 rounded-full overflow-hidden transition-transform duration-300 hover:scale-105 ring-2 ring-border-subtle flex-shrink-0 bg-surface-elevated flex items-center justify-center">
+                      <img
+                        src={getSocietyLogo(society.logoUrl)}
+                        alt={`${society.name} avatar`}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.currentTarget.src = '/default-society.jpg';
+                        }}
+                      />
                     </div>
-                    <div className="transition-transform duration-500 hover:translate-x-1 min-w-0 flex-1">
-                      <div className="text-sm font-medium text-zinc-200 truncate">@{society.name.toLowerCase().replace(/[^a-z0-9]/g, '')}</div>
-                      
+                    <div className="min-w-0 flex-1">
+                      <div className="text-sm font-medium text-text-secondary truncate">
+                        @{society.name.toLowerCase().replace(/[^a-z0-9]/g, '')}
+                      </div>
                     </div>
                   </div>
 
                   <div className="relative z-10 text-right shrink-0">
-                    <div className="text-xl font-bold leading-none text-white">
-                      {(() => { 
-                        try { 
+                    <div className="text-lg font-bold leading-none text-text-primary">
+                      {(() => {
+                        try {
                           const s = society as any;
-                          return (s.executiveCouncil ? JSON.parse(s.executiveCouncil).length : 0) + (s.presidentName ? 1 : 0); 
-                        } catch { return 1; } 
+                          return (
+                            (s.executiveCouncil ? JSON.parse(s.executiveCouncil).length : 0) +
+                            (s.presidentName ? 1 : 0)
+                          );
+                        } catch {
+                          return 1;
+                        }
                       })()}
                     </div>
-                    <div className="text-[10px] uppercase tracking-wider font-bold text-zinc-400">EC Members</div>
+                    <div className="text-[10px] uppercase tracking-wider font-bold text-text-muted mt-0.5">
+                      EC Members
+                    </div>
                   </div>
                 </div>
               </div>
@@ -285,8 +285,3 @@ export const SocietyDirectoryPage: React.FC = () => {
     </div>
   );
 };
-
-
-
-
-

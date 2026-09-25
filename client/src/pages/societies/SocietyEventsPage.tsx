@@ -178,9 +178,9 @@ export const SocietyEventsPage: React.FC = () => {
       </div>
 
       {isLoading ? (
-        <div className="cards-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 w-full mx-auto">
+        <div className="cards-container">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="animate-pulse bg-white/5 rounded-[24px] border border-white/10 h-72 w-full backdrop-blur-md"></div>
+            <div key={i} className="animate-pulse bg-surface-elevated/40 rounded-3xl border border-border-subtle h-72 w-full backdrop-blur-md"></div>
           ))}
         </div>
       ) : isError ? (
@@ -219,7 +219,7 @@ export const SocietyEventsPage: React.FC = () => {
               }
             />
           ) : (
-            <div className="cards-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 w-full mx-auto">
+            <div className="cards-container">
               {filteredEvents.map((event: EventItem) => (
                 <EventCard key={event.id} item={{ ...event, type: 'event' } as any} />
               ))}

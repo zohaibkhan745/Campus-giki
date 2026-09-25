@@ -213,7 +213,7 @@ export const SocietySetupPage: React.FC = () => {
   };
 
   if (isLoadingSociety) {
-    return <div className="p-8 text-center text-fog font-medium text-sm">Loading society profile...</div>;
+    return <div className="p-8 text-center text-text-muted font-medium text-sm">Loading society profile...</div>;
   }
 
   const onFormError = (formErrors: any) => {
@@ -267,7 +267,7 @@ export const SocietySetupPage: React.FC = () => {
       <div className="flex items-center justify-between mb-2">
         <button
           onClick={() => navigate(-1)}
-          className="inline-flex items-center justify-center w-10 h-10 bg-white/5 hover:bg-white/10 backdrop-blur-md border border-white/10 text-white rounded-full transition-all cursor-pointer shadow-lg"
+          className="inline-flex items-center justify-center w-10 h-10 bg-surface-hover hover:bg-surface backdrop-blur-md border border-border-medium text-text-primary rounded-full transition-all cursor-pointer shadow-elevation-1"
           title="Go Back"
         >
           <ArrowLeft className="w-5 h-5" />
@@ -275,10 +275,10 @@ export const SocietySetupPage: React.FC = () => {
       </div>
 
       <div className="flex flex-col gap-2">
-        <h1 className="font-extrabold text-4xl sm:text-5xl text-white tracking-tight">
+        <h1 className="font-extrabold text-4xl sm:text-5xl text-text-primary tracking-tight">
           {isEditing ? 'Edit Society Profile' : 'Setup Society Profile'}
         </h1>
-        <p className="text-gray-400 font-medium">
+        <p className="text-text-secondary font-medium">
           {isEditing ? 'Update your society information.' : 'Complete your profile to activate your society account.'}
         </p>
       </div>
@@ -286,11 +286,11 @@ export const SocietySetupPage: React.FC = () => {
       {serverError && <Alert variant="error" message={serverError} />}
 
       {/* Tabs */}
-      <div className="flex flex-col sm:flex-row justify-center items-stretch sm:items-center bg-white/5 border border-white/10 rounded-2xl p-1 gap-1 mb-8 w-full shadow-2xl">
+      <div className="flex flex-col sm:flex-row justify-center items-stretch sm:items-center bg-surface-hover/70 border border-border-medium rounded-2xl p-1 gap-1 mb-8 w-full shadow-elevation-1">
         <button
           type="button"
           onClick={() => setActiveTab('info')}
-          className={`flex-1 flex justify-center items-center gap-2 px-4 py-3 text-sm font-bold rounded-xl transition-all ${activeTab === 'info' ? 'bg-white text-gray-900 shadow-md' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
+          className={`flex-1 flex justify-center items-center gap-2 px-4 py-3 text-sm font-bold rounded-xl transition-all cursor-pointer ${activeTab === 'info' ? 'bg-surface text-text-primary shadow-sm border border-border-medium/50' : 'text-text-secondary hover:text-text-primary hover:bg-surface-hover'}`}
         >
           <Building2 className="w-4 h-4" />
           <span>Society Info</span>
@@ -298,7 +298,7 @@ export const SocietySetupPage: React.FC = () => {
         <button
           type="button"
           onClick={() => setActiveTab('council')}
-          className={`flex-1 flex justify-center items-center gap-2 px-4 py-3 text-sm font-bold rounded-xl transition-all ${activeTab === 'council' ? 'bg-white text-gray-900 shadow-md' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
+          className={`flex-1 flex justify-center items-center gap-2 px-4 py-3 text-sm font-bold rounded-xl transition-all cursor-pointer ${activeTab === 'council' ? 'bg-surface text-text-primary shadow-sm border border-border-medium/50' : 'text-text-secondary hover:text-text-primary hover:bg-surface-hover'}`}
         >
           <Users className="w-4 h-4" />
           <span>Executive Council</span>
@@ -309,9 +309,9 @@ export const SocietySetupPage: React.FC = () => {
         
         {/* SOCIETY INFO TAB */}
         <div className={activeTab === 'info' ? 'block space-y-8' : 'hidden'}>
-          <div className="bg-[#1e2025]/50 border border-white/10 p-6 sm:p-8 rounded-3xl space-y-8 shadow-xl">
-            <h3 className="text-xl font-bold text-white flex items-center gap-2 border-b border-white/10 pb-4">
-              <Building2 className="w-5 h-5 text-gray-400" /> Society Info
+          <div className="bg-surface-elevated/70 border border-border-medium p-6 sm:p-8 rounded-3xl space-y-8 shadow-elevation-1">
+            <h3 className="text-xl font-bold text-text-primary flex items-center gap-2 border-b border-border-subtle pb-4">
+              <Building2 className="w-5 h-5 text-text-secondary" /> Society Info
             </h3>
 
             <div className="space-y-6">
@@ -326,7 +326,7 @@ export const SocietySetupPage: React.FC = () => {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-[11px] font-bold text-gray-400 mb-2 uppercase tracking-wider">
+                  <label className="block text-[11px] font-bold text-text-secondary mb-2 uppercase tracking-wider">
                     Organization Type *
                   </label>
                   <CustomDropdown
@@ -340,12 +340,12 @@ export const SocietySetupPage: React.FC = () => {
                     placeholder="Select Type"
                   />
                   {errors.type?.message && (
-                    <p className="text-red-400 text-xs mt-1.5 font-medium">{errors.type.message}</p>
+                    <p className="text-red-500 text-xs mt-1.5 font-medium">{errors.type.message}</p>
                   )}
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-bold text-gray-400 mb-2 uppercase tracking-wider">
+                  <label className="block text-[11px] font-bold text-text-secondary mb-2 uppercase tracking-wider">
                     Category *
                   </label>
                   <CustomDropdown
@@ -356,23 +356,23 @@ export const SocietySetupPage: React.FC = () => {
                     disabled={isLoadingCategories}
                   />
                   {errors.categoryId?.message && (
-                    <p className="text-red-400 text-xs mt-1.5 font-medium">{errors.categoryId.message}</p>
+                    <p className="text-red-500 text-xs mt-1.5 font-medium">{errors.categoryId.message}</p>
                   )}
                 </div>
               </div>
               
               <div>
-                <label className="block text-[11px] font-bold text-gray-400 mb-2 uppercase tracking-wider">
+                <label className="block text-[11px] font-bold text-text-secondary mb-2 uppercase tracking-wider">
                   Description *
                 </label>
                 <textarea
                   {...register('longDescription')}
                   placeholder="Detailed description of your society's vision, goals, and activities..."
                   rows={4}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all resize-none font-medium"
+                  className="w-full bg-surface border border-border-medium rounded-xl px-4 py-3 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-brand-primary/40 focus:border-brand-primary transition-all resize-none font-medium"
                 />
                 {errors.longDescription?.message && (
-                  <p className="text-red-400 text-xs mt-1.5 font-medium">{errors.longDescription.message}</p>
+                  <p className="text-red-500 text-xs mt-1.5 font-medium">{errors.longDescription.message}</p>
                 )}
               </div>
 
@@ -396,9 +396,9 @@ export const SocietySetupPage: React.FC = () => {
             </div>
           </div>
 
-          <div className="bg-[#1e2025]/50 border border-white/10 p-6 sm:p-8 rounded-3xl space-y-6 shadow-xl">
-            <h3 className="text-xl font-bold text-white flex items-center gap-2 border-b border-white/10 pb-4">
-              <Share2 className="w-5 h-5 text-gray-400" /> Social Links (Optional)
+          <div className="bg-surface-elevated/70 border border-border-medium p-6 sm:p-8 rounded-3xl space-y-6 shadow-elevation-1">
+            <h3 className="text-xl font-bold text-text-primary flex items-center gap-2 border-b border-border-subtle pb-4">
+              <Share2 className="w-5 h-5 text-text-secondary" /> Social Links (Optional)
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <Input label="Instagram" placeholder="Instagram Profile URL" {...register('instagram')}  error={errors.instagram?.message} />
@@ -412,19 +412,19 @@ export const SocietySetupPage: React.FC = () => {
         {/* EXECUTIVE COUNCIL TAB */}
         <div className={activeTab === 'council' ? 'block space-y-8' : 'hidden'}>
           {/* Executive Posts Section */}
-          <div className="bg-[#1e2025]/50 border border-white/10 p-6 sm:p-8 rounded-3xl space-y-8 shadow-xl">
+          <div className="bg-surface-elevated/70 border border-border-medium p-6 sm:p-8 rounded-3xl space-y-8 shadow-elevation-1">
             <div>
-              <h3 className="text-xl font-bold text-white flex items-center gap-2 border-b border-white/10 pb-4">
-                <User className="w-5 h-5 text-gray-400" /> Executive Council (Optional)
+              <h3 className="text-xl font-bold text-text-primary flex items-center gap-2 border-b border-border-subtle pb-4">
+                <User className="w-5 h-5 text-text-secondary" /> Executive Council (Optional)
               </h3>
-              <p className="text-xs text-gray-400 mt-2">
+              <p className="text-xs text-text-secondary mt-2">
                 Executive members can be filled now or updated anytime later from your society dashboard.
               </p>
             </div>
             
             {/* President */}
             <div className="space-y-4">
-              <h4 className="text-md font-bold text-white uppercase tracking-wider">
+              <h4 className="text-md font-bold text-text-primary uppercase tracking-wider">
                 PRESIDENT</h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <Input label="Full Name" placeholder="Full Name" {...register('presidentName')} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^a-zA-Z.,\- ]/g, '') }} error={errors.presidentName?.message} />
@@ -432,18 +432,18 @@ export const SocietySetupPage: React.FC = () => {
                 <Input label="Contact Number" placeholder="e.g. 03001234567 or +923001234567" {...register('presidentContact')} maxLength={16} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9+\- ]/g, '').slice(0, 16) }} error={errors.presidentContact?.message} />
                 <Input label="Email Address" type="email" placeholder="president@giki.edu.pk" {...register('presidentEmail')}  error={errors.presidentEmail?.message} />
                 <div>
-                  <label className="block text-[11px] font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Faculty</label>
+                  <label className="block text-[11px] font-bold text-text-secondary mb-1.5 uppercase tracking-wider">Faculty</label>
                   <CustomDropdown value={watch('presidentFaculty')} onChange={(e: any) => setValue('presidentFaculty', e.target.value)} options={[ { value: 'FCSE', label: 'FCSE' }, { value: 'FEE', label: 'FEE' }, { value: 'FME', label: 'FME' }, { value: 'FCVE', label: 'FCVE' }, { value: 'FCME', label: 'FCME' }, { value: 'FMTE', label: 'FMTE' }, { value: 'FES', label: 'FES' }, { value: 'FBS', label: 'FBS' }, { value: 'MGS', label: 'MGS' } ]} placeholder="Select Faculty" />
-                  {errors.presidentFaculty?.message && <p className="text-red-400 text-xs mt-1 font-medium">{errors.presidentFaculty.message}</p>}
+                  {errors.presidentFaculty?.message && <p className="text-red-500 text-xs mt-1 font-medium">{errors.presidentFaculty.message}</p>}
                 </div>
               </div>
             </div>
             
-            <hr className="border-white/10" />
+            <hr className="border-border-subtle" />
 
             {/* Vice President */}
             <div className="space-y-4">
-              <h4 className="text-md font-bold text-white uppercase tracking-wider">
+              <h4 className="text-md font-bold text-text-primary uppercase tracking-wider">
                 VICE PRESIDENT</h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <Input label="Full Name" placeholder="Full Name" {...register('vp.name')} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^a-zA-Z.,\- ]/g, '') }} error={errors.vp?.name?.message} />
@@ -451,18 +451,18 @@ export const SocietySetupPage: React.FC = () => {
                 <Input label="Contact Number" placeholder="e.g. 03001234567 or +923001234567" {...register('vp.contact')} maxLength={16} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9+\- ]/g, '').slice(0, 16) }} error={errors.vp?.contact?.message} />
                 <Input label="Email Address" type="email" placeholder="vp@giki.edu.pk" {...register('vp.email')}  error={errors.vp?.email?.message} />
                 <div>
-                  <label className="block text-[11px] font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Faculty</label>
+                  <label className="block text-[11px] font-bold text-text-secondary mb-1.5 uppercase tracking-wider">Faculty</label>
                   <CustomDropdown value={watch('vp.faculty')} onChange={(e: any) => setValue('vp.faculty', e.target.value)} options={[ { value: 'FCSE', label: 'FCSE' }, { value: 'FEE', label: 'FEE' }, { value: 'FME', label: 'FME' }, { value: 'FCVE', label: 'FCVE' }, { value: 'FCME', label: 'FCME' }, { value: 'FMTE', label: 'FMTE' }, { value: 'FES', label: 'FES' }, { value: 'FBS', label: 'FBS' }, { value: 'MGS', label: 'MGS' } ]} placeholder="Select Faculty" />
-                  {errors.vp?.faculty?.message && <p className="text-red-400 text-xs mt-1 font-medium">{errors.vp.faculty.message}</p>}
+                  {errors.vp?.faculty?.message && <p className="text-red-500 text-xs mt-1 font-medium">{errors.vp.faculty.message}</p>}
                 </div>
               </div>
             </div>
 
-            <hr className="border-white/10" />
+            <hr className="border-border-subtle" />
 
             {/* Event Coordinator */}
             <div className="space-y-4">
-              <h4 className="text-md font-bold text-white uppercase tracking-wider">
+              <h4 className="text-md font-bold text-text-primary uppercase tracking-wider">
                 EVENT COORDINATOR</h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <Input label="Full Name" placeholder="Full Name" {...register('ec.name')} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^a-zA-Z.,\- ]/g, '') }} error={errors.ec?.name?.message} />
@@ -470,18 +470,18 @@ export const SocietySetupPage: React.FC = () => {
                 <Input label="Contact Number" placeholder="e.g. 03001234567 or +923001234567" {...register('ec.contact')} maxLength={16} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9+\- ]/g, '').slice(0, 16) }} error={errors.ec?.contact?.message} />
                 <Input label="Email Address" type="email" placeholder="ec@giki.edu.pk" {...register('ec.email')}  error={errors.ec?.email?.message} />
                 <div>
-                  <label className="block text-[11px] font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Faculty</label>
+                  <label className="block text-[11px] font-bold text-text-secondary mb-1.5 uppercase tracking-wider">Faculty</label>
                   <CustomDropdown value={watch('ec.faculty')} onChange={(e: any) => setValue('ec.faculty', e.target.value)} options={[ { value: 'FCSE', label: 'FCSE' }, { value: 'FEE', label: 'FEE' }, { value: 'FME', label: 'FME' }, { value: 'FCVE', label: 'FCVE' }, { value: 'FCME', label: 'FCME' }, { value: 'FMTE', label: 'FMTE' }, { value: 'FES', label: 'FES' }, { value: 'FBS', label: 'FBS' }, { value: 'MGS', label: 'MGS' } ]} placeholder="Select Faculty" />
-                  {errors.ec?.faculty?.message && <p className="text-red-400 text-xs mt-1 font-medium">{errors.ec.faculty.message}</p>}
+                  {errors.ec?.faculty?.message && <p className="text-red-500 text-xs mt-1 font-medium">{errors.ec.faculty.message}</p>}
                 </div>
               </div>
             </div>
 
-            <hr className="border-white/10" />
+            <hr className="border-border-subtle" />
 
             {/* General Secretary */}
             <div className="space-y-4">
-              <h4 className="text-md font-bold text-white uppercase tracking-wider">
+              <h4 className="text-md font-bold text-text-primary uppercase tracking-wider">
                 GENERAL SECRETARY</h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <Input label="Full Name" placeholder="Full Name" {...register('gs.name')} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^a-zA-Z.,\- ]/g, '') }} error={errors.gs?.name?.message} />
@@ -489,18 +489,18 @@ export const SocietySetupPage: React.FC = () => {
                 <Input label="Contact Number" placeholder="e.g. 03001234567 or +923001234567" {...register('gs.contact')} maxLength={16} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9+\- ]/g, '').slice(0, 16) }} error={errors.gs?.contact?.message} />
                 <Input label="Email Address" type="email" placeholder="gs@giki.edu.pk" {...register('gs.email')}  error={errors.gs?.email?.message} />
                 <div>
-                  <label className="block text-[11px] font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Faculty</label>
+                  <label className="block text-[11px] font-bold text-text-secondary mb-1.5 uppercase tracking-wider">Faculty</label>
                   <CustomDropdown value={watch('gs.faculty')} onChange={(e: any) => setValue('gs.faculty', e.target.value)} options={[ { value: 'FCSE', label: 'FCSE' }, { value: 'FEE', label: 'FEE' }, { value: 'FME', label: 'FME' }, { value: 'FCVE', label: 'FCVE' }, { value: 'FCME', label: 'FCME' }, { value: 'FMTE', label: 'FMTE' }, { value: 'FES', label: 'FES' }, { value: 'FBS', label: 'FBS' }, { value: 'MGS', label: 'MGS' } ]} placeholder="Select Faculty" />
-                  {errors.gs?.faculty?.message && <p className="text-red-400 text-xs mt-1 font-medium">{errors.gs.faculty.message}</p>}
+                  {errors.gs?.faculty?.message && <p className="text-red-500 text-xs mt-1 font-medium">{errors.gs.faculty.message}</p>}
                 </div>
               </div>
             </div>
 
-            <hr className="border-white/10" />
+            <hr className="border-border-subtle" />
 
             {/* Treasurer */}
             <div className="space-y-4">
-              <h4 className="text-md font-bold text-white uppercase tracking-wider">
+              <h4 className="text-md font-bold text-text-primary uppercase tracking-wider">
                 TREASURER</h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <Input label="Full Name" placeholder="Full Name" {...register('treasurer.name')} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^a-zA-Z.,\- ]/g, '') }} error={errors.treasurer?.name?.message} />
@@ -508,18 +508,18 @@ export const SocietySetupPage: React.FC = () => {
                 <Input label="Contact Number" placeholder="e.g. 03001234567 or +923001234567" {...register('treasurer.contact')} maxLength={16} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9+\- ]/g, '').slice(0, 16) }} error={errors.treasurer?.contact?.message} />
                 <Input label="Email Address" type="email" placeholder="treasurer@giki.edu.pk" {...register('treasurer.email')}  error={errors.treasurer?.email?.message} />
                 <div>
-                  <label className="block text-[11px] font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Faculty</label>
+                  <label className="block text-[11px] font-bold text-text-secondary mb-1.5 uppercase tracking-wider">Faculty</label>
                   <CustomDropdown value={watch('treasurer.faculty')} onChange={(e: any) => setValue('treasurer.faculty', e.target.value)} options={[ { value: 'FCSE', label: 'FCSE' }, { value: 'FEE', label: 'FEE' }, { value: 'FME', label: 'FME' }, { value: 'FCVE', label: 'FCVE' }, { value: 'FCME', label: 'FCME' }, { value: 'FMTE', label: 'FMTE' }, { value: 'FES', label: 'FES' }, { value: 'FBS', label: 'FBS' }, { value: 'MGS', label: 'MGS' } ]} placeholder="Select Faculty" />
-                  {errors.treasurer?.faculty?.message && <p className="text-red-400 text-xs mt-1 font-medium">{errors.treasurer.faculty.message}</p>}
+                  {errors.treasurer?.faculty?.message && <p className="text-red-500 text-xs mt-1 font-medium">{errors.treasurer.faculty.message}</p>}
                 </div>
               </div>
             </div>
 
-              <div className="border-t border-white/10 my-8"></div>
+              <div className="border-t border-border-subtle my-8"></div>
 
               {/* Director Liaison */}
             <div className="space-y-4">
-              <h4 className="text-md font-bold text-white uppercase tracking-wider">
+              <h4 className="text-md font-bold text-text-primary uppercase tracking-wider">
                 DIRECTOR LIAISON</h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <Input label="Full Name" placeholder="Full Name" {...register('dl.name')} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^a-zA-Z.,\- ]/g, '') }} error={errors.dl?.name?.message} />
@@ -527,9 +527,9 @@ export const SocietySetupPage: React.FC = () => {
                 <Input label="Contact Number" placeholder="e.g. 03001234567 or +923001234567" {...register('dl.contact')} maxLength={16} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9+\- ]/g, '').slice(0, 16) }} error={errors.dl?.contact?.message} />
                 <Input label="Email Address" type="email" placeholder="dl@giki.edu.pk" {...register('dl.email')}  error={errors.dl?.email?.message} />
                 <div>
-                  <label className="block text-[11px] font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Faculty</label>
+                  <label className="block text-[11px] font-bold text-text-secondary mb-1.5 uppercase tracking-wider">Faculty</label>
                   <CustomDropdown value={watch('dl.faculty')} onChange={(e: any) => setValue('dl.faculty', e.target.value)} options={[ { value: 'FCSE', label: 'FCSE' }, { value: 'FEE', label: 'FEE' }, { value: 'FME', label: 'FME' }, { value: 'FCVE', label: 'FCVE' }, { value: 'FCME', label: 'FCME' }, { value: 'FMTE', label: 'FMTE' }, { value: 'FES', label: 'FES' }, { value: 'FBS', label: 'FBS' }, { value: 'MGS', label: 'MGS' } ]} placeholder="Select Faculty" />
-                  {errors.dl?.faculty?.message && <p className="text-red-400 text-xs mt-1 font-medium">{errors.dl.faculty.message}</p>}
+                  {errors.dl?.faculty?.message && <p className="text-red-500 text-xs mt-1 font-medium">{errors.dl.faculty.message}</p>}
                 </div>
               </div>
             </div>
@@ -537,12 +537,12 @@ export const SocietySetupPage: React.FC = () => {
           </div>
 
           {/* Other Members Section */}
-          <div className="bg-[#1e2025]/50 border border-white/10 p-6 sm:p-8 rounded-3xl space-y-6 shadow-xl">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-white/10 pb-4 gap-4">
-              <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                <Users className="w-5 h-5 text-gray-400" /> Other Executive Members
+          <div className="bg-surface-elevated/70 border border-border-medium p-6 sm:p-8 rounded-3xl space-y-6 shadow-elevation-1">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-border-subtle pb-4 gap-4">
+              <h3 className="text-xl font-bold text-text-primary flex items-center gap-2">
+                <Users className="w-5 h-5 text-text-secondary" /> Other Executive Members
               </h3>
-              <button type="button" onClick={() => appendMember({ role: 'Executive Member', name: '', regNum: '', email: '', contact: '', faculty: 'FCSE' })} className="flex items-center justify-center gap-1.5 px-4 py-2 text-xs font-bold bg-white text-gray-900 rounded-lg hover:bg-gray-100 transition-colors whitespace-nowrap">
+              <button type="button" onClick={() => appendMember({ role: 'Executive Member', name: '', regNum: '', email: '', contact: '', faculty: 'FCSE' })} className="flex items-center justify-center gap-1.5 px-4 py-2 text-xs font-bold bg-text-primary text-text-inverse rounded-lg hover:opacity-90 transition-opacity whitespace-nowrap cursor-pointer">
                   <Plus className="w-4 h-4" /> Add Member
                 </button>
             </div>
@@ -555,16 +555,16 @@ export const SocietySetupPage: React.FC = () => {
                 const dropdownValue = isCustomRole ? 'Other' : (currentRole || 'Executive Member');
 
                 return (
-                  <div key={field.id} className="p-6 rounded-2xl bg-white/5 border border-white/10 space-y-5 relative">
-                    <button type="button" onClick={() => removeMember(index)} className="absolute top-5 right-5 text-gray-500 hover:text-red-400 transition-colors p-1" title="Remove Member">
+                  <div key={field.id} className="p-6 rounded-2xl bg-surface/50 border border-border-subtle space-y-5 relative">
+                    <button type="button" onClick={() => removeMember(index)} className="absolute top-5 right-5 text-text-muted hover:text-red-500 transition-colors p-1 cursor-pointer" title="Remove Member">
                       <Trash2 className="w-5 h-5" />
                     </button>
                     
-                    <h4 className="text-md font-bold text-white mb-2 pb-2 border-b border-white/5 inline-block">Member {index + 1}</h4>
+                    <h4 className="text-md font-bold text-text-primary mb-2 pb-2 border-b border-border-subtle inline-block">Member {index + 1}</h4>
                     
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                       <div>
-                        <label className="block text-[11px] font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Position *</label>
+                        <label className="block text-[11px] font-bold text-text-secondary mb-1.5 uppercase tracking-wider">Position *</label>
                         <CustomDropdown
                             value={dropdownValue}
                             onChange={(e: any) => {
@@ -582,15 +582,15 @@ export const SocietySetupPage: React.FC = () => {
                               { value: 'Other', label: 'Other (Custom Position)' }
                             ]}
                           />
-                        {errors.otherMembers?.[index]?.role?.message && <p className="text-red-400 text-xs mt-1 font-medium">{errors.otherMembers[index].role?.message}</p>}
+                        {errors.otherMembers?.[index]?.role?.message && <p className="text-red-500 text-xs mt-1 font-medium">{errors.otherMembers[index].role?.message}</p>}
                       </div>
 
                       {dropdownValue === 'Other' && (
                         <div>
-                          <label className="block text-[11px] font-bold text-blue-400 mb-1.5 uppercase tracking-wider">Custom Position Name *</label>
+                          <label className="block text-[11px] font-bold text-brand-primary mb-1.5 uppercase tracking-wider">Custom Position Name *</label>
                           <input 
                             {...register(`otherMembers.${index}.role` as const)} 
-                            className="w-full bg-black/20 border border-blue-500/30 rounded-xl px-4 py-2.5 text-sm text-white font-medium focus:outline-none focus:border-blue-500/70 transition-colors"
+                            className="w-full bg-surface border border-brand-primary/40 rounded-xl px-4 py-2.5 text-sm text-text-primary font-medium focus:outline-none focus:border-brand-primary transition-colors"
                             placeholder="Type position name..."
                           />
                         </div>
@@ -599,36 +599,36 @@ export const SocietySetupPage: React.FC = () => {
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 pt-2">
                       <div>
-                        <label className="block text-[11px] font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Full Name *</label>
-                        <input {...register(`otherMembers.${index}.name` as const)} className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white font-medium focus:outline-none focus:border-blue-500/50 transition-colors" placeholder="Full Name" onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^a-zA-Z.,\- ]/g, '') }} />
-                        {errors.otherMembers?.[index]?.name?.message && <p className="text-red-400 text-xs mt-1 font-medium">{errors.otherMembers[index].name?.message}</p>}
+                        <label className="block text-[11px] font-bold text-text-secondary mb-1.5 uppercase tracking-wider">Full Name *</label>
+                        <input {...register(`otherMembers.${index}.name` as const)} className="w-full bg-surface border border-border-medium rounded-xl px-4 py-2.5 text-sm text-text-primary font-medium focus:outline-none focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20 transition-colors" placeholder="Full Name" onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^a-zA-Z.,\- ]/g, '') }} />
+                        {errors.otherMembers?.[index]?.name?.message && <p className="text-red-500 text-xs mt-1 font-medium">{errors.otherMembers[index].name?.message}</p>}
                       </div>
                       <div>
-                        <label className="block text-[11px] font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Reg Number *</label>
-                        <input {...register(`otherMembers.${index}.regNum` as const)} className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white font-medium focus:outline-none focus:border-blue-500/50 transition-colors" placeholder="e.g. 2023123" maxLength={7} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '').slice(0, 7) }} />
-                        {errors.otherMembers?.[index]?.regNum?.message && <p className="text-red-400 text-xs mt-1 font-medium">{errors.otherMembers[index].regNum?.message}</p>}
+                        <label className="block text-[11px] font-bold text-text-secondary mb-1.5 uppercase tracking-wider">Reg Number *</label>
+                        <input {...register(`otherMembers.${index}.regNum` as const)} className="w-full bg-surface border border-border-medium rounded-xl px-4 py-2.5 text-sm text-text-primary font-medium focus:outline-none focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20 transition-colors" placeholder="e.g. 2023123" maxLength={7} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '').slice(0, 7) }} />
+                        {errors.otherMembers?.[index]?.regNum?.message && <p className="text-red-500 text-xs mt-1 font-medium">{errors.otherMembers[index].regNum?.message}</p>}
                       </div>
                       <div>
-                        <label className="block text-[11px] font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Email Address *</label>
-                        <input type="email" {...register(`otherMembers.${index}.email` as const)} className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white font-medium focus:outline-none focus:border-blue-500/50 transition-colors" placeholder="Email" />
-                        {errors.otherMembers?.[index]?.email?.message && <p className="text-red-400 text-xs mt-1 font-medium">{errors.otherMembers[index].email?.message}</p>}
+                        <label className="block text-[11px] font-bold text-text-secondary mb-1.5 uppercase tracking-wider">Email Address *</label>
+                        <input type="email" {...register(`otherMembers.${index}.email` as const)} className="w-full bg-surface border border-border-medium rounded-xl px-4 py-2.5 text-sm text-text-primary font-medium focus:outline-none focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20 transition-colors" placeholder="Email" />
+                        {errors.otherMembers?.[index]?.email?.message && <p className="text-red-500 text-xs mt-1 font-medium">{errors.otherMembers[index].email?.message}</p>}
                       </div>
                       <div>
-                        <label className="block text-[11px] font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Contact Number *</label>
-                        <input {...register(`otherMembers.${index}.contact` as const)} className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white font-medium focus:outline-none focus:border-blue-500/50 transition-colors" placeholder="e.g. 03001234567 or +923001234567" maxLength={16} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9+\- ]/g, '').slice(0, 16) }} />
-                        {errors.otherMembers?.[index]?.contact?.message && <p className="text-red-400 text-xs mt-1 font-medium">{errors.otherMembers[index].contact?.message}</p>}
+                        <label className="block text-[11px] font-bold text-text-secondary mb-1.5 uppercase tracking-wider">Contact Number *</label>
+                        <input {...register(`otherMembers.${index}.contact` as const)} className="w-full bg-surface border border-border-medium rounded-xl px-4 py-2.5 text-sm text-text-primary font-medium focus:outline-none focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20 transition-colors" placeholder="e.g. 03001234567 or +923001234567" maxLength={16} onInput={(e: any) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9+\- ]/g, '').slice(0, 16) }} />
+                        {errors.otherMembers?.[index]?.contact?.message && <p className="text-red-500 text-xs mt-1 font-medium">{errors.otherMembers[index].contact?.message}</p>}
                       </div>
                       <div>
-                        <label className="block text-[11px] font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Faculty *</label>
+                        <label className="block text-[11px] font-bold text-text-secondary mb-1.5 uppercase tracking-wider">Faculty *</label>
                         <CustomDropdown value={watch(`otherMembers.${index}.faculty` as const)} onChange={(e: any) => setValue(`otherMembers.${index}.faculty` as const, e.target.value)} options={[ { value: 'FCSE', label: 'FCSE' }, { value: 'FEE', label: 'FEE' }, { value: 'FME', label: 'FME' }, { value: 'FCVE', label: 'FCVE' }, { value: 'FCME', label: 'FCME' }, { value: 'FMTE', label: 'FMTE' }, { value: 'FES', label: 'FES' }, { value: 'FBS', label: 'FBS' }, { value: 'MGS', label: 'MGS' } ]} placeholder="Select Faculty" />
-                        {errors.otherMembers?.[index]?.faculty?.message && <p className="text-red-400 text-xs mt-1 font-medium">{errors.otherMembers[index].faculty?.message}</p>}
+                        {errors.otherMembers?.[index]?.faculty?.message && <p className="text-red-500 text-xs mt-1 font-medium">{errors.otherMembers[index].faculty?.message}</p>}
                       </div>
                     </div>
                   </div>
                 );
               })}
               {otherMembers.length === 0 && (
-                <div className="text-center py-8 text-gray-500 text-sm font-medium border border-dashed border-white/10 rounded-2xl">
+                <div className="text-center py-8 text-text-muted text-sm font-medium border border-dashed border-border-subtle rounded-2xl">
                   No other executive members added yet.
                 </div>
               )}
@@ -640,7 +640,7 @@ export const SocietySetupPage: React.FC = () => {
           <Button
             type="submit"
             isLoading={setupMutation.isPending}
-            className="btn-primary !px-8 !py-3 !text-sm !font-bold rounded-xl shadow-[0_0_20px_rgba(59,130,246,0.3)] hover:shadow-[0_0_30px_rgba(59,130,246,0.5)] transition-all"
+            className="!px-8 !py-3 !text-sm !font-bold rounded-xl shadow-md transition-all"
           >
             {isEditing ? 'Save Changes' : 'Complete Setup'}
           </Button>
