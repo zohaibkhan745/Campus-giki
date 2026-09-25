@@ -667,15 +667,13 @@ export const AdminSocietiesPage: React.FC = () => {
               </div>
 
               <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-border-subtle">
-                <button
+                <Button
                   type="button"
-                  className="btn-cancel"
-                  style={{ width: 'auto' }}
+                  variant="outline"
                   onClick={() => setEditingSociety(null)}
                 >
-
                   Cancel
-                </button>
+                </Button>
                 <Button
                   type="button"
                   variant="primary"

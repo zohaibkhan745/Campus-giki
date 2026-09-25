@@ -146,11 +146,11 @@ export const AdminEventsPage: React.FC = () => {
       </div>
 
       <div className="text-left mb-6">
-        <h1 className="font-extrabold text-5xl sm:text-6xl text-white tracking-tight leading-tight">Campus Events Overview</h1>
+        <h1 className="font-extrabold text-5xl sm:text-6xl text-text-primary tracking-tight leading-tight">Campus Events Overview</h1>
       </div>
 
       {/* Filter Toolbar */}
-      <div className="bg-white/[0.08] backdrop-blur-[20px] p-5 rounded-[18px] border border-white/20 space-y-4 shadow-[0_12px_40px_rgba(0,0,0,0.4)] relative" style={{ zIndex: 100 }}>
+      <div className="bg-white/[0.08] backdrop-blur-[20px] p-5 rounded-[18px] border border-white/20 space-y-4 shadow-[0_12px_40px_rgba(0,0,0,0.4)] relative z-[100]">
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="relative w-full md:w-80 flex items-center">
             <div className="absolute left-3 text-gray-400 pointer-events-none"><Search className="w-4 h-4" /></div>
@@ -159,13 +159,13 @@ export const AdminEventsPage: React.FC = () => {
               placeholder="Search event title or venue..."
               value={searchQuery}
               onChange={(e) => { setSearchQuery(e.target.value); /* reset handled by queryKey */ }}
-              className="w-full bg-transparent text-white text-sm rounded-xl border border-white/20 px-3.5 py-2 pl-10 outline-none focus:border-white/40"
+              className="w-full bg-transparent text-text-primary placeholder:text-text-muted text-sm rounded-xl border border-white/20 px-3.5 py-2 pl-10 outline-none focus:border-brand-primary"
             />
           </div>
           
         </div>
 
-        <div className="flex flex-col md:flex-row flex-wrap items-center gap-4 pt-4 border-t border-white/10 mt-2">
+        <div className="flex flex-col md:flex-row flex-wrap items-center gap-4 pt-4 border-t border-border-subtle mt-2">
           
           <CustomDropdown className="w-full md:flex-1 shrink-0" icon={<Calendar className="w-4 h-4" />} options={[{ value: 'all', label: 'All Event Timings' }, { value: 'upcoming', label: 'Upcoming Events' }, { value: 'past', label: 'Past Events' }]}
             value={typeToggle}

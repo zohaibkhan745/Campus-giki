@@ -152,11 +152,11 @@ export const AdminPendingEventsPage: React.FC = () => {
       </div>
 
       <div className="space-y-1 py-6 text-left">
-        <h1 className="font-extrabold text-5xl sm:text-6xl text-white tracking-tight leading-tight mb-8">Pending Reviews</h1>
+        <h1 className="font-extrabold text-5xl sm:text-6xl text-text-primary tracking-tight leading-tight mb-8">Pending Reviews</h1>
       </div>
 
       {/* Filter Toolbar */}
-      <div className="bg-white/[0.08] backdrop-blur-[20px] p-5 rounded-[18px] border border-white/20 space-y-4 shadow-[0_12px_40px_rgba(0,0,0,0.4)] relative" style={{ zIndex: 100 }}>
+      <div className="bg-white/[0.08] backdrop-blur-[20px] p-5 rounded-[18px] border border-white/20 space-y-4 shadow-[0_12px_40px_rgba(0,0,0,0.4)] relative z-[100]">
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="relative w-full md:w-80 flex items-center">
             <div className="absolute left-3 text-gray-400 pointer-events-none"><Search className="w-4 h-4" /></div>
@@ -165,7 +165,7 @@ export const AdminPendingEventsPage: React.FC = () => {
               placeholder="Search event title or venue..."
               value={searchQuery}
               onChange={(e) => { setSearchQuery(e.target.value); /* reset handled by queryKey */ }}
-              className="w-full bg-transparent text-white text-sm rounded-xl border border-white/20 px-3.5 py-2 pl-10 outline-none focus:border-white/40"
+              className="w-full bg-transparent text-text-primary placeholder:text-text-muted text-sm rounded-xl border border-white/20 px-3.5 py-2 pl-10 outline-none focus:border-brand-primary"
             />
           </div>
           <div className="flex flex-wrap items-center bg-white/5 p-1 rounded-xl border border-white/10 w-full md:w-auto gap-1">
@@ -177,7 +177,7 @@ export const AdminPendingEventsPage: React.FC = () => {
                 else if (filterType === 'upcoming') setUpcomingFilter();
                 else setPastFilter();
               }}
-                className={`px-3 py-1.5 rounded-[10px] text-xs font-bold transition-all ${typeToggle === filterType ? 'bg-white text-black shadow-sm' : 'text-gray-400 hover:text-white'}`}
+                className={`px-3 py-1.5 rounded-[10px] text-xs font-bold transition-all cursor-pointer ${typeToggle === filterType ? 'bg-text-primary text-text-inverse shadow-sm' : 'text-text-secondary hover:text-text-primary'}`}
               >
                 {filterType === 'this_week' ? 'This Week' : filterType === 'this_month' ? 'This Month' : filterType.charAt(0).toUpperCase() + filterType.slice(1)}
               </button>

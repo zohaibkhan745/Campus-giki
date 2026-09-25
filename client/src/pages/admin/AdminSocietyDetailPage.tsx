@@ -291,14 +291,14 @@ export const AdminSocietyDetailPage: React.FC = () => {
           ) : (
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-600/20 via-transparent to-transparent" />
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0e1117] via-[#0e1117]/60 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-canvas via-canvas/60 to-transparent" />
         </div>
 
         {/* Profile Info Row */}
         <div className="relative px-6 sm:px-8 pb-8 pt-0 -mt-16 sm:-mt-20 flex flex-col md:flex-row items-start md:items-end justify-between gap-6">
           <div className="flex flex-col sm:flex-row items-start sm:items-end gap-5">
             {/* Society Logo */}
-            <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-3xl bg-[#12151c] border-2 border-white/30 shadow-2xl p-1.5 shrink-0 overflow-hidden">
+            <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-3xl bg-surface-elevated border-2 border-border-medium shadow-2xl p-1.5 shrink-0 overflow-hidden">
               <img
                 src={getSocietyLogo(society.logoUrl)}
                 alt={society.name}

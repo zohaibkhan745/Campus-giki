@@ -111,14 +111,16 @@ const deleteMutation = useMutation({
 
       <div className="w-[95%] max-w-[1200px] flex justify-between items-end mb-6 text-left">
         <div>
-          <h1 className="font-extrabold text-5xl sm:text-6xl text-white tracking-tight leading-tight mb-8">Society Advisors</h1>
+          <h1 className="font-extrabold text-5xl sm:text-6xl text-text-primary tracking-tight leading-tight mb-8">Society Advisors</h1>
         </div>
-        <button
-            onClick={() => setIsModalOpen(true)}
-            className="bg-white text-black border-none py-[10px] px-[18px] rounded-[12px] text-[14px] font-semibold cursor-pointer transition-all duration-300 hover:bg-gray-100 hover:-translate-y-[2px] shadow-lg"
-          >
-            + Add Advisor
-        </button>
+        <Button
+          variant="primary"
+          onClick={() => setIsModalOpen(true)}
+          className="shrink-0"
+          leftIcon={<UserPlus className="w-4 h-4" />}
+        >
+          Add Advisor
+        </Button>
       </div>
 
       <div className="w-[95%] max-w-[1200px] bg-white/[0.08] backdrop-blur-[20px] rounded-[24px] p-[30px] shadow-[0_12px_40px_rgba(0,0,0,0.4)] border border-white/20">
@@ -293,7 +295,7 @@ const deleteMutation = useMutation({
                 </div>
               </div>
 
-              <div className="flex justify-end gap-3 pt-4 border-t border-white/10">
+              <div className="flex justify-end gap-3 pt-4 border-t border-border-medium">
                 <Button
                   type="button"
                   variant="outline"
@@ -301,7 +303,6 @@ const deleteMutation = useMutation({
                     setIsModalOpen(false);
                     setFormError(null);
                   }}
-                  className="btn-cancel" style={{width:"auto"}}
                 >
                   Cancel
                 </Button>
@@ -309,7 +310,6 @@ const deleteMutation = useMutation({
                   type="submit"
                   variant="primary"
                   isLoading={createMutation.isPending}
-                  className="btn-cancel" style={{width:"auto", background:"#fff", color:"#000"}}
                 >
                   Create Advisor
                 </Button>
@@ -318,46 +318,21 @@ const deleteMutation = useMutation({
           </div>
         </div>, document.body)}
 
-      {deleteModalOpen && createPortal(
-        <>
-          
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
-            <div
-              className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
-              onClick={() => setDeleteModalOpen(false)}
-            />
-            <div className="relative w-full max-w-md bg-white/10 backdrop-blur-[20px] border border-white/20 rounded-[18px] shadow-[0_12px_40px_rgba(0,0,0,0.4)] p-8 text-white flex flex-col gap-4">
-              
-              <h3 className="text-[1.4rem] font-bold leading-tight drop-shadow-md">Delete Advisor</h3>
-              <p className="text-[0.95rem] text-white/85 leading-relaxed drop-shadow-sm mb-2">
-                Are you sure you want to delete this advisor? This action cannot be undone and will permanently remove their access.
-              </p>
-              <div className="flex justify-end gap-3 mt-2">
-                <Button
-                  variant="outline"
-                  onClick={() => setDeleteModalOpen(false)}
-                  className="px-4 py-3 rounded-lg border border-white/30 bg-white/15 backdrop-blur-md text-white font-semibold transition-all hover:bg-white/30 hover:border-white/50"
-                  style={{width:"auto", minHeight: "44px"}}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  variant="primary"
-                  isLoading={deleteMutation.isPending}
-                  onClick={() => {
-                    if (advisorToDelete) {
-                      deleteMutation.mutate(advisorToDelete);
-                    }
-                  }}
-                  className="px-4 py-3 rounded-lg border border-red-500/50 bg-red-500/80 backdrop-blur-md text-white font-semibold transition-all hover:bg-red-500"
-                  style={{width:"auto", minHeight: "44px"}}
-                >
-                  Delete
-                </Button>
-              </div>
-            </div>
-          </div>
-        </>, document.body)}
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={deleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        onConfirm={() => {
+          if (advisorToDelete) {
+            deleteMutation.mutate(advisorToDelete);
+          }
+        }}
+        title="Delete Advisor"
+        message="Are you sure you want to delete this advisor? This action cannot be undone and will permanently remove their access."
+        confirmText="Delete"
+        variant="danger"
+        isLoading={deleteMutation.isPending}
+      />
     </div>
   );
 };

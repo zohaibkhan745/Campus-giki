@@ -138,11 +138,11 @@ export const AdminYearlyPlanDetailPage: React.FC = () => {
               {plan.status.replace('_', ' ')}
             </span>
             <div className="flex items-center gap-4">
-              <div className="w-14 h-14 rounded-full bg-[#007ebb] p-1 flex items-center justify-center border-2 border-white/80 shrink-0 shadow-lg overflow-hidden">
+              <div className="w-14 h-14 rounded-full bg-brand-primary p-1 flex items-center justify-center border-2 border-white/80 shrink-0 shadow-lg overflow-hidden">
                 {plan.society?.logoUrl ? (
                   <img src={getSocietyLogo(plan.society.logoUrl)} className="w-full h-full rounded-full object-cover bg-white" alt="logo" onError={(e) => { e.currentTarget.src = '/default-society.jpg'; }} />
                 ) : (
-                  <div className="w-full h-full rounded-full border border-white/70 flex flex-col items-center justify-center select-none bg-[#007ebb]">
+                  <div className="w-full h-full rounded-full border border-white/70 flex flex-col items-center justify-center select-none bg-brand-primary">
                     <span className="text-white text-xs font-bold leading-none">{plan.society?.name?.substring(0,3).toLowerCase() || 'SOC'}</span>
                     <span className="text-white text-[7px] uppercase font-semibold mt-0.5">Chapter</span>
                   </div>

@@ -137,7 +137,7 @@ export const AdminStaffPage: React.FC = () => {
       {/* Page Header */}
       <div className="w-[95%] max-w-[1200px] flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-6 text-left">
         <div>
-          <h1 className="font-extrabold text-5xl sm:text-6xl text-white tracking-tight leading-tight mb-2">
+          <h1 className="font-extrabold text-5xl sm:text-6xl text-text-primary tracking-tight leading-tight mb-2">
             DSA & DDSA Staff
           </h1>
           <p className="text-slate-400 text-sm">
@@ -145,16 +145,17 @@ export const AdminStaffPage: React.FC = () => {
           </p>
         </div>
 
-        <button
+        <Button
+          variant="primary"
           onClick={() => {
             setFormError(null);
             setIsModalOpen(true);
           }}
-          className="bg-white text-black border-none py-[10px] px-[18px] rounded-[12px] text-[14px] font-semibold cursor-pointer transition-all duration-300 hover:bg-gray-100 hover:-translate-y-[2px] shadow-lg flex items-center gap-2 shrink-0"
+          className="shrink-0"
+          leftIcon={<UserPlus className="w-4 h-4" />}
         >
-          <UserPlus className="w-4 h-4" />
-          <span>+ Invite DDSA Staff</span>
-        </button>
+          Invite DDSA Staff
+        </Button>
       </div>
 
       {/* Main Glass Card Table */}
@@ -379,8 +380,6 @@ export const AdminStaffPage: React.FC = () => {
                       setIsModalOpen(false);
                       setFormError(null);
                     }}
-                    className="btn-cancel"
-                    style={{ width: 'auto' }}
                   >
                     Cancel
                   </Button>
@@ -388,8 +387,6 @@ export const AdminStaffPage: React.FC = () => {
                     type="submit"
                     variant="primary"
                     isLoading={createMutation.isPending}
-                    className="btn-cancel"
-                    style={{ width: 'auto', background: '#fff', color: '#000' }}
                   >
                     Dispatch Invitation
                   </Button>

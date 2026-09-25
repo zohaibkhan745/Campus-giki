@@ -24,6 +24,7 @@ import { Button } from '@/components/ui/Button';
 import { PostCard } from '@/components/feed/PostCard';
 import { CustomDatePicker } from '@/components/ui/date-picker';
 import { Alert } from '@/components/ui/Alert';
+import { ConfirmModal } from '@/components/ui/ConfirmModal';
 import { PostCreateModal } from '@/components/feed/PostCreateModal';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { EmptyState } from '@/components/ui/EmptyState';
@@ -166,7 +167,7 @@ export const AdminPostsPage: React.FC = () => {
       </div>
 
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-        <h1 className="font-extrabold text-5xl sm:text-6xl text-white tracking-tight leading-tight drop-shadow-md">
+        <h1 className="font-extrabold text-5xl sm:text-6xl text-text-primary tracking-tight leading-tight">
           Campus Posts
         </h1>
         <Button
@@ -308,27 +309,16 @@ export const AdminPostsPage: React.FC = () => {
       />
 
       {/* Delete Confirmation Modal */}
-      {postToDelete && (
-        <div className="modal-overlay active z-[60]">
-          <div className="modal-box">
-            <h3 className="modal-title" style={{ color: '#fca5a5' }}>
-              <AlertTriangle className="w-6 h-6" />
-              <span>Remove Post</span>
-            </h3>
-            <p className="modal-description">
-              Are you sure you want to remove this post? It will no longer be visible on the student feed.
-            </p>
-            <div className="flex gap-3 pt-2">
-              <button onClick={() => setPostToDelete(null)} className="btn-cancel">
-                Cancel
-              </button>
-              <button onClick={confirmDelete} className="btn-confirm danger">
-                Confirm Delete
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ConfirmModal
+        isOpen={!!postToDelete}
+        onClose={() => setPostToDelete(null)}
+        onConfirm={confirmDelete}
+        title="Remove Post"
+        message="Are you sure you want to remove this post? It will no longer be visible on the student feed."
+        confirmText="Confirm Delete"
+        variant="danger"
+        isLoading={deleteMutation.isPending}
+      />
     </div>
   );
 };

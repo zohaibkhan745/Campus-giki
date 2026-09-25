@@ -73,7 +73,7 @@ export const AdminYearlyPlansPage: React.FC = () => {
     switch (status) {
       case 'APPROVED':
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-transparent border border-forest-ink border border-emerald-500/20 text-forest-ink rounded-inputs text-xs font-semibold">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-success/10 border border-success/30 text-success rounded-inputs text-xs font-semibold">
             <CheckCircle2 className="w-3.5 h-3.5" />
             <span>APPROVED</span>
           </span>
@@ -81,14 +81,14 @@ export const AdminYearlyPlansPage: React.FC = () => {
       case 'PENDING_ADMIN':
       case 'PENDING':
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-transparent border border-ember-glow border border-orange-500/20 text-orange-400 rounded-inputs text-xs font-semibold">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-warning/10 border border-warning/30 text-warning rounded-inputs text-xs font-semibold">
             <Clock className="w-3.5 h-3.5" />
             <span>PENDING REVIEW</span>
           </span>
         );
       case 'CHANGES_REQUESTED':
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-transparent border border-white/10 border border-red-500/20 text-red-400 rounded-inputs text-xs font-semibold">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-danger/10 border border-danger/30 text-danger rounded-inputs text-xs font-semibold">
             <AlertCircle className="w-3.5 h-3.5" />
             <span>CHANGES REQUESTED</span>
           </span>
@@ -117,7 +117,7 @@ export const AdminYearlyPlansPage: React.FC = () => {
 
       {/* Header Banner */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 py-6">
-        <h1 className="font-extrabold text-5xl sm:text-6xl text-white tracking-tight leading-tight mb-8 drop-shadow-md">
+        <h1 className="font-extrabold text-5xl sm:text-6xl text-text-primary tracking-tight leading-tight mb-8">
           Campus Society Yearly Plan Records
         </h1>
       </div>
