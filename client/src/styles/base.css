@@ -13,17 +13,13 @@ body {
 }
 
 @layer base {
-  article,
-  section,
-  aside,
-  header,
-  footer,
-  div[class~="rounded-cards"],
-  div[class~="border-vast-ink"],
-  div[class~="border-2"] {
-    border-color: var(--border-subtle);
+  /* Accessible Keyboard Navigation Default */
+  :focus-visible {
+    outline: 2px solid var(--brand-primary);
+    outline-offset: 2px;
   }
 
+  /* Form controls base theme bindings */
   input,
   select,
   textarea {
@@ -35,13 +31,15 @@ body {
   option {
     background-color: var(--bg-surface-elevated);
     color: var(--text-primary);
-    font-weight: 600;
+    font-weight: 500;
   }
 
-  input:focus,
-  select:focus,
-  textarea:focus {
-    border-color: var(--border-strong);
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    border-color: var(--brand-primary);
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 1px;
   }
 }
 
@@ -134,4 +132,3 @@ body {
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
-

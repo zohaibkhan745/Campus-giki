@@ -20,8 +20,7 @@
   height: var(--pill-height);
   color: #ffffff;
   border-radius: calc(var(--pill-height) / 2);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   overflow: hidden;
   white-space: nowrap;
   box-sizing: border-box;
@@ -47,16 +46,16 @@
 
 .state-approve,
 .state-committed {
-  background-color: #10b981;
+  background-color: var(--color-success, #10b981);
 }
 
 .state-delete,
 .state-failed {
-  background-color: #ef4444;
+  background-color: var(--color-danger, #ef4444);
 }
 
 .state-sync {
-  background-color: #3b82f6;
+  background-color: var(--brand-primary, #3b82f6);
 }
 
 .notification-pill.state-sync {
@@ -219,3 +218,13 @@
   will-change: opacity;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .notification-pill,
+  .notification-pill.state-sync,
+  .notification-pill.state-committed,
+  .notification-pill.state-failed,
+  .page-transition {
+    animation: none !important;
+    transition: opacity 0.15s ease !important;
+  }
+}

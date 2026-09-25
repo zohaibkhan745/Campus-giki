@@ -13,7 +13,7 @@
   cursor: pointer;
   font-size: 0.85rem;
   font-weight: 600;
-  transition: all 0.2s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -22,6 +22,11 @@
 .campus-calendar-glass-btn:hover {
   background: var(--bg-surface-hover);
   border-color: var(--border-strong);
+}
+
+.campus-calendar-glass-btn:focus-visible {
+  outline: 2px solid var(--brand-primary);
+  outline-offset: 2px;
 }
 
 .campus-calendar-search-input {
@@ -44,7 +49,7 @@
 
 .campus-calendar-search-input:focus {
   border-color: var(--brand-primary);
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+  box-shadow: 0 0 0 2px var(--focus-ring);
 }
 
 .campus-calendar-card {
@@ -115,8 +120,8 @@
 }
 
 .campus-calendar-day-cell.today .campus-calendar-day-number {
-  background: var(--text-primary);
-  color: var(--bg-canvas);
+  background: var(--brand-primary);
+  color: #ffffff;
   border-radius: 50%;
   width: 24px;
   height: 24px;
@@ -146,11 +151,16 @@
   filter: brightness(1.1);
 }
 
-.event-blue { background: #2563eb; }
+.campus-calendar-event-tag:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 1px;
+}
+
+.event-blue { background: var(--brand-primary); }
 .event-magenta { background: #db2777; }
-.event-green { background: #16a34a; }
-.event-orange { background: #ea580c; }
-.event-red { background: #dc2626; }
+.event-green { background: var(--color-success); }
+.event-orange { background: var(--brand-accent); }
+.event-red { background: var(--color-danger); }
 
 @media (max-width: 768px) {
   .campus-calendar-day-cell { min-height: 70px; padding: 4px 2px; gap: 2px; }
@@ -163,4 +173,12 @@
   .campus-calendar-weekdays div { font-size: 0.75rem; }
   .campus-calendar-day-cell { min-height: 55px; }
   .campus-calendar-event-tag { font-size: 0.6rem; padding: 1px 3px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .campus-calendar-event-tag:hover,
+  .campus-calendar-glass-btn {
+    transform: none !important;
+    transition: none !important;
+  }
 }

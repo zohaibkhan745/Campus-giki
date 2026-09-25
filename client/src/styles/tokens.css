@@ -11,6 +11,7 @@
   --bg-surface: #131622;
   --bg-surface-hover: #1b2030;
   --bg-surface-elevated: #181c2b;
+  --bg-surface-subtle: #0f121a;
   --bg-surface-glass: rgba(19, 22, 34, 0.8);
   --bg-surface-glass-border: rgba(255, 255, 255, 0.14);
 
@@ -31,18 +32,23 @@
   --brand-secondary: #6366f1;
   --brand-accent: #ffa946;
 
-  /* Legacy design tokens mapped dynamically */
+  /* Status Colors */
+  --color-success: #10b981;
+  --color-success-hover: #059669;
+  --color-danger: #ef4444;
+  --color-danger-hover: #dc2626;
+  --color-warning: #f59e0b;
+  --color-warning-hover: #d97706;
+  --color-info: #3b82f6;
+
+  /* Focus & Accessibility */
+  --focus-ring: rgba(59, 130, 246, 0.5);
+
+  /* Legacy aliases mapped to semantic tokens */
   --color-lavender-whisper: #2a2235;
-  --color-forest-ink: #4ade80;
-  --color-ember-glow: #ffa946;
-  --color-vast-ink: #f3f4f6;
-  --color-lumen-cream: rgba(17, 19, 24, 0.65);
-  --color-lumen-stone: rgba(44, 47, 56, 0.7);
-  --color-fog: #9ca3af;
-  --color-charcoal: #e5e7eb;
-  --color-pure-white: #ffffff;
-  --color-border-soft: rgba(255, 255, 255, 0.08);
-  --color-border-mid: rgba(255, 255, 255, 0.15);
+  --color-forest-ink: var(--color-success);
+  --color-ember-glow: var(--color-warning);
+  --color-vast-ink: var(--text-primary);
 
   /* Shadows & Depth */
   --shadow-elevation-1: 0 4px 16px rgba(0, 0, 0, 0.35);
@@ -63,6 +69,7 @@
   --bg-surface: #ffffff;
   --bg-surface-hover: #f1f5f9;
   --bg-surface-elevated: #ffffff;
+  --bg-surface-subtle: #f8fafc;
   --bg-surface-glass: rgba(255, 255, 255, 0.88);
   --bg-surface-glass-border: rgba(0, 0, 0, 0.09);
 
@@ -83,18 +90,23 @@
   --brand-secondary: #4f46e5;
   --brand-accent: #ea580c;
 
-  /* Legacy design tokens mapped dynamically */
+  /* Status Colors */
+  --color-success: #16a34a;
+  --color-success-hover: #15803d;
+  --color-danger: #ef4444;
+  --color-danger-hover: #dc2626;
+  --color-warning: #f59e0b;
+  --color-warning-hover: #d97706;
+  --color-info: #2563eb;
+
+  /* Focus & Accessibility */
+  --focus-ring: rgba(37, 99, 235, 0.4);
+
+  /* Legacy aliases mapped to semantic tokens */
   --color-lavender-whisper: #f1f0f5;
-  --color-forest-ink: #16a34a;
-  --color-ember-glow: #ea580c;
-  --color-vast-ink: #0f172a;
-  --color-lumen-cream: rgba(255, 255, 255, 0.9);
-  --color-lumen-stone: #f8fafc;
-  --color-fog: #64748b;
-  --color-charcoal: #334155;
-  --color-pure-white: #ffffff;
-  --color-border-soft: rgba(0, 0, 0, 0.08);
-  --color-border-mid: rgba(0, 0, 0, 0.14);
+  --color-forest-ink: var(--color-success);
+  --color-ember-glow: var(--color-warning);
+  --color-vast-ink: var(--text-primary);
 
   /* Shadows & Depth */
   --shadow-elevation-1: 0 4px 16px rgba(0, 0, 0, 0.06);

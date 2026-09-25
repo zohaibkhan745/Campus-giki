@@ -15,21 +15,7 @@
     visibility: visible;
   }
 
-  #venue-slip-printable {
-    position: fixed !important;
-    left: 0 !important;
-    top: 0 !important;
-    width: 100% !important;
-    min-height: 100% !important;
-    margin: 0 !important;
-    padding: 15mm !important;
-    background: white !important;
-    color: black !important;
-    transform: none !important;
-    border: none !important;
-    box-shadow: none !important;
-  }
-
+  #venue-slip-printable,
   #yearly-plan-printable {
     position: fixed !important;
     left: 0 !important;
@@ -37,12 +23,21 @@
     width: 100% !important;
     min-height: 100% !important;
     margin: 0 !important;
-    padding: 12mm !important;
     background: white !important;
     color: black !important;
     transform: none !important;
     border: none !important;
     box-shadow: none !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  #venue-slip-printable {
+    padding: 15mm !important;
+  }
+
+  #yearly-plan-printable {
+    padding: 12mm !important;
   }
 
   tr {

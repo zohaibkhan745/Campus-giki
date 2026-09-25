@@ -6,7 +6,7 @@
   position: fixed;
   inset: 0;
   z-index: 9999;
-  background: rgba(10, 10, 12, 0.6);
+  background: rgba(10, 10, 12, 0.65);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   display: flex;
@@ -14,7 +14,7 @@
   justify-content: center;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.25s ease;
 }
 
 .modal-overlay.active {
@@ -32,8 +32,8 @@
   width: 90%;
   max-width: 500px;
   box-shadow: var(--shadow-modal), inset 0 0 0 1px var(--border-subtle);
-  transform: translateY(20px) scale(0.95);
-  transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  transform: translateY(16px) scale(0.97);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   color: var(--text-primary);
 }
 
@@ -51,21 +51,10 @@
   gap: 12px;
 }
 
-.btn-cancel {
-  background: var(--bg-surface-hover);
-  border: 1px solid var(--border-medium);
-  color: var(--text-primary);
-  padding: 10px 20px;
-  border-radius: 10px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  height: 44px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.btn-cancel:hover {
-  background: var(--border-medium);
+@media (prefers-reduced-motion: reduce) {
+  .modal-overlay,
+  .modal-box {
+    transition: none !important;
+    transform: none !important;
+  }
 }

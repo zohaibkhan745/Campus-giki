@@ -11,6 +11,7 @@
   --color-surface: var(--bg-surface);
   --color-surface-hover: var(--bg-surface-hover);
   --color-surface-elevated: var(--bg-surface-elevated);
+  --color-surface-subtle: var(--bg-surface-subtle);
   --color-surface-glass: var(--bg-surface-glass);
   --color-surface-glass-border: var(--bg-surface-glass-border);
 
@@ -28,18 +29,19 @@
   --color-brand-secondary: var(--brand-secondary);
   --color-brand-accent: var(--brand-accent);
 
+  --color-success: var(--color-success);
+  --color-success-hover: var(--color-success-hover);
+  --color-danger: var(--color-danger);
+  --color-danger-hover: var(--color-danger-hover);
+  --color-warning: var(--color-warning);
+  --color-warning-hover: var(--color-warning-hover);
+  --color-info: var(--color-info);
+  --color-focus-ring: var(--focus-ring);
+
   --color-lavender-whisper: var(--color-lavender-whisper);
   --color-forest-ink: var(--color-forest-ink);
   --color-ember-glow: var(--color-ember-glow);
   --color-vast-ink: var(--color-vast-ink);
-  --color-lumen-cream: var(--color-lumen-cream);
-  --color-lumen-stone: var(--color-lumen-stone);
-  --color-fog: var(--color-fog);
-  --color-charcoal: var(--color-charcoal);
-  --color-pure-white: var(--color-pure-white);
-
-  --color-border-soft: var(--color-border-soft);
-  --color-border-mid: var(--color-border-mid);
 
   --font-inter: var(--font-inter);
   --font-eb-garamond: var(--font-eb-garamond);
