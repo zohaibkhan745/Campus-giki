@@ -185,7 +185,9 @@ export const YearlyCalendarPage: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <BackButton />
+          <div className="mb-4">
+            <BackButton variant="inline" />
+          </div>
           <h1 className="text-4xl font-extrabold text-text-primary tracking-tight">
             Society Annual Calendar ({currentYear}-{currentYear + 1})
           </h1>

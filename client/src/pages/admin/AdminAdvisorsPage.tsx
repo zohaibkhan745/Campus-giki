@@ -102,7 +102,9 @@ const deleteMutation = useMutation({
 
   return (
     <div className="w-full min-h-screen flex flex-col items-center py-10 font-sans">
-      <BackButton />
+      <div className="w-[95%] max-w-[1200px] flex items-center justify-start mb-4">
+        <BackButton variant="inline" />
+      </div>
 
       <div className="w-[95%] max-w-[1200px] flex justify-between items-end mb-6 text-left">
         <div>

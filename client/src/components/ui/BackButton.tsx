@@ -19,7 +19,7 @@ export const BackButton: React.FC<BackButtonProps> = ({
   onClick,
   className = '',
   title = 'Go back',
-  variant = 'fixed',
+  variant = 'inline',
 }) => {
   const navigate = useNavigate();
 

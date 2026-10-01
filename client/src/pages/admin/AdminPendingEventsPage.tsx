@@ -143,8 +143,8 @@ export const AdminPendingEventsPage: React.FC = () => {
 
   return (
     <div className="max-w-7xl mx-auto space-y-6 text-left py-4">
-      <div className="flex items-center justify-between">
-        <BackButton />
+      <div className="flex items-center justify-between mb-4">
+        <BackButton variant="inline" />
       </div>
 
       <div className="space-y-1 py-6 text-left">

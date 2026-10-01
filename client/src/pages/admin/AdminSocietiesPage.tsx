@@ -222,7 +222,9 @@ export const AdminSocietiesPage: React.FC = () => {
   return (
     <div className="max-w-6xl mx-auto space-y-6 text-left py-4 relative px-4">
       {/* Top Back Navigation */}
-      <BackButton />
+      <div className="flex items-center">
+        <BackButton variant="inline" />
+      </div>
 
       {/* Page Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 py-4 sm:py-6">

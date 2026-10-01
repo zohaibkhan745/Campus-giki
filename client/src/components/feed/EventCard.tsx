@@ -16,6 +16,7 @@ const UploadSignedSlipModal = React.lazy(() =>
 );
 import { Loader2 } from 'lucide-react';
 import { ConfirmModal } from '@/components/ui/ConfirmModal';
+import { AddToCalendarButton } from '@/components/events';
 
 interface EventCardProps {
   item: EventFeedItem;
@@ -287,6 +288,12 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
         </div>
 
         <div className="flex items-center gap-2 shrink-0 h-full">
+          <AddToCalendarButton
+            event={item}
+            variant="compact"
+            className="h-[32px] w-[32px]"
+            align="right"
+          />
           {reviewUrl ? (
             <Link
               to={reviewUrl}

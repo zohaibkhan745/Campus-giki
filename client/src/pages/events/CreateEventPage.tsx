@@ -199,7 +199,9 @@ export const CreateEventPage: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <BackButton to="/dashboard" />
+          <div className="mb-4">
+            <BackButton to="/dashboard" variant="inline" />
+          </div>
           <h1 className="text-3xl font-extrabold text-text-primary tracking-tight">
             Create New Campus Event
           </h1>

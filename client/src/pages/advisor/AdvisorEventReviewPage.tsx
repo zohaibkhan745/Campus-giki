@@ -187,8 +187,10 @@ export const AdvisorEventReviewPage: React.FC = () => {
   return (
     <div className="max-w-4xl mx-auto space-y-6 text-left py-4 px-4 pb-32">
       {/* Top Heading */}
-      <BackButton />
-      <div className="mb-6 mt-12 sm:mt-8">
+      <div className="flex items-center mb-4">
+        <BackButton variant="inline" />
+      </div>
+      <div className="mb-6">
         <h1 className="text-4xl font-extrabold text-text-primary leading-tight">
           Event Details: {eventData.title}
         </h1>
@@ -331,7 +333,7 @@ export const AdvisorEventReviewPage: React.FC = () => {
                 <label className="block text-xs uppercase tracking-wider text-text-secondary font-semibold mb-1">
                   Event Type
                 </label>
-                <CustomDropdown placeholder="Select Type" disabled={true} options={[{value:"Workshop",label:"Workshop"},{value:"Seminar",label:"Seminar"},{value:"Hackathon",label:"Hackathon"},{value:"Competition",label:"Competition"},{value:"Social",label:"Social"},{value:"Other",label:"Other"}]} value={eventData.eventType || undefined} />
+                <CustomDropdown placeholder="Not Specified" disabled={true} options={[{value:"Workshop",label:"Workshop"},{value:"Seminar",label:"Seminar"},{value:"Hackathon",label:"Hackathon"},{value:"Competition",label:"Competition"},{value:"Social",label:"Social"},{value:"Other",label:"Other"}]} value={eventData.eventType || undefined} />
               </div>
               <Input
                 type="date"

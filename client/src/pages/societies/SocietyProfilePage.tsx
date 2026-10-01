@@ -126,7 +126,7 @@ export const SocietyProfilePage: React.FC = () => {
         logoUrl={getSocietyLogo(society.logoUrl)}
         fallbackImage="/default-society.jpg"
         hideSpacer
-        backButton={<BackButton />}
+        backButton={<BackButton variant="fixed" />}
         warningBadge={
           society.hasWarning ? (
             <div className="absolute top-4 left-16 sm:left-20 z-10">

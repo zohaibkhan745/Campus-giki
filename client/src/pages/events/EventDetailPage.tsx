@@ -21,6 +21,7 @@ import { VenuePermissionSlipModal } from '@/components/events/VenuePermissionSli
 import { UploadSignedSlipModal } from '@/components/events/UploadSignedSlipModal';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { BackButton } from '@/components/ui';
+import { AddToCalendarButton } from '@/components/events';
 
 export const EventDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -149,18 +150,27 @@ export const EventDetailPage: React.FC = () => {
               </h1>
             </div>
 
-            {/* 3. Primary Registration Action Button */}
-            {eventItem.registrationLink && (
-              <a
-                href={eventItem.registrationLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-brand-primary hover:bg-brand-primary-hover text-white rounded-xl text-sm font-bold transition-all shadow-md hover:shadow-lg active:scale-95 shrink-0 cursor-pointer"
-              >
-                <span>Register for Event</span>
-                <ExternalLink className="w-4 h-4 text-white" />
-              </a>
-            )}
+            {/* Action Buttons: Add to Calendar & Register */}
+            <div className="flex flex-wrap items-center gap-3">
+              <AddToCalendarButton
+                event={eventItem}
+                variant="primary"
+                align="right"
+              />
+
+              {/* 3. Primary Registration Action Button */}
+              {eventItem.registrationLink && (
+                <a
+                  href={eventItem.registrationLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-brand-primary hover:bg-brand-primary-hover text-white rounded-xl text-sm font-bold transition-all shadow-md hover:shadow-lg active:scale-95 shrink-0 cursor-pointer"
+                >
+                  <span>Register for Event</span>
+                  <ExternalLink className="w-4 h-4 text-white" />
+                </a>
+              )}
+            </div>
           </div>
         </div>
 

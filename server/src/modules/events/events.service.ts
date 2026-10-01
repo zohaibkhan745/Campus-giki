@@ -392,6 +392,104 @@ export class EventsService {
   }
 
   /**
+   * Generates RFC 5545 compliant iCalendar content for an event.
+   */
+  async generateEventIcs(eventId: string): Promise<{ icsContent: string; filename: string }> {
+    const event = await this.getEventById(eventId);
+
+    const pad = (n: number) => String(n).padStart(2, '0');
+    const formatUtc = (date: Date) =>
+      date.getUTCFullYear() +
+      pad(date.getUTCMonth() + 1) +
+      pad(date.getUTCDate()) +
+      'T' +
+      pad(date.getUTCHours()) +
+      pad(date.getUTCMinutes()) +
+      pad(date.getUTCSeconds()) +
+      'Z';
+
+    const escapeIcs = (str: string) =>
+      str
+        .replace(/\\/g, '\\\\')
+        .replace(/;/g, '\\;')
+        .replace(/,/g, '\\,')
+        .replace(/\r?\n/g, '\\n');
+
+    const eventDate = new Date(event.eventDate);
+    const year = eventDate.getFullYear();
+    const month = eventDate.getMonth();
+    const day = eventDate.getDate();
+
+    let startHours = 9;
+    let startMinutes = 0;
+    if (event.startTime) {
+      const [h, m] = event.startTime.split(':').map(Number);
+      if (!isNaN(h)) startHours = h;
+      if (!isNaN(m)) startMinutes = m;
+    }
+
+    let endHours = startHours + 2;
+    let endMinutes = startMinutes;
+    if (event.endTime) {
+      const [h, m] = event.endTime.split(':').map(Number);
+      if (!isNaN(h)) endHours = h;
+      if (!isNaN(m)) endMinutes = m;
+    }
+
+    const startDate = new Date(year, month, day, startHours, startMinutes, 0);
+    let endDate = new Date(year, month, day, endHours, endMinutes, 0);
+    if (endDate <= startDate) {
+      endDate = new Date(startDate.getTime() + 2 * 60 * 60 * 1000);
+    }
+
+    const now = new Date();
+    const uid = `${event.id}@campusgiki.edu.pk`;
+    const dtstamp = formatUtc(now);
+    const dtstart = formatUtc(startDate);
+    const dtend = formatUtc(endDate);
+
+    const summary = escapeIcs(event.title);
+    const description = escapeIcs(event.description || '');
+    const location = escapeIcs(event.venue || 'GIK Institute, Topi');
+    const organizer = event.society?.name ? escapeIcs(event.society.name) : 'Campus GIKI';
+
+    const lines = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//Campus GIKI//Campus Hub Events//EN',
+      'CALSCALE:GREGORIAN',
+      'METHOD:PUBLISH',
+      'BEGIN:VEVENT',
+      `UID:${uid}`,
+      `DTSTAMP:${dtstamp}`,
+      `DTSTART:${dtstart}`,
+      `DTEND:${dtend}`,
+      `SUMMARY:${summary}`,
+      `DESCRIPTION:${description}`,
+      `LOCATION:${location}`,
+      `ORGANIZER;CN=${organizer}:MAILTO:events@giki.edu.pk`,
+      'STATUS:CONFIRMED',
+    ];
+
+    if (event.registrationLink) {
+      lines.push(`URL:${event.registrationLink}`);
+    }
+
+    lines.push('END:VEVENT', 'END:VCALENDAR');
+
+    const cleanTitle = event.title
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '');
+    const filename = `${cleanTitle || 'campus-event'}.ics`;
+
+    return {
+      icsContent: lines.join('\r\n'),
+      filename,
+    };
+  }
+
+  /**
    * Updates an existing event after enforcing ownership validation.
    */
 

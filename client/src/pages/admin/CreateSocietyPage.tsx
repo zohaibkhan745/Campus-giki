@@ -104,8 +104,8 @@ export const CreateSocietyPage: React.FC = () => {
   return (
     <div className="max-w-3xl mx-auto space-y-6 text-left py-4">
       {/* Back Button */}
-      <div className="flex items-center justify-between">
-        <BackButton />
+      <div className="flex items-center justify-between mb-4">
+        <BackButton variant="inline" />
       </div>
 
       {/* Header Banner */}

@@ -126,8 +126,9 @@ export const AdminStaffPage: React.FC = () => {
 
   return (
     <div className="w-full min-h-screen flex flex-col items-center py-10 font-sans">
-      {/* Floating Back Button */}
-      <BackButton />
+      <div className="w-[95%] max-w-[1200px] flex items-center justify-start mb-4">
+        <BackButton variant="inline" />
+      </div>
 
       {/* Page Header */}
       <div className="w-[95%] max-w-[1200px] flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-6 text-left">

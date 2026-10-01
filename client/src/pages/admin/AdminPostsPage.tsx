@@ -156,8 +156,8 @@ export const AdminPostsPage: React.FC = () => {
 
   return (
     <div className="w-full max-w-[1440px] mx-auto text-left relative">
-      <div className="flex items-center justify-between">
-        <BackButton />
+      <div className="flex items-center justify-between mb-4">
+        <BackButton variant="inline" />
       </div>
 
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">

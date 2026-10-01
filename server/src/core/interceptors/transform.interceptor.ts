@@ -11,6 +11,10 @@ export class TransformInterceptor<T> implements NestInterceptor<T, ApiResponse<T
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
 
+    if (response.getHeader('content-type')?.toString().includes('text/calendar')) {
+      return next.handle() as Observable<any>;
+    }
+
     return next.handle().pipe(
       map((data: T): ApiResponse<T> => {
         let message = 'Request processed successfully';

@@ -14,7 +14,9 @@ import {
   UseInterceptors,
   UploadedFile,
   BadRequestException,
+  Res,
 } from '@nestjs/common';
+import type { Response } from 'express';
 import {
   ApiTags,
   ApiOperation,
@@ -117,6 +119,30 @@ export class EventsController {
   })
   async getEventById(@Param('id', ParseUUIDPipe) id: string): Promise<EventResponseDto> {
     return this.eventsService.getEventById(id);
+  }
+
+  @Get(':id/ics')
+  @HttpCode(HttpStatus.OK)
+  @Header('Cache-Control', 'public, max-age=60, stale-while-revalidate=120')
+  @Header('Content-Type', 'text/calendar; charset=utf-8')
+  @ApiOperation({ summary: 'Download RFC 5545 iCalendar (.ics) file for an event' })
+  @ApiParam({ name: 'id', description: 'Event UUID' })
+  @ApiResponse({
+    status: 200,
+    description: 'iCalendar file returned',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Event with specified ID not found',
+  })
+  async downloadEventIcs(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<string> {
+    const { icsContent, filename } = await this.eventsService.generateEventIcs(id);
+    res.setHeader('Content-Type', 'text/calendar; charset=utf-8');
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    return icsContent;
   }
 
   @Patch(':id/edit-request')

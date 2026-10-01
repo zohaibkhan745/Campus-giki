@@ -116,7 +116,9 @@ export const AdminYearlyPlanDetailPage: React.FC = () => {
       <SmokeyCanvasBackground />
       
       <div className="relative z-10 w-full max-w-4xl mx-auto flex flex-col gap-6 text-left">
-        <BackButton />
+        <div className="flex items-center">
+          <BackButton variant="inline" />
+        </div>
 
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex flex-col gap-3">

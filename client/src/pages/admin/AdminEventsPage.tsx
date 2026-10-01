@@ -137,8 +137,8 @@ export const AdminEventsPage: React.FC = () => {
 
   return (
     <div className="w-full max-w-[1440px] mx-auto text-left relative">
-      <div className="flex items-center justify-between">
-        <BackButton />
+      <div className="flex items-center justify-between mb-4">
+        <BackButton variant="inline" />
       </div>
 
       <div className="text-left mb-6">

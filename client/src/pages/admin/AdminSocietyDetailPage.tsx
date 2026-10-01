@@ -259,8 +259,10 @@ export const AdminSocietyDetailPage: React.FC = () => {
 
   return (
     <div className="max-w-6xl mx-auto space-y-6 text-left py-4 relative px-4">
-      {/* Top Floating Back Button */}
-      <BackButton to="/admin/societies" title="Back to Societies" />
+      {/* Top Back Button */}
+      <div className="flex items-center">
+        <BackButton to="/admin/societies" title="Back to Societies" variant="inline" />
+      </div>
 
       {/* Breadcrumb Navigation */}
       <div className="flex items-center gap-2 text-xs font-semibold text-text-secondary pl-1">
