@@ -16,6 +16,7 @@ import { CustomDropdown } from '@/components/ui/CustomDropdown';
 import { EventCard } from '@/components/feed/EventCard';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { BackButton } from '@/components/ui';
 import type { EventItem } from '@/types/event.types';
 
 export const SocietyEventsPage: React.FC = () => {
@@ -115,16 +116,10 @@ export const SocietyEventsPage: React.FC = () => {
   return (
     <div className="w-full max-w-[1440px] mx-auto text-left relative pb-20">
       <div className="flex items-center justify-between mb-4">
-        <button
-          onClick={() => navigate(-1)}
-          className="inline-flex items-center justify-center w-10 h-10 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white rounded-full transition-all cursor-pointer shadow-lg shrink-0"
-          title="Go Back"
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </button>
+        <BackButton variant="inline" className="shrink-0" />
         <Link
           to="/events/create"
-          className="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-gray-900 hover:bg-gray-200 border border-white/20 rounded-xl text-sm font-bold transition-all shadow-lg shrink-0"
+          className="inline-flex items-center gap-2 px-5 py-2.5 bg-text-primary text-text-inverse hover:opacity-90 border border-border-medium rounded-xl text-sm font-bold transition-all shadow-elevation-1 shrink-0"
         >
           <Plus className="w-4 h-4" />
           <span>Create New Event</span>
@@ -132,10 +127,10 @@ export const SocietyEventsPage: React.FC = () => {
       </div>
 
       {/* Filter Toolbar */}
-      <div className="relative z-[200] bg-white/[0.08] backdrop-blur-[20px] p-3 rounded-[18px] border border-white/20 shadow-[0_12px_40px_rgba(0,0,0,0.4)] w-full mb-8">
+      <div className="relative z-[200] bg-surface-glass backdrop-blur-xl p-3 rounded-cards border border-border-medium shadow-elevation-1 w-full mb-8">
         <div className="flex flex-row items-center justify-between gap-3 overflow-x-auto custom-scrollbar">
           <div className="relative w-64 shrink-0">
-            <div className="absolute left-3 text-gray-400 pointer-events-none flex items-center justify-center h-full">
+            <div className="absolute left-3 text-text-muted pointer-events-none flex items-center justify-center h-full">
               <Search className="w-4 h-4" />
             </div>
             <input
@@ -143,7 +138,7 @@ export const SocietyEventsPage: React.FC = () => {
               placeholder="Search event title or venue..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-transparent text-white text-sm rounded-xl border border-white/20 px-3.5 py-2 pl-10 transition-all outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:border-indigo-500 font-medium"
+              className="w-full bg-surface text-text-primary placeholder:text-text-muted text-sm rounded-xl border border-border-medium px-3.5 py-2 pl-10 transition-all outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:border-brand-primary font-medium"
             />
           </div>
 

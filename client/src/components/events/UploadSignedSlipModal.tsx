@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { invalidateEventQueries } from '@/lib/queryInvalidations';
 import {
   UploadCloud,
   X,
@@ -134,11 +135,7 @@ export const UploadSignedSlipModal: React.FC<UploadSignedSlipModalProps> = ({
     },
     onSuccess: () => {
       globalNotification.triggerSuccess('Signed venue permission slip uploaded successfully!');
-      queryClient.invalidateQueries({ queryKey: ['event', event.id] });
-      queryClient.invalidateQueries({ queryKey: ['mySocietyEventsList'] });
-      queryClient.invalidateQueries({ queryKey: ['societyDashboard'] });
-      queryClient.invalidateQueries({ queryKey: ['adminDashboard'] });
-      queryClient.invalidateQueries({ queryKey: ['adminEventsList'] });
+      void invalidateEventQueries(queryClient, event.id);
       handleClose();
     },
     onError: (err: any) => {
@@ -177,16 +174,16 @@ export const UploadSignedSlipModal: React.FC<UploadSignedSlipModalProps> = ({
         />
 
         {/* Minimal Header */}
-        <div className="flex items-center justify-between pb-3 border-b border-white/10">
+        <div className="flex items-center justify-between pb-3 border-b border-border-subtle">
           <div>
-            <h3 className="font-bold text-base text-white">Upload Signed Slip</h3>
-            <p className="text-xs text-gray-400 mt-0.5">PS to Dean / Venue Custodian Endorsement</p>
+            <h3 className="font-bold text-base text-text-primary">Upload Signed Slip</h3>
+            <p className="text-xs text-text-secondary mt-0.5">PS to Dean / Venue Custodian Endorsement</p>
           </div>
           <button
             type="button"
             onClick={handleClose}
             aria-label="Close dialog"
-            className="p-1.5 text-gray-400 hover:text-white rounded-lg hover:bg-white/10 transition-colors"
+            className="p-1.5 text-text-secondary hover:text-text-primary rounded-lg hover:bg-surface-hover transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -197,17 +194,17 @@ export const UploadSignedSlipModal: React.FC<UploadSignedSlipModalProps> = ({
           <div
             className={`p-3.5 rounded-xl border text-xs space-y-1.5 ${
               event.venueClearanceStatus === 'VERIFIED'
-                ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-300'
+                ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
                 : event.venueClearanceStatus === 'REJECTED'
-                ? 'bg-red-500/10 border-red-500/20 text-red-300'
-                : 'bg-white/5 border-white/10 text-gray-300'
+                ? 'bg-red-500/10 border-red-500/20 text-red-400'
+                : 'bg-surface-glass border-border-subtle text-text-secondary'
             }`}
           >
             <div className="flex items-center justify-between font-semibold">
               <div className="flex items-center gap-1.5">
                 {event.venueClearanceStatus === 'VERIFIED' && <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />}
                 {event.venueClearanceStatus === 'REJECTED' && <AlertCircle className="w-3.5 h-3.5 text-red-400" />}
-                {event.venueClearanceStatus === 'SUBMITTED' && <Clock className="w-3.5 h-3.5 text-gray-400" />}
+                {event.venueClearanceStatus === 'SUBMITTED' && <Clock className="w-3.5 h-3.5 text-text-muted" />}
                 <span>
                   {event.venueClearanceStatus === 'SUBMITTED' ? 'Under Review by DSA' : event.venueClearanceStatus}
                 </span>
@@ -250,40 +247,40 @@ export const UploadSignedSlipModal: React.FC<UploadSignedSlipModalProps> = ({
               onClick={() => fileInputRef.current?.click()}
               className={`border border-dashed rounded-xl p-8 text-center cursor-pointer transition-all flex flex-col items-center justify-center gap-3 ${
                 isDragOver
-                  ? 'border-white/50 bg-white/10'
-                  : 'border-white/15 hover:border-white/30 bg-white/[0.02] hover:bg-white/[0.04]'
+                  ? 'border-brand-primary bg-surface-hover'
+                  : 'border-border-medium hover:border-border-strong bg-surface-glass hover:bg-surface-hover'
               }`}
             >
-              <div className="p-3 rounded-full bg-white/5 text-gray-300">
+              <div className="p-3 rounded-full bg-surface border border-border-subtle text-text-secondary">
                 <UploadCloud className="w-6 h-6" />
               </div>
               <div>
-                <p className="text-sm font-medium text-white">
-                  Click to upload <span className="text-gray-400 font-normal">or drag and drop</span>
+                <p className="text-sm font-medium text-text-primary">
+                  Click to upload <span className="text-text-secondary font-normal">or drag and drop</span>
                 </p>
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-text-muted mt-1">
                   JPG, PNG, WebP or PDF (max 10MB)
                 </p>
               </div>
             </div>
           ) : (
             /* Selected State: Clean Minimalist Preview Card */
-            <div className="border border-white/10 bg-white/[0.02] rounded-xl overflow-hidden">
+            <div className="border border-border-subtle bg-surface rounded-xl overflow-hidden">
               {/* File Info Bar */}
-              <div className="p-3.5 flex items-center justify-between gap-3 border-b border-white/10 bg-white/[0.01]">
+              <div className="p-3.5 flex items-center justify-between gap-3 border-b border-border-subtle bg-surface-glass">
                 <div className="flex items-center gap-3 min-w-0">
-                  <div className="p-2 rounded-lg bg-white/5 text-gray-300 shrink-0">
+                  <div className="p-2 rounded-lg bg-surface border border-border-subtle text-text-secondary shrink-0">
                     {selectedFile.type === 'application/pdf' ? (
-                      <FileText className="w-4 h-4 text-rose-400" />
+                      <FileText className="w-4 h-4 text-rose-500" />
                     ) : (
-                      <FileCheck className="w-4 h-4 text-emerald-400" />
+                      <FileCheck className="w-4 h-4 text-emerald-500" />
                     )}
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs font-semibold text-white truncate max-w-[200px] sm:max-w-[280px]" title={selectedFile.name}>
+                    <p className="text-xs font-semibold text-text-primary truncate max-w-[200px] sm:max-w-[280px]" title={selectedFile.name}>
                       {selectedFile.name}
                     </p>
-                    <p className="text-[11px] text-gray-400 mt-0.5">
+                    <p className="text-[11px] text-text-secondary mt-0.5">
                       {formatFileSize(selectedFile.size)}
                     </p>
                   </div>
@@ -294,7 +291,7 @@ export const UploadSignedSlipModal: React.FC<UploadSignedSlipModalProps> = ({
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className="px-2.5 py-1 text-xs font-medium text-gray-300 hover:text-white rounded-lg hover:bg-white/10 transition-colors"
+                    className="px-2.5 py-1 text-xs font-medium text-text-secondary hover:text-text-primary rounded-lg hover:bg-surface-hover transition-colors"
                   >
                     Change
                   </button>
@@ -302,7 +299,7 @@ export const UploadSignedSlipModal: React.FC<UploadSignedSlipModalProps> = ({
                     type="button"
                     onClick={handleRemoveFile}
                     title="Remove file"
-                    className="p-1.5 text-gray-400 hover:text-red-400 rounded-lg hover:bg-white/10 transition-colors"
+                    className="p-1.5 text-text-muted hover:text-rose-500 rounded-lg hover:bg-surface-hover transition-colors"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -321,7 +318,7 @@ export const UploadSignedSlipModal: React.FC<UploadSignedSlipModalProps> = ({
               )}
 
               {selectedFile.type === 'application/pdf' && (
-                <div className="p-6 text-center text-xs text-gray-400">
+                <div className="p-6 text-center text-xs text-text-secondary">
                   PDF document attached and ready for upload
                 </div>
               )}
@@ -336,18 +333,18 @@ export const UploadSignedSlipModal: React.FC<UploadSignedSlipModalProps> = ({
           )}
 
           {/* Footer Actions */}
-          <div className="flex items-center justify-end gap-3 pt-3 border-t border-white/10">
+          <div className="flex items-center justify-end gap-3 pt-3 border-t border-border-subtle">
             <button
               type="button"
               onClick={handleClose}
-              className="px-4 py-2 text-xs font-semibold text-gray-400 hover:text-white transition-colors"
+              className="px-4 py-2 text-xs font-semibold text-text-secondary hover:text-text-primary transition-colors cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={!selectedFile || uploadMutation.isPending}
-              className="inline-flex items-center gap-2 px-5 py-2 rounded-xl text-xs font-semibold bg-white text-black hover:bg-gray-200 disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-sm active:scale-[0.98]"
+              className="inline-flex items-center gap-2 px-5 py-2 rounded-xl text-xs font-semibold bg-text-primary text-text-inverse hover:opacity-90 disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-elevation-1 active:scale-[0.98] cursor-pointer"
             >
               {uploadMutation.isPending ? (
                 <>

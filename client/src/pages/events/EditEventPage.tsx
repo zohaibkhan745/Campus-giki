@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate, Link, useParams } from "react-router-dom";
+import { invalidateEventQueries } from "@/lib/queryInvalidations";
 import {
   Calendar,
   Clock,
@@ -161,14 +162,7 @@ export const EditEventPage: React.FC = () => {
   const deleteMutation = useMutation({
     mutationFn: () => eventService.deleteEvent(id!),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["myEvents"] });
-      queryClient.invalidateQueries({ queryKey: ["publicEvents"] });
-      queryClient.invalidateQueries({ queryKey: ["events"] });
-      queryClient.invalidateQueries({ queryKey: ["societyEvents"] });
-      queryClient.invalidateQueries({ queryKey: ["societyDashboard"] });
-      queryClient.invalidateQueries({ queryKey: ["adminEvents"] });
-      queryClient.invalidateQueries({ queryKey: ["adminEventsList"] });
-      queryClient.invalidateQueries({ queryKey: ["campusFeed"] });
+      void invalidateEventQueries(queryClient, id);
       navigate("/dashboard", { replace: true });
     },
   });
@@ -177,17 +171,7 @@ export const EditEventPage: React.FC = () => {
     meta: { notify: true },
     mutationFn: (data: EventFormData) => eventService.updateEvent(id!, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["myEvents"] });
-      queryClient.invalidateQueries({ queryKey: ["event", id] });
-      queryClient.invalidateQueries({ queryKey: ["publicEvents"] });
-      queryClient.invalidateQueries({ queryKey: ["events"] });
-      queryClient.invalidateQueries({ queryKey: ["societyEvents"] });
-      queryClient.invalidateQueries({ queryKey: ["societyDashboard"] });
-      queryClient.invalidateQueries({ queryKey: ["adminEvents"] });
-      queryClient.invalidateQueries({ queryKey: ["adminEventsList"] });
-      queryClient.invalidateQueries({ queryKey: ["advisorDashboard"] });
-      queryClient.invalidateQueries({ queryKey: ["adminDashboard"] });
-      queryClient.invalidateQueries({ queryKey: ["campusFeed"] });
+      void invalidateEventQueries(queryClient, id);
       navigate("/dashboard", { replace: true });
     },
     onError: (
@@ -213,7 +197,7 @@ export const EditEventPage: React.FC = () => {
 
   if (isLoadingEvent) {
     return (
-      <div className="min-h-[50vh] flex flex-col justify-center items-center text-gray-400 gap-3">
+      <div className="min-h-[50vh] flex flex-col justify-center items-center text-text-secondary gap-3">
         <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
         <p className="text-sm font-medium">Loading event details...</p>
       </div>
@@ -451,7 +435,7 @@ export const EditEventPage: React.FC = () => {
 
       <form
         onSubmit={(e) => e.preventDefault()}
-        className="bg-white/[0.08] backdrop-blur-[20px] p-6 md:p-8 rounded-cards border border-white/20 space-y-8"
+        className="bg-surface-glass backdrop-blur-xl p-6 md:p-8 rounded-cards border border-border-medium shadow-elevation-1 space-y-8"
         noValidate
       >
         <div className="form-section">
@@ -877,14 +861,14 @@ export const EditEventPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-white/20 mt-4">
+        <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-border-subtle mt-4">
           {isEditLocked ? (
             (eventData as any)?.editRequestStatus === "PENDING" ? (
               <Button
                 type="button"
                 variant="outline"
                 disabled
-                className="w-full text-gray-400 border-white/20"
+                className="w-full text-text-muted border-border-medium"
               >
                 <Clock className="w-5 h-5 mr-2" />
                 Edit Request Pending DSA Approval
@@ -905,7 +889,7 @@ export const EditEventPage: React.FC = () => {
               <Button
                 type="button"
                 variant="primary"
-                className="w-full bg-white text-black hover:bg-gray-200"
+                className="w-full bg-text-primary text-text-inverse hover:opacity-90 shadow-elevation-1"
                 isLoading={updateMutation.isPending}
                 onClick={handleSubmit((data) => onSubmit(data, false), onError)}
                 leftIcon={<Save className="w-5 h-5" />}

@@ -3,6 +3,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { AlertTriangle } from 'lucide-react';
 import { eventService } from '@/services/event.service';
 import { Button } from '@/components/ui/Button';
+import { invalidateEventQueries } from '@/lib/queryInvalidations';
 
 interface DeleteEventDialogProps {
   isOpen: boolean;
@@ -23,16 +24,7 @@ export const DeleteEventDialog: React.FC<DeleteEventDialogProps> = ({
     meta: { notify: true },
     mutationFn: (id: string) => eventService.deleteEvent(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['myEvents'] });
-      queryClient.invalidateQueries({ queryKey: ['publicEvents'] });
-      queryClient.invalidateQueries({ queryKey: ['events'] });
-      queryClient.invalidateQueries({ queryKey: ['societyEvents'] });
-      queryClient.invalidateQueries({ queryKey: ['societyDashboard'] });
-      queryClient.invalidateQueries({ queryKey: ['adminEvents'] });
-      queryClient.invalidateQueries({ queryKey: ['adminEventsList'] });
-      queryClient.invalidateQueries({ queryKey: ['advisorDashboard'] });
-      queryClient.invalidateQueries({ queryKey: ['adminDashboard'] });
-      queryClient.invalidateQueries({ queryKey: ['campusFeed'] });
+      void invalidateEventQueries(queryClient, eventId || undefined);
       onClose();
     },
   });

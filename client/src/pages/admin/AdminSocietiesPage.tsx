@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import { Link, useNavigate } from 'react-router-dom';
+import { invalidateSocietyQueries } from '@/lib/queryInvalidations';
 import { useDebounce } from '@/hooks/useDebounce';
 import { getSocietyLogo, getAdvisorLogo } from '@/lib/utils';
 import {
@@ -27,6 +28,7 @@ import {
   type AdminSocietyStatusType,
 } from '@/services/admin.service';
 import { societyService } from '@/services/society.service';
+import { BackButton } from '@/components/ui';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { CustomDropdown } from '@/components/ui/CustomDropdown';
@@ -124,8 +126,8 @@ export const AdminSocietiesPage: React.FC = () => {
     meta: { notify: true },
     mutationFn: (data: { id: string; payload: { name?: string; categoryId?: string; advisorId?: string | null } }) =>
       adminService.updateSociety(data.id, data.payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['adminSocietiesList'] });
+    onSuccess: (_, variables) => {
+      void invalidateSocietyQueries(queryClient, variables.id);
       setEditingSociety(null);
     },
     onError: (error: AxiosError<{ message?: string | string[] }>) => {
@@ -137,8 +139,8 @@ export const AdminSocietiesPage: React.FC = () => {
   const deleteMutation = useMutation({
     meta: { notify: true },
     mutationFn: (id: string) => adminService.deleteSociety(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['adminSocietiesList'] });
+    onSuccess: (_, id) => {
+      void invalidateSocietyQueries(queryClient, id);
       setDeletingSociety(null);
     },
     onError: (error: AxiosError<{ message?: string | string[] }>) => {
@@ -150,8 +152,8 @@ export const AdminSocietiesPage: React.FC = () => {
   const deactivateMutation = useMutation({
     meta: { notify: true },
     mutationFn: (id: string) => adminService.deactivateSociety(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['adminSocietiesList'] });
+    onSuccess: (_, id) => {
+      void invalidateSocietyQueries(queryClient, id);
       setDeactivatingSociety(null);
     },
     onError: (error: AxiosError<{ message?: string | string[] }>) => {
@@ -163,8 +165,8 @@ export const AdminSocietiesPage: React.FC = () => {
   const reactivateMutation = useMutation({
     meta: { notify: true },
     mutationFn: (id: string) => adminService.reactivateSociety(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['adminSocietiesList'] });
+    onSuccess: (_, id) => {
+      void invalidateSocietyQueries(queryClient, id);
       setReactivatingSociety(null);
     },
     onError: (error: any) => {
@@ -220,13 +222,7 @@ export const AdminSocietiesPage: React.FC = () => {
   return (
     <div className="max-w-6xl mx-auto space-y-6 text-left py-4 relative px-4">
       {/* Top Back Navigation */}
-      <button
-        onClick={() => navigate(-1)}
-        className="fixed top-4 left-4 sm:top-6 sm:left-6 z-[100] inline-flex items-center justify-center w-10 h-10 bg-black/40 hover:bg-black/60 backdrop-blur-md border border-white/20 text-white rounded-full transition-all cursor-pointer shadow-lg"
-        title="Go Back"
-      >
-        <ArrowLeft className="w-5 h-5" />
-      </button>
+      <BackButton />
 
       {/* Page Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 py-4 sm:py-6">
@@ -613,7 +609,7 @@ export const AdminSocietiesPage: React.FC = () => {
       {editingSociety &&
         createPortal(
           <div className="modal-overlay active">
-            <div className="modal-box" style={{ maxWidth: '520px' }}>
+            <div className="modal-box max-w-xl w-full">
               <div className="flex justify-between items-center mb-6">
                 <h3 className="modal-title flex items-center gap-2 m-0 text-text-primary font-bold">
                   <Building2 className="w-5 h-5 text-brand-primary" />

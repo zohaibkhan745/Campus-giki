@@ -23,6 +23,7 @@ import { societyService } from '@/services/society.service';
 import { Alert } from '@/components/ui/Alert';
 import { CustomDropdown } from '@/components/ui/CustomDropdown';
 import { CustomDatePicker } from '@/components/ui/date-picker';
+import { BackButton } from '@/components/ui';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { EmptyState } from '@/components/ui/EmptyState';
 
@@ -137,12 +138,7 @@ export const AdminEventsPage: React.FC = () => {
   return (
     <div className="w-full max-w-[1440px] mx-auto text-left relative">
       <div className="flex items-center justify-between">
-        <button
-          onClick={() => navigate(-1)}
-          className="fixed top-4 left-4 sm:top-6 sm:left-6 z-[100] inline-flex items-center justify-center w-10 h-10 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white rounded-full transition-all cursor-pointer shadow-lg"
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </button>
+        <BackButton />
       </div>
 
       <div className="text-left mb-6">
@@ -150,16 +146,16 @@ export const AdminEventsPage: React.FC = () => {
       </div>
 
       {/* Filter Toolbar */}
-      <div className="bg-white/[0.08] backdrop-blur-[20px] p-5 rounded-[18px] border border-white/20 space-y-4 shadow-[0_12px_40px_rgba(0,0,0,0.4)] relative z-[100]">
+      <div className="bg-surface-glass backdrop-blur-xl p-5 rounded-cards border border-border-medium space-y-4 shadow-elevation-1 relative z-[100]">
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="relative w-full md:w-80 flex items-center">
-            <div className="absolute left-3 text-gray-400 pointer-events-none"><Search className="w-4 h-4" /></div>
+            <div className="absolute left-3 text-text-muted pointer-events-none"><Search className="w-4 h-4" /></div>
             <input
               type="text"
               placeholder="Search event title or venue..."
               value={searchQuery}
               onChange={(e) => { setSearchQuery(e.target.value); /* reset handled by queryKey */ }}
-              className="w-full bg-transparent text-text-primary placeholder:text-text-muted text-sm rounded-xl border border-white/20 px-3.5 py-2 pl-10 outline-none focus:border-brand-primary"
+              className="w-full bg-surface text-text-primary placeholder:text-text-muted text-sm rounded-xl border border-border-medium px-3.5 py-2 pl-10 outline-none focus:border-brand-primary"
             />
           </div>
           
@@ -189,7 +185,7 @@ export const AdminEventsPage: React.FC = () => {
           <div className="w-full md:flex-1 shrink-0"><CustomDatePicker value={fromDate} onChange={(val: string) => { setFromDate(val); setTypeToggle("all"); /* reset handled by queryKey */ }} placeholder="From Date" /></div>
           <div className="w-full md:flex-1 shrink-0"><CustomDatePicker value={toDate} onChange={(val: string) => { setToDate(val); setTypeToggle("all"); /* reset handled by queryKey */ }} placeholder="To Date" /></div>
             {(searchQuery || societyFilter || statusFilter || fromDate || toDate || typeToggle !== 'all') && (
-              <button onClick={handleClearFilters} className="p-2 text-gray-400 hover:text-white bg-white/5 rounded-xl">
+              <button onClick={handleClearFilters} className="p-2 text-text-secondary hover:text-text-primary bg-surface hover:bg-surface-hover border border-border-medium rounded-xl transition-colors cursor-pointer">
                 <FilterX className="w-4 h-4" />
               </button>
             )}
@@ -198,8 +194,8 @@ export const AdminEventsPage: React.FC = () => {
 
       {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4">
-          <div className="space-y-4"><div className="h-6 w-48 bg-white/10 rounded animate-pulse"></div><div className="h-[380px] bg-white/5 rounded-[22px] animate-pulse border border-white/10"></div></div>
-          <div className="space-y-4"><div className="h-6 w-48 bg-white/10 rounded animate-pulse"></div><div className="h-[380px] bg-white/5 rounded-[22px] animate-pulse border border-white/10"></div></div>
+          <div className="space-y-4"><div className="h-6 w-48 bg-border-subtle rounded animate-pulse"></div><div className="h-[380px] bg-surface-glass rounded-cards animate-pulse border border-border-subtle"></div></div>
+          <div className="space-y-4"><div className="h-6 w-48 bg-border-subtle rounded animate-pulse"></div><div className="h-[380px] bg-surface-glass rounded-cards animate-pulse border border-border-subtle"></div></div>
         </div>
       ) : isError ? (
         <ErrorState

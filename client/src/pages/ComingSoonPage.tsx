@@ -5,38 +5,32 @@ export const ComingSoonPage: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-5 relative overflow-hidden bg-transparent">
-      <div className="relative z-10 w-full max-w-[440px] p-10 py-10 px-7 rounded-[18px] bg-white/[0.08] backdrop-blur-[20px] border border-white/20 shadow-[0_12px_40px_rgba(0,0,0,0.4)] text-white flex flex-col gap-4 text-center items-center">
+    <div className="min-h-screen flex items-center justify-center p-5 relative overflow-hidden bg-canvas">
+      <div className="relative z-10 w-full max-w-[440px] p-8 sm:p-10 rounded-cards bg-surface-glass backdrop-blur-xl border border-border-medium shadow-elevation-2 text-text-primary flex flex-col gap-4 text-center items-center">
         <div 
-          className="text-7xl font-extrabold leading-none tracking-tight mb-2"
-          style={{
-            background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.2) 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            filter: 'drop-shadow(0 4px 12px rgba(255, 255, 255, 0.15)) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4))'
-          }}
+          className="text-7xl font-extrabold leading-none tracking-tight mb-2 bg-gradient-to-br from-brand-primary to-indigo-500 bg-clip-text text-transparent"
         >
           XOX
         </div>
         
-        <h3 className="text-2xl font-bold leading-tight drop-shadow-md">
+        <h3 className="text-2xl font-bold leading-tight text-text-primary">
           Coming Soon
         </h3>
         
-        <p className="text-[0.95rem] text-white/85 leading-relaxed drop-shadow-sm">
-          This page/feature will be brought soon
+        <p className="text-sm text-text-secondary leading-relaxed">
+          This feature is currently under active development and will be available soon.
         </p>
         
         <div className="flex gap-3 w-full mt-2">
           <Link 
             to="/" 
-            className="flex-1 py-3 px-4 rounded-[10px] text-[0.95rem] font-semibold text-black bg-white border border-white hover:bg-white/85 hover:border-white/85 transition-all text-center inline-flex justify-center items-center"
+            className="flex-1 py-3 px-4 rounded-xl text-sm font-semibold bg-text-primary text-text-inverse hover:opacity-90 transition-all text-center inline-flex justify-center items-center shadow-sm"
           >
             Return Home
           </Link>
           <button 
             onClick={() => navigate(-1)}
-            className="flex-1 py-3 px-4 rounded-[10px] text-[0.95rem] font-semibold text-white/80 bg-transparent border border-white/15 backdrop-blur-[10px] hover:bg-white/10 hover:border-white/30 hover:text-white transition-all text-center inline-flex justify-center items-center cursor-pointer"
+            className="flex-1 py-3 px-4 rounded-xl text-sm font-semibold text-text-primary bg-surface hover:bg-surface-hover border border-border-medium transition-all text-center inline-flex justify-center items-center cursor-pointer shadow-sm"
           >
             Go Back
           </button>

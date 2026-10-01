@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { invalidateSocietyQueries } from '@/lib/queryInvalidations';
 import {
   ArrowLeft,
   Building2,
@@ -34,6 +35,7 @@ import { getSocietyLogo, getAdvisorLogo } from '@/lib/utils';
 import { CustomDropdown } from '@/components/ui/CustomDropdown';
 import { ConfirmModal } from '@/components/ui/ConfirmModal';
 import { ErrorState } from '@/components/ui/ErrorState';
+import { BackButton } from '@/components/ui';
 import { globalNotification } from '@/contexts/NotificationContext';
 import type { AxiosError } from 'axios';
 
@@ -109,7 +111,7 @@ export const AdminSocietyDetailPage: React.FC = () => {
       adminService.updateSociety(id!, payload),
     onSuccess: (updated) => {
       queryClient.invalidateQueries({ queryKey: ['adminSocietyDetail', id] });
-      queryClient.invalidateQueries({ queryKey: ['adminSocietiesList'] });
+      void invalidateSocietyQueries(queryClient, id);
       setIsEditModalOpen(false);
       globalNotification.triggerSuccess(`Society "${updated.name}" updated successfully.`);
     },
@@ -125,7 +127,7 @@ export const AdminSocietyDetailPage: React.FC = () => {
     mutationFn: () => adminService.deactivateSociety(id!),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['adminSocietyDetail', id] });
-      queryClient.invalidateQueries({ queryKey: ['adminSocietiesList'] });
+      void invalidateSocietyQueries(queryClient, id);
       setIsBanModalOpen(false);
       globalNotification.triggerSuccess('Society account has been banned/deactivated.');
     },
@@ -141,7 +143,7 @@ export const AdminSocietyDetailPage: React.FC = () => {
     mutationFn: () => adminService.reactivateSociety(id!),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['adminSocietyDetail', id] });
-      queryClient.invalidateQueries({ queryKey: ['adminSocietiesList'] });
+      void invalidateSocietyQueries(queryClient, id);
       setIsReactivateModalOpen(false);
       globalNotification.triggerSuccess('Society account has been reactivated successfully.');
     },
@@ -156,7 +158,7 @@ export const AdminSocietyDetailPage: React.FC = () => {
   const deleteMutation = useMutation({
     mutationFn: () => adminService.deleteSociety(id!),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['adminSocietiesList'] });
+      void invalidateSocietyQueries(queryClient, id);
       setIsDeleteModalOpen(false);
       globalNotification.triggerSuccess('Society has been permanently removed.');
       navigate('/admin/societies', { replace: true });
@@ -226,7 +228,7 @@ export const AdminSocietyDetailPage: React.FC = () => {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center gap-3">
         <Loader2 className="w-9 h-9 animate-spin text-blue-500" />
-        <p className="text-sm font-semibold text-gray-400">Loading society profile details...</p>
+        <p className="text-sm font-semibold text-text-secondary">Loading society profile details...</p>
       </div>
     );
   }
@@ -258,25 +260,19 @@ export const AdminSocietyDetailPage: React.FC = () => {
   return (
     <div className="max-w-6xl mx-auto space-y-6 text-left py-4 relative px-4">
       {/* Top Floating Back Button */}
-      <button
-        onClick={() => navigate('/admin/societies')}
-        className="fixed top-4 left-4 sm:top-6 sm:left-6 z-[100] inline-flex items-center justify-center w-10 h-10 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white rounded-full transition-all cursor-pointer shadow-lg"
-        title="Back to Societies"
-      >
-        <ArrowLeft className="w-5 h-5" />
-      </button>
+      <BackButton to="/admin/societies" title="Back to Societies" />
 
       {/* Breadcrumb Navigation */}
-      <div className="flex items-center gap-2 text-xs font-semibold text-gray-400 pl-1">
-        <Link to="/admin/societies" className="hover:text-white transition-colors">
+      <div className="flex items-center gap-2 text-xs font-semibold text-text-secondary pl-1">
+        <Link to="/admin/societies" className="hover:text-text-primary transition-colors">
           Societies Management
         </Link>
         <span>/</span>
-        <span className="text-white truncate max-w-[200px] sm:max-w-md">{society.name}</span>
+        <span className="text-text-primary truncate max-w-[200px] sm:max-w-md">{society.name}</span>
       </div>
 
       {/* Hero Header Glass Card */}
-      <div className="relative rounded-[28px] overflow-hidden bg-white/[0.08] backdrop-blur-[24px] border border-white/20 shadow-2xl">
+      <div className="relative rounded-3xl overflow-hidden bg-surface-glass backdrop-blur-xl border border-border-medium shadow-elevation-2">
         {/* Banner Backdrop */}
         <div className="h-44 sm:h-52 w-full relative overflow-hidden bg-gradient-to-r from-blue-900/40 via-purple-900/30 to-slate-900/60">
           {society.bannerUrl ? (
@@ -313,11 +309,11 @@ export const AdminSocietyDetailPage: React.FC = () => {
             {/* Title & Metadata */}
             <div className="space-y-2">
               <div className="flex flex-wrap items-center gap-2.5">
-                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight leading-tight">
+                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-text-primary tracking-tight leading-tight">
                   {society.name}
                 </h1>
                 {society.shortform && society.shortform !== 'NA' && (
-                  <span className="px-2.5 py-0.5 rounded-lg text-xs font-bold uppercase tracking-wider bg-white/10 text-blue-300 border border-white/15">
+                  <span className="px-2.5 py-0.5 rounded-lg text-xs font-bold uppercase tracking-wider bg-surface-glass text-blue-600 dark:text-blue-300 border border-border-subtle">
                     {society.shortform}
                   </span>
                 )}
@@ -325,7 +321,7 @@ export const AdminSocietyDetailPage: React.FC = () => {
 
               <div className="flex flex-wrap items-center gap-2.5">
                 {society.category && (
-                  <span className="px-3 py-1 rounded-full text-xs font-semibold bg-white/10 text-gray-200 border border-white/15">
+                  <span className="px-3 py-1 rounded-full text-xs font-semibold bg-surface-glass text-text-secondary border border-border-subtle">
                     {society.category.name}
                   </span>
                 )}
@@ -350,8 +346,8 @@ export const AdminSocietyDetailPage: React.FC = () => {
                   </span>
                 )}
 
-                <span className="text-xs text-gray-400 flex items-center gap-1">
-                  <Calendar className="w-3.5 h-3.5 text-gray-500" />
+                <span className="text-xs text-text-secondary flex items-center gap-1">
+                  <Calendar className="w-3.5 h-3.5 text-text-muted" />
                   Registered {new Date(society.createdAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
                 </span>
               </div>
@@ -365,9 +361,9 @@ export const AdminSocietyDetailPage: React.FC = () => {
               to={`/societies/${society.id}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex-1 md:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold bg-white/10 hover:bg-white/20 border border-white/20 text-white transition-all shadow-md cursor-pointer"
+              className="flex-1 md:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold bg-surface hover:bg-surface-hover border border-border-medium text-text-primary transition-all shadow-elevation-1 cursor-pointer"
             >
-              <ExternalLink className="w-3.5 h-3.5 text-emerald-400" />
+              <ExternalLink className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400" />
               <span>Public Page</span>
             </Link>
 
@@ -375,9 +371,9 @@ export const AdminSocietyDetailPage: React.FC = () => {
             <button
               type="button"
               onClick={handleOpenEdit}
-              className="flex-1 md:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold bg-white/10 hover:bg-white/20 border border-white/20 text-white transition-all shadow-md cursor-pointer"
+              className="flex-1 md:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold bg-surface hover:bg-surface-hover border border-border-medium text-text-primary transition-all shadow-elevation-1 cursor-pointer"
             >
-              <Edit3 className="w-3.5 h-3.5 text-blue-400" />
+              <Edit3 className="w-3.5 h-3.5 text-blue-500 dark:text-blue-400" />
               <span>Edit Details</span>
             </button>
 
@@ -417,48 +413,48 @@ export const AdminSocietyDetailPage: React.FC = () => {
 
       {/* Quick Overview Stats Bar */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className="bg-white/[0.06] backdrop-blur-[20px] border border-white/15 rounded-2xl p-4 flex items-center gap-3.5 shadow-lg">
-          <div className="w-11 h-11 rounded-xl bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-blue-400 shrink-0">
+        <div className="bg-surface-glass backdrop-blur-xl border border-border-medium rounded-2xl p-4 flex items-center gap-3.5 shadow-elevation-1">
+          <div className="w-11 h-11 rounded-xl bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-blue-500 dark:text-blue-400 shrink-0">
             <Calendar className="w-5 h-5" />
           </div>
           <div className="min-w-0">
-            <span className="text-xl sm:text-2xl font-black text-white block leading-none">
+            <span className="text-xl sm:text-2xl font-black text-text-primary block leading-none">
               {society._count?.events ?? 0}
             </span>
-            <span className="text-xs text-gray-400 font-medium">Total Events</span>
+            <span className="text-xs text-text-secondary font-medium">Total Events</span>
           </div>
         </div>
 
-        <div className="bg-white/[0.06] backdrop-blur-[20px] border border-white/15 rounded-2xl p-4 flex items-center gap-3.5 shadow-lg">
-          <div className="w-11 h-11 rounded-xl bg-purple-500/15 border border-purple-500/30 flex items-center justify-center text-purple-400 shrink-0">
+        <div className="bg-surface-glass backdrop-blur-xl border border-border-medium rounded-2xl p-4 flex items-center gap-3.5 shadow-elevation-1">
+          <div className="w-11 h-11 rounded-xl bg-purple-500/15 border border-purple-500/30 flex items-center justify-center text-purple-500 dark:text-purple-400 shrink-0">
             <FileText className="w-5 h-5" />
           </div>
           <div className="min-w-0">
-            <span className="text-xl sm:text-2xl font-black text-white block leading-none">
+            <span className="text-xl sm:text-2xl font-black text-text-primary block leading-none">
               {society._count?.yearlyPlans ?? 0}
             </span>
-            <span className="text-xs text-gray-400 font-medium">Yearly Plans</span>
+            <span className="text-xs text-text-secondary font-medium">Yearly Plans</span>
           </div>
         </div>
 
-        <div className="bg-white/[0.06] backdrop-blur-[20px] border border-white/15 rounded-2xl p-4 flex items-center gap-3.5 shadow-lg">
-          <div className="w-11 h-11 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0">
+        <div className="bg-surface-glass backdrop-blur-xl border border-border-medium rounded-2xl p-4 flex items-center gap-3.5 shadow-elevation-1">
+          <div className="w-11 h-11 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-500 dark:text-emerald-400 shrink-0">
             <Users className="w-5 h-5" />
           </div>
           <div className="min-w-0">
-            <span className="text-xl sm:text-2xl font-black text-white block leading-none">
+            <span className="text-xl sm:text-2xl font-black text-text-primary block leading-none">
               {totalCouncilCount}
             </span>
-            <span className="text-xs text-gray-400 font-medium">Cabinet Members</span>
+            <span className="text-xs text-text-secondary font-medium">Cabinet Members</span>
           </div>
         </div>
 
-        <div className="bg-white/[0.06] backdrop-blur-[20px] border border-white/15 rounded-2xl p-4 flex items-center gap-3.5 shadow-lg">
+        <div className="bg-surface-glass backdrop-blur-xl border border-border-medium rounded-2xl p-4 flex items-center gap-3.5 shadow-elevation-1">
           <div
             className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 border ${
               society.isSetupComplete
-                ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-400'
-                : 'bg-amber-500/15 border-amber-500/30 text-amber-400'
+                ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-500 dark:text-emerald-400'
+                : 'bg-amber-500/15 border-amber-500/30 text-amber-500 dark:text-amber-400'
             }`}
           >
             {society.isSetupComplete ? (
@@ -470,12 +466,12 @@ export const AdminSocietyDetailPage: React.FC = () => {
           <div className="min-w-0">
             <span
               className={`text-sm sm:text-base font-bold block leading-tight truncate ${
-                society.isSetupComplete ? 'text-emerald-400' : 'text-amber-400'
+                society.isSetupComplete ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'
               }`}
             >
               {society.isSetupComplete ? 'Complete' : 'Pending'}
             </span>
-            <span className="text-xs text-gray-400 font-medium">Profile Setup</span>
+            <span className="text-xs text-text-secondary font-medium">Profile Setup</span>
           </div>
         </div>
       </div>
@@ -483,22 +479,22 @@ export const AdminSocietyDetailPage: React.FC = () => {
       {/* Primary Leadership Cards: Advisor & President */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Faculty Advisor Card */}
-        <div className="bg-white/[0.08] backdrop-blur-[20px] border border-white/20 rounded-[24px] p-6 shadow-xl flex flex-col justify-between">
+        <div className="bg-surface-glass backdrop-blur-xl border border-border-medium rounded-cards p-6 shadow-elevation-1 flex flex-col justify-between">
           <div>
-            <div className="flex items-center justify-between pb-4 mb-4 border-b border-white/10">
+            <div className="flex items-center justify-between pb-4 mb-4 border-b border-border-subtle">
               <div className="flex items-center gap-2.5">
-                <div className="p-2 rounded-xl bg-purple-500/20 border border-purple-500/30 text-purple-400">
+                <div className="p-2 rounded-xl bg-purple-500/20 border border-purple-500/30 text-purple-600 dark:text-purple-400">
                   <GraduationCap className="w-5 h-5" />
                 </div>
                 <div>
-                  <h2 className="text-lg font-bold text-white leading-tight">Faculty Advisor</h2>
-                  <p className="text-xs text-gray-400">Official DSA academic supervisor</p>
+                  <h2 className="text-lg font-bold text-text-primary leading-tight">Faculty Advisor</h2>
+                  <p className="text-xs text-text-secondary">Official DSA academic supervisor</p>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={handleOpenEdit}
-                className="text-xs font-semibold text-purple-400 hover:text-purple-300 transition-colors flex items-center gap-1 cursor-pointer"
+                className="text-xs font-semibold text-purple-600 dark:text-purple-400 hover:underline transition-colors flex items-center gap-1 cursor-pointer"
               >
                 <Edit3 className="w-3 h-3" />
                 <span>Change</span>
@@ -511,20 +507,20 @@ export const AdminSocietyDetailPage: React.FC = () => {
                   <img
                     src={getAdvisorLogo(society.advisor.user?.avatarUrl)}
                     alt={society.advisor.user?.fullName}
-                    className="w-14 h-14 rounded-2xl border border-white/20 object-cover bg-white/5 shrink-0 shadow-md"
+                    className="w-14 h-14 rounded-2xl border border-border-medium object-cover bg-surface-hover shrink-0 shadow-md"
                     onError={(e) => {
                       e.currentTarget.onerror = null;
                       e.currentTarget.src = '/default-advisor.jpg';
                     }}
                   />
                   <div className="min-w-0 space-y-1">
-                    <h3 className="font-extrabold text-lg text-white truncate">
+                    <h3 className="font-extrabold text-lg text-text-primary truncate">
                       {society.advisor.user?.fullName || 'N/A'}
                     </h3>
-                    <p className="text-xs font-semibold text-purple-300">
+                    <p className="text-xs font-semibold text-purple-600 dark:text-purple-300">
                       {society.advisor.designation}
                     </p>
-                    <p className="text-xs text-gray-400 truncate">
+                    <p className="text-xs text-text-secondary truncate">
                       {society.advisor.department}
                     </p>
                   </div>
@@ -532,12 +528,12 @@ export const AdminSocietyDetailPage: React.FC = () => {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-2">
                   {society.advisor.user?.email && (
-                    <div className="bg-white/5 border border-white/10 rounded-xl p-3 flex items-center justify-between gap-2">
+                    <div className="bg-surface-hover/50 border border-border-subtle rounded-xl p-3 flex items-center justify-between gap-2">
                       <div className="flex items-center gap-2 min-w-0">
-                        <Mail className="w-4 h-4 text-gray-400 shrink-0" />
+                        <Mail className="w-4 h-4 text-text-muted shrink-0" />
                         <a
                           href={`mailto:${society.advisor.user.email}`}
-                          className="text-xs text-gray-300 hover:text-white truncate font-medium"
+                          className="text-xs text-text-primary hover:underline truncate font-medium"
                         >
                           {society.advisor.user.email}
                         </a>
@@ -545,11 +541,11 @@ export const AdminSocietyDetailPage: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => handleCopy(society.advisor!.user!.email, 'advisor-email')}
-                        className="p-1 text-gray-400 hover:text-white transition-colors cursor-pointer"
+                        className="p-1 text-text-muted hover:text-text-primary transition-colors cursor-pointer"
                         title="Copy Email"
                       >
                         {copiedField === 'advisor-email' ? (
-                          <Check className="w-3.5 h-3.5 text-emerald-400" />
+                          <Check className="w-3.5 h-3.5 text-emerald-500" />
                         ) : (
                           <Copy className="w-3.5 h-3.5" />
                         )}
@@ -558,21 +554,21 @@ export const AdminSocietyDetailPage: React.FC = () => {
                   )}
 
                   {society.advisor.phoneNumber && (
-                    <div className="bg-white/5 border border-white/10 rounded-xl p-3 flex items-center justify-between gap-2">
+                    <div className="bg-surface-hover/50 border border-border-subtle rounded-xl p-3 flex items-center justify-between gap-2">
                       <div className="flex items-center gap-2 min-w-0">
-                        <Phone className="w-4 h-4 text-gray-400 shrink-0" />
-                        <span className="text-xs text-gray-300 font-mono truncate">
+                        <Phone className="w-4 h-4 text-text-muted shrink-0" />
+                        <span className="text-xs text-text-primary font-mono truncate">
                           {society.advisor.phoneNumber}
                         </span>
                       </div>
                       <button
                         type="button"
                         onClick={() => handleCopy(society.advisor!.phoneNumber!, 'advisor-phone')}
-                        className="p-1 text-gray-400 hover:text-white transition-colors cursor-pointer"
+                        className="p-1 text-text-muted hover:text-text-primary transition-colors cursor-pointer"
                         title="Copy Phone"
                       >
                         {copiedField === 'advisor-phone' ? (
-                          <Check className="w-3.5 h-3.5 text-emerald-400" />
+                          <Check className="w-3.5 h-3.5 text-emerald-500" />
                         ) : (
                           <Copy className="w-3.5 h-3.5" />
                         )}
@@ -583,17 +579,17 @@ export const AdminSocietyDetailPage: React.FC = () => {
               </div>
             ) : (
               <div className="py-6 text-center space-y-3">
-                <AlertCircle className="w-8 h-8 text-amber-400/80 mx-auto" />
+                <AlertCircle className="w-8 h-8 text-amber-500 mx-auto" />
                 <div>
-                  <p className="text-sm font-semibold text-white">No Advisor Assigned</p>
-                  <p className="text-xs text-gray-400 mt-1">
+                  <p className="text-sm font-semibold text-text-primary">No Advisor Assigned</p>
+                  <p className="text-xs text-text-secondary mt-1">
                     Assign a faculty advisor to enable yearly plans & event approvals.
                   </p>
                 </div>
                 <button
                   type="button"
                   onClick={handleOpenEdit}
-                  className="px-4 py-2 rounded-xl text-xs font-bold bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 border border-purple-500/40 transition-all cursor-pointer"
+                  className="px-4 py-2 rounded-xl text-xs font-bold bg-purple-600 hover:bg-purple-700 text-white transition-all shadow-sm cursor-pointer"
                 >
                   Assign Advisor
                 </button>
@@ -603,42 +599,42 @@ export const AdminSocietyDetailPage: React.FC = () => {
         </div>
 
         {/* Society President Card */}
-        <div className="bg-white/[0.08] backdrop-blur-[20px] border border-white/20 rounded-[24px] p-6 shadow-xl flex flex-col justify-between">
+        <div className="bg-surface-glass backdrop-blur-xl border border-border-medium rounded-cards p-6 shadow-elevation-1 flex flex-col justify-between">
           <div>
-            <div className="flex items-center justify-between pb-4 mb-4 border-b border-white/10">
+            <div className="flex items-center justify-between pb-4 mb-4 border-b border-border-subtle">
               <div className="flex items-center gap-2.5">
-                <div className="p-2 rounded-xl bg-amber-500/20 border border-amber-500/30 text-amber-400">
+                <div className="p-2 rounded-xl bg-amber-500/20 border border-amber-500/30 text-amber-600 dark:text-amber-400">
                   <UserCheck className="w-5 h-5" />
                 </div>
                 <div>
-                  <h2 className="text-lg font-bold text-white leading-tight">Society President</h2>
-                  <p className="text-xs text-gray-400">Elected student representative & account lead</p>
+                  <h2 className="text-lg font-bold text-text-primary leading-tight">Society President</h2>
+                  <p className="text-xs text-text-secondary">Elected student representative & account lead</p>
                 </div>
               </div>
-              <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-500/15 text-amber-400 border border-amber-500/30">
+              <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30">
                 President
               </span>
             </div>
 
             <div className="space-y-4">
               <div className="flex items-center gap-4">
-                <div className="w-14 h-14 rounded-2xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-300 text-xl font-black shrink-0 shadow-md">
+                <div className="w-14 h-14 rounded-2xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-600 dark:text-amber-300 text-xl font-black shrink-0 shadow-md">
                   {(society.presidentName || society.user?.fullName || society.name)
                     .substring(0, 2)
                     .toUpperCase()}
                 </div>
                 <div className="min-w-0 space-y-1">
-                  <h3 className="font-extrabold text-lg text-white truncate">
+                  <h3 className="font-extrabold text-lg text-text-primary truncate">
                     {society.presidentName || society.user?.fullName || 'Not Specified'}
                   </h3>
                   <div className="flex items-center gap-2 flex-wrap text-xs">
                     {society.presidentFaculty && (
-                      <span className="font-medium text-amber-300">
+                      <span className="font-medium text-amber-600 dark:text-amber-300">
                         {society.presidentFaculty}
                       </span>
                     )}
                     {society.presidentRegNum && (
-                      <span className="font-mono text-gray-400 bg-white/5 px-2 py-0.5 rounded-md border border-white/10">
+                      <span className="font-mono text-text-secondary bg-surface px-2 py-0.5 rounded-md border border-border-subtle">
                         Reg: {society.presidentRegNum}
                       </span>
                     )}
@@ -648,12 +644,12 @@ export const AdminSocietyDetailPage: React.FC = () => {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-2">
                 {society.presidentEmail && (
-                  <div className="bg-white/5 border border-white/10 rounded-xl p-3 flex items-center justify-between gap-2">
+                  <div className="bg-surface-hover/50 border border-border-subtle rounded-xl p-3 flex items-center justify-between gap-2">
                     <div className="flex items-center gap-2 min-w-0">
-                      <Mail className="w-4 h-4 text-gray-400 shrink-0" />
+                      <Mail className="w-4 h-4 text-text-muted shrink-0" />
                       <a
                         href={`mailto:${society.presidentEmail}`}
-                        className="text-xs text-gray-300 hover:text-white truncate font-medium"
+                        className="text-xs text-text-primary hover:underline truncate font-medium"
                       >
                         {society.presidentEmail}
                       </a>
@@ -661,11 +657,11 @@ export const AdminSocietyDetailPage: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => handleCopy(society.presidentEmail, 'pres-email')}
-                      className="p-1 text-gray-400 hover:text-white transition-colors cursor-pointer"
+                      className="p-1 text-text-muted hover:text-text-primary transition-colors cursor-pointer"
                       title="Copy Email"
                     >
                       {copiedField === 'pres-email' ? (
-                        <Check className="w-3.5 h-3.5 text-emerald-400" />
+                        <Check className="w-3.5 h-3.5 text-emerald-500" />
                       ) : (
                         <Copy className="w-3.5 h-3.5" />
                       )}
@@ -674,21 +670,21 @@ export const AdminSocietyDetailPage: React.FC = () => {
                 )}
 
                 {society.presidentContact && (
-                  <div className="bg-white/5 border border-white/10 rounded-xl p-3 flex items-center justify-between gap-2">
+                  <div className="bg-surface-hover/50 border border-border-subtle rounded-xl p-3 flex items-center justify-between gap-2">
                     <div className="flex items-center gap-2 min-w-0">
-                      <Phone className="w-4 h-4 text-gray-400 shrink-0" />
-                      <span className="text-xs text-gray-300 font-mono truncate">
+                      <Phone className="w-4 h-4 text-text-muted shrink-0" />
+                      <span className="text-xs text-text-primary font-mono truncate">
                         {society.presidentContact}
                       </span>
                     </div>
                     <button
                       type="button"
                       onClick={() => handleCopy(society.presidentContact!, 'pres-phone')}
-                      className="p-1 text-gray-400 hover:text-white transition-colors cursor-pointer"
+                      className="p-1 text-text-muted hover:text-text-primary transition-colors cursor-pointer"
                       title="Copy Phone"
                     >
                       {copiedField === 'pres-phone' ? (
-                        <Check className="w-3.5 h-3.5 text-emerald-400" />
+                        <Check className="w-3.5 h-3.5 text-emerald-500" />
                       ) : (
                         <Copy className="w-3.5 h-3.5" />
                       )}
@@ -702,17 +698,17 @@ export const AdminSocietyDetailPage: React.FC = () => {
       </div>
 
       {/* Executive Council (EC) Section */}
-      <div className="bg-white/[0.08] backdrop-blur-[20px] border border-white/20 rounded-[24px] p-6 shadow-xl space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-white/10">
+      <div className="bg-surface-glass backdrop-blur-xl border border-border-medium rounded-cards p-6 shadow-elevation-1 space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-border-subtle">
           <div>
             <div className="flex items-center gap-2.5">
-              <Users className="w-5 h-5 text-blue-400" />
-              <h2 className="text-xl font-bold text-white">Executive Council (EC) Cabinet</h2>
-              <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30">
+              <Users className="w-5 h-5 text-brand-primary" />
+              <h2 className="text-xl font-bold text-text-primary">Executive Council (EC) Cabinet</h2>
+              <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-500/20 text-blue-600 dark:text-blue-300 border border-blue-500/30">
                 {totalCouncilCount} Members
               </span>
             </div>
-            <p className="text-xs text-gray-400 mt-1">
+            <p className="text-xs text-text-secondary mt-1">
               Active office bearers managing society operations for the current tenure.
             </p>
           </div>
@@ -720,9 +716,9 @@ export const AdminSocietyDetailPage: React.FC = () => {
 
         {totalCouncilCount === 0 ? (
           <div className="py-12 text-center space-y-2">
-            <Users className="w-10 h-10 text-gray-500 mx-auto" />
-            <p className="text-sm font-semibold text-gray-300">No Executive Council Submitted</p>
-            <p className="text-xs text-gray-500">
+            <Users className="w-10 h-10 text-text-muted mx-auto" />
+            <p className="text-sm font-semibold text-text-secondary">No Executive Council Submitted</p>
+            <p className="text-xs text-text-muted">
               The society has not finalized or submitted its cabinet roster in the portal yet.
             </p>
           </div>
@@ -731,19 +727,19 @@ export const AdminSocietyDetailPage: React.FC = () => {
             <table className="w-full border-collapse text-left min-w-[750px]">
               <thead>
                 <tr>
-                  <th className="p-3 text-slate-400 text-xs uppercase tracking-wider border-b border-white/10 w-[7%]">
+                  <th className="p-3 text-text-secondary text-xs uppercase tracking-wider border-b border-border-subtle font-semibold w-[7%]">
                     Sr.
                   </th>
-                  <th className="p-3 text-slate-400 text-xs uppercase tracking-wider border-b border-white/10 w-[25%]">
+                  <th className="p-3 text-text-secondary text-xs uppercase tracking-wider border-b border-border-subtle font-semibold w-[25%]">
                     Member Name
                   </th>
-                  <th className="p-3 text-slate-400 text-xs uppercase tracking-wider border-b border-white/10 w-[20%]">
+                  <th className="p-3 text-text-secondary text-xs uppercase tracking-wider border-b border-border-subtle font-semibold w-[20%]">
                     Designated Role
                   </th>
-                  <th className="p-3 text-slate-400 text-xs uppercase tracking-wider border-b border-white/10 w-[20%]">
+                  <th className="p-3 text-text-secondary text-xs uppercase tracking-wider border-b border-border-subtle font-semibold w-[20%]">
                     Faculty / Dept
                   </th>
-                  <th className="p-3 text-slate-400 text-xs uppercase tracking-wider border-b border-white/10 w-[28%]">
+                  <th className="p-3 text-text-secondary text-xs uppercase tracking-wider border-b border-border-subtle font-semibold w-[28%]">
                     Contact & Email
                   </th>
                 </tr>
@@ -751,29 +747,29 @@ export const AdminSocietyDetailPage: React.FC = () => {
               <tbody>
                 {/* 1. President */}
                 {society.presidentName && (
-                  <tr className="border-b border-white/10 hover:bg-white/[0.04] transition-colors bg-amber-500/[0.03]">
-                    <td className="p-3.5 text-xs font-bold text-amber-400">01</td>
-                    <td className="p-3.5 text-sm font-bold text-white">
+                  <tr className="border-b border-border-subtle hover:bg-surface-hover transition-colors bg-amber-500/[0.03]">
+                    <td className="p-3.5 text-xs font-bold text-amber-600 dark:text-amber-400">01</td>
+                    <td className="p-3.5 text-sm font-bold text-text-primary">
                       {society.presidentName}
                     </td>
                     <td className="p-3.5">
-                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30">
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/30">
                         President
                       </span>
                     </td>
-                    <td className="p-3.5 text-xs text-gray-300">
+                    <td className="p-3.5 text-xs text-text-secondary">
                       {society.presidentFaculty || 'N/A'}
                     </td>
-                    <td className="p-3.5 text-xs text-gray-300">
+                    <td className="p-3.5 text-xs text-text-secondary">
                       <div className="flex flex-col">
                         <a
                           href={`mailto:${society.presidentEmail}`}
-                          className="text-blue-300 hover:text-white transition-colors"
+                          className="text-brand-primary hover:underline transition-colors"
                         >
                           {society.presidentEmail}
                         </a>
                         {society.presidentContact && (
-                          <span className="text-[11px] text-gray-400 font-mono mt-0.5">
+                          <span className="text-[11px] text-text-muted font-mono mt-0.5">
                             {society.presidentContact}
                           </span>
                         )}
@@ -798,40 +794,40 @@ export const AdminSocietyDetailPage: React.FC = () => {
                   return (
                     <tr
                       key={idx}
-                      className="border-b border-white/5 hover:bg-white/[0.04] transition-colors last:border-b-0"
+                      className="border-b border-border-subtle hover:bg-surface-hover transition-colors last:border-b-0"
                     >
-                      <td className="p-3.5 text-xs text-gray-400 font-mono">{srNum}</td>
-                      <td className="p-3.5 text-sm font-semibold text-white">
+                      <td className="p-3.5 text-xs text-text-muted font-mono">{srNum}</td>
+                      <td className="p-3.5 text-sm font-semibold text-text-primary">
                         {member.name || 'N/A'}
                       </td>
                       <td className="p-3.5">
                         <span
                           className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${
                             isCoreRole
-                              ? 'bg-blue-500/15 text-blue-400 border border-blue-500/30'
-                              : 'bg-white/10 text-gray-300 border border-white/10'
+                              ? 'bg-blue-500/15 text-blue-600 dark:text-blue-400 border border-blue-500/30'
+                              : 'bg-surface-glass text-text-secondary border border-border-subtle'
                           }`}
                         >
                           {member.role || 'Member'}
                         </span>
                       </td>
-                      <td className="p-3.5 text-xs text-gray-300">
+                      <td className="p-3.5 text-xs text-text-secondary">
                         {member.faculty || 'N/A'}
                       </td>
-                      <td className="p-3.5 text-xs text-gray-300">
+                      <td className="p-3.5 text-xs text-text-secondary">
                         <div className="flex flex-col">
                           {member.email ? (
                             <a
                               href={`mailto:${member.email}`}
-                              className="text-blue-300 hover:text-white transition-colors"
+                              className="text-brand-primary hover:underline transition-colors"
                             >
                               {member.email}
                             </a>
                           ) : (
-                            <span className="text-gray-500 italic">No email provided</span>
+                            <span className="text-text-muted italic">No email provided</span>
                           )}
                           {member.contact && (
-                            <span className="text-[11px] text-gray-400 font-mono mt-0.5">
+                            <span className="text-[11px] text-text-muted font-mono mt-0.5">
                               {member.contact}
                             </span>
                           )}
@@ -843,29 +839,29 @@ export const AdminSocietyDetailPage: React.FC = () => {
 
                 {/* Faculty Advisor Row at Bottom of Roster */}
                 {society.advisor && (
-                  <tr className="border-t-2 border-white/15 bg-purple-500/[0.04] hover:bg-purple-500/[0.07] transition-colors">
-                    <td className="p-3.5 text-xs font-bold text-purple-400">FA</td>
-                    <td className="p-3.5 text-sm font-bold text-white">
+                  <tr className="border-t-2 border-border-medium bg-purple-500/[0.04] hover:bg-purple-500/[0.07] transition-colors">
+                    <td className="p-3.5 text-xs font-bold text-purple-600 dark:text-purple-400">FA</td>
+                    <td className="p-3.5 text-sm font-bold text-text-primary">
                       {society.advisor.user?.fullName || 'N/A'}
                     </td>
                     <td className="p-3.5">
-                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-purple-500/20 text-purple-400 border border-purple-500/30">
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-purple-500/20 text-purple-600 dark:text-purple-400 border border-purple-500/30">
                         Faculty Advisor
                       </span>
                     </td>
-                    <td className="p-3.5 text-xs text-gray-300">
+                    <td className="p-3.5 text-xs text-text-secondary">
                       {society.advisor.department}
                     </td>
-                    <td className="p-3.5 text-xs text-gray-300">
+                    <td className="p-3.5 text-xs text-text-secondary">
                       <div className="flex flex-col">
                         <a
                           href={`mailto:${society.advisor.user?.email}`}
-                          className="text-purple-300 hover:text-white transition-colors"
+                          className="text-purple-600 dark:text-purple-300 hover:underline transition-colors"
                         >
                           {society.advisor.user?.email}
                         </a>
                         {society.advisor.phoneNumber && (
-                          <span className="text-[11px] text-gray-400 font-mono mt-0.5">
+                          <span className="text-[11px] text-text-muted font-mono mt-0.5">
                             {society.advisor.phoneNumber}
                           </span>
                         )}
@@ -882,25 +878,25 @@ export const AdminSocietyDetailPage: React.FC = () => {
       {/* About & Social Media Links */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Description (2 cols) */}
-        <div className="lg:col-span-2 bg-white/[0.08] backdrop-blur-[20px] border border-white/20 rounded-[24px] p-6 shadow-xl space-y-4">
-          <div className="flex items-center gap-2 pb-3 border-b border-white/10">
-            <Building2 className="w-5 h-5 text-gray-400" />
-            <h2 className="text-lg font-bold text-white">About the Society</h2>
+        <div className="lg:col-span-2 bg-surface-glass backdrop-blur-xl border border-border-medium rounded-cards p-6 shadow-elevation-1 space-y-4">
+          <div className="flex items-center gap-2 pb-3 border-b border-border-subtle">
+            <Building2 className="w-5 h-5 text-text-muted" />
+            <h2 className="text-lg font-bold text-text-primary">About the Society</h2>
           </div>
 
-          <div className="space-y-4 text-sm text-gray-300 leading-relaxed">
+          <div className="space-y-4 text-sm text-text-secondary leading-relaxed">
             {society.shortDescription && (
-              <p className="font-medium text-white/90 bg-white/5 p-4 rounded-2xl border border-white/10">
+              <p className="font-medium text-text-primary bg-surface-hover/50 p-4 rounded-2xl border border-border-subtle">
                 {society.shortDescription}
               </p>
             )}
 
             {society.longDescription ? (
-              <p className="whitespace-pre-line text-gray-300">
+              <p className="whitespace-pre-line text-text-secondary">
                 {society.longDescription}
               </p>
             ) : !society.shortDescription ? (
-              <p className="text-gray-500 italic py-4">
+              <p className="text-text-muted italic py-4">
                 No description or mission statement has been provided yet.
               </p>
             ) : null}
@@ -908,19 +904,19 @@ export const AdminSocietyDetailPage: React.FC = () => {
         </div>
 
         {/* Contact & Social Links (1 col) */}
-        <div className="bg-white/[0.08] backdrop-blur-[20px] border border-white/20 rounded-[24px] p-6 shadow-xl space-y-4">
-          <div className="flex items-center gap-2 pb-3 border-b border-white/10">
-            <Globe className="w-5 h-5 text-gray-400" />
-            <h2 className="text-lg font-bold text-white">Online Presence</h2>
+        <div className="bg-surface-glass backdrop-blur-xl border border-border-medium rounded-cards p-6 shadow-elevation-1 space-y-4">
+          <div className="flex items-center gap-2 pb-3 border-b border-border-subtle">
+            <Globe className="w-5 h-5 text-text-muted" />
+            <h2 className="text-lg font-bold text-text-primary">Online Presence</h2>
           </div>
 
           <div className="space-y-2.5">
             {society.email && (
               <a
                 href={`mailto:${society.email}`}
-                className="flex items-center gap-3 p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 hover:text-white transition-all text-xs"
+                className="flex items-center gap-3 p-3 rounded-xl bg-surface-hover/50 hover:bg-surface-hover border border-border-subtle text-text-secondary hover:text-text-primary transition-all text-xs"
               >
-                <Mail className="w-4 h-4 text-blue-400 shrink-0" />
+                <Mail className="w-4 h-4 text-blue-500 shrink-0" />
                 <span className="truncate">{society.email}</span>
               </a>
             )}
@@ -930,9 +926,9 @@ export const AdminSocietyDetailPage: React.FC = () => {
                 href={society.website.startsWith('http') ? society.website : `https://${society.website}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-3 p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 hover:text-white transition-all text-xs"
+                className="flex items-center gap-3 p-3 rounded-xl bg-surface-hover/50 hover:bg-surface-hover border border-border-subtle text-text-secondary hover:text-text-primary transition-all text-xs"
               >
-                <Globe className="w-4 h-4 text-emerald-400 shrink-0" />
+                <Globe className="w-4 h-4 text-emerald-500 shrink-0" />
                 <span className="truncate">Official Website</span>
                 <ExternalLink className="w-3 h-3 ml-auto opacity-60" />
               </a>
@@ -943,9 +939,9 @@ export const AdminSocietyDetailPage: React.FC = () => {
                 href={society.instagram.startsWith('http') ? society.instagram : `https://instagram.com/${society.instagram.replace('@', '')}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-3 p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 hover:text-white transition-all text-xs"
+                className="flex items-center gap-3 p-3 rounded-xl bg-surface-hover/50 hover:bg-surface-hover border border-border-subtle text-text-secondary hover:text-text-primary transition-all text-xs"
               >
-                <InstagramIcon className="w-4 h-4 text-pink-400 shrink-0" />
+                <InstagramIcon className="w-4 h-4 text-pink-500 shrink-0" />
                 <span className="truncate">Instagram</span>
                 <ExternalLink className="w-3 h-3 ml-auto opacity-60" />
               </a>
@@ -956,9 +952,9 @@ export const AdminSocietyDetailPage: React.FC = () => {
                 href={society.linkedin.startsWith('http') ? society.linkedin : `https://linkedin.com/company/${society.linkedin}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-3 p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 hover:text-white transition-all text-xs"
+                className="flex items-center gap-3 p-3 rounded-xl bg-surface-hover/50 hover:bg-surface-hover border border-border-subtle text-text-secondary hover:text-text-primary transition-all text-xs"
               >
-                <LinkedinIcon className="w-4 h-4 text-blue-400 shrink-0" />
+                <LinkedinIcon className="w-4 h-4 text-blue-500 shrink-0" />
                 <span className="truncate">LinkedIn</span>
                 <ExternalLink className="w-3 h-3 ml-auto opacity-60" />
               </a>
@@ -969,16 +965,16 @@ export const AdminSocietyDetailPage: React.FC = () => {
                 href={society.facebook.startsWith('http') ? society.facebook : `https://facebook.com/${society.facebook}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-3 p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 hover:text-white transition-all text-xs"
+                className="flex items-center gap-3 p-3 rounded-xl bg-surface-hover/50 hover:bg-surface-hover border border-border-subtle text-text-secondary hover:text-text-primary transition-all text-xs"
               >
-                <FacebookIcon className="w-4 h-4 text-blue-500 shrink-0" />
+                <FacebookIcon className="w-4 h-4 text-blue-600 shrink-0" />
                 <span className="truncate">Facebook</span>
                 <ExternalLink className="w-3 h-3 ml-auto opacity-60" />
               </a>
             )}
 
             {!society.email && !society.website && !society.instagram && !society.linkedin && !society.facebook && (
-              <p className="text-xs text-gray-500 italic py-4 text-center">
+              <p className="text-xs text-text-muted italic py-4 text-center">
                 No social links or public email configured yet.
               </p>
             )}
@@ -989,15 +985,15 @@ export const AdminSocietyDetailPage: React.FC = () => {
       {/* Events & Yearly Plans Summary Activity Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Recent Events Preview */}
-        <div className="bg-white/[0.08] backdrop-blur-[20px] border border-white/20 rounded-[24px] p-6 shadow-xl space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-white/10">
+        <div className="bg-surface-glass backdrop-blur-xl border border-border-medium rounded-cards p-6 shadow-elevation-1 space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-border-subtle">
             <div className="flex items-center gap-2">
-              <Calendar className="w-5 h-5 text-blue-400" />
-              <h2 className="text-lg font-bold text-white">Recent Events</h2>
+              <Calendar className="w-5 h-5 text-blue-500 dark:text-blue-400" />
+              <h2 className="text-lg font-bold text-text-primary">Recent Events</h2>
             </div>
             <Link
               to="/admin/events"
-              className="text-xs text-blue-400 hover:text-blue-300 transition-colors font-semibold"
+              className="text-xs text-blue-600 dark:text-blue-400 hover:underline font-semibold"
             >
               All Events
             </Link>
@@ -1008,11 +1004,11 @@ export const AdminSocietyDetailPage: React.FC = () => {
               {society.events.map((ev) => (
                 <div
                   key={ev.id}
-                  className="bg-white/5 border border-white/10 hover:border-white/20 rounded-2xl p-3.5 flex items-center justify-between gap-3 transition-colors"
+                  className="bg-surface border border-border-subtle hover:border-border-medium rounded-2xl p-3.5 flex items-center justify-between gap-3 transition-colors"
                 >
                   <div className="min-w-0 space-y-1">
-                    <h3 className="text-sm font-bold text-white truncate">{ev.title}</h3>
-                    <div className="flex items-center gap-3 text-xs text-gray-400">
+                    <h3 className="text-sm font-bold text-text-primary truncate">{ev.title}</h3>
+                    <div className="flex items-center gap-3 text-xs text-text-secondary">
                       <span>{new Date(ev.eventDate).toLocaleDateString()}</span>
                       <span>•</span>
                       <span className="truncate">{ev.venue}</span>
@@ -1023,17 +1019,17 @@ export const AdminSocietyDetailPage: React.FC = () => {
                     <span
                       className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
                         ev.approvalStatus === 'APPROVED'
-                          ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                          ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'
                           : ev.approvalStatus === 'PENDING_ADMIN'
-                          ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
-                          : 'bg-white/10 text-gray-400 border border-white/10'
+                          ? 'bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/30'
+                          : 'bg-surface-hover text-text-muted border border-border-subtle'
                       }`}
                     >
                       {ev.approvalStatus.replace('_', ' ')}
                     </span>
                     <Link
                       to={`/admin/events/${ev.id}`}
-                      className="p-1.5 rounded-lg bg-white/5 hover:bg-white/15 text-gray-300 hover:text-white transition-colors"
+                      className="p-1.5 rounded-lg bg-surface hover:bg-surface-hover text-text-secondary hover:text-text-primary border border-border-subtle transition-colors"
                       title="Review Event"
                     >
                       <ExternalLink className="w-3.5 h-3.5" />
@@ -1043,22 +1039,22 @@ export const AdminSocietyDetailPage: React.FC = () => {
               ))}
             </div>
           ) : (
-            <div className="py-8 text-center text-gray-500 text-xs italic">
+            <div className="py-8 text-center text-text-muted text-xs italic">
               No campus events submitted by this society yet.
             </div>
           )}
         </div>
 
         {/* Yearly Plans Preview */}
-        <div className="bg-white/[0.08] backdrop-blur-[20px] border border-white/20 rounded-[24px] p-6 shadow-xl space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-white/10">
+        <div className="bg-surface-glass backdrop-blur-xl border border-border-medium rounded-cards p-6 shadow-elevation-1 space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-border-subtle">
             <div className="flex items-center gap-2">
-              <FileText className="w-5 h-5 text-purple-400" />
-              <h2 className="text-lg font-bold text-white">Yearly Calendar Plans</h2>
+              <FileText className="w-5 h-5 text-purple-500 dark:text-purple-400" />
+              <h2 className="text-lg font-bold text-text-primary">Yearly Calendar Plans</h2>
             </div>
             <Link
               to="/admin/yearly-plans"
-              className="text-xs text-purple-400 hover:text-purple-300 transition-colors font-semibold"
+              className="text-xs text-purple-600 dark:text-purple-400 hover:underline font-semibold"
             >
               All Plans
             </Link>
@@ -1069,11 +1065,11 @@ export const AdminSocietyDetailPage: React.FC = () => {
               {society.yearlyPlans.map((plan) => (
                 <div
                   key={plan.id}
-                  className="bg-white/5 border border-white/10 hover:border-white/20 rounded-2xl p-3.5 flex items-center justify-between gap-3 transition-colors"
+                  className="bg-surface border border-border-subtle hover:border-border-medium rounded-2xl p-3.5 flex items-center justify-between gap-3 transition-colors"
                 >
                   <div className="min-w-0 space-y-1">
-                    <h3 className="text-sm font-bold text-white">Academic Calendar {plan.year}</h3>
-                    <p className="text-xs text-gray-400">
+                    <h3 className="text-sm font-bold text-text-primary">Academic Calendar {plan.year}</h3>
+                    <p className="text-xs text-text-secondary">
                       Created on {new Date(plan.createdAt).toLocaleDateString()}
                     </p>
                   </div>
@@ -1082,17 +1078,17 @@ export const AdminSocietyDetailPage: React.FC = () => {
                     <span
                       className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
                         plan.status === 'APPROVED'
-                          ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                          ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'
                           : plan.status === 'PENDING_ADMIN'
-                          ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
-                          : 'bg-white/10 text-gray-400 border border-white/10'
+                          ? 'bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/30'
+                          : 'bg-surface-hover text-text-muted border border-border-subtle'
                       }`}
                     >
                       {plan.status.replace('_', ' ')}
                     </span>
                     <Link
                       to={`/admin/yearly-plans/${plan.id}`}
-                      className="p-1.5 rounded-lg bg-white/5 hover:bg-white/15 text-gray-300 hover:text-white transition-colors"
+                      className="p-1.5 rounded-lg bg-surface hover:bg-surface-hover text-text-secondary hover:text-text-primary border border-border-subtle transition-colors"
                       title="View Plan Details"
                     >
                       <ExternalLink className="w-3.5 h-3.5" />
@@ -1102,7 +1098,7 @@ export const AdminSocietyDetailPage: React.FC = () => {
               ))}
             </div>
           ) : (
-            <div className="py-8 text-center text-gray-500 text-xs italic">
+            <div className="py-8 text-center text-text-muted text-xs italic">
               No yearly calendar plans submitted yet.
             </div>
           )}
@@ -1116,18 +1112,18 @@ export const AdminSocietyDetailPage: React.FC = () => {
             className="absolute inset-0 bg-black/60 backdrop-blur-sm"
             onClick={() => !updateMutation.isPending && setIsEditModalOpen(false)}
           />
-          <div className="relative w-full max-w-lg bg-[rgba(24,26,32,0.95)] backdrop-blur-[25px] border border-white/20 rounded-[24px] shadow-[0_12px_40px_rgba(0,0,0,0.6)] p-6 overflow-hidden flex flex-col gap-5 text-white">
-            <div className="flex items-center justify-between pb-3 border-b border-white/10">
+          <div className="relative w-full max-w-lg bg-surface backdrop-blur-2xl border border-border-medium rounded-cards shadow-elevation-3 p-6 overflow-hidden flex flex-col gap-5 text-text-primary">
+            <div className="flex items-center justify-between pb-3 border-b border-border-subtle">
               <div className="flex items-center gap-2.5">
-                <div className="p-2 rounded-xl bg-blue-500/20 border border-blue-500/30 text-blue-400">
+                <div className="p-2 rounded-xl bg-blue-500/20 border border-blue-500/30 text-blue-500 dark:text-blue-400">
                   <Edit3 className="w-5 h-5" />
                 </div>
-                <h3 className="text-xl font-bold text-white">Edit Society Details</h3>
+                <h3 className="text-xl font-bold text-text-primary">Edit Society Details</h3>
               </div>
               <button
                 type="button"
                 onClick={() => setIsEditModalOpen(false)}
-                className="p-1.5 rounded-full hover:bg-white/10 transition-colors text-white/70 hover:text-white"
+                className="p-1.5 rounded-full hover:bg-surface-hover transition-colors text-text-secondary hover:text-text-primary"
                 disabled={updateMutation.isPending}
               >
                 <X className="w-5 h-5" />
@@ -1136,20 +1132,20 @@ export const AdminSocietyDetailPage: React.FC = () => {
 
             <form onSubmit={handleSaveEdit} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">
                   Society Name *
                 </label>
                 <input
                   type="text"
                   value={editName}
                   onChange={(e) => setEditName(e.target.value)}
-                  className="w-full bg-white/5 border border-white/15 focus:border-blue-500 rounded-xl px-4 py-2.5 text-sm text-white placeholder-gray-500 outline-none transition-colors"
+                  className="w-full bg-surface border border-border-medium focus:border-brand-primary rounded-xl px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted outline-none transition-colors"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">
                   Category
                 </label>
                 <CustomDropdown
@@ -1164,7 +1160,7 @@ export const AdminSocietyDetailPage: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">
                   Faculty Advisor
                 </label>
                 <CustomDropdown
@@ -1181,19 +1177,19 @@ export const AdminSocietyDetailPage: React.FC = () => {
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-white/10">
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-border-subtle">
                 <button
                   type="button"
                   onClick={() => setIsEditModalOpen(false)}
                   disabled={updateMutation.isPending}
-                  className="px-4 py-2 rounded-xl text-xs font-bold text-gray-300 hover:text-white hover:bg-white/10 border border-white/10 transition-colors cursor-pointer"
+                  className="px-4 py-2 rounded-xl text-xs font-bold text-text-secondary hover:text-text-primary hover:bg-surface-hover border border-border-subtle transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={updateMutation.isPending}
-                  className="px-5 py-2 rounded-xl text-xs font-bold bg-white text-black hover:bg-gray-200 transition-all flex items-center gap-2 cursor-pointer shadow-lg disabled:opacity-50"
+                  className="px-5 py-2 rounded-xl text-xs font-bold bg-text-primary text-text-inverse hover:opacity-90 transition-all flex items-center gap-2 cursor-pointer shadow-elevation-1 disabled:opacity-50"
                 >
                   {updateMutation.isPending && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                   <span>Save Changes</span>

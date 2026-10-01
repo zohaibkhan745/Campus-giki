@@ -86,11 +86,11 @@ export const OnboardSocietyModal: React.FC<OnboardSocietyModalProps> = ({ isOpen
 
   return (
     <div className="modal-overlay active z-[200]">
-      <div className="modal-box" style={{ maxWidth: "800px", maxHeight: "90vh", overflow: "hidden" }}>
+      <div className="modal-box max-w-3xl w-full max-h-[90vh] overflow-hidden flex flex-col">
         
         <div className="flex justify-between items-center mb-6">
           <h2 className="modal-title">Onboard New Society</h2>
-          <button onClick={handleClose} className="p-2 text-gray-400 hover:text-white rounded-full transition-colors">
+          <button onClick={handleClose} className="p-2 text-text-secondary hover:text-text-primary rounded-full hover:bg-surface-hover transition-colors cursor-pointer">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -176,7 +176,7 @@ export const OnboardSocietyModal: React.FC<OnboardSocietyModalProps> = ({ isOpen
           ) : (
             <div className="space-y-6">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 flex items-center justify-center bg-forest-ink/10 border-2 border-forest-ink text-forest-ink rounded-full shrink-0">
+                <div className="w-10 h-10 flex items-center justify-center bg-success/10 border-2 border-success text-success rounded-full shrink-0">
                   <CheckCircle2 className="w-5 h-5" />
                 </div>
                 <div>

@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link, useNavigate } from 'react-router-dom';
+import { invalidateSocietyQueries } from '@/lib/queryInvalidations';
 import {
   Shield,
   Building2,
@@ -27,6 +28,7 @@ import { Input } from '@/components/ui/Input';
 import { CustomDropdown } from '@/components/ui/CustomDropdown';
 import { Button } from '@/components/ui/Button';
 import { Alert } from '@/components/ui/Alert';
+import { BackButton } from '@/components/ui';
 import type { AxiosError } from 'axios';
 
 export const CreateSocietyPage: React.FC = () => {
@@ -34,6 +36,7 @@ export const CreateSocietyPage: React.FC = () => {
   const [provisionedData, setProvisionedData] = useState<OnboardSocietyResult | null>(null);
   const [copied, setCopied] = useState(false);
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const { data: categories = [] } = useQuery({
     queryKey: ['categories'],
@@ -65,6 +68,7 @@ export const CreateSocietyPage: React.FC = () => {
       adminService.onboardSociety(payload),
     onSuccess: (data) => {
       setProvisionedData(data);
+      void invalidateSocietyQueries(queryClient, data?.id);
       reset();
     },
     onError: (
@@ -101,20 +105,14 @@ export const CreateSocietyPage: React.FC = () => {
     <div className="max-w-3xl mx-auto space-y-6 text-left py-4">
       {/* Back Button */}
       <div className="flex items-center justify-between">
-        <button
-          onClick={() => navigate(-1)}
-          className="fixed top-4 left-4 sm:top-6 sm:left-6 z-[100] inline-flex items-center justify-center w-10 h-10 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white rounded-full transition-all cursor-pointer shadow-lg"
-          title="Go Back"
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </button>
+        <BackButton />
       </div>
 
       {/* Header Banner */}
-      <h1 className="font-extrabold text-5xl sm:text-6xl text-white tracking-tight leading-tight mb-8">Onboard New Campus Society</h1>
+      <h1 className="font-extrabold text-5xl sm:text-6xl text-text-primary tracking-tight leading-tight mb-8">Onboard New Campus Society</h1>
 
       {/* Onboarding Form */}
-      <form onSubmit={handleSubmit(onSubmit)} className="bg-white/[0.08] backdrop-blur-[20px] p-6 sm:p-8 rounded-[18px] border border-white/20 space-y-6 shadow-[0_12px_40px_rgba(0,0,0,0.4)]" noValidate>
+      <form onSubmit={handleSubmit(onSubmit)} className="bg-surface-glass backdrop-blur-xl p-6 sm:p-8 rounded-cards border border-border-medium space-y-6 shadow-elevation-1" noValidate>
         <div className="space-y-4">
           <Input
             label="Society Name *"
@@ -142,8 +140,8 @@ export const CreateSocietyPage: React.FC = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-1">
-              <label className="text-xs font-semibold text-white flex items-center gap-1.5">
-                <Tag className="w-3.5 h-3.5 text-white" />
+              <label className="text-xs font-semibold text-text-secondary flex items-center gap-1.5">
+                <Tag className="w-3.5 h-3.5 text-brand-primary" />
                 <span>Society Category *</span>
               </label>
               <CustomDropdown 
@@ -158,8 +156,8 @@ export const CreateSocietyPage: React.FC = () => {
             </div>
 
             <div className="space-y-1">
-              <label className="text-xs font-semibold text-white flex items-center gap-1.5">
-                <UserCheck className="w-3.5 h-3.5 text-white" />
+              <label className="text-xs font-semibold text-text-secondary flex items-center gap-1.5">
+                <UserCheck className="w-3.5 h-3.5 text-brand-primary" />
                 <span>Assigned Faculty Advisor *</span>
               </label>
               <CustomDropdown 

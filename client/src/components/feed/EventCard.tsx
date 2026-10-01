@@ -7,6 +7,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useQueryClient } from '@tanstack/react-query';
 import { eventService } from '@/services/event.service';
 import { globalNotification } from '@/contexts/NotificationContext';
+import { invalidateEventQueries } from '@/lib/queryInvalidations';
 const VenuePermissionSlipModal = React.lazy(() =>
   import('@/components/events/VenuePermissionSlipModal').then((m) => ({ default: m.VenuePermissionSlipModal })),
 );
@@ -93,14 +94,7 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
       await eventService.deleteEvent(item.id);
       setShowDeleteConfirm(false);
       globalNotification.triggerSuccess?.('Event deleted successfully');
-      queryClient.invalidateQueries({ queryKey: ['campusFeed'] });
-      queryClient.invalidateQueries({ queryKey: ['myEvents'] });
-      queryClient.invalidateQueries({ queryKey: ['publicEvents'] });
-      queryClient.invalidateQueries({ queryKey: ['events'] });
-      queryClient.invalidateQueries({ queryKey: ['societyEvents'] });
-      queryClient.invalidateQueries({ queryKey: ['societyDashboard'] });
-      queryClient.invalidateQueries({ queryKey: ['adminEvents'] });
-      queryClient.invalidateQueries({ queryKey: ['mySocietyEventsList'] });
+      void invalidateEventQueries(queryClient, item.id);
       if (onDelete) onDelete();
     } catch {
       globalNotification.triggerFailed?.('Failed to delete event');
@@ -180,22 +174,23 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
       </div>
 
       {/* Center Media & Description Body */}
-      <div className={`relative w-full flex-1 min-h-0 overflow-hidden flex flex-col ${!coverImage ? 'bg-black/[0.4] backdrop-blur-[24px]' : 'bg-gray-900'}`}>
+      <div className={`relative w-full flex-1 min-h-0 overflow-hidden flex flex-col ${!coverImage ? 'bg-surface-glass backdrop-blur-xl' : 'bg-surface-hover'}`}>
         {coverImage ? (
-          <img
-            src={coverImage}
-            alt={item.title || 'Event Poster'}
-            loading="lazy"
-            decoding="async"
-            className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
-          />
-        ) : (
-          <div className="absolute inset-0 bg-black/30" />
-        )}
+          <>
+            <img
+              src={coverImage}
+              alt={item.title || 'Event Poster'}
+              loading="lazy"
+              decoding="async"
+              className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+            />
+            <div className="absolute inset-0 bg-black/30" />
+          </>
+        ) : null}
 
         <div className={cn("relative z-10 text-left flex flex-col flex-1", !coverImage ? "p-4" : "absolute top-5 left-5 right-5")}>
-          <div className="flex flex-col gap-1 drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
-            <div className="flex items-center gap-1.5 text-xs font-semibold text-white">
+          <div className={cn("flex flex-col gap-1", coverImage ? "drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)] text-white" : "text-text-primary")}>
+            <div className={cn("flex items-center gap-1.5 text-xs font-semibold", coverImage ? "text-white" : "text-text-primary")}>
               <svg className="w-3.5 h-3.5 stroke-current flex-shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
                 <line x1="16" y1="2" x2="16" y2="6" />
@@ -205,7 +200,7 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
               <span>{eventDate} • {eventTime}</span>
             </div>
             {item.venue && (
-              <div className="flex items-center gap-1.5 text-[11px] font-medium text-gray-200">
+              <div className={cn("flex items-center gap-1.5 text-[11px] font-medium", coverImage ? "text-gray-200" : "text-text-secondary")}>
                 <svg className="w-3.5 h-3.5 stroke-current flex-shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
                   <circle cx="12" cy="10" r="3" />
@@ -216,7 +211,7 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
           </div>
 
           {!coverImage && (
-            <div className="text-gray-300 text-[16px] leading-relaxed mt-3 line-clamp-6 whitespace-pre-wrap flex-1">
+            <div className="text-text-secondary text-[16px] leading-relaxed mt-3 line-clamp-6 whitespace-pre-wrap flex-1">
               {item.description}
             </div>
           )}

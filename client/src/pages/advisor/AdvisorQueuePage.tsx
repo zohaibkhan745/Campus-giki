@@ -101,7 +101,7 @@ export const AdvisorQueuePage: React.FC = () => {
       case 'APPROVED':
       case 'PUBLISHED':
         return (
-          <span className="flex justify-center items-center gap-1.5 px-3 py-1 bg-transparent border border-forest-ink text-forest-ink rounded-xl text-xs font-semibold">
+          <span className="flex justify-center items-center gap-1.5 px-3 py-1 bg-transparent border border-success text-success rounded-xl text-xs font-semibold">
             <CheckCircle2 className="w-3.5 h-3.5" />
             <span>{status === 'PUBLISHED' ? 'PUBLISHED' : 'APPROVED'}</span>
           </span>
@@ -155,10 +155,10 @@ export const AdvisorQueuePage: React.FC = () => {
       </div>
 
       {/* 2. Command Center — matching Society & Admin */}
-      <div className="flex flex-col md:flex-row bg-white/[0.08] backdrop-blur-[20px] border border-white/20 rounded-[18px] shadow-[0_12px_40px_rgba(0,0,0,0.4)] overflow-visible">
+      <div className="flex flex-col md:flex-row bg-surface-glass backdrop-blur-xl border border-border-medium rounded-cards shadow-elevation-1 overflow-visible">
         {/* Quick Actions */}
-        <div className="flex-1 p-6 flex flex-col justify-center space-y-5 border-b md:border-b-0 md:border-r border-white/10">
-          <h3 className="font-extrabold text-lg text-white flex items-center gap-2">Dashboard</h3>
+        <div className="flex-1 p-6 flex flex-col justify-center space-y-5 border-b md:border-b-0 md:border-r border-border-subtle">
+          <h3 className="font-extrabold text-lg text-text-primary flex items-center gap-2">Dashboard</h3>
 
           <div className="grid grid-cols-2 gap-3">
             <button
@@ -174,7 +174,7 @@ export const AdvisorQueuePage: React.FC = () => {
                   {pendingEventsCount > 9 ? '9+' : pendingEventsCount}
                 </span>
               )}
-              <MicVocal className="w-6 h-6" />
+              <MicVocal className="w-6 h-6 text-brand-primary" />
               <span>Events</span>
             </button>
             <button
@@ -190,7 +190,7 @@ export const AdvisorQueuePage: React.FC = () => {
                   {pendingPlansCount > 9 ? '9+' : pendingPlansCount}
                 </span>
               )}
-              <CalendarDays className="w-6 h-6" />
+              <CalendarDays className="w-6 h-6 text-brand-primary" />
               <span>Annual Plans</span>
             </button>
           </div>
@@ -198,10 +198,10 @@ export const AdvisorQueuePage: React.FC = () => {
 
         {/* At a Glance */}
         <div className="flex-1 p-6 flex flex-col justify-center space-y-5 relative overflow-visible group">
-          <h3 className="font-extrabold text-lg text-white flex items-center gap-2 z-10">
+          <h3 className="font-extrabold text-lg text-text-primary flex items-center gap-2 z-10">
             Review Queue
           </h3>
-          <p className="text-sm font-medium text-gray-400 z-10 leading-snug">
+          <p className="text-sm font-medium text-text-secondary z-10 leading-snug">
             Review, evaluate, and provide official feedback on {assignedSocietyName}'s event proposals and annual calendar plans.
           </p>
 
@@ -242,13 +242,13 @@ export const AdvisorQueuePage: React.FC = () => {
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="bg-white/[0.05] hover:bg-white/[0.08] backdrop-blur-[12px] p-5 rounded-[18px] border border-white/10 hover:border-white/25 transition-all shadow-sm space-y-3 animate-pulse"
+              className="bg-surface-glass backdrop-blur-md p-5 rounded-cards border border-border-subtle space-y-3 animate-pulse"
             >
               <div className="flex justify-between items-center">
-                <div className="h-5 bg-white/10 rounded w-1/3" />
-                <div className="h-6 bg-white/10 rounded w-24" />
+                <div className="h-5 bg-surface-hover rounded w-1/3" />
+                <div className="h-6 bg-surface-hover rounded w-24" />
               </div>
-              <div className="h-4 bg-white/10 rounded w-1/2" />
+              <div className="h-4 bg-surface-hover rounded w-1/2" />
             </div>
           ))}
         </div>
@@ -288,7 +288,7 @@ export const AdvisorQueuePage: React.FC = () => {
 
       {/* Pagination */}
       {meta && meta.totalPages > 1 && (
-        <nav aria-label="Pagination" className="flex items-center justify-between pt-4 border-t-2 border-white/10 text-xs font-semibold text-gray-400">
+        <nav aria-label="Pagination" className="flex items-center justify-between pt-4 border-t border-border-subtle text-xs font-semibold text-text-secondary">
           <span>
             Page {meta.page} of {meta.totalPages} ({meta.total} items)
           </span>
@@ -297,7 +297,7 @@ export const AdvisorQueuePage: React.FC = () => {
             <button
               disabled={!meta.hasPreviousPage}
               onClick={() => setPage((p) => Math.max(1, p - 1))}
-              className="inline-flex items-center gap-1 px-3 py-1.5 bg-white/10 border border-white/20 rounded-xl hover:bg-lavender-whisper disabled:opacity-40 transition-colors"
+              className="inline-flex items-center gap-1 px-3 py-1.5 bg-surface-glass border border-border-medium rounded-xl hover:bg-surface-hover text-text-primary disabled:opacity-40 transition-colors cursor-pointer"
               aria-label="Previous page"
             >
               <ChevronLeft className="w-4 h-4" />
@@ -307,7 +307,7 @@ export const AdvisorQueuePage: React.FC = () => {
             <button
               disabled={!meta.hasNextPage}
               onClick={() => setPage((p) => p + 1)}
-              className="inline-flex items-center gap-1 px-3 py-1.5 bg-white/10 border border-white/20 rounded-xl hover:bg-lavender-whisper disabled:opacity-40 transition-colors"
+              className="inline-flex items-center gap-1 px-3 py-1.5 bg-surface-glass border border-border-medium rounded-xl hover:bg-surface-hover text-text-primary disabled:opacity-40 transition-colors cursor-pointer"
               aria-label="Next page"
             >
               <span>Next</span>

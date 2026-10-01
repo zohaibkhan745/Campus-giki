@@ -7,13 +7,21 @@
 
 @theme {
   --color-canvas: var(--bg-canvas);
+  --color-bg-canvas: var(--bg-canvas);
   --color-canvas-subtle: var(--bg-canvas-subtle);
+  --color-bg-canvas-subtle: var(--bg-canvas-subtle);
   --color-surface: var(--bg-surface);
+  --color-bg-surface: var(--bg-surface);
   --color-surface-hover: var(--bg-surface-hover);
+  --color-bg-surface-hover: var(--bg-surface-hover);
   --color-surface-elevated: var(--bg-surface-elevated);
+  --color-bg-surface-elevated: var(--bg-surface-elevated);
   --color-surface-subtle: var(--bg-surface-subtle);
+  --color-bg-surface-subtle: var(--bg-surface-subtle);
   --color-surface-glass: var(--bg-surface-glass);
+  --color-bg-surface-glass: var(--bg-surface-glass);
   --color-surface-glass-border: var(--bg-surface-glass-border);
+  --color-bg-surface-glass-border: var(--bg-surface-glass-border);
 
   --color-text-primary: var(--text-primary);
   --color-text-secondary: var(--text-secondary);
@@ -38,8 +46,6 @@
   --color-info: var(--color-info);
   --color-focus-ring: var(--focus-ring);
 
-  --color-lavender-whisper: var(--color-lavender-whisper);
-  --color-forest-ink: var(--color-forest-ink);
   --color-ember-glow: var(--color-ember-glow);
   --color-vast-ink: var(--color-vast-ink);
 

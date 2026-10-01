@@ -3,6 +3,7 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate, Link } from "react-router-dom";
+import { invalidateEventQueries } from "@/lib/queryInvalidations";
 import { ArrowLeft, CheckCircle2, ShieldCheck, Sparkles, Loader2 } from "lucide-react";
 import { eventService } from "@/services/event.service";
 import { societyService } from "@/services/society.service";
@@ -18,6 +19,7 @@ import { EventMediaUploader } from "@/components/common/EventMediaUploader";
 import { CustomDatePicker } from "@/components/ui/CustomDatePicker";
 import { CustomTimePicker } from "@/components/ui/CustomTimePicker";
 import { CustomDropdown } from "@/components/ui/CustomDropdown";
+import { BackButton } from "@/components/ui";
 import { cn } from "@/lib/utils";
 import type { AxiosError } from "axios";
 
@@ -160,16 +162,7 @@ export const CreateEventPage: React.FC = () => {
     meta: { notify: true },
     mutationFn: (data: EventFormData) => eventService.createEvent(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["myEvents"] });
-      queryClient.invalidateQueries({ queryKey: ["publicEvents"] });
-      queryClient.invalidateQueries({ queryKey: ["events"] });
-      queryClient.invalidateQueries({ queryKey: ["societyEvents"] });
-      queryClient.invalidateQueries({ queryKey: ["societyDashboard"] });
-      queryClient.invalidateQueries({ queryKey: ["adminEvents"] });
-      queryClient.invalidateQueries({ queryKey: ["adminEventsList"] });
-      queryClient.invalidateQueries({ queryKey: ["advisorDashboard"] });
-      queryClient.invalidateQueries({ queryKey: ["adminDashboard"] });
-      queryClient.invalidateQueries({ queryKey: ["campusFeed"] });
+      void invalidateEventQueries(queryClient);
       navigate("/dashboard", { replace: true });
     },
     onError: (
@@ -206,14 +199,7 @@ export const CreateEventPage: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <button
-            type="button"
-            onClick={() => navigate("/dashboard")}
-            className="fixed top-4 left-4 sm:top-6 sm:left-6 z-[100] inline-flex items-center justify-center w-10 h-10 bg-surface-hover hover:bg-surface backdrop-blur-md border border-border-medium text-text-primary rounded-full transition-all cursor-pointer shadow-elevation-1"
-            title="Go Back"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </button>
+          <BackButton to="/dashboard" />
           <h1 className="text-3xl font-extrabold text-text-primary tracking-tight">
             Create New Campus Event
           </h1>

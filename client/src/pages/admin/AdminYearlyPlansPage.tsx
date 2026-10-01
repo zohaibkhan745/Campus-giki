@@ -27,6 +27,7 @@ import type { PlanStatus } from '@/types/yearly-plan.types';
 import { Alert } from '@/components/ui/Alert';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { BackButton } from '@/components/ui';
 
 export const AdminYearlyPlansPage: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -95,7 +96,7 @@ export const AdminYearlyPlansPage: React.FC = () => {
         );
       default:
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/5 text-white font-medium rounded-inputs text-xs font-semibold">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-surface-hover text-text-muted font-medium rounded-inputs text-xs font-semibold border border-border-subtle">
             <span>DRAFT</span>
           </span>
         );
@@ -106,13 +107,7 @@ export const AdminYearlyPlansPage: React.FC = () => {
     <div className="max-w-6xl mx-auto space-y-6 text-left py-4">
       {/* Top Back Navigation Link */}
       <div className="flex items-center justify-between">
-        <button
-          onClick={() => navigate(-1)}
-          className="fixed top-4 left-4 sm:top-6 sm:left-6 z-[100] inline-flex items-center justify-center w-10 h-10 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white rounded-full transition-all cursor-pointer shadow-lg"
-          title="Go Back"
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </button>
+        <BackButton />
       </div>
 
       {/* Header Banner */}
@@ -126,8 +121,8 @@ export const AdminYearlyPlansPage: React.FC = () => {
       <div className="flex flex-col sm:flex-row gap-2.5 mb-6">
         {/* Search Input */}
         <div className="relative w-full flex-1 flex items-center">
-            <div className="absolute left-4 text-gray-400 pointer-events-none flex items-center justify-center z-10">
-              <Search className="w-5 h-5 text-white" />
+            <div className="absolute left-4 text-text-muted pointer-events-none flex items-center justify-center z-10">
+              <Search className="w-5 h-5" />
             </div>
             <input
               type="text"
@@ -137,7 +132,7 @@ export const AdminYearlyPlansPage: React.FC = () => {
                 setSearchQuery(e.target.value);
                 setPage(1);
               }}
-              className="w-full bg-white/[0.08] backdrop-blur-[20px] text-white placeholder:text-gray-300 text-sm rounded-xl border border-white/20 px-4 py-[12px] pl-12 h-[48px] transition-all outline-none focus:ring-2 focus:ring-white/40 shadow-[0_12px_40px_rgba(0,0,0,0.4)]"
+              className="w-full bg-surface text-text-primary placeholder:text-text-muted text-sm rounded-xl border border-border-medium px-4 py-[12px] pl-12 h-[48px] transition-all outline-none focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20 shadow-elevation-1"
             />
         </div>
 
@@ -179,7 +174,7 @@ export const AdminYearlyPlansPage: React.FC = () => {
           {(statusFilter || yearFilter || searchQuery) && (
             <button
               onClick={handleClearFilters}
-              className="p-2 text-gray-400 hover:text-white bg-white/5 rounded-inputs transition-colors shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+              className="p-2 text-text-secondary hover:text-text-primary bg-surface hover:bg-surface-hover border border-border-medium rounded-inputs transition-colors shrink-0 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
               title="Clear all filters"
               aria-label="Clear all filters"
             >
@@ -195,13 +190,13 @@ export const AdminYearlyPlansPage: React.FC = () => {
           {[1, 2, 3, 4].map((i) => (
             <div
               key={i}
-              className="bg-transparent p-5 rounded-cards border border-white/10 space-y-3 animate-pulse"
+              className="bg-surface-glass p-5 rounded-cards border border-border-subtle space-y-3 animate-pulse"
             >
               <div className="flex justify-between items-center">
-                <div className="h-5 bg-white/10 rounded w-1/3" />
-                <div className="h-6 bg-white/10 rounded w-24" />
+                <div className="h-5 bg-border-subtle rounded w-1/3" />
+                <div className="h-6 bg-border-subtle rounded w-24" />
               </div>
-              <div className="h-4 bg-white/10 rounded w-1/2" />
+              <div className="h-4 bg-border-subtle rounded w-1/2" />
             </div>
           ))}
         </div>
@@ -237,7 +232,7 @@ export const AdminYearlyPlansPage: React.FC = () => {
 
       {/* Pagination Bar */}
       {meta && meta.totalPages > 1 && (
-        <nav aria-label="Pagination" className="flex items-center justify-between pt-4 border-t-2 border-white/10 text-xs font-semibold text-gray-400">
+        <nav aria-label="Pagination" className="flex items-center justify-between pt-4 border-t-2 border-border-subtle text-xs font-semibold text-text-secondary">
           <span>
             Page {meta.page} of {meta.totalPages} ({meta.total} plans)
           </span>
@@ -246,7 +241,7 @@ export const AdminYearlyPlansPage: React.FC = () => {
             <button
               disabled={!meta.hasPreviousPage}
               onClick={() => setPage((p) => Math.max(1, p - 1))}
-              className="inline-flex items-center gap-1 px-3 py-1.5 bg-white/5 border border-white/10 rounded-inputs hover:bg-white/5 disabled:opacity-40 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+              className="inline-flex items-center gap-1 px-3 py-1.5 bg-surface border border-border-medium rounded-inputs hover:bg-surface-hover text-text-secondary hover:text-text-primary disabled:opacity-40 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
               aria-label="Previous page"
             >
               <ChevronLeft className="w-4 h-4" />
@@ -256,7 +251,7 @@ export const AdminYearlyPlansPage: React.FC = () => {
             <button
               disabled={!meta.hasNextPage}
               onClick={() => setPage((p) => p + 1)}
-              className="inline-flex items-center gap-1 px-3 py-1.5 bg-white/5 border border-white/10 rounded-inputs hover:bg-white/5 disabled:opacity-40 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+              className="inline-flex items-center gap-1 px-3 py-1.5 bg-surface border border-border-medium rounded-inputs hover:bg-surface-hover text-text-secondary hover:text-text-primary disabled:opacity-40 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
               aria-label="Next page"
             >
               <span>Next</span>

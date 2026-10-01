@@ -110,7 +110,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
     return (
       <div className="flex flex-col items-center">
         {label && (
-          <label className="block text-xs uppercase tracking-wider text-gray-400 font-semibold mb-2 text-center">
+          <label className="block text-xs uppercase tracking-wider text-text-secondary font-semibold mb-2 text-center">
             {label}
           </label>
         )}
@@ -124,11 +124,11 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
 
         <div className="relative group shrink-0">
           <div
-            className={`relative overflow-hidden cursor-pointer transition-all duration-300 border shadow-[0_8px_30px_rgba(0,0,0,0.3)] ${
+            className={`relative overflow-hidden cursor-pointer transition-all duration-300 border shadow-elevation-1 ${
               dragActive
-                ? 'bg-white/[0.18] border-white/60 scale-[1.02]'
-                : 'bg-white/[0.08] border-white/20 hover:border-white/50'
-            } backdrop-blur-[20px] rounded-full ${circleSizeClass}`}
+                ? 'bg-surface-hover border-brand-primary scale-[1.02]'
+                : 'bg-surface-glass border-border-medium hover:border-brand-primary/50'
+            } backdrop-blur-xl rounded-full ${circleSizeClass}`}
             onDragEnter={handleDrag}
             onDragLeave={handleDrag}
             onDragOver={handleDrag}
@@ -140,27 +140,23 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
                 <img
                   src={activeImage}
                   alt="Avatar"
-                  className="w-full h-full object-cover rounded-full"
+                  className="w-full h-full object-cover rounded-full transition-transform duration-300 group-hover:scale-105"
                   onError={() => {
                     setError('Failed to load image preview');
                     setPreviewUrl(null);
                   }}
                 />
 
-                {/* Hover overlay with quick actions */}
-                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-full backdrop-blur-[2px]">
-                  <div className="w-11 h-11 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center text-white transition-all shadow-sm">
-                    <Camera className="w-5 h-5 text-white" />
-                  </div>
-                </div>
+                {/* Subtle ring effect on hover without blurring or obscuring image */}
+                <div className="absolute inset-0 rounded-full transition-all pointer-events-none group-hover:ring-2 group-hover:ring-brand-primary/40" />
               </>
             ) : (
               /* Minimal, clean placeholder when no image exists */
-              <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-b from-white/[0.08] to-white/[0.03] group-hover:from-white/[0.12] group-hover:to-white/[0.06] transition-all">
-                <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white/70 group-hover:scale-110 group-hover:bg-white/20 group-hover:text-white transition-all mb-1 shadow-inner">
+              <div className="w-full h-full flex flex-col items-center justify-center bg-surface-hover/50 group-hover:bg-surface-hover transition-all">
+                <div className="w-10 h-10 rounded-full bg-surface border border-border-subtle flex items-center justify-center text-text-secondary group-hover:scale-110 group-hover:text-text-primary transition-all mb-1 shadow-inner">
                   <Camera className="w-5 h-5" />
                 </div>
-                <span className="text-[11px] font-semibold text-white/75 group-hover:text-white tracking-wide">
+                <span className="text-[11px] font-semibold text-text-secondary group-hover:text-text-primary tracking-wide">
                   Add Photo
                 </span>
               </div>
@@ -202,10 +198,10 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
               e.stopPropagation();
               fileInputRef.current?.click();
             }}
-            className="absolute bottom-0 right-0 sm:bottom-0.5 sm:right-0.5 w-8 h-8 rounded-full bg-white hover:bg-gray-100 text-black shadow-lg flex items-center justify-center border-2 border-surface hover:scale-110 active:scale-95 transition-transform cursor-pointer z-10"
+            className="absolute bottom-0 right-0 sm:bottom-0.5 sm:right-0.5 w-8 h-8 rounded-full bg-surface hover:bg-surface-hover text-text-primary border-2 border-border-medium shadow-elevation-2 flex items-center justify-center hover:scale-110 active:scale-95 transition-transform cursor-pointer z-10"
             aria-label="Upload photo"
           >
-            <Camera className="w-4 h-4 text-black" />
+            <Camera className="w-4 h-4" />
           </button>
         </div>
 
@@ -225,7 +221,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
   return (
     <div className="w-full space-y-2">
       {label && (
-        <label className="block text-xs uppercase tracking-wider text-gray-400 font-semibold mb-1">
+        <label className="block text-xs uppercase tracking-wider text-text-secondary font-semibold mb-1">
           {label}
         </label>
       )}
@@ -248,8 +244,10 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
       >
         <div
           className={`absolute inset-0 transition-all duration-300 border ${
-            dragActive ? 'bg-white/[0.15] border-white/40' : 'bg-white/[0.08] border-white/20'
-          } backdrop-blur-[20px] rounded-[18px] shadow-[0_12px_40px_rgba(0,0,0,0.4)] flex flex-col items-center justify-center p-4`}
+            dragActive
+              ? 'bg-surface-hover border-brand-primary'
+              : 'bg-surface-glass border-border-medium hover:border-border-strong'
+          } backdrop-blur-xl rounded-[18px] shadow-elevation-1 flex flex-col items-center justify-center p-4`}
           onClick={() => !previewUrl && fileInputRef.current?.click()}
           style={{ cursor: previewUrl ? 'default' : 'pointer' }}
         >
@@ -272,7 +270,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
                     fileInputRef.current?.click();
                   }}
                   type="button"
-                  className="px-3 py-1.5 rounded-xl bg-white/20 hover:bg-white/30 border border-white/30 text-white transition-all active:scale-95 shadow-md flex items-center gap-1.5 text-xs font-semibold backdrop-blur-md"
+                  className="px-3 py-1.5 rounded-xl bg-surface/90 hover:bg-surface border border-border-medium text-text-primary transition-all active:scale-95 shadow-md flex items-center gap-1.5 text-xs font-semibold backdrop-blur-md"
                   aria-label="Change banner"
                 >
                   <UploadCloud className="w-3.5 h-3.5" />
@@ -281,7 +279,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
                 <button
                   onClick={handleClear}
                   type="button"
-                  className="px-3 py-1.5 rounded-xl bg-red-500/30 hover:bg-red-500/50 border border-red-500/50 text-red-200 hover:text-white transition-all active:scale-95 shadow-md flex items-center gap-1.5 text-xs font-semibold backdrop-blur-md"
+                  className="px-3 py-1.5 rounded-xl bg-red-500/80 hover:bg-red-500 border border-red-500/50 text-white transition-all active:scale-95 shadow-md flex items-center gap-1.5 text-xs font-semibold backdrop-blur-md"
                   aria-label="Remove banner"
                 >
                   <X className="w-3.5 h-3.5" />
@@ -291,14 +289,14 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
             </>
           ) : (
             <div className="flex flex-col items-center justify-center text-center space-y-2.5">
-              <div className="p-3 bg-white/10 rounded-full text-white/70 group-hover:scale-110 transition-transform">
+              <div className="p-3 bg-surface border border-border-subtle rounded-full text-text-secondary group-hover:scale-110 group-hover:text-text-primary transition-transform">
                 <UploadCloud className="w-7 h-7" />
               </div>
               <div>
-                <p className="text-sm font-semibold text-white mb-0.5">
-                  Click to upload <span className="font-normal text-white/70">or drag and drop</span>
+                <p className="text-sm font-semibold text-text-primary mb-0.5">
+                  Click to upload <span className="font-normal text-text-secondary">or drag and drop</span>
                 </p>
-                <p className="text-xs text-white/50">
+                <p className="text-xs text-text-muted">
                   {helperText || 'PNG, JPG, WebP or GIF (Max 5MB)'}
                 </p>
               </div>

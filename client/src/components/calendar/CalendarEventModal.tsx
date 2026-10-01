@@ -142,7 +142,7 @@ export const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
         {/* Modal Inner Content */}
         <div className="relative z-10 h-full flex flex-col p-6 sm:p-8">
           {/* Header (Author info) */}
-          <div className="profile-header pb-4 mb-4 border-b border-white/10 flex items-center justify-between gap-3 shrink-0 pr-10">
+          <div className="profile-header pb-4 mb-4 border-b border-border-subtle flex items-center justify-between gap-3 shrink-0 pr-10">
             {societyId ? (
               <Link
                 to={`/societies/${societyId}`}
@@ -168,17 +168,17 @@ export const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
                 <img
                   src={logoImage}
                   alt={authorName}
-                  className="w-11 h-11 rounded-full border border-white/20 object-cover shrink-0 group-hover/society:ring-2 group-hover/society:ring-blue-400/80 group-hover/society:scale-105 transition-all"
+                  className="w-11 h-11 rounded-full border border-border-medium object-cover shrink-0 group-hover/society:ring-2 group-hover/society:ring-blue-400/80 group-hover/society:scale-105 transition-all"
                   onError={(e) => {
                     e.currentTarget.src = '/default-society.jpg';
                   }}
                 />
                 <div className="flex flex-col min-w-0 text-left">
-                  <span className="font-bold text-white text-base truncate group-hover/society:text-blue-400 transition-colors">
+                  <span className="font-bold text-text-primary text-base truncate group-hover/society:text-blue-500 dark:group-hover/society:text-blue-400 transition-colors">
                     {authorName}
                   </span>
                   {formattedDate && (
-                    <span className="text-xs text-gray-400">Posted: {formattedDate}</span>
+                    <span className="text-xs text-text-secondary">Posted: {formattedDate}</span>
                   )}
                 </div>
               </Link>
@@ -187,15 +187,15 @@ export const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
                 <img
                   src={logoImage}
                   alt={authorName}
-                  className="w-11 h-11 rounded-full border border-white/20 object-cover shrink-0"
+                  className="w-11 h-11 rounded-full border border-border-medium object-cover shrink-0"
                   onError={(e) => {
                     e.currentTarget.src = '/default-society.jpg';
                   }}
                 />
                 <div className="flex flex-col min-w-0">
-                  <span className="font-bold text-white text-base truncate">{authorName}</span>
+                  <span className="font-bold text-text-primary text-base truncate">{authorName}</span>
                   {formattedDate && (
-                    <span className="text-xs text-gray-400">Posted: {formattedDate}</span>
+                    <span className="text-xs text-text-secondary">Posted: {formattedDate}</span>
                   )}
                 </div>
               </div>
@@ -205,14 +205,14 @@ export const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
           {/* Scrollable Event Content */}
           <div className="flex-1 overflow-y-auto custom-scrollbar pr-1.5 min-h-0 space-y-4">
             {/* Date & Time / Venue Badges */}
-            <div className="flex flex-col gap-2 p-3 rounded-xl bg-white/5 border border-white/10 text-xs sm:text-sm">
-              <div className="text-gray-200 flex items-center gap-2.5 font-medium">
-                <Calendar className="w-4 h-4 text-blue-400 shrink-0" />
+            <div className="flex flex-col gap-2 p-3 rounded-xl bg-surface-glass border border-border-subtle text-xs sm:text-sm">
+              <div className="text-text-primary flex items-center gap-2.5 font-medium">
+                <Calendar className="w-4 h-4 text-blue-500 dark:text-blue-400 shrink-0" />
                 <span>{scheduleText}</span>
               </div>
               {event.venue && (
-                <div className="text-gray-200 flex items-center gap-2.5 font-medium">
-                  <MapPin className="w-4 h-4 text-red-400 shrink-0" />
+                <div className="text-text-primary flex items-center gap-2.5 font-medium">
+                  <MapPin className="w-4 h-4 text-rose-500 dark:text-rose-400 shrink-0" />
                   <span>{event.venue}</span>
                 </div>
               )}
@@ -220,17 +220,17 @@ export const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
 
             {/* Title & Description */}
             <div className="space-y-2">
-              <h3 className="text-lg sm:text-xl font-black text-white tracking-tight leading-snug">
+              <h3 className="text-lg sm:text-xl font-black text-text-primary tracking-tight leading-snug">
                 {event.title}
               </h3>
-              <p className="text-gray-300 text-sm leading-relaxed whitespace-pre-line">
+              <p className="text-text-secondary text-sm leading-relaxed whitespace-pre-line">
                 {event.description || 'No detailed description provided for this event.'}
               </p>
             </div>
           </div>
 
           {/* Footer Call to Action */}
-          <div className="mt-auto pt-4 border-t border-white/10 shrink-0">
+          <div className="mt-auto pt-4 border-t border-border-subtle shrink-0">
             {event.registrationLink ? (
               <a
                 href={
@@ -240,7 +240,7 @@ export const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
                 }
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center w-full py-3 px-5 bg-white text-gray-950 rounded-xl font-bold hover:bg-gray-200 transition-all hover:shadow-lg active:scale-[0.99] gap-2 text-sm cursor-pointer"
+                className="flex items-center justify-center w-full py-3 px-5 bg-text-primary text-text-inverse rounded-xl font-bold hover:opacity-90 transition-all shadow-elevation-1 active:scale-[0.99] gap-2 text-sm cursor-pointer"
               >
                 <span>Register Now</span>
                 <ExternalLink className="w-4 h-4" />
@@ -248,7 +248,7 @@ export const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
             ) : (
               <Link
                 to={`/events/${event.id}`}
-                className="flex items-center justify-center w-full py-3 px-5 bg-white text-gray-950 rounded-xl font-bold hover:bg-gray-200 transition-all hover:shadow-lg active:scale-[0.99] gap-2 text-sm cursor-pointer"
+                className="flex items-center justify-center w-full py-3 px-5 bg-text-primary text-text-inverse rounded-xl font-bold hover:opacity-90 transition-all shadow-elevation-1 active:scale-[0.99] gap-2 text-sm cursor-pointer"
               >
                 <span>View Event Details</span>
                 <ArrowRight className="w-4 h-4" />

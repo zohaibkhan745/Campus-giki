@@ -16,7 +16,7 @@ export const RootLayout: React.FC = () => {
   const location = useLocation();
 
   return (
-    <div className="min-h-screen flex flex-col font-inter bg-canvas text-text-primary relative overflow-x-hidden w-screen max-w-[100vw]">
+    <div className="min-h-screen flex flex-col font-inter bg-canvas text-text-primary relative overflow-x-hidden w-full max-w-full">
       <main className="relative z-20 flex-1 min-w-0 min-h-screen pb-28 md:pb-32 w-full pt-8">
         <Suspense fallback={<ContentFallback />}>
           <div className="w-full h-full">

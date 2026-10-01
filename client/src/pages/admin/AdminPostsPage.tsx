@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
+import { invalidatePostQueries } from '@/lib/queryInvalidations';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -21,6 +22,7 @@ import {
 } from 'lucide-react';
 import { postService, type PostItem } from '@/services/post.service';
 import { Button } from '@/components/ui/Button';
+import { BackButton } from '@/components/ui';
 import { PostCard } from '@/components/feed/PostCard';
 import { CustomDatePicker } from '@/components/ui/date-picker';
 import { Alert } from '@/components/ui/Alert';
@@ -110,8 +112,7 @@ export const AdminPostsPage: React.FC = () => {
         ? postService.updatePost(editingPost.id, formData)
         : postService.createPost(formData),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['adminPosts'] });
-      await queryClient.invalidateQueries({ queryKey: ['campusFeed'] });
+      await invalidatePostQueries(queryClient);
       closeModal();
     },
     onError: (error: AxiosError<{ message?: string | string[] }>) => {
@@ -124,8 +125,7 @@ export const AdminPostsPage: React.FC = () => {
     meta: { notify: true },
     mutationFn: (id: string) => postService.deletePost(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['adminPosts'] });
-      queryClient.invalidateQueries({ queryKey: ['campusFeed'] });
+      void invalidatePostQueries(queryClient);
     },
   });
 
@@ -157,13 +157,7 @@ export const AdminPostsPage: React.FC = () => {
   return (
     <div className="w-full max-w-[1440px] mx-auto text-left relative">
       <div className="flex items-center justify-between">
-        <button
-          onClick={() => navigate(-1)}
-          className="fixed top-4 left-4 sm:top-6 sm:left-6 z-[100] inline-flex items-center justify-center w-10 h-10 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white rounded-full transition-all cursor-pointer shadow-lg"
-          title="Go Back"
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </button>
+        <BackButton />
       </div>
 
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
@@ -181,7 +175,7 @@ export const AdminPostsPage: React.FC = () => {
       </div>
 
       {/* Filter Toolbar */}
-      <div className="relative z-[200] bg-white/[0.08] backdrop-blur-[20px] p-5 rounded-[18px] border border-white/20 shadow-[0_12px_40px_rgba(0,0,0,0.4)] w-full">
+      <div className="relative z-[200] bg-surface-glass backdrop-blur-xl p-5 rounded-cards border border-border-medium shadow-elevation-1 w-full">
         <div className="flex flex-col sm:flex-row items-center gap-4">
           <div className="w-full sm:flex-1 shrink-0">
             <CustomDatePicker
@@ -203,7 +197,7 @@ export const AdminPostsPage: React.FC = () => {
           {(dateFrom || dateTo) && (
             <button
               onClick={handleClearFilters}
-              className="p-2.5 text-gray-400 hover:text-white bg-white/5 hover:bg-white/10 rounded-[14px] transition-colors shrink-0 flex items-center gap-1.5 text-xs font-semibold cursor-pointer"
+              className="p-2.5 text-text-secondary hover:text-text-primary bg-surface hover:bg-surface-hover border border-border-medium rounded-xl transition-colors shrink-0 flex items-center gap-1.5 text-xs font-semibold cursor-pointer"
               title="Clear filters"
             >
               <FilterX className="w-4 h-4" />
@@ -215,7 +209,7 @@ export const AdminPostsPage: React.FC = () => {
 
       {isLoading ? (
         <div className="flex justify-center p-12">
-          <Loader2 className="w-8 h-8 animate-spin text-white/50" />
+          <Loader2 className="w-8 h-8 animate-spin text-brand-primary" />
         </div>
       ) : isError ? (
         <ErrorState
@@ -286,7 +280,7 @@ export const AdminPostsPage: React.FC = () => {
         <div className="flex justify-center items-center pt-8 pb-4">
           <Button
             variant="outline"
-            className="rounded-[12px] px-8 py-3 bg-[rgba(255,255,255,0.08)] backdrop-blur-[12px] text-[16px] font-semibold text-white border border-[rgba(255,255,255,0.15)] hover:bg-[rgba(255,255,255,0.16)] hover:border-[rgba(255,255,255,0.25)] transition-all"
+            className="rounded-xl px-8 py-3 bg-surface hover:bg-surface-hover text-base font-semibold text-text-primary border border-border-medium transition-all shadow-sm"
             onClick={() => fetchNextPage()}
             disabled={isFetchingNextPage}
           >

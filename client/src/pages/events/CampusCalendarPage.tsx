@@ -297,7 +297,7 @@ export const CampusCalendarPage: React.FC = () => {
                   onClick={() => { setListFilter(filter as any); setVisibleEventsCount(8); }}
                   className={`px-4 py-2 rounded-full font-bold text-sm border transition-all cursor-pointer ${
                     listFilter === filter
-                      ? 'bg-text-primary text-bg-canvas border-text-primary shadow-sm'
+                      ? 'bg-text-primary text-text-inverse border-text-primary shadow-sm'
                       : 'bg-surface-glass text-text-secondary border-border-subtle hover:border-border-strong hover:text-text-primary'
                   }`}
                 >

@@ -9,13 +9,13 @@ import {
   ArrowLeft,
   AlertCircle,
   Tag,
-  Camera,
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { societyService } from '@/services/society.service';
 import { EventCard } from '@/components/feed/EventCard';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { BackButton } from '@/components/ui';
 import { BannerHeader } from '@/components/layout/BannerHeader';
 
 export const SocietyProfilePage: React.FC = () => {
@@ -78,8 +78,8 @@ export const SocietyProfilePage: React.FC = () => {
   if (isLoadingSociety && !society) {
     return (
       <div className="w-full text-left font-sans bg-transparent animate-pulse">
-        <div className="w-screen h-[280px] md:h-[320px] bg-white/5 relative -ml-[50vw] left-1/2 -mt-8">
-          <div className="absolute bottom-[-60px] md:bottom-[-90px] left-6 md:left-12 w-[120px] md:w-[180px] h-[120px] md:h-[180px] rounded-full bg-white/10 border-4 border-border-medium" />
+        <div className="w-full h-[280px] md:h-[320px] bg-surface-elevated/60 rounded-2xl border border-border-subtle relative shadow-elevation-1">
+          <div className="absolute bottom-[-60px] md:bottom-[-90px] left-6 md:left-12 w-[120px] md:w-[180px] h-[120px] md:h-[180px] rounded-full bg-surface-elevated border-4 border-canvas shadow-elevation-1" />
         </div>
         <div className="max-w-[1440px] mx-auto px-6 md:px-12 pt-20 md:pt-28 space-y-4">
           <div className="h-8 w-64 bg-white/10 rounded-lg" />
@@ -126,15 +126,7 @@ export const SocietyProfilePage: React.FC = () => {
         logoUrl={getSocietyLogo(society.logoUrl)}
         fallbackImage="/default-society.jpg"
         hideSpacer
-        backButton={
-          <button
-            onClick={() => navigate(-1)}
-            className="fixed top-4 left-4 sm:top-6 sm:left-6 z-[100] inline-flex items-center justify-center w-10 h-10 bg-black/40 hover:bg-black/60 backdrop-blur-md border border-white/20 text-white rounded-full transition-all cursor-pointer shadow-lg"
-            title="Go Back"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </button>
-        }
+        backButton={<BackButton />}
         warningBadge={
           society.hasWarning ? (
             <div className="absolute top-4 left-16 sm:left-20 z-10">
@@ -176,19 +168,7 @@ export const SocietyProfilePage: React.FC = () => {
           linkedin: society.linkedin,
           website: society.website,
         }}
-        avatarOverlay={
-          isSocietyManager ? (
-            <Link
-              to="/society/setup"
-              className="absolute inset-0 rounded-full bg-black/50 opacity-0 group-hover/avatar:opacity-100 transition-opacity flex items-center justify-center text-white backdrop-blur-[2px] cursor-pointer"
-              aria-label="Change society logo"
-            >
-              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center text-white transition-all shadow-md">
-                <Camera className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-              </div>
-            </Link>
-          ) : undefined
-        }
+        editUrl={isSocietyManager ? "/society/setup" : undefined}
       />
 
       {/* Content Section */}

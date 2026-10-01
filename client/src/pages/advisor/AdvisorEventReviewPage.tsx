@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate, useParams, Link } from 'react-router-dom';
+import { invalidateEventQueries } from '@/lib/queryInvalidations';
 import {
   Calendar,
   Clock,
@@ -28,17 +29,17 @@ import {
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { Alert } from '@/components/ui/Alert';
-import { ErrorState } from '@/components/ui';
+import { ErrorState, BackButton } from '@/components/ui';
 import type { AxiosError } from 'axios';
 
 const getBadgeStyles = (status: string) => {
   switch (status) {
     case 'PUBLISHED':
-    case 'APPROVED': return 'bg-green-600 text-white border-green-700';
-    case 'PENDING_ADVISOR': return 'bg-orange-500 text-white border-orange-600';
-    case 'PENDING_ADMIN': return 'bg-white text-black border-gray-200';
-    case 'CHANGES_REQUESTED': return 'bg-red-500 text-white border-red-600';
-    default: return 'bg-white/10 text-white border-white/20';
+    case 'APPROVED': return 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border-emerald-500/30';
+    case 'PENDING_ADVISOR': return 'bg-orange-500/20 text-orange-600 dark:text-orange-400 border-orange-500/30';
+    case 'PENDING_ADMIN': return 'bg-amber-500/20 text-amber-600 dark:text-amber-400 border-amber-500/30';
+    case 'CHANGES_REQUESTED': return 'bg-rose-500/20 text-rose-600 dark:text-rose-400 border-rose-500/30';
+    default: return 'bg-surface-hover text-text-muted border-border-subtle';
   }
 }
 const formatStatus = (s: string) => s.replace('_', ' ');
@@ -103,9 +104,7 @@ export const AdvisorEventReviewPage: React.FC = () => {
     meta: { notify: true },
     mutationFn: (data: EventFormData) => eventService.updateEvent(id!, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['event', id] });
-      queryClient.invalidateQueries({ queryKey: ['advisorEventsQueue'] });
-      queryClient.invalidateQueries({ queryKey: ['societyDashboard'] });
+      void invalidateEventQueries(queryClient, id);
     },
     onError: (
       error: AxiosError<{ message?: string | string[]; error?: string }>,
@@ -123,10 +122,7 @@ export const AdvisorEventReviewPage: React.FC = () => {
     mutationFn: ({ status }: { status: string }) =>
       advisorService.updateEventStatus(id!, { status, comments: advisorComment }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['event', id] });
-      queryClient.invalidateQueries({ queryKey: ['advisorEventsQueue'] });
-      queryClient.invalidateQueries({ queryKey: ['advisorEvents'] });
-      queryClient.invalidateQueries({ queryKey: ['societyDashboard'] });
+      void invalidateEventQueries(queryClient, id);
       navigate('/advisor/yearly-plans', { replace: true });
     },
     onError: (
@@ -157,7 +153,7 @@ export const AdvisorEventReviewPage: React.FC = () => {
 
   if (isLoadingEvent) {
     return (
-      <div className="min-h-[50vh] flex flex-col justify-center items-center text-gray-400 gap-3">
+      <div className="min-h-[50vh] flex flex-col justify-center items-center text-text-secondary gap-3">
         <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
         <p className="text-sm font-medium">Loading event details...</p>
       </div>
@@ -191,49 +187,43 @@ export const AdvisorEventReviewPage: React.FC = () => {
   return (
     <div className="max-w-4xl mx-auto space-y-6 text-left py-4 px-4 pb-32">
       {/* Top Heading */}
-      <button
-        onClick={() => navigate(-1)}
-        className="fixed top-4 left-4 sm:top-6 sm:left-6 z-[100] inline-flex items-center justify-center w-10 h-10 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white rounded-full transition-all cursor-pointer shadow-lg"
-        title="Go Back"
-      >
-        <ArrowLeft className="w-5 h-5" />
-      </button>
+      <BackButton />
       <div className="mb-6 mt-12 sm:mt-8">
-        <h1 className="text-4xl font-extrabold text-white leading-tight">
+        <h1 className="text-4xl font-extrabold text-text-primary leading-tight">
           Event Details: {eventData.title}
         </h1>
         <div className="flex items-center gap-3 mt-3">
           <span className={`px-3 py-1 border backdrop-blur-md rounded-inputs text-xs uppercase tracking-wider font-bold ${getBadgeStyles(eventData.approvalStatus || '')}`}>
             {formatStatus(eventData.approvalStatus || '')}
           </span>
-          <span className="text-sm text-gray-400 font-medium">Society: {eventData.society?.name}</span>
+          <span className="text-sm text-text-secondary font-medium">Society: {eventData.society?.name}</span>
         </div>
       </div>
 
       {eventData.rules && (
         <div className="p-4 bg-amber-500/10 border border-amber-500/30 backdrop-blur-md rounded-cards space-y-1">
-          <div className="flex items-center gap-2 text-amber-400 font-extrabold text-xs uppercase tracking-wider">
+          <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 font-extrabold text-xs uppercase tracking-wider">
             <ShieldCheck className="w-4 h-4 shrink-0" />
             <span>Official DSA Directives &amp; Event Rules</span>
           </div>
-          <p className="text-xs text-amber-200/80 font-medium whitespace-pre-line leading-relaxed pl-6">
+          <p className="text-xs text-amber-800 dark:text-amber-200/80 font-medium whitespace-pre-line leading-relaxed pl-6">
             {eventData.rules}
           </p>
         </div>
       )}
 
       {/* Main Glassmorphic Card */}
-      <div className="relative z-1 w-full p-8 rounded-[18px] bg-white/[0.08] backdrop-blur-[20px] border border-white/20 shadow-[0_12px_40px_rgba(0,0,0,0.4)] text-white space-y-8">
+      <div className="relative z-1 w-full p-8 rounded-cards bg-surface-glass backdrop-blur-xl border border-border-medium shadow-elevation-1 text-text-primary space-y-8">
         
         {/* Advisor Review & Comments Section */}
         <div className="space-y-4">
           <h2 className="text-lg font-extrabold flex items-center gap-2">
-            <ShieldCheck className="w-5 h-5" />
+            <ShieldCheck className="w-5 h-5 text-brand-primary" />
             Advisor Review & Feedback
           </h2>
           
           <div className="space-y-1.5 text-left">
-            <label className="block text-xs uppercase tracking-wider text-gray-400 font-semibold mb-1">
+            <label className="block text-xs uppercase tracking-wider text-text-secondary font-semibold mb-1">
               Feedback / Comments
             </label>
             <textarea
@@ -246,14 +236,14 @@ export const AdvisorEventReviewPage: React.FC = () => {
               placeholder="Provide feedback or reasons for requesting changes..."
               disabled={!isPending || updateEventStatusMutation.isPending}
               className={cn(
-                "w-full text-sm transition-all outline-none bg-transparent text-white placeholder:text-gray-500 rounded-inputs px-3.5 py-2.5 border resize-y disabled:opacity-50",
+                "w-full text-sm transition-all outline-none bg-surface text-text-primary placeholder:text-text-muted rounded-inputs px-3.5 py-2.5 border resize-y disabled:opacity-50",
                 commentError 
                   ? "border-red-500/50 ring-2 ring-red-500/20 focus:border-red-500" 
-                  : "border-white/20 focus:border-white/40 focus:ring-2 focus:ring-white/10"
+                  : "border-border-medium focus:border-border-strong focus:ring-2 focus:ring-brand-primary/20"
               )}
             />
             {commentError && (
-              <p className="text-red-400 text-xs mt-1 font-medium">Comment is required to request changes.</p>
+              <p className="text-red-500 dark:text-red-400 text-xs mt-1 font-medium">Comment is required to request changes.</p>
             )}
           </div>
 
@@ -265,7 +255,7 @@ export const AdvisorEventReviewPage: React.FC = () => {
                 onClick={() => updateEventStatusMutation.mutate({ status: 'PENDING_ADMIN' })}
                 isLoading={updateEventStatusMutation.isPending}
                 leftIcon={<CheckCircle2 className="w-4 h-4 text-white" />}
-                className="bg-green-600 text-white hover:bg-green-700 w-full sm:flex-1"
+                className="bg-emerald-600 text-white hover:bg-emerald-700 w-full sm:flex-1"
               >
                 Approve (Send to DSA)
               </Button>
@@ -274,27 +264,27 @@ export const AdvisorEventReviewPage: React.FC = () => {
                 variant="outline"
                 onClick={handleRequestChanges}
                 isLoading={updateEventStatusMutation.isPending}
-                leftIcon={<AlertCircle className="w-4 h-4 text-black" />}
-                className="bg-white text-black hover:bg-gray-200 w-full sm:flex-1"
+                leftIcon={<AlertCircle className="w-4 h-4 text-text-secondary" />}
+                className="bg-surface hover:bg-surface-hover text-text-primary border border-border-medium w-full sm:flex-1"
               >
                 Request Changes
               </Button>
             </div>
           ) : (
-            <p className="text-xs text-gray-400 font-medium pt-2">
+            <p className="text-xs text-text-secondary font-medium pt-2">
               This event is currently in {eventData.approvalStatus} status and cannot be approved/rejected at this time.
             </p>
           )}
         </div>
 
         {/* Separator Line */}
-        <div className="w-full h-px bg-white/10 my-6"></div>
+        <div className="w-full h-px bg-border-subtle my-6"></div>
 
         {/* Event Overview Section */}
         <form onSubmit={handleSubmit(onSaveDetails)} className="space-y-6" noValidate>
           <div className="space-y-4">
             <h2 className="text-lg font-extrabold flex items-center gap-2">
-              <Calendar className="w-5 h-5" />
+              <Calendar className="w-5 h-5 text-brand-primary" />
               Event Overview
             </h2>
 
@@ -308,18 +298,18 @@ export const AdvisorEventReviewPage: React.FC = () => {
             />
 
             <div className="space-y-1.5 text-left">
-              <label className="block text-xs uppercase tracking-wider text-gray-400 font-semibold mb-1">
+              <label className="block text-xs uppercase tracking-wider text-text-secondary font-semibold mb-1">
                 Event Description *
               </label>
               <div className="relative flex items-start">
-                <div className="absolute left-3 top-3 text-gray-400 pointer-events-none flex items-center justify-center">
+                <div className="absolute left-3 top-3 text-text-muted pointer-events-none flex items-center justify-center">
                   <FileText className="w-4 h-4" />
                 </div>
                 <textarea
                   rows={4}
                   placeholder="Describe your event agenda, prerequisites, target audience, and guidelines..."
                   disabled={true}
-                  className="w-full text-sm transition-all outline-none bg-transparent text-white placeholder:text-gray-500 rounded-inputs px-3.5 py-2.5 pl-10 border border-white/20 disabled:opacity-50 resize-y"
+                  className="w-full text-sm transition-all outline-none bg-surface-hover/50 text-text-primary placeholder:text-text-muted rounded-inputs px-3.5 py-2.5 pl-10 border border-border-subtle disabled:opacity-75 resize-y"
                   {...register('description')}
                 />
               </div>
@@ -327,18 +317,18 @@ export const AdvisorEventReviewPage: React.FC = () => {
           </div>
 
           {/* Separator Line */}
-          <div className="w-full h-px bg-white/10 my-6"></div>
+          <div className="w-full h-px bg-border-subtle my-6"></div>
 
           {/* Event Type & Logistics */}
           <div className="space-y-4">
             <h2 className="text-lg font-extrabold flex items-center gap-2">
-              <MapPin className="w-5 h-5" />
+              <MapPin className="w-5 h-5 text-brand-primary" />
               Logistics & Details
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-1.5 text-left">
-                <label className="block text-xs uppercase tracking-wider text-gray-400 font-semibold mb-1">
+                <label className="block text-xs uppercase tracking-wider text-text-secondary font-semibold mb-1">
                   Event Type
                 </label>
                 <CustomDropdown placeholder="Select Type" disabled={true} options={[{value:"Workshop",label:"Workshop"},{value:"Seminar",label:"Seminar"},{value:"Hackathon",label:"Hackathon"},{value:"Competition",label:"Competition"},{value:"Social",label:"Social"},{value:"Other",label:"Other"}]} value={eventData.eventType || undefined} />
@@ -379,12 +369,12 @@ export const AdvisorEventReviewPage: React.FC = () => {
           </div>
 
           {/* Separator Line */}
-          <div className="w-full h-px bg-white/10 my-6"></div>
+          <div className="w-full h-px bg-border-subtle my-6"></div>
 
           {/* In-Charge Details */}
           <div className="space-y-4">
             <h2 className="text-lg font-extrabold flex items-center gap-2">
-              <ShieldCheck className="w-5 h-5" />
+              <ShieldCheck className="w-5 h-5 text-brand-primary" />
               In-Charge Details
             </h2>
 

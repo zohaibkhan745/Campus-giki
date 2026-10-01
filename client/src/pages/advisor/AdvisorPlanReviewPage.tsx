@@ -2,6 +2,7 @@ import { getSocietyLogo } from '@/lib/utils';
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams, useNavigate } from 'react-router-dom';
+import { invalidatePlanQueries } from '@/lib/queryInvalidations';
 import {
   ArrowLeft,
   Building2,
@@ -15,8 +16,7 @@ import {
 import { yearlyPlanService } from '@/services/yearly-plan.service';
 import { Button } from '@/components/ui/Button';
 import { FeedbackHistory } from '@/components/shared/FeedbackHistory';
-import { SmokeyCanvasBackground } from '@/components/ui/SmokeyCanvasBackground';
-import { ErrorState } from '@/components/ui';
+import { ErrorState, BackButton, SmokeyCanvasBackground } from '@/components/ui';
 import type { AxiosError } from 'axios';
 
 import { cn } from '@/lib/utils';
@@ -48,10 +48,7 @@ export const AdvisorPlanReviewPage: React.FC = () => {
     mutationFn: (data: { decision: 'APPROVED' | 'CHANGES_REQUESTED'; comment?: string }) =>
       yearlyPlanService.reviewPlan(id!, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['yearlyPlanDetail', id] });
-      queryClient.invalidateQueries({ queryKey: ['advisorYearlyPlansQueue'] });
-      queryClient.invalidateQueries({ queryKey: ['advisorPlans'] });
-      queryClient.invalidateQueries({ queryKey: ['societyDashboard'] });
+      void invalidatePlanQueries(queryClient, id);
       setComment('');
     }
   });
@@ -72,16 +69,16 @@ export const AdvisorPlanReviewPage: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen w-screen bg-gray-950 flex flex-col justify-center items-center text-white gap-3 m-0">
-        <Loader2 className="w-8 h-8 animate-spin text-white" />
-        <p className="text-sm font-medium text-gray-400">Loading plan details for review...</p>
+      <div className="min-h-screen w-full bg-canvas flex flex-col justify-center items-center text-text-primary gap-3 m-0">
+        <Loader2 className="w-8 h-8 animate-spin text-brand-primary" />
+        <p className="text-sm font-medium text-text-secondary">Loading plan details for review...</p>
       </div>
     );
   }
 
   if (isError || !plan) {
     return (
-      <div className="min-h-screen w-full bg-gray-950 flex flex-col justify-center items-center py-12 px-4 text-center m-0">
+      <div className="min-h-screen w-full bg-canvas flex flex-col justify-center items-center py-12 px-4 text-center m-0">
         <div className="w-full max-w-2xl">
           <ErrorState
             error={error}
@@ -107,25 +104,19 @@ export const AdvisorPlanReviewPage: React.FC = () => {
   const isPendingAdvisor = plan.status === 'PENDING_ADVISOR' || plan.status === 'PENDING';
 
   return (
-    <div className="relative min-h-screen w-full bg-gray-950 overflow-x-hidden overflow-y-auto m-0 flex justify-center py-10 px-4">
+    <div className="relative min-h-screen w-full bg-canvas overflow-x-hidden overflow-y-auto m-0 flex justify-center py-10 px-4">
       <SmokeyCanvasBackground />
       
       <div className="relative z-10 w-full max-w-4xl mx-auto flex flex-col gap-6 text-left">
-        <button
-          onClick={() => navigate(-1)}
-          className="fixed top-4 left-4 sm:top-6 sm:left-6 z-[100] inline-flex items-center justify-center w-10 h-10 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white rounded-full transition-all cursor-pointer shadow-lg"
-          title="Go Back"
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </button>
+        <BackButton />
 
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex flex-col gap-3">
-            <span className="inline-block w-fit px-3 py-1 rounded-md text-xs font-semibold bg-gray-800 text-gray-400">
+            <span className="inline-block w-fit px-3 py-1 rounded-md text-xs font-semibold bg-surface-glass border border-border-subtle text-text-secondary">
               {plan.status.replace('_', ' ')}
             </span>
             <div className="flex items-center gap-4">
-              <div className="w-14 h-14 rounded-full bg-brand-primary p-1 flex items-center justify-center border-2 border-white/80 shrink-0 shadow-lg overflow-hidden">
+              <div className="w-14 h-14 rounded-full bg-brand-primary p-1 flex items-center justify-center border-2 border-border-medium shrink-0 shadow-lg overflow-hidden">
                 {plan.society?.logoUrl ? (
                   <img src={getSocietyLogo(plan.society.logoUrl)} className="w-full h-full rounded-full object-cover bg-white" alt="logo" onError={(e) => { e.currentTarget.src = '/default-society.jpg'; }} />
                 ) : (
@@ -136,8 +127,8 @@ export const AdvisorPlanReviewPage: React.FC = () => {
                 )}
               </div>
               <div className="flex flex-col">
-                <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">{plan.society?.name}</h1>
-                <p className="text-sm text-gray-400">Annual Calendar Plan for Year <span className="font-bold text-white">{plan.year}</span></p>
+                <h1 className="text-2xl sm:text-3xl font-black text-text-primary tracking-tight">{plan.society?.name}</h1>
+                <p className="text-sm text-text-secondary">Annual Calendar Plan for Year <span className="font-bold text-text-primary">{plan.year}</span></p>
               </div>
             </div>
           </div>
@@ -147,25 +138,25 @@ export const AdvisorPlanReviewPage: React.FC = () => {
               type="button"
               variant="outline"
               size="md"
-              className="bg-white/10 hover:bg-white/20 border-white/20 text-white font-bold shadow-lg flex items-center gap-2 cursor-pointer"
+              className="bg-surface hover:bg-surface-hover border-border-medium text-text-primary font-bold shadow-sm flex items-center gap-2 cursor-pointer"
               onClick={() => setIsPrintModalOpen(true)}
-              leftIcon={<Printer className="w-4 h-4 text-blue-400" />}
+              leftIcon={<Printer className="w-4 h-4 text-blue-500" />}
             >
               Print / Save PDF
             </Button>
           </div>
         </div>
 
-        <div className="bg-gray-900/60 border border-white/10 rounded-2xl p-5 sm:p-7 backdrop-blur-md flex flex-col gap-4">
+        <div className="bg-surface border border-border-subtle rounded-2xl p-5 sm:p-7 backdrop-blur-md shadow-elevation-1 flex flex-col gap-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <h2 className="text-base sm:text-lg font-bold text-white">Faculty Advisor Feedback &amp; Decision</h2>
+              <h2 className="text-base sm:text-lg font-bold text-text-primary">Faculty Advisor Feedback &amp; Decision</h2>
             </div>
           </div>
 
           {plan.advisorComments && (
-            <div className="p-4 bg-white/5 border border-white/10 rounded-xl space-y-1">
-              <h3 className="text-xs font-bold text-gray-300 uppercase">Advisor Feedback History</h3>
+            <div className="p-4 bg-surface-glass border border-border-subtle rounded-xl space-y-1">
+              <h3 className="text-xs font-bold text-text-secondary uppercase">Advisor Feedback History</h3>
               <FeedbackHistory rawComments={plan.advisorComments} />
             </div>
           )}
@@ -173,7 +164,7 @@ export const AdvisorPlanReviewPage: React.FC = () => {
           {isPendingAdvisor ? (
             <div className="space-y-4 pt-2">
               <div className="space-y-1 text-left">
-                <label className="text-xs font-semibold text-gray-300 font-medium">
+                <label className="text-xs font-semibold text-text-secondary">
                   Advisor Comments / Revision Instructions
                 </label>
                 <textarea
@@ -185,14 +176,14 @@ export const AdvisorPlanReviewPage: React.FC = () => {
                   }}
                   placeholder="Type revision comments or feedback notes for the society officers..."
                   className={cn(
-                    "w-full bg-white/5 text-white placeholder:text-gray-500 text-sm rounded-xl border p-3.5 transition-all outline-none",
+                    "w-full bg-surface text-text-primary placeholder:text-text-muted text-sm rounded-xl border p-3.5 transition-all outline-none",
                     commentError 
                       ? "border-red-500/50 ring-2 ring-red-500/20 focus:border-red-500" 
-                      : "border-white/10 focus:border-white/30 focus:ring-2 focus:ring-white/10"
+                      : "border-border-medium focus:border-border-strong focus:ring-2 focus:ring-brand-primary/20"
                   )}
                 />
                 {commentError && (
-                  <p className="text-red-400 text-xs mt-1">Comment is required to request changes.</p>
+                  <p className="text-red-500 dark:text-red-400 text-xs mt-1">Comment is required to request changes.</p>
                 )}
               </div>
 
@@ -201,7 +192,7 @@ export const AdvisorPlanReviewPage: React.FC = () => {
                   type="button"
                   variant="outline"
                   size="lg"
-                  className="w-full sm:w-1/2 bg-white/5 hover:bg-white/10 text-white border-white/10"
+                  className="w-full sm:w-1/2 bg-surface hover:bg-surface-hover text-text-primary border-border-medium"
                   isLoading={reviewMutation.isPending}
                   onClick={handleRequestChanges}
                   leftIcon={<Send className="w-4 h-4" />}
@@ -213,7 +204,7 @@ export const AdvisorPlanReviewPage: React.FC = () => {
                   type="button"
                   variant="primary"
                   size="lg"
-                  className="w-full sm:w-1/2 bg-emerald-500 text-white hover:bg-emerald-600 border-transparent shadow-md"
+                  className="w-full sm:w-1/2 bg-emerald-600 text-white hover:bg-emerald-700 border-transparent shadow-md"
                   isLoading={reviewMutation.isPending}
                   onClick={handleApprove}
                 >
@@ -222,60 +213,60 @@ export const AdvisorPlanReviewPage: React.FC = () => {
               </div>
             </div>
           ) : (
-            <div className="p-4 bg-emerald-500/10 rounded-xl border border-emerald-500/20 text-xs text-emerald-400 font-bold">
+            <div className="p-4 bg-emerald-500/10 rounded-xl border border-emerald-500/20 text-xs text-emerald-600 dark:text-emerald-400 font-bold">
               {isApproved ? 'You have already approved this plan.' : 'This plan is not currently pending your review.'}
             </div>
           )}
         </div>
 
-        <div className="bg-gray-900/60 border border-white/10 rounded-2xl p-5 sm:p-7 backdrop-blur-md flex flex-col">
-          <div className="flex items-center justify-between gap-4 border-b border-white/10 pb-4 mb-4">
+        <div className="bg-surface border border-border-subtle rounded-2xl p-5 sm:p-7 backdrop-blur-md shadow-elevation-1 flex flex-col">
+          <div className="flex items-center justify-between gap-4 border-b border-border-subtle pb-4 mb-4">
             <div className="flex items-center gap-2">
-              <h2 className="text-lg sm:text-xl font-bold text-white">Submitted Events</h2>
+              <h2 className="text-lg sm:text-xl font-bold text-text-primary">Submitted Events</h2>
             </div>
-            <span className="px-3 py-1.5 rounded-lg text-sm font-bold bg-white/10 text-white border border-white/10">{plan.plannedEvents?.length || 0} Events</span>
+            <span className="px-3 py-1.5 rounded-lg text-sm font-bold bg-surface-glass text-text-primary border border-border-subtle">{plan.plannedEvents?.length || 0} Events</span>
           </div>
 
           <div className="flex flex-col">
             {plan.plannedEvents?.map((event: any, idx: number) => (
-              <div key={idx} className="py-5 first:pt-0 last:pb-0 border-b border-white/5 last:border-b-0 group">
+              <div key={idx} className="py-5 first:pt-0 last:pb-0 border-b border-border-subtle last:border-b-0 group">
                 <div className="flex flex-col sm:flex-row gap-4 justify-between">
                   <div className="flex flex-col min-w-0 flex-1">
-                    <span className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Event {idx + 1}:</span>
-                    <h3 className="text-base sm:text-lg font-bold text-white leading-tight">{event.eventName}</h3>
+                    <span className="text-xs font-bold text-text-muted uppercase tracking-wider mb-1">Event {idx + 1}:</span>
+                    <h3 className="text-base sm:text-lg font-bold text-text-primary leading-tight">{event.eventName}</h3>
                     
                     <div className="flex flex-wrap gap-2 mt-3 mb-2">
-                      <span className="inline-flex items-center gap-1.5 text-sm text-gray-300">
-                        Venue: <span className="font-bold text-base text-white">{event.venue || 'N/A'}</span>
+                      <span className="inline-flex items-center gap-1.5 text-sm text-text-secondary">
+                        Venue: <span className="font-bold text-base text-text-primary">{event.venue || 'N/A'}</span>
                       </span>
                       {event.eventType && (
-                        <span className="inline-flex items-center px-2 py-0.5 ml-3 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                        <span className="inline-flex items-center px-2 py-0.5 ml-3 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
                           {event.eventType}
                         </span>
                       )}
                     </div>
 
                     <div className="mt-2">
-                      <span className="inline-flex items-center gap-1.5 text-sm text-gray-300 mb-1.5">
+                      <span className="inline-flex items-center gap-1.5 text-sm text-text-secondary mb-1.5">
                         Description:
                       </span>
-                      <div className="p-3 bg-white/5 border border-white/10 rounded-lg">
-                        <p className="text-sm text-gray-300 leading-relaxed">{event.description}</p>
+                      <div className="p-3 bg-surface-glass border border-border-subtle rounded-lg">
+                        <p className="text-sm text-text-secondary leading-relaxed">{event.description}</p>
                       </div>
                     </div>
                   </div>
                   <div className="flex flex-col sm:items-end gap-1.5 shrink-0 sm:min-w-[140px]">
                     {event.startDate && event.endDate && new Date(event.startDate).getTime() === new Date(event.endDate).getTime() ? (
                       <>
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-500/10 text-blue-400 border border-blue-500/20 mb-1">{event.duration || '1 Day Event'}</span>
-                        <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Event Date</span>
-                        <span className="text-sm font-bold text-white">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 mb-1">{event.duration || '1 Day Event'}</span>
+                        <span className="text-xs font-semibold text-text-muted uppercase tracking-wider">Event Date</span>
+                        <span className="text-sm font-bold text-text-primary">
                           {new Date(event.startDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
                         </span>
                       </>
                     ) : (
                       <>
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-500/10 text-purple-400 border border-purple-500/20 mb-1">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20 mb-1">
                           {event.duration ? event.duration : (event.startDate && event.endDate ? 
                             (() => {
                               const diffTime = Math.abs(new Date(event.endDate).getTime() - new Date(event.startDate).getTime());
@@ -286,12 +277,12 @@ export const AdvisorPlanReviewPage: React.FC = () => {
                             : "Multi-Day Event"
                           )}
                         </span>
-                        <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Start Date</span>
-                        <span className="text-sm font-bold text-white">
+                        <span className="text-xs font-semibold text-text-muted uppercase tracking-wider">Start Date</span>
+                        <span className="text-sm font-bold text-text-primary">
                           {event.startDate ? new Date(event.startDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A'}
                         </span>
-                        <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider mt-2">End Date</span>
-                        <span className="text-sm font-bold text-white">
+                        <span className="text-xs font-semibold text-text-muted uppercase tracking-wider mt-2">End Date</span>
+                        <span className="text-sm font-bold text-text-primary">
                           {event.endDate ? new Date(event.endDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A'}
                         </span>
                       </>
@@ -301,7 +292,7 @@ export const AdvisorPlanReviewPage: React.FC = () => {
               </div>
             ))}
             {(!plan.plannedEvents || plan.plannedEvents.length === 0) && (
-              <p className="text-sm text-gray-400 py-4 text-center">No events in this annual plan.</p>
+              <p className="text-sm text-text-muted py-4 text-center">No events in this annual plan.</p>
             )}
           </div>
         </div>

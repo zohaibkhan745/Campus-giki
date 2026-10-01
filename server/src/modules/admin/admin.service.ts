@@ -22,6 +22,8 @@ import * as crypto from 'crypto';
 
 import { ConfigService } from '@nestjs/config';
 import { EmailService } from '../email/email.service';
+import { FeedService } from '../feed/feed.service';
+import { RedisService } from '../../core/redis/redis.service';
 import { CreateAdvisorDto } from './dto/create-advisor.dto';
 import { CreateStaffDto } from './dto/create-staff.dto';
 
@@ -31,6 +33,7 @@ export class AdminService {
     private readonly prisma: PrismaService,
     private readonly emailService: EmailService,
     private readonly configService: ConfigService,
+    private readonly redis: RedisService,
   ) {}
 
   /**
@@ -110,12 +113,12 @@ export class AdminService {
         where: { status: PlanStatus.APPROVED },
       }),
       this.prisma.event.count({
-        where: { eventDate: { gte: startOfWeek, lte: endOfWeek }, approvalStatus: 'PUBLISHED' },
+        where: { eventDate: { gte: startOfWeek, lte: endOfWeek }, approvalStatus: { in: ['PUBLISHED', 'APPROVED'] } },
       }),
       this.prisma.event.count({
-        where: { eventDate: { gte: startOfMonth, lte: endOfMonth }, approvalStatus: 'PUBLISHED' },
+        where: { eventDate: { gte: startOfMonth, lte: endOfMonth }, approvalStatus: { in: ['PUBLISHED', 'APPROVED'] } },
       }),
-      this.prisma.event.count({ where: { eventDate: { gte: now }, approvalStatus: 'PUBLISHED' } }),
+      this.prisma.event.count({ where: { eventDate: { gte: now }, approvalStatus: { in: ['PUBLISHED', 'APPROVED'] } } }),
 
       this.prisma.yearlyPlan.findMany({
         where: { status: PlanStatus.APPROVED },
@@ -150,7 +153,7 @@ export class AdminService {
       }),
 
       this.prisma.event.findMany({
-        where: { eventDate: { gte: now }, approvalStatus: 'PUBLISHED' },
+        where: { eventDate: { gte: now }, approvalStatus: { in: ['PUBLISHED', 'APPROVED'] } },
         take: 5,
         orderBy: { eventDate: 'asc' },
         include: {
@@ -190,7 +193,7 @@ export class AdminService {
       }),
 
       this.prisma.event.findMany({
-        where: { approvalStatus: 'PUBLISHED' },
+        where: { approvalStatus: { in: ['PUBLISHED', 'APPROVED'] } },
         take: 5,
         orderBy: { dsaApprovedAt: 'desc' },
         include: {
@@ -1304,28 +1307,34 @@ export class AdminService {
       throw new NotFoundException('Event not found');
     }
 
+    const isApprovedOrPublished = dto.status === 'PUBLISHED' || dto.status === 'APPROVED';
+
     const data: any = {
-      approvalStatus: dto.status as any,
+      approvalStatus: isApprovedOrPublished ? 'PUBLISHED' : (dto.status as any),
       dsaComments: dto.comments || null,
       rules: dto.rules !== undefined ? dto.rules : undefined,
-      isPublished: dto.status === 'PUBLISHED' || dto.status === 'APPROVED',
+      isPublished: isApprovedOrPublished,
       ...(dto.status === 'CHANGES_REQUESTED' ? { lastChangeRequestBy: 'DSA_ADMIN' } : {}),
-      ...(dto.status === 'PUBLISHED' || dto.status === 'APPROVED'
-        ? { lastChangeRequestBy: null }
-        : {}),
+      ...(isApprovedOrPublished ? { lastChangeRequestBy: null } : {}),
     };
 
-    if (dto.status === 'PUBLISHED' || dto.status === 'APPROVED') {
+    if (isApprovedOrPublished) {
       data.dsaApprovedAt = new Date();
       if (!event.venueClearanceStatus) {
         data.venueClearanceStatus = 'PENDING_UPLOAD';
       }
     }
 
-    return this.prisma.event.update({
+    const updated = await this.prisma.event.update({
       where: { id: eventId },
       data,
     });
+
+    // Invalidate public feed and public events caches across replicas
+    FeedService.invalidate();
+    void this.redis.invalidatePattern('events:public:*');
+
+    return updated;
   }
 
   async verifyVenueClearance(
@@ -1347,7 +1356,7 @@ export class AdminService {
       venueClearanceVerifiedAt: dto.status === 'VERIFIED' ? new Date() : null,
     };
 
-    return this.prisma.event.update({
+    const updated = await this.prisma.event.update({
       where: { id: eventId },
       data,
       include: {
@@ -1356,5 +1365,11 @@ export class AdminService {
         },
       },
     });
+
+    // Invalidate public feed and public events caches
+    FeedService.invalidate();
+    void this.redis.invalidatePattern('events:public:*');
+
+    return updated;
   }
 }

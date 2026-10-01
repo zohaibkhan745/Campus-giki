@@ -1,6 +1,7 @@
 import React from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { postService } from '@/services/post.service';
+import { invalidatePostQueries } from '@/lib/queryInvalidations';
 import { PostCreateModal } from './PostCreateModal';
 
 interface MakeAnnouncementDialogProps {
@@ -20,9 +21,7 @@ export const MakeAnnouncementDialog: React.FC<MakeAnnouncementDialogProps> = ({
       return postService.createPost(data);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['campusFeed'] });
-      queryClient.invalidateQueries({ queryKey: ['adminPosts'] });
-      queryClient.invalidateQueries({ queryKey: ['dashboardPosts'] });
+      void invalidatePostQueries(queryClient);
       onClose();
     },
   });

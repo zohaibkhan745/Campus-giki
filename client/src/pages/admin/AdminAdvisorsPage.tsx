@@ -12,6 +12,7 @@ import { Alert } from '@/components/ui/Alert';
 import { CustomDropdown } from '@/components/ui/CustomDropdown';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { BackButton } from '@/components/ui';
 import type { AxiosError } from 'axios';
 
 export const AdminAdvisorsPage: React.FC = () => {
@@ -101,13 +102,7 @@ const deleteMutation = useMutation({
 
   return (
     <div className="w-full min-h-screen flex flex-col items-center py-10 font-sans">
-      <button
-        onClick={() => navigate(-1)}
-        className="fixed top-4 left-4 sm:top-6 sm:left-6 z-[100] inline-flex items-center justify-center w-10 h-10 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white rounded-full transition-all cursor-pointer shadow-lg"
-        title="Go Back"
-      >
-        <ArrowLeft className="w-5 h-5" />
-      </button>
+      <BackButton />
 
       <div className="w-[95%] max-w-[1200px] flex justify-between items-end mb-6 text-left">
         <div>
@@ -123,22 +118,22 @@ const deleteMutation = useMutation({
         </Button>
       </div>
 
-      <div className="w-[95%] max-w-[1200px] bg-white/[0.08] backdrop-blur-[20px] rounded-[24px] p-[30px] shadow-[0_12px_40px_rgba(0,0,0,0.4)] border border-white/20">
-        <div className="mb-[25px] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-white/10 pb-3">
-          <h2 className="text-lg font-bold text-white m-0 text-left">Advisors List</h2>
+      <div className="w-[95%] max-w-[1200px] bg-surface-glass backdrop-blur-xl rounded-cards p-6 sm:p-8 shadow-elevation-1 border border-border-medium">
+        <div className="mb-[25px] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-border-subtle pb-3">
+          <h2 className="text-lg font-bold text-text-primary m-0 text-left">Advisors List</h2>
           <div className="w-full sm:w-72">
             <input 
               type="text"
               placeholder="Search by name or email..." 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full text-sm transition-all outline-none bg-black/20 text-white placeholder:text-gray-500 rounded-inputs px-3.5 py-2.5 border border-white/20 focus:border-white/40 focus:ring-2 focus:ring-white/10"
+              className="w-full text-sm transition-all outline-none bg-surface text-text-primary placeholder:text-text-muted rounded-inputs px-3.5 py-2.5 border border-border-medium focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20"
             />
           </div>
         </div>
 
         {isLoading ? (
-          <div className="p-8 text-center text-slate-400 font-semibold animate-pulse">Loading advisors...</div>
+          <div className="p-8 text-center text-text-secondary font-semibold animate-pulse">Loading advisors...</div>
         ) : isError ? (
           <ErrorState
             error={error}
@@ -171,49 +166,49 @@ const deleteMutation = useMutation({
             <table className="w-full border-collapse text-left min-w-[800px]">
               <thead>
                 <tr>
-                  <th className="p-[15px] text-slate-400 text-[13px] uppercase tracking-[1px] border-b border-white/10 w-[10%]">Sr.</th>
-                  <th className="p-[15px] text-slate-400 text-[13px] uppercase tracking-[1px] border-b border-white/10 w-[20%]">Advisor Name</th>
-                  <th className="p-[15px] text-slate-400 text-[13px] uppercase tracking-[1px] border-b border-white/10 w-[25%]">Email</th>
-                  <th className="p-[15px] text-slate-400 text-[13px] uppercase tracking-[1px] border-b border-white/10 w-[15%]">Faculty</th>
-                  <th className="p-[15px] text-slate-400 text-[13px] uppercase tracking-[1px] border-b border-white/10 w-[20%]">Assigned Societies</th>
-                  <th className="p-[15px] text-slate-400 text-[13px] uppercase tracking-[1px] border-b border-white/10 w-[10%] text-center">Actions</th>
+                  <th className="p-[15px] text-text-secondary text-[13px] uppercase tracking-[1px] border-b border-border-subtle font-semibold w-[10%]">Sr.</th>
+                  <th className="p-[15px] text-text-secondary text-[13px] uppercase tracking-[1px] border-b border-border-subtle font-semibold w-[20%]">Advisor Name</th>
+                  <th className="p-[15px] text-text-secondary text-[13px] uppercase tracking-[1px] border-b border-border-subtle font-semibold w-[25%]">Email</th>
+                  <th className="p-[15px] text-text-secondary text-[13px] uppercase tracking-[1px] border-b border-border-subtle font-semibold w-[15%]">Faculty</th>
+                  <th className="p-[15px] text-text-secondary text-[13px] uppercase tracking-[1px] border-b border-border-subtle font-semibold w-[20%]">Assigned Societies</th>
+                  <th className="p-[15px] text-text-secondary text-[13px] uppercase tracking-[1px] border-b border-border-subtle font-semibold w-[10%] text-center">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {advisors.filter((a: AdvisorOption) => ((a.user?.fullName || '') + (a.user?.email || '')).toLowerCase().includes(searchQuery.toLowerCase())).map((advisor: AdvisorOption, index: number) => (
-                  <tr key={advisor.id} className="hover:bg-white/[0.03] transition-colors group">
-                    <td className="py-[18px] px-[15px] text-[15px] border-b border-white/5 text-slate-200 group-last:border-b-0">
+                  <tr key={advisor.id} className="hover:bg-surface-hover transition-colors group">
+                    <td className="py-[18px] px-[15px] text-[15px] border-b border-border-subtle text-text-secondary group-last:border-b-0">
                       {String(index + 1).padStart(2, '0')}
                     </td>
-                    <td className="py-[18px] px-[15px] text-[15px] border-b border-white/5 text-white font-semibold group-last:border-b-0">
+                    <td className="py-[18px] px-[15px] text-[15px] border-b border-border-subtle text-text-primary font-semibold group-last:border-b-0">
 <div className="flex items-center gap-3">
-<img src={getAdvisorLogo(advisor.user?.avatarUrl)} alt={advisor.user?.fullName} className="w-8 h-8 rounded-full border border-white/20 object-cover" />
+<img src={getAdvisorLogo(advisor.user?.avatarUrl)} alt={advisor.user?.fullName} className="w-8 h-8 rounded-full border border-border-medium object-cover" />
 <span>{advisor.user?.fullName}</span>
 </div>
 </td>
-                    <td className="py-[18px] px-[15px] text-[15px] border-b border-white/5 text-slate-200 group-last:border-b-0">
-                      <a href={`mailto:${advisor.user.email}`} className="text-blue-400 hover:text-blue-300 hover:underline transition-colors">
+                    <td className="py-[18px] px-[15px] text-[15px] border-b border-border-subtle text-text-secondary group-last:border-b-0">
+                      <a href={`mailto:${advisor.user.email}`} className="text-brand-primary hover:underline transition-colors">
                         {advisor.user.email}
                       </a>
                     </td>
-                    <td className="py-[18px] px-[15px] text-[15px] border-b border-white/5 text-slate-200 group-last:border-b-0">
+                    <td className="py-[18px] px-[15px] text-[15px] border-b border-border-subtle text-text-secondary group-last:border-b-0">
                       {advisor.department}
                     </td>
-                    <td className="py-[18px] px-[15px] text-[15px] border-b border-white/5 text-slate-200 group-last:border-b-0">
+                    <td className="py-[18px] px-[15px] text-[15px] border-b border-border-subtle text-text-secondary group-last:border-b-0">
                       {advisor.societies && advisor.societies.length > 0 ? (
                         <div className="flex flex-wrap gap-2">
                           {advisor.societies.map((soc, idx) => (
-                            <span key={idx} className="px-[12px] py-[6px] rounded-[20px] text-[12px] font-bold uppercase bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                            <span key={idx} className="px-[12px] py-[6px] rounded-[20px] text-[12px] font-bold uppercase bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
                               {soc.name}
                             </span>
                           ))}
                         </div>
                       ) : (
-                        <span className="text-slate-500 italic text-sm">Unassigned</span>
+                        <span className="text-text-muted italic text-sm">Unassigned</span>
                       )}
                     </td>
-<td className="py-[18px] px-[15px] text-[15px] border-b border-white/5 text-slate-200 group-last:border-b-0 text-center">
-<button onClick={() => handleDelete(advisor.id)} className="px-4 py-2 flex items-center gap-1.5 mx-auto bg-red-500 text-white hover:bg-red-600 rounded-lg transition-transform hover:-translate-y-0.5 font-bold text-sm shadow-[0_4px_12px_rgba(239,68,68,0.4)]"><Trash2 className="w-3.5 h-3.5" /><span>Delete</span></button>
+<td className="py-[18px] px-[15px] text-[15px] border-b border-border-subtle text-text-secondary group-last:border-b-0 text-center">
+<button onClick={() => handleDelete(advisor.id)} className="px-4 py-2 flex items-center gap-1.5 mx-auto bg-red-600 text-white hover:bg-red-700 rounded-lg transition-transform hover:-translate-y-0.5 font-bold text-sm shadow-sm cursor-pointer"><Trash2 className="w-3.5 h-3.5" /><span>Delete</span></button>
 </td>
 </tr>
                 ))}
@@ -225,7 +220,7 @@ const deleteMutation = useMutation({
 
       {isModalOpen && createPortal(
 <div className="modal-overlay active">
-          <div className="modal-box" style={{ maxWidth: "550px" }}>
+          <div className="modal-box max-w-xl w-full">
             <h3 className="modal-title">
               <UserPlus className="w-5 h-5 text-slate-400" />
               Onboard New Advisor

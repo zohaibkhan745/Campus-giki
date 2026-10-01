@@ -23,6 +23,7 @@ import { Input } from '@/components/ui/Input';
 import { Alert } from '@/components/ui/Alert';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { ErrorState } from '@/components/ui/ErrorState';
+import { BackButton } from '@/components/ui';
 import type { AxiosError } from 'axios';
 
 export const AdminStaffPage: React.FC = () => {
@@ -96,12 +97,12 @@ export const AdminStaffPage: React.FC = () => {
           <Shield className="w-8 h-8" />
         </div>
         <h2 className="text-3xl font-extrabold text-white tracking-tight">Director Authority Required</h2>
-        <p className="text-sm text-gray-400 max-w-md mx-auto leading-relaxed">
+        <p className="text-sm text-text-secondary max-w-md mx-auto leading-relaxed">
           Staff management is reserved exclusively for the Director of Student Affairs (DSA).
         </p>
         <button
           onClick={() => navigate('/dashboard')}
-          className="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-black font-semibold text-sm rounded-xl hover:bg-gray-100 transition-all shadow-lg"
+          className="inline-flex items-center gap-2 px-5 py-2.5 bg-surface hover:bg-surface-hover text-text-primary border border-border-medium font-semibold text-sm rounded-xl transition-all shadow-sm cursor-pointer"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back to DSA Dashboard</span>
@@ -126,13 +127,7 @@ export const AdminStaffPage: React.FC = () => {
   return (
     <div className="w-full min-h-screen flex flex-col items-center py-10 font-sans">
       {/* Floating Back Button */}
-      <button
-        onClick={() => navigate(-1)}
-        className="fixed top-4 left-4 sm:top-6 sm:left-6 z-[100] inline-flex items-center justify-center w-10 h-10 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white rounded-full transition-all cursor-pointer shadow-lg"
-        title="Go Back"
-      >
-        <ArrowLeft className="w-5 h-5" />
-      </button>
+      <BackButton />
 
       {/* Page Header */}
       <div className="w-[95%] max-w-[1200px] flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-6 text-left">
@@ -140,7 +135,7 @@ export const AdminStaffPage: React.FC = () => {
           <h1 className="font-extrabold text-5xl sm:text-6xl text-text-primary tracking-tight leading-tight mb-2">
             DSA & DDSA Staff
           </h1>
-          <p className="text-slate-400 text-sm">
+          <p className="text-text-secondary text-sm">
             Manage Directorate personnel and provision accounts for Deputy Directors of Student Affairs.
           </p>
         </div>
@@ -159,29 +154,29 @@ export const AdminStaffPage: React.FC = () => {
       </div>
 
       {/* Main Glass Card Table */}
-      <div className="w-[95%] max-w-[1200px] bg-white/[0.08] backdrop-blur-[20px] rounded-[24px] p-[30px] shadow-[0_12px_40px_rgba(0,0,0,0.4)] border border-white/20">
-        <div className="mb-[25px] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
-          <div className="flex items-center gap-2.5 text-lg font-bold text-white">
-            <ShieldCheck className="w-5 h-5 text-blue-400" />
+      <div className="w-[95%] max-w-[1200px] bg-surface-glass backdrop-blur-xl rounded-cards p-6 sm:p-8 shadow-elevation-1 border border-border-medium">
+        <div className="mb-[25px] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-border-subtle pb-4">
+          <div className="flex items-center gap-2.5 text-lg font-bold text-text-primary">
+            <ShieldCheck className="w-5 h-5 text-brand-primary" />
             <span>Active Administrative Accounts ({staffList.length})</span>
           </div>
 
           <div className="w-full sm:w-72">
             <div className="relative flex items-center">
-              <Search className="w-4 h-4 absolute left-3.5 text-gray-400 pointer-events-none" />
+              <Search className="w-4 h-4 absolute left-3.5 text-text-muted pointer-events-none" />
               <input
                 type="text"
                 placeholder="Search staff by name or email..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full text-sm transition-all outline-none bg-black/20 text-white placeholder:text-gray-500 rounded-inputs pl-10 pr-3.5 py-2.5 border border-white/20 focus:border-white/40 focus:ring-2 focus:ring-white/10"
+                className="w-full text-sm transition-all outline-none bg-surface text-text-primary placeholder:text-text-muted rounded-inputs pl-10 pr-3.5 py-2.5 border border-border-medium focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20"
               />
             </div>
           </div>
         </div>
 
         {isLoading ? (
-          <div className="p-12 text-center text-slate-400 font-semibold animate-pulse">
+          <div className="p-12 text-center text-text-secondary font-semibold animate-pulse">
             Loading administrative personnel...
           </div>
         ) : isError ? (
@@ -212,19 +207,19 @@ export const AdminStaffPage: React.FC = () => {
             <table className="w-full border-collapse text-left min-w-[800px]">
               <thead>
                 <tr>
-                  <th className="p-[15px] text-slate-400 text-[13px] uppercase tracking-[1px] border-b border-white/10 w-[8%]">
+                  <th className="p-[15px] text-text-secondary text-[13px] uppercase tracking-[1px] border-b border-border-subtle font-semibold w-[8%]">
                     Sr.
                   </th>
-                  <th className="p-[15px] text-slate-400 text-[13px] uppercase tracking-[1px] border-b border-white/10 w-[30%]">
+                  <th className="p-[15px] text-text-secondary text-[13px] uppercase tracking-[1px] border-b border-border-subtle font-semibold w-[30%]">
                     Staff Member
                   </th>
-                  <th className="p-[15px] text-slate-400 text-[13px] uppercase tracking-[1px] border-b border-white/10 w-[28%]">
+                  <th className="p-[15px] text-text-secondary text-[13px] uppercase tracking-[1px] border-b border-border-subtle font-semibold w-[28%]">
                     Official Email
                   </th>
-                  <th className="p-[15px] text-slate-400 text-[13px] uppercase tracking-[1px] border-b border-white/10 w-[20%]">
+                  <th className="p-[15px] text-text-secondary text-[13px] uppercase tracking-[1px] border-b border-border-subtle font-semibold w-[20%]">
                     Role & Position
                   </th>
-                  <th className="p-[15px] text-slate-400 text-[13px] uppercase tracking-[1px] border-b border-white/10 w-[14%] text-center">
+                  <th className="p-[15px] text-text-secondary text-[13px] uppercase tracking-[1px] border-b border-border-subtle font-semibold w-[14%] text-center">
                     Actions
                   </th>
                 </tr>
@@ -235,25 +230,25 @@ export const AdminStaffPage: React.FC = () => {
                   return (
                     <tr
                       key={member.id}
-                      className="hover:bg-white/[0.04] transition-colors group border-b border-white/5 last:border-b-0"
+                      className="hover:bg-surface-hover transition-colors group border-b border-border-subtle last:border-b-0"
                     >
-                      <td className="py-[18px] px-[15px] text-[14px] text-slate-400 font-medium">
+                      <td className="py-[18px] px-[15px] text-[14px] text-text-secondary font-medium">
                         {index + 1}
                       </td>
 
-                      <td className="py-[18px] px-[15px] text-[15px] text-slate-200">
+                      <td className="py-[18px] px-[15px] text-[15px] text-text-primary">
                         <div className="flex items-center gap-3">
                           <div
                             className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm shrink-0 ${
                               isMemberDirector
-                                ? 'bg-amber-500/15 text-amber-400 border border-amber-500/30'
-                                : 'bg-indigo-500/15 text-indigo-400 border border-indigo-500/30'
+                                ? 'bg-amber-500/15 text-amber-500 border border-amber-500/30'
+                                : 'bg-indigo-500/15 text-indigo-500 border border-indigo-500/30'
                             }`}
                           >
                             {isMemberDirector ? <Crown className="w-5 h-5" /> : <Shield className="w-5 h-5" />}
                           </div>
                           <div>
-                            <span className="font-bold text-white block">{member.fullName}</span>
+                            <span className="font-bold text-text-primary block">{member.fullName}</span>
                             {!member.isEmailVerified ? (
                               <span className="inline-flex items-center gap-1 text-[11px] text-amber-400/90 font-medium">
                                 <Clock className="w-3 h-3" />
@@ -323,8 +318,8 @@ export const AdminStaffPage: React.FC = () => {
       {isModalOpen &&
         createPortal(
           <div className="modal-overlay active z-[200]">
-            <div className="modal-box" style={{ maxWidth: '550px' }}>
-              <div className="flex justify-between items-center mb-6 border-b border-white/10 pb-3">
+            <div className="modal-box max-w-xl w-full">
+              <div className="flex justify-between items-center mb-6 border-b border-border-subtle pb-3">
                 <h3 className="modal-title flex items-center gap-2.5">
                   <UserPlus className="w-5 h-5 text-slate-400" />
                   <span>Invite Deputy Director (DDSA)</span>
@@ -334,7 +329,7 @@ export const AdminStaffPage: React.FC = () => {
                     setIsModalOpen(false);
                     setFormError(null);
                   }}
-                  className="p-1.5 text-gray-400 hover:text-white rounded-full transition-colors hover:bg-white/10"
+                  className="p-1.5 text-text-secondary hover:text-text-primary rounded-full transition-colors hover:bg-surface-hover"
                 >
                   <X className="w-5 h-5" />
                 </button>

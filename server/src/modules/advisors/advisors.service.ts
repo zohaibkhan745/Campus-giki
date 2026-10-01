@@ -5,6 +5,7 @@ import { PaginatedAdvisorPlansResponseDto } from './dto/advisor-plans-response.d
 import { QueryAdvisorEventsDto } from './dto/query-advisor-events.dto';
 import { UpdateAdvisorEventDto } from './dto/update-advisor-event.dto';
 import { Society, Prisma } from '@prisma/client';
+import { FeedService } from '../feed/feed.service';
 
 @Injectable()
 export class AdvisorsService {
@@ -169,7 +170,7 @@ export class AdvisorsService {
 
     const isPublished = dto.status === 'PUBLISHED';
 
-    return this.prisma.event.update({
+    const updated = await this.prisma.event.update({
       where: { id: eventId },
       data: {
         approvalStatus: dto.status,
@@ -183,5 +184,11 @@ export class AdvisorsService {
         },
       },
     });
+
+    if (isPublished) {
+      FeedService.invalidate();
+    }
+
+    return updated;
   }
 }

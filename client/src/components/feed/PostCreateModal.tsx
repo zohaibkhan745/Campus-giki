@@ -122,7 +122,7 @@ export const PostCreateModal: React.FC<PostCreateModalProps> = ({
   return typeof document !== "undefined" ? createPortal(
     <div className="modal-overlay active">
       <div
-        className="modal-box" style={{ maxWidth: "550px" }}
+        className="modal-box max-w-xl w-full"
         onClick={(e) => e.stopPropagation()}
       >
         <input

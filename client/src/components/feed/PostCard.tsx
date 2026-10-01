@@ -144,22 +144,23 @@ const PostCardComponent: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) 
         </div>
 
         {/* Center Media & Description Body */}
-        <div className={`relative w-full flex-1 min-h-0 overflow-hidden flex flex-col ${!coverImage ? 'bg-black/[0.4] backdrop-blur-[24px]' : 'bg-gray-900'}`}>
+        <div className={`relative w-full flex-1 min-h-0 overflow-hidden flex flex-col ${!coverImage ? 'bg-surface-glass backdrop-blur-xl' : 'bg-surface-hover'}`}>
           {coverImage ? (
-            <img
-              src={coverImage}
-              alt={postTitle}
-              loading="lazy"
-              decoding="async"
-              className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
-            />
-          ) : (
-            <div className="absolute inset-0 bg-black/30" />
-          )}
+            <>
+              <img
+                src={coverImage}
+                alt={postTitle}
+                loading="lazy"
+                decoding="async"
+                className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+              />
+              <div className="absolute inset-0 bg-black/30" />
+            </>
+          ) : null}
 
           <div className={cn("relative z-10 text-left flex flex-col flex-1", !coverImage ? "p-4" : "absolute top-5 left-5 right-5")}>
             {!coverImage && (
-              <div className="text-gray-300 text-[16px] leading-relaxed mt-3 line-clamp-6 whitespace-pre-wrap flex-1">
+              <div className="text-text-secondary text-[16px] leading-relaxed mt-3 line-clamp-6 whitespace-pre-wrap flex-1">
                 {item.content}
               </div>
             )}

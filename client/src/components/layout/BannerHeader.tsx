@@ -80,11 +80,15 @@ export const BannerHeader: React.FC<BannerHeaderProps> = ({
         {warningBadge}
 
         {/* Profile Circle */}
-        <div className="shared-profile-container group/avatar relative">
+        <div className={`shared-profile-container group/avatar relative ${editUrl ? 'cursor-pointer' : ''}`}>
           <img
             src={logoUrl || fallbackImage}
             alt={`${title} avatar`}
-            className="shared-profile-img"
+            className={`shared-profile-img transition-all duration-300 ease-out ${
+              editUrl
+                ? 'group-hover/avatar:scale-[1.03] group-hover/avatar:shadow-2xl group-hover/avatar:border-brand-primary/40'
+                : 'hover:scale-[1.02] hover:shadow-xl'
+            }`}
             onError={(e) => {
               e.currentTarget.onerror = null;
               e.currentTarget.src = fallbackImage;
@@ -96,8 +100,9 @@ export const BannerHeader: React.FC<BannerHeaderProps> = ({
           {editUrl && !avatarOverlay && (
             <Link
               to={editUrl}
-              className="absolute inset-0 rounded-full cursor-pointer hover:bg-black/20 transition-all"
+              className="absolute inset-0 rounded-full cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
               aria-label="Edit Profile"
+              title="Edit Profile"
             />
           )}
         </div>

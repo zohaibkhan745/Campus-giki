@@ -118,23 +118,23 @@ export const YearlyPlanPrintModal: React.FC<YearlyPlanPrintModalProps> = ({
           </div>
           <div className="min-w-0">
             <div className="flex items-center gap-2">
-              <h3 className="text-sm font-bold text-white truncate">
+              <h3 className="text-sm font-bold text-text-primary truncate">
                 Annual Calendar Plan {plan.year}
               </h3>
-              <span className="hidden sm:inline-block text-[11px] font-mono px-2 py-0.5 rounded bg-white/10 text-gray-300 border border-white/10">
+              <span className="hidden sm:inline-block text-[11px] font-mono px-2 py-0.5 rounded bg-surface-glass text-text-secondary border border-border-subtle">
                 {refCode}
               </span>
             </div>
-            <p className="text-xs text-gray-400 truncate">{societyName}</p>
+            <p className="text-xs text-text-secondary truncate">{societyName}</p>
           </div>
         </div>
 
         {/* Center: Zoom controls */}
-        <div className="hidden md:flex items-center gap-1.5 bg-white/5 border border-white/10 rounded-xl p-1 text-xs text-gray-300">
+        <div className="hidden md:flex items-center gap-1.5 bg-surface-glass border border-border-medium rounded-xl p-1 text-xs text-text-secondary">
           <button
             type="button"
             onClick={handleZoomOut}
-            className="p-1.5 hover:bg-white/10 rounded-lg transition-colors cursor-pointer text-gray-300 hover:text-white"
+            className="p-1.5 hover:bg-surface-hover rounded-lg transition-colors cursor-pointer text-text-secondary hover:text-text-primary"
             title="Zoom Out"
           >
             <ZoomOut className="w-4 h-4" />
@@ -142,7 +142,7 @@ export const YearlyPlanPrintModal: React.FC<YearlyPlanPrintModalProps> = ({
           <button
             type="button"
             onClick={handleResetActual}
-            className="px-2.5 py-1 hover:bg-white/10 rounded-lg transition-colors cursor-pointer font-mono font-medium text-[11px]"
+            className="px-2.5 py-1 hover:bg-surface-hover rounded-lg transition-colors cursor-pointer font-mono font-medium text-[11px] text-text-primary"
             title="Actual Size (100%)"
           >
             {Math.round(scale * 100)}%
@@ -150,16 +150,16 @@ export const YearlyPlanPrintModal: React.FC<YearlyPlanPrintModalProps> = ({
           <button
             type="button"
             onClick={handleZoomIn}
-            className="p-1.5 hover:bg-white/10 rounded-lg transition-colors cursor-pointer text-gray-300 hover:text-white"
+            className="p-1.5 hover:bg-surface-hover rounded-lg transition-colors cursor-pointer text-text-secondary hover:text-text-primary"
             title="Zoom In"
           >
             <ZoomIn className="w-4 h-4" />
           </button>
-          <div className="w-px h-4 bg-white/10 mx-0.5" />
+          <div className="w-px h-4 bg-border-subtle mx-0.5" />
           <button
             type="button"
             onClick={handleFitPage}
-            className="p-1.5 hover:bg-white/10 rounded-lg transition-colors cursor-pointer text-gray-300 hover:text-white"
+            className="p-1.5 hover:bg-surface-hover rounded-lg transition-colors cursor-pointer text-text-secondary hover:text-text-primary"
             title="Fit Page"
           >
             <Maximize2 className="w-4 h-4" />
@@ -171,7 +171,7 @@ export const YearlyPlanPrintModal: React.FC<YearlyPlanPrintModalProps> = ({
           <button
             type="button"
             onClick={handlePrint}
-            className="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs py-2 px-4 rounded-xl shadow-lg transition-all flex items-center gap-2 cursor-pointer"
+            className="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs py-2 px-4 rounded-xl shadow-elevation-1 transition-all flex items-center gap-2 cursor-pointer"
           >
             <Printer className="w-4 h-4" />
             <span className="hidden sm:inline">Print / Save as PDF</span>
@@ -181,7 +181,7 @@ export const YearlyPlanPrintModal: React.FC<YearlyPlanPrintModalProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-xl transition-colors cursor-pointer"
+            className="p-2 text-text-secondary hover:text-text-primary hover:bg-surface-hover rounded-xl transition-colors cursor-pointer"
             title="Close (Esc)"
           >
             <X className="w-5 h-5" />

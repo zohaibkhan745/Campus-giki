@@ -30,22 +30,25 @@ import {
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { Alert } from '@/components/ui/Alert';
+import { BackButton } from '@/components/ui';
 import type { AxiosError } from 'axios';
 
 const getBadgeStyles = (status: string) => {
   switch (status) {
     case 'PUBLISHED':
-    case 'APPROVED': return 'bg-green-600 text-white border-green-700';
-    case 'PENDING_ADVISOR': return 'bg-orange-500 text-white border-orange-600';
-    case 'PENDING_ADMIN': return 'bg-white text-black border-gray-200';
-    case 'CHANGES_REQUESTED': return 'bg-red-500 text-white border-red-600';
-    default: return 'bg-white/10 text-white border-white/20';
+    case 'APPROVED': return 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border-emerald-500/30';
+    case 'PENDING_ADVISOR': return 'bg-orange-500/20 text-orange-600 dark:text-orange-400 border-orange-500/30';
+    case 'PENDING_ADMIN': return 'bg-amber-500/20 text-amber-600 dark:text-amber-400 border-amber-500/30';
+    case 'CHANGES_REQUESTED': return 'bg-rose-500/20 text-rose-600 dark:text-rose-400 border-rose-500/30';
+    default: return 'bg-surface-hover text-text-muted border-border-subtle';
   }
 }
 const formatStatus = (s: string) => s.replace('_', ' ');
 
 import { cn } from '@/lib/utils';
 import { globalNotification } from '@/contexts/NotificationContext';
+import { invalidateEventQueries, optimisticApproveEvent } from '@/lib/queryInvalidations';
+
 export const AdminEventReviewPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -75,9 +78,7 @@ export const AdminEventReviewPage: React.FC = () => {
           ? 'Physical venue clearance verified successfully!'
           : 'Venue slip re-upload requested from society.'
       );
-      queryClient.invalidateQueries({ queryKey: ['event', id] });
-      queryClient.invalidateQueries({ queryKey: ['adminDashboard'] });
-      queryClient.invalidateQueries({ queryKey: ['adminEventsList'] });
+      void invalidateEventQueries(queryClient, id);
     },
     onError: (err: any) => {
       const msg = err.response?.data?.message || 'Failed to update venue clearance status.';
@@ -124,9 +125,7 @@ export const AdminEventReviewPage: React.FC = () => {
     meta: { notify: true },
     mutationFn: (data: EventFormData) => eventService.updateEvent(id!, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['event', id] });
-      queryClient.invalidateQueries({ queryKey: ['adminDashboard'] });
-      queryClient.invalidateQueries({ queryKey: ['societyDashboard'] });
+      void invalidateEventQueries(queryClient, id);
     },
     onError: (
       error: AxiosError<{ message?: string | string[]; error?: string }>,
@@ -143,11 +142,13 @@ export const AdminEventReviewPage: React.FC = () => {
     meta: { notify: true },
     mutationFn: (data: { status: 'APPROVED' | 'CHANGES_REQUESTED' | 'PENDING_ADVISOR' }) =>
       adminService.updateEventStatus(id!, { status: data.status, comments: dsaComment.trim() || undefined }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['event', id] });
-      queryClient.invalidateQueries({ queryKey: ['adminDashboard'] });
-      queryClient.invalidateQueries({ queryKey: ['adminEventsList'] });
-      queryClient.invalidateQueries({ queryKey: ['societyDashboard'] });
+    onSuccess: (_, variables) => {
+      if (id) {
+        if (variables.status === 'APPROVED') {
+          optimisticApproveEvent(queryClient, id);
+        }
+        void invalidateEventQueries(queryClient, id);
+      }
       navigate('/dashboard', { replace: true });
     },
     onError: (
@@ -178,7 +179,7 @@ export const AdminEventReviewPage: React.FC = () => {
 
   if (isLoadingEvent) {
     return (
-      <div className="min-h-[50vh] flex flex-col justify-center items-center text-gray-400 gap-3">
+      <div className="min-h-[50vh] flex flex-col justify-center items-center text-text-secondary gap-3">
         <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
         <p className="text-sm font-medium">Loading event details...</p>
       </div>
@@ -188,13 +189,7 @@ export const AdminEventReviewPage: React.FC = () => {
   if (isError || !eventData) {
     return (
       <div className="max-w-md mx-auto py-12 space-y-4 text-center">
-        <Link
-          to="/dashboard"
-          className="fixed top-4 left-4 sm:top-6 sm:left-6 z-[100] inline-flex items-center justify-center w-10 h-10 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white rounded-full transition-all cursor-pointer shadow-lg"
-          title="Go Back"
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </Link>
+        <BackButton to="/dashboard" />
       </div>
     );
   }
@@ -204,49 +199,43 @@ export const AdminEventReviewPage: React.FC = () => {
   return (
     <div className="max-w-4xl mx-auto space-y-6 text-left py-4 px-4 pb-32">
       {/* Top Heading */}
-      <button
-        onClick={() => navigate(-1)}
-        className="fixed top-4 left-4 sm:top-6 sm:left-6 z-[100] inline-flex items-center justify-center w-10 h-10 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white rounded-full transition-all cursor-pointer shadow-lg"
-        title="Go Back"
-      >
-        <ArrowLeft className="w-5 h-5" />
-      </button>
+      <BackButton />
       <div className="mb-6 mt-12 sm:mt-8">
-        <h1 className="text-4xl font-extrabold text-white leading-tight">
+        <h1 className="text-4xl font-extrabold text-text-primary leading-tight">
           Event Details: {eventData.title}
         </h1>
         <div className="flex items-center gap-3 mt-3">
           <span className={`px-3 py-1 border backdrop-blur-md rounded-inputs text-xs uppercase tracking-wider font-bold ${getBadgeStyles(eventData.approvalStatus || '')}`}>
             {formatStatus(eventData.approvalStatus || '')}
           </span>
-          <span className="text-sm text-gray-400 font-medium">Society: {eventData.society?.name}</span>
+          <span className="text-sm text-text-secondary font-medium">Society: {eventData.society?.name}</span>
         </div>
       </div>
 
       {eventData.rules && (
         <div className="p-4 bg-amber-500/10 border border-amber-500/30 backdrop-blur-md rounded-cards space-y-1">
-          <div className="flex items-center gap-2 text-amber-400 font-extrabold text-xs uppercase tracking-wider">
+          <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 font-extrabold text-xs uppercase tracking-wider">
             <ShieldCheck className="w-4 h-4 shrink-0" />
             <span>Official DSA Directives &amp; Event Rules</span>
           </div>
-          <p className="text-xs text-amber-200/80 font-medium whitespace-pre-line leading-relaxed pl-6">
+          <p className="text-xs text-amber-800 dark:text-amber-200/80 font-medium whitespace-pre-line leading-relaxed pl-6">
             {eventData.rules}
           </p>
         </div>
       )}
 
       {/* Main Glassmorphic Card */}
-      <div className="relative z-1 w-full p-8 rounded-[18px] bg-white/[0.08] backdrop-blur-[20px] border border-white/20 shadow-[0_12px_40px_rgba(0,0,0,0.4)] text-white space-y-8">
+      <div className="relative z-1 w-full p-8 rounded-cards bg-surface-glass backdrop-blur-xl border border-border-medium shadow-elevation-1 text-text-primary space-y-8">
         
         {/* Advisor Review & Comments Section */}
         <div className="space-y-4">
           <h2 className="text-lg font-extrabold flex items-center gap-2">
-            <ShieldCheck className="w-5 h-5" />
+            <ShieldCheck className="w-5 h-5 text-brand-primary" />
             DSA Admin Review & Feedback
           </h2>
           
           <div className="space-y-1.5 text-left">
-            <label className="block text-xs uppercase tracking-wider text-gray-400 font-semibold mb-1">
+            <label className="block text-xs uppercase tracking-wider text-text-secondary font-semibold mb-1">
               Feedback / Comments
             </label>
             <textarea
@@ -259,14 +248,14 @@ export const AdminEventReviewPage: React.FC = () => {
               placeholder="Provide feedback or reasons for requesting changes..."
               disabled={!isPending || updateEventStatusMutation.isPending}
               className={cn(
-                "w-full text-sm transition-all outline-none bg-transparent text-white placeholder:text-gray-500 rounded-inputs px-3.5 py-2.5 border resize-y disabled:opacity-50",
+                "w-full text-sm transition-all outline-none bg-surface text-text-primary placeholder:text-text-muted rounded-inputs px-3.5 py-2.5 border resize-y disabled:opacity-50",
                 commentError 
                   ? "border-red-500/50 ring-2 ring-red-500/20 focus:border-red-500" 
-                  : "border-white/20 focus:border-white/40 focus:ring-2 focus:ring-white/10"
+                  : "border-border-medium focus:border-border-strong focus:ring-2 focus:ring-brand-primary/20"
               )}
             />
             {commentError && (
-              <p className="text-red-400 text-xs mt-1 font-medium">Comment is required to request changes.</p>
+              <p className="text-red-500 dark:text-red-400 text-xs mt-1 font-medium">Comment is required to request changes.</p>
             )}
           </div>
 
@@ -278,7 +267,7 @@ export const AdminEventReviewPage: React.FC = () => {
                 onClick={() => updateEventStatusMutation.mutate({ status: 'APPROVED' })}
                 isLoading={updateEventStatusMutation.isPending}
                 leftIcon={<CheckCircle2 className="w-4 h-4 text-white" />}
-                className="bg-green-600 text-white hover:bg-green-700 w-full sm:flex-1"
+                className="bg-emerald-600 text-white hover:bg-emerald-700 w-full sm:flex-1"
               >
                 Approve (Publish)
               </Button>
@@ -287,14 +276,14 @@ export const AdminEventReviewPage: React.FC = () => {
                 variant="outline"
                 onClick={handleRequestChanges}
                 isLoading={updateEventStatusMutation.isPending}
-                leftIcon={<AlertCircle className="w-4 h-4 text-black" />}
-                className="bg-white text-black hover:bg-gray-200 w-full sm:flex-1"
+                leftIcon={<AlertCircle className="w-4 h-4 text-text-secondary" />}
+                className="bg-surface hover:bg-surface-hover text-text-primary border border-border-medium w-full sm:flex-1"
               >
                 Request Changes
               </Button>
             </div>
           ) : (
-            <p className="text-xs text-gray-400 font-medium pt-2">
+            <p className="text-xs text-text-secondary font-medium pt-2">
               This event is currently in {eventData.approvalStatus} status and cannot be approved/rejected at this time.
             </p>
           )}
@@ -303,22 +292,22 @@ export const AdminEventReviewPage: React.FC = () => {
         {/* Physical Venue Clearance Review Section */}
         {(eventData.approvalStatus === 'APPROVED' || eventData.approvalStatus === 'PUBLISHED') && (
           <>
-            <div className="w-full h-px bg-white/10 my-6"></div>
+            <div className="w-full h-px bg-border-subtle my-6"></div>
             <div className="space-y-4">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <h2 className="text-lg font-extrabold flex items-center gap-2">
-                  <FileText className="w-5 h-5 text-amber-400" />
+                  <FileText className="w-5 h-5 text-amber-500" />
                   Physical Venue Clearance &amp; PS to Dean Endorsement
                 </h2>
                 <span className={cn(
                   "px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-inputs border",
                   eventData.venueClearanceStatus === 'VERIFIED'
-                    ? "bg-green-600/20 text-green-400 border-green-500/40"
+                    ? "bg-green-600/20 text-green-600 dark:text-green-400 border-green-500/40"
                     : eventData.venueClearanceStatus === 'SUBMITTED'
-                    ? "bg-blue-600/20 text-blue-400 border-blue-500/40"
+                    ? "bg-blue-600/20 text-blue-600 dark:text-blue-400 border-blue-500/40"
                     : eventData.venueClearanceStatus === 'REJECTED'
-                    ? "bg-red-600/20 text-red-400 border-red-500/40"
-                    : "bg-amber-500/20 text-amber-300 border-amber-500/40"
+                    ? "bg-red-600/20 text-red-600 dark:text-red-400 border-red-500/40"
+                    : "bg-amber-500/20 text-amber-700 dark:text-amber-300 border-amber-500/40"
                 )}>
                   {eventData.venueClearanceStatus === 'VERIFIED'
                     ? 'Verified & Cleared'
@@ -330,18 +319,18 @@ export const AdminEventReviewPage: React.FC = () => {
                 </span>
               </div>
 
-              <div className="p-4 bg-white/5 border border-white/10 rounded-2xl space-y-2 text-xs text-gray-300">
+              <div className="p-4 bg-surface-glass border border-border-subtle rounded-2xl space-y-2 text-xs text-text-secondary">
                 <p>
-                  Requested Venue: <strong className="text-white text-sm">{eventData.venue}</strong>
+                  Requested Venue: <strong className="text-text-primary text-sm">{eventData.venue}</strong>
                 </p>
-                <p className="text-gray-400">
+                <p className="text-text-muted">
                   Society must obtain an official signature and stamp from the PS to Dean / Dean&apos;s Office certifying that this facility is vacant and allocated.
                 </p>
                 <div className="pt-2">
                   <button
                     type="button"
                     onClick={() => setIsVenueSlipPreviewOpen(true)}
-                    className="inline-flex items-center gap-1.5 text-xs text-blue-400 hover:text-blue-300 font-bold transition-colors cursor-pointer"
+                    className="inline-flex items-center gap-1.5 text-xs text-brand-primary hover:underline font-bold transition-colors cursor-pointer"
                   >
                     <FileText className="w-3.5 h-3.5" />
                     <span>Preview Official Generated Slip (PDF)</span>
@@ -352,24 +341,24 @@ export const AdminEventReviewPage: React.FC = () => {
               {/* Stamped Document Preview & Action */}
               {eventData.signedVenueSlipUrl ? (
                 <div className="space-y-4 pt-2">
-                  <div className="p-4 bg-white/5 border border-white/10 rounded-2xl space-y-3">
+                  <div className="p-4 bg-surface-glass border border-border-subtle rounded-2xl space-y-3">
                     <div className="flex items-center justify-between">
-                      <span className="text-xs uppercase tracking-wider text-gray-400 font-bold">
+                      <span className="text-xs uppercase tracking-wider text-text-secondary font-bold">
                         Uploaded PS to Dean Endorsement Slip
                       </span>
                       {eventData.venueSlipUploadedAt && (
-                        <span className="text-[11px] text-gray-400">
+                        <span className="text-[11px] text-text-muted">
                           Uploaded on {new Date(eventData.venueSlipUploadedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
                         </span>
                       )}
                     </div>
 
                     {/* Preview box */}
-                    <div className="rounded-xl overflow-hidden border border-white/10 bg-black flex flex-col items-center justify-center p-3">
+                    <div className="rounded-xl overflow-hidden border border-border-subtle bg-canvas-subtle flex flex-col items-center justify-center p-3">
                       {eventData.signedVenueSlipUrl.toLowerCase().endsWith('.pdf') ? (
                         <div className="py-8 flex flex-col items-center gap-3">
                           <FileText className="w-12 h-12 text-red-400" />
-                          <p className="text-xs text-gray-300 font-medium">Scanned PDF Document Uploaded</p>
+                          <p className="text-xs text-text-secondary font-medium">Scanned PDF Document Uploaded</p>
                           <a
                             href={resolveImageUrl(eventData.signedVenueSlipUrl)}
                             target="_blank"
@@ -406,7 +395,7 @@ export const AdminEventReviewPage: React.FC = () => {
 
                   {/* Feedback notes input */}
                   <div className="space-y-1.5 text-left">
-                    <label className="block text-xs uppercase tracking-wider text-gray-400 font-semibold mb-1">
+                    <label className="block text-xs uppercase tracking-wider text-text-secondary font-semibold mb-1">
                       DSA Venue Notes / Re-upload Instructions
                     </label>
                     <textarea
@@ -415,7 +404,7 @@ export const AdminEventReviewPage: React.FC = () => {
                       onChange={(e) => setVenueNotes(e.target.value)}
                       placeholder="e.g. Signature and stamp verified, hall reserved. OR: Stamp unclear, please re-upload."
                       disabled={verifyVenueMutation.isPending}
-                      className="w-full text-sm transition-all outline-none bg-transparent text-white placeholder:text-gray-500 rounded-inputs px-3.5 py-2.5 border border-white/20 focus:border-white/40 focus:ring-2 focus:ring-white/10 resize-y"
+                      className="w-full text-sm transition-all outline-none bg-surface text-text-primary placeholder:text-text-muted rounded-inputs px-3.5 py-2.5 border border-border-medium focus:border-border-strong focus:ring-2 focus:ring-brand-primary/20 resize-y"
                     />
                   </div>
 
@@ -436,15 +425,15 @@ export const AdminEventReviewPage: React.FC = () => {
                       variant="outline"
                       onClick={() => verifyVenueMutation.mutate({ status: 'REJECTED', notes: venueNotes.trim() || 'Please re-upload a clear photo with the official stamp.' })}
                       isLoading={verifyVenueMutation.isPending}
-                      leftIcon={<AlertCircle className="w-4 h-4 text-red-400" />}
-                      className="bg-red-500/10 hover:bg-red-500/20 text-red-300 border-red-500/30 w-full sm:flex-1"
+                      leftIcon={<AlertCircle className="w-4 h-4 text-red-500" />}
+                      className="bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-300 border-red-500/30 w-full sm:flex-1"
                     >
                       Request Re-upload
                     </Button>
                   </div>
                 </div>
               ) : (
-                <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-2xl text-xs text-amber-300 flex items-center gap-2.5">
+                <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-2xl text-xs text-amber-600 dark:text-amber-300 flex items-center gap-2.5">
                   <AlertCircle className="w-4 h-4 shrink-0" />
                   <span>The society has not yet uploaded the signed venue slip for this event.</span>
                 </div>
@@ -454,13 +443,13 @@ export const AdminEventReviewPage: React.FC = () => {
         )}
 
         {/* Separator Line */}
-        <div className="w-full h-px bg-white/10 my-6"></div>
+        <div className="w-full h-px bg-border-subtle my-6"></div>
 
         {/* Event Overview Section */}
         <form onSubmit={handleSubmit(onSaveDetails)} className="space-y-6" noValidate>
           <div className="space-y-4">
             <h2 className="text-lg font-extrabold flex items-center gap-2">
-              <Calendar className="w-5 h-5" />
+              <Calendar className="w-5 h-5 text-brand-primary" />
               Event Overview
             </h2>
 
@@ -474,18 +463,18 @@ export const AdminEventReviewPage: React.FC = () => {
             />
 
             <div className="space-y-1.5 text-left">
-              <label className="block text-xs uppercase tracking-wider text-gray-400 font-semibold mb-1">
+              <label className="block text-xs uppercase tracking-wider text-text-secondary font-semibold mb-1">
                 Event Description *
               </label>
               <div className="relative flex items-start">
-                <div className="absolute left-3 top-3 text-gray-400 pointer-events-none flex items-center justify-center">
+                <div className="absolute left-3 top-3 text-text-muted pointer-events-none flex items-center justify-center">
                   <FileText className="w-4 h-4" />
                 </div>
                 <textarea
                   rows={4}
                   placeholder="Describe your event agenda, prerequisites, target audience, and guidelines..."
                   disabled={true}
-                  className="w-full text-sm transition-all outline-none bg-transparent text-white placeholder:text-gray-500 rounded-inputs px-3.5 py-2.5 pl-10 border border-white/20 disabled:opacity-50 resize-y"
+                  className="w-full text-sm transition-all outline-none bg-surface-hover/50 text-text-primary placeholder:text-text-muted rounded-inputs px-3.5 py-2.5 pl-10 border border-border-subtle disabled:opacity-75 resize-y"
                   {...register('description')}
                 />
               </div>
@@ -493,18 +482,18 @@ export const AdminEventReviewPage: React.FC = () => {
           </div>
 
           {/* Separator Line */}
-          <div className="w-full h-px bg-white/10 my-6"></div>
+          <div className="w-full h-px bg-border-subtle my-6"></div>
 
           {/* Event Type & Logistics */}
           <div className="space-y-4">
             <h2 className="text-lg font-extrabold flex items-center gap-2">
-              <MapPin className="w-5 h-5" />
+              <MapPin className="w-5 h-5 text-brand-primary" />
               Logistics & Details
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-1.5 text-left">
-                <label className="block text-xs uppercase tracking-wider text-gray-400 font-semibold mb-1">
+                <label className="block text-xs uppercase tracking-wider text-text-secondary font-semibold mb-1">
                   Event Type
                 </label>
                 <CustomDropdown placeholder="Select Type" disabled={true} options={[{value:"Workshop",label:"Workshop"},{value:"Seminar",label:"Seminar"},{value:"Hackathon",label:"Hackathon"},{value:"Competition",label:"Competition"},{value:"Social",label:"Social"},{value:"Other",label:"Other"}]} value={eventData.eventType || undefined} />
@@ -545,12 +534,12 @@ export const AdminEventReviewPage: React.FC = () => {
           </div>
 
           {/* Separator Line */}
-          <div className="w-full h-px bg-white/10 my-6"></div>
+          <div className="w-full h-px bg-border-subtle my-6"></div>
 
           {/* In-Charge Details */}
           <div className="space-y-4">
             <h2 className="text-lg font-extrabold flex items-center gap-2">
-              <ShieldCheck className="w-5 h-5" />
+              <ShieldCheck className="w-5 h-5 text-brand-primary" />
               In-Charge Details
             </h2>
 

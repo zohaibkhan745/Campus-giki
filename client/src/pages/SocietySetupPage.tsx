@@ -21,6 +21,7 @@ import {
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { Alert } from '@/components/ui/Alert';
+import { BackButton } from '@/components/ui';
 import { ImageUploader } from '@/components/common/ImageUploader';
 import type { AxiosError } from 'axios';
 
@@ -265,13 +266,7 @@ export const SocietySetupPage: React.FC = () => {
     <div className="max-w-4xl mx-auto space-y-6 text-left py-4 mb-24">
       {/* Top Back Navigation */}
       <div className="flex items-center justify-between mb-2">
-        <button
-          onClick={() => navigate(-1)}
-          className="inline-flex items-center justify-center w-10 h-10 bg-surface-hover hover:bg-surface backdrop-blur-md border border-border-medium text-text-primary rounded-full transition-all cursor-pointer shadow-elevation-1"
-          title="Go Back"
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </button>
+        <BackButton variant="inline" />
       </div>
 
       <div className="flex flex-col gap-2">

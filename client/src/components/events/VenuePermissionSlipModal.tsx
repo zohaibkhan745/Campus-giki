@@ -142,48 +142,48 @@ export const VenuePermissionSlipModal: React.FC<VenuePermissionSlipModalProps> =
             <FileText className="w-5 h-5" />
           </div>
           <div className="min-w-0">
-            <h3 className="font-extrabold text-sm sm:text-base text-white truncate leading-tight">
+            <h3 className="font-extrabold text-sm sm:text-base text-text-primary truncate leading-tight">
               Venue Permission Slip
             </h3>
-            <p className="text-[11px] text-gray-400 truncate">
+            <p className="text-[11px] text-text-secondary truncate">
               {refCode} • {displaySociety}
             </p>
           </div>
         </div>
 
         {/* Center: Interactive Zoom Controls */}
-        <div className="flex items-center gap-1.5 bg-white/5 border border-white/10 rounded-xl px-2 py-1">
+        <div className="flex items-center gap-1.5 bg-surface-glass border border-border-medium rounded-xl px-2 py-1">
           <button
             type="button"
             onClick={handleZoomOut}
-            className="p-1.5 text-gray-400 hover:text-white rounded-lg hover:bg-white/10 transition-colors"
+            className="p-1.5 text-text-secondary hover:text-text-primary rounded-lg hover:bg-surface-hover transition-colors cursor-pointer"
             title="Zoom Out"
           >
             <ZoomOut className="w-4 h-4" />
           </button>
 
-          <span className="text-xs font-mono font-bold px-1.5 min-w-[48px] text-center text-gray-200">
+          <span className="text-xs font-mono font-bold px-1.5 min-w-[48px] text-center text-text-primary">
             {Math.round(scale * 100)}%
           </span>
 
           <button
             type="button"
             onClick={handleZoomIn}
-            className="p-1.5 text-gray-400 hover:text-white rounded-lg hover:bg-white/10 transition-colors"
+            className="p-1.5 text-text-secondary hover:text-text-primary rounded-lg hover:bg-surface-hover transition-colors cursor-pointer"
             title="Zoom In"
           >
             <ZoomIn className="w-4 h-4" />
           </button>
 
-          <div className="w-px h-4 bg-white/20 mx-1"></div>
+          <div className="w-px h-4 bg-border-subtle mx-1"></div>
 
           <button
             type="button"
             onClick={handleFitPage}
-            className={`px-2.5 py-1 text-xs font-bold rounded-lg transition-colors ${
+            className={`px-2.5 py-1 text-xs font-bold rounded-lg transition-colors cursor-pointer ${
               zoomMode === 'fit'
                 ? 'bg-blue-600 text-white shadow-sm'
-                : 'text-gray-400 hover:text-white hover:bg-white/10'
+                : 'text-text-secondary hover:text-text-primary hover:bg-surface-hover'
             }`}
             title="Fit Entire Page on Screen"
           >
@@ -193,10 +193,10 @@ export const VenuePermissionSlipModal: React.FC<VenuePermissionSlipModalProps> =
           <button
             type="button"
             onClick={handleFitWidth}
-            className={`px-2.5 py-1 text-xs font-bold rounded-lg transition-colors hidden sm:block ${
+            className={`px-2.5 py-1 text-xs font-bold rounded-lg transition-colors hidden sm:block cursor-pointer ${
               zoomMode === 'width'
                 ? 'bg-blue-600 text-white shadow-sm'
-                : 'text-gray-400 hover:text-white hover:bg-white/10'
+                : 'text-text-secondary hover:text-text-primary hover:bg-surface-hover'
             }`}
             title="Fit Page Width"
           >
@@ -206,7 +206,7 @@ export const VenuePermissionSlipModal: React.FC<VenuePermissionSlipModalProps> =
           <button
             type="button"
             onClick={handleResetActual}
-            className="p-1.5 text-gray-400 hover:text-white rounded-lg hover:bg-white/10 transition-colors hidden sm:block"
+            className="p-1.5 text-text-secondary hover:text-text-primary rounded-lg hover:bg-surface-hover transition-colors hidden sm:block cursor-pointer"
             title="Actual Size (100%)"
           >
             <RotateCcw className="w-3.5 h-3.5" />
@@ -218,7 +218,7 @@ export const VenuePermissionSlipModal: React.FC<VenuePermissionSlipModalProps> =
           <button
             type="button"
             onClick={handlePrint}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all shadow-lg hover:shadow-blue-600/30 cursor-pointer"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all shadow-elevation-1 hover:shadow-blue-600/30 cursor-pointer"
           >
             <Printer className="w-4 h-4" />
             <span className="hidden sm:inline">Print / Save as PDF</span>
@@ -228,7 +228,7 @@ export const VenuePermissionSlipModal: React.FC<VenuePermissionSlipModalProps> =
           <button
             type="button"
             onClick={onClose}
-            className="p-2 text-gray-400 hover:text-white rounded-xl hover:bg-white/10 transition-colors"
+            className="p-2 text-text-secondary hover:text-text-primary rounded-xl hover:bg-surface-hover transition-colors cursor-pointer"
             title="Close viewer"
           >
             <X className="w-5 h-5" />

@@ -20,6 +20,7 @@ import { EventDetailSkeleton } from '@/components/events/EventDetailSkeleton';
 import { VenuePermissionSlipModal } from '@/components/events/VenuePermissionSlipModal';
 import { UploadSignedSlipModal } from '@/components/events/UploadSignedSlipModal';
 import { ErrorState } from '@/components/ui/ErrorState';
+import { BackButton } from '@/components/ui';
 
 export const EventDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -108,13 +109,7 @@ export const EventDetailPage: React.FC = () => {
     <div className="page-transition max-w-4xl mx-auto space-y-6 text-left pt-10 sm:pt-14 pb-8 px-4">
       {/* Top Back Navigation Link */}
       <div className="flex items-center justify-between">
-        <button
-          onClick={() => navigate(-1)}
-          className="fixed top-4 left-4 sm:top-6 sm:left-6 z-[100] inline-flex items-center justify-center w-10 h-10 bg-surface-glass hover:bg-surface-hover backdrop-blur-md border border-border-subtle text-text-primary rounded-full transition-all cursor-pointer shadow-elevation-2"
-          title="Go Back"
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </button>
+        <BackButton />
       </div>
 
       {/* Main Container */}
@@ -382,7 +377,7 @@ export const EventDetailPage: React.FC = () => {
         )}
 
         {/* 8. DSA Admin Audit Trail */}
-        {user?.role === 'DSA_ADMIN' && eventItem.approvalStatus === 'PUBLISHED' && eventItem.dsaApprovedAt && (
+        {user?.role === 'DSA_ADMIN' && (eventItem.approvalStatus === 'PUBLISHED' || eventItem.approvalStatus === 'APPROVED') && eventItem.dsaApprovedAt && (
           <div className="space-y-3 pt-4 border-t border-border-subtle">
             <h3 className="text-xs font-semibold uppercase tracking-wider text-text-muted">
               Administrative Audit Log

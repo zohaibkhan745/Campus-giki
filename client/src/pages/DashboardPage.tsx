@@ -60,24 +60,24 @@ const StudentDashboardView: React.FC<{ user: any; logout: () => void }> = ({ use
   return (
     <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 text-left">
       {/* Welcome Banner */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-950/80 via-slate-900/90 to-indigo-950/80 border border-white/10 p-8 sm:p-10 shadow-2xl backdrop-blur-xl">
-        <div className="absolute top-0 right-0 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="relative overflow-hidden rounded-3xl bg-surface-glass border border-border-medium p-8 sm:p-10 shadow-elevation-2 backdrop-blur-xl">
+        <div className="absolute top-0 right-0 w-80 h-80 bg-brand-primary/10 rounded-full blur-3xl pointer-events-none" />
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-3">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/15 border border-blue-400/25 text-blue-400 text-xs font-semibold uppercase tracking-wider">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/15 border border-blue-400/25 text-blue-600 dark:text-blue-400 text-xs font-semibold uppercase tracking-wider">
               <GraduationCap className="w-4 h-4" />
               <span>GIKI Student Portal</span>
             </div>
-            <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+            <h1 className="text-3xl sm:text-4xl font-extrabold text-text-primary tracking-tight">
               Welcome back, {user?.fullName || 'Student'}
             </h1>
-            <p className="text-gray-400 text-sm sm:text-base max-w-xl">
+            <p className="text-text-secondary text-sm sm:text-base max-w-xl">
               Explore upcoming campus events, connect with student societies, and stay up to date with live announcements from the Directorate of Student Affairs.
             </p>
           </div>
           <button
             onClick={logout}
-            className="self-start md:self-center inline-flex items-center gap-2 px-4 py-2.5 bg-red-500/15 hover:bg-red-500/25 border border-red-500/30 rounded-xl text-red-400 text-sm font-semibold transition-colors"
+            className="self-start md:self-center inline-flex items-center gap-2 px-4 py-2.5 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 rounded-xl text-red-600 dark:text-red-400 text-sm font-semibold transition-colors cursor-pointer"
           >
             <LogOut className="w-4 h-4" />
             <span>Sign Out</span>
@@ -161,7 +161,7 @@ const StudentDashboardView: React.FC<{ user: any; logout: () => void }> = ({ use
       {/* Account Info card */}
       <div className="p-6 rounded-2xl bg-surface-glass border border-border-medium shadow-elevation-1 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 rounded-xl bg-forest-ink/15 text-forest-ink border border-forest-ink/25">
+          <div className="p-2.5 rounded-xl bg-success/15 text-success border border-success/25">
             <UserCheck className="w-5 h-5" />
           </div>
           <div>
@@ -169,7 +169,7 @@ const StudentDashboardView: React.FC<{ user: any; logout: () => void }> = ({ use
             <div className="text-xs text-text-secondary">Authenticated Student Account • GIKI Campus Network</div>
           </div>
         </div>
-        <div className="flex items-center gap-2 text-xs font-semibold text-forest-ink bg-forest-ink/10 px-3 py-1.5 rounded-lg border border-forest-ink/20">
+        <div className="flex items-center gap-2 text-xs font-semibold text-success bg-success/10 px-3 py-1.5 rounded-lg border border-success/20">
           <Shield className="w-3.5 h-3.5" />
           <span>Active Student Session</span>
         </div>
@@ -280,31 +280,29 @@ export const DashboardPage: React.FC = () => {
         editUrl="/society/setup"
       />
       <div className="space-y-6 text-left py-4 px-4">
-        <div className="flex justify-end mb-4">
-          <div className="grid grid-cols-3 md:flex md:flex-wrap lg:flex-nowrap md:justify-end gap-2 md:gap-3 w-full md:w-auto shrink-0 mt-4 md:mt-0">
+        <div className="flex flex-wrap justify-end gap-2 md:gap-3 mb-4 w-full md:w-auto shrink-0">
           <button
-              onClick={() => setIsAboutModalOpen(true)}
-              className="flex justify-center items-center gap-1.5 px-4 py-2.5 bg-white hover:bg-gray-100 text-gray-900 border-none rounded-xl text-sm font-bold transition-colors shadow-lg"
-            >
-              <Info className="w-4 h-4" />
-              <span>About Society</span>
-            </button>
-            <Link
+            onClick={() => setIsAboutModalOpen(true)}
+            className="flex justify-center items-center gap-1.5 px-4 py-2.5 bg-surface hover:bg-surface-hover text-text-primary border border-border-medium rounded-xl text-sm font-bold transition-colors shadow-elevation-1 cursor-pointer"
+          >
+            <Info className="w-4 h-4" />
+            <span>About Society</span>
+          </button>
+          <Link
             to="/society/setup"
-            className="flex justify-center items-center gap-1.5 px-4 py-2.5 bg-white hover:bg-gray-100 text-gray-900 border-none rounded-xl text-sm font-bold transition-colors"
+            className="flex justify-center items-center gap-1.5 px-4 py-2.5 bg-surface hover:bg-surface-hover text-text-primary border border-border-medium rounded-xl text-sm font-bold transition-colors shadow-elevation-1 cursor-pointer"
           >
             <Edit className="w-4 h-4" />
-              <span>Manage Info</span>
-            </Link>
+            <span>Manage Info</span>
+          </Link>
           <button
             onClick={logout}
-            className="flex justify-center items-center gap-1.5 px-4 py-2.5 bg-red-500 hover:bg-red-600 border-none rounded-xl text-white text-sm font-bold transition-colors"
+            className="flex justify-center items-center gap-1.5 px-4 py-2.5 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 rounded-xl text-red-600 dark:text-red-400 text-sm font-bold transition-colors cursor-pointer"
           >
             <LogOut className="w-4 h-4" />
             <span>Log out</span>
           </button>
         </div>
-      </div>
 
       {user?.role === 'SOCIETY' && profile && (
         <>
@@ -461,7 +459,7 @@ export const DashboardPage: React.FC = () => {
             <div className="space-y-4">
               <div className="flex items-center justify-between pb-3">
                 <div className="flex items-center gap-2 font-extrabold text-lg text-text-primary">
-                  <UpcomingEventIcon className="w-5 h-5 text-forest-ink" />
+                  <UpcomingEventIcon className="w-5 h-5 text-success" />
                   <h3>Next Upcoming ({upcomingEvents.length})</h3>
                 </div>
                 {/* Fallback to calendar if there's no general events page for societies */}

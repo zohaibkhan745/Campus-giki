@@ -11,3 +11,4 @@ export * from './EmptyState';
 export * from './ErrorState';
 export * from './OfflineBanner';
 export * from './ThemeToggle';
+export * from './BackButton';

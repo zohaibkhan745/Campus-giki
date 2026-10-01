@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/Button';
 import { Alert } from '@/components/ui/Alert';
 import { ImageUploader } from '@/components/common/ImageUploader';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
+import { BackButton } from '@/components/ui';
 import { useNavigate } from 'react-router-dom';
 import type { AxiosError } from 'axios';
 
@@ -119,13 +120,7 @@ export const SettingsPage: React.FC = () => {
     <div className="max-w-3xl mx-auto space-y-6 text-left py-4">
       {/* Top Back Navigation */}
       <div className="flex items-center justify-between mb-2">
-        <button
-          onClick={() => navigate(-1)}
-          className="fixed top-4 left-4 sm:top-6 sm:left-6 z-[100] inline-flex items-center justify-center w-10 h-10 bg-surface-glass hover:bg-surface-hover backdrop-blur-md border border-border-medium text-text-primary rounded-full transition-all cursor-pointer shadow-elevation-1"
-          title="Go Back"
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </button>
+        <BackButton />
       </div>
 
       <h1 className="font-extrabold text-5xl sm:text-6xl text-text-primary tracking-tight leading-tight mb-8">

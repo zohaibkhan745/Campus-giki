@@ -5,6 +5,7 @@ import { FeedbackHistory } from '@/components/shared/FeedbackHistory';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
+import { invalidatePlanQueries } from '@/lib/queryInvalidations';
 import {
   CalendarDays,
   Plus,
@@ -26,6 +27,7 @@ import {
 import type { PlanStatus } from '@/types/yearly-plan.types';
 import { CustomDatePicker } from '@/components/ui/CustomDatePicker';
 import { CustomDropdown } from '@/components/ui/CustomDropdown';
+import { BackButton } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import type { AxiosError } from 'axios';
 
@@ -100,8 +102,7 @@ export const YearlyCalendarPage: React.FC = () => {
         events: data.payload.events,
       }),
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['myYearlyPlans'] });
-      queryClient.invalidateQueries({ queryKey: ['societyDashboard'] });
+      void invalidatePlanQueries(queryClient, existingPlan?.id);
       if (variables.status === 'PENDING_ADVISOR' as PlanStatus) {
         setSuccessMessage('Yearly calendar plan submitted for advisor review successfully!');
         setTimeout(() => navigate(-1), 1500);
@@ -120,8 +121,7 @@ export const YearlyCalendarPage: React.FC = () => {
         events: data.payload.events,
       }),
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['myYearlyPlans'] });
-      queryClient.invalidateQueries({ queryKey: ['societyDashboard'] });
+      void invalidatePlanQueries(queryClient, existingPlan?.id);
       if (variables.status === 'PENDING_ADVISOR' as PlanStatus) {
         setSuccessMessage('Revised yearly plan resubmitted for advisor review successfully!');
         setTimeout(() => navigate(-1), 1500);
@@ -158,7 +158,7 @@ export const YearlyCalendarPage: React.FC = () => {
   const requestEditMutation = useMutation({
     mutationFn: () => yearlyPlanService.requestEdit(existingPlan!.id, editReason),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['yearly-plans', 'me'] });
+      void invalidatePlanQueries(queryClient, existingPlan?.id);
       setSuccessMessage('Edit access requested successfully. Waiting for admin approval.');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     },
@@ -185,13 +185,7 @@ export const YearlyCalendarPage: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <button
-            onClick={() => navigate(-1)}
-            className="fixed top-4 left-4 sm:top-6 sm:left-6 z-[100] inline-flex items-center justify-center w-10 h-10 bg-surface-glass hover:bg-surface-hover backdrop-blur-md border border-border-medium text-text-primary rounded-full transition-all cursor-pointer shadow-lg"
-            title="Go Back"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </button>
+          <BackButton />
           <h1 className="text-4xl font-extrabold text-text-primary tracking-tight">
             Society Annual Calendar ({currentYear}-{currentYear + 1})
           </h1>

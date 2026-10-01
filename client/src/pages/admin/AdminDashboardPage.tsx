@@ -78,7 +78,7 @@ export const AdminDashboardPage: React.FC = () => {
           <div className="grid grid-cols-2 md:flex md:flex-wrap lg:flex-nowrap md:justify-end gap-2 md:gap-3 w-full md:w-auto shrink-0 mt-4 md:mt-0">
                     <Link
             to="/admin/societies/create"
-            className="flex justify-center items-center gap-1.5 px-4 py-2.5 bg-white hover:bg-gray-100 text-gray-900 rounded-xl text-sm font-bold transition-colors shadow-lg"
+            className="flex justify-center items-center gap-1.5 px-4 py-2.5 bg-surface hover:bg-surface-hover text-text-primary border border-border-medium rounded-xl text-sm font-bold transition-colors shadow-sm"
           >
             <UserPlus className="w-4 h-4" />
             <span>Onboard Society</span>
@@ -182,13 +182,13 @@ export const AdminDashboardPage: React.FC = () => {
       <div className="flex flex-col gap-10 mt-8">
         {/* 1. Pending Event Proposals for DSA Review */}
         <div className="space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b-2 border-white/10 pb-3 gap-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b-2 border-border-subtle pb-3 gap-3">
             <div>
-              <div className="flex items-center gap-2 font-extrabold text-lg text-white">
+              <div className="flex items-center gap-2 font-extrabold text-lg text-text-primary">
                 <MicVocal className="w-5 h-5 text-indigo-400" />
                 <h3>Pending Event Proposals for Review ({pendingEvents.length})</h3>
               </div>
-              <p className="text-xs text-gray-400 mt-0.5">
+              <p className="text-xs text-text-secondary mt-0.5">
                 Review and approve society event proposals submitted for administrative clearance
               </p>
             </div>
@@ -203,7 +203,7 @@ export const AdminDashboardPage: React.FC = () => {
                   { value: 'CHANGES_REQUESTED', label: 'Changes Requested' }
                 ]}
               />
-              <Link to="/admin/events" className="whitespace-nowrap px-4 py-2 bg-white text-gray-900 border border-transparent rounded-xl text-sm font-bold shadow-md hover:bg-gray-100 transition-all">
+              <Link to="/admin/events" className="whitespace-nowrap px-4 py-2 bg-text-primary text-text-inverse border border-transparent rounded-xl text-sm font-bold shadow-md hover:opacity-90 transition-all">
                 View All Events
               </Link>
             </div>
@@ -212,9 +212,9 @@ export const AdminDashboardPage: React.FC = () => {
           {isPendingLoading ? (
             <div className="space-y-3">
               {[1, 2].map((i) => (
-                <div key={i} className="bg-white/[0.05] hover:bg-white/[0.08] backdrop-blur-[12px] p-5 rounded-[18px] border border-white/10 hover:border-white/25 transition-all shadow-sm animate-pulse space-y-2">
-                  <div className="h-5 bg-white/10 rounded w-1/3" />
-                  <div className="h-4 bg-white/10 rounded w-1/2" />
+                <div key={i} className="bg-surface-glass backdrop-blur-md p-5 rounded-cards border border-border-subtle transition-all shadow-elevation-1 animate-pulse space-y-2">
+                  <div className="h-5 bg-border-subtle rounded w-1/3" />
+                  <div className="h-4 bg-border-subtle rounded w-1/2" />
                 </div>
               ))}
             </div>

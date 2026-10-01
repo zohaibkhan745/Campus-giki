@@ -16,7 +16,7 @@ export const DashboardLayout: React.FC = () => {
   const location = useLocation();
 
   return (
-    <div className="min-h-screen flex flex-col font-inter bg-canvas text-text-primary relative overflow-x-hidden w-screen max-w-[100vw]">
+    <div className="min-h-screen flex flex-col font-inter bg-canvas text-text-primary relative overflow-x-hidden w-full max-w-full">
       <main className="relative z-20 flex-1 min-w-0 min-h-screen pb-28 md:pb-32 px-4 sm:px-6 lg:px-8 max-w-[1440px] mx-auto w-full pt-8">
         <Suspense fallback={<DashboardFallback />}>
           <div className="w-full h-full">

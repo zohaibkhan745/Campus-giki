@@ -177,41 +177,41 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ profil
               <div className="flex items-center justify-between mb-[12px]">
                 <h2 className="text-[18px] md:text-[22px] font-bold text-white uppercase tracking-wider mb-0">ABOUT US</h2>
                 {isCurrentUserSociety && (
-                  <button onClick={handleEdit} className="flex items-center justify-center gap-1.5 px-4 py-2 bg-white text-gray-900 hover:bg-gray-200 rounded-xl text-sm font-bold transition-all shadow-lg shrink-0">
+                  <button onClick={handleEdit} className="flex items-center justify-center gap-1.5 px-4 py-2 bg-text-primary text-text-inverse hover:opacity-90 rounded-xl text-sm font-bold transition-all shadow-elevation-1 shrink-0 cursor-pointer">
                     <Edit className="w-4 h-4" /> Manage Info
                   </button>
                 )}
               </div>
-              <p className="text-[14px] md:text-[16px] leading-[1.6] text-gray-300 whitespace-pre-wrap">
+              <p className="text-[14px] md:text-[16px] leading-[1.6] text-text-secondary whitespace-pre-wrap">
                 {profile.longDescription || "No description provided."}
               </p>
             </div>
   
             <div className="mt-12 w-full">
               <div className="flex items-center justify-between mb-[16px]">
-                <h2 className="text-[18px] md:text-[22px] font-bold text-white uppercase tracking-wider">EXECUTIVE COUNCIL</h2>
+                <h2 className="text-[18px] md:text-[22px] font-bold text-text-primary uppercase tracking-wider">EXECUTIVE COUNCIL</h2>
               </div>
               <div className="bg-white/[0.02] border border-white/5 rounded-2xl overflow-x-auto w-full">
                 <table className="w-full text-left border-collapse min-w-[700px] whitespace-nowrap">
                   <thead>
-                    <tr className="border-b border-white/10 bg-white/5">
-                      <th className="py-4 px-5 text-[11px] font-black text-gray-400 uppercase tracking-widest w-16">Sr. No</th>
-                      <th className="py-4 px-5 text-[11px] font-black text-gray-400 uppercase tracking-widest">Position</th>
-                      <th className="py-4 px-5 text-[11px] font-black text-gray-400 uppercase tracking-widest">Name</th>
-                      <th className="py-4 px-5 text-[11px] font-black text-gray-400 uppercase tracking-widest">Email</th>
-                      <th className="py-4 px-5 text-[11px] font-black text-gray-400 uppercase tracking-widest text-right">Actions</th>
+                    <tr className="border-b border-border-subtle bg-surface-glass">
+                      <th className="py-4 px-5 text-[11px] font-black text-text-secondary uppercase tracking-widest w-16">Sr. No</th>
+                      <th className="py-4 px-5 text-[11px] font-black text-text-secondary uppercase tracking-widest">Position</th>
+                      <th className="py-4 px-5 text-[11px] font-black text-text-secondary uppercase tracking-widest">Name</th>
+                      <th className="py-4 px-5 text-[11px] font-black text-text-secondary uppercase tracking-widest">Email</th>
+                      <th className="py-4 px-5 text-[11px] font-black text-text-secondary uppercase tracking-widest text-right">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-white/5">
+                  <tbody className="divide-y divide-border-subtle">
                     {profile.presidentName ? (
-                      <tr className="hover:bg-white/5 transition-colors">
-                        <td className="py-4 px-5 text-[14px] font-semibold text-gray-400">01</td>
-                        <td className="py-4 px-5 text-[15px] font-bold text-amber-400">President</td>
-                        <td className="py-4 px-5 text-[15px] font-semibold text-white">{profile.presidentName}</td>
-                        <td className="py-4 px-5 text-[14px] text-gray-400">{profile.presidentEmail}</td>
+                      <tr className="hover:bg-surface-hover transition-colors">
+                        <td className="py-4 px-5 text-[14px] font-semibold text-text-secondary">01</td>
+                        <td className="py-4 px-5 text-[15px] font-bold text-amber-500 dark:text-amber-400">President</td>
+                        <td className="py-4 px-5 text-[15px] font-semibold text-text-primary">{profile.presidentName}</td>
+                        <td className="py-4 px-5 text-[14px] text-text-secondary">{profile.presidentEmail}</td>
                         <td className="py-4 px-5 text-right">
                           {isCurrentUserSociety && (
-                              <span className="text-gray-500 font-bold px-3">-</span>
+                              <span className="text-text-muted font-bold px-3">-</span>
                             )}
                         </td>
                       </tr>
@@ -220,17 +220,17 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ profil
                     {council.map((member: any, i: number) => {
                       const isUneditable = UNEDITABLE_ROLES.includes(member.role);
                       return (
-                        <tr key={i} className="hover:bg-white/5 transition-colors">
-                          <td className="py-4 px-5 text-[14px] font-semibold text-gray-400">{(profile.presidentName ? i + 2 : i + 1).toString().padStart(2, '0')}</td>
-                          <td className="py-4 px-5 text-[15px] font-semibold text-white">{member.role}</td>
-                          <td className="py-4 px-5 text-[15px] font-semibold text-white">{member.name}</td>
-                          <td className="py-4 px-5 text-[14px] text-gray-400">{member.email}</td>
+                        <tr key={i} className="hover:bg-surface-hover transition-colors">
+                          <td className="py-4 px-5 text-[14px] font-semibold text-text-secondary">{(profile.presidentName ? i + 2 : i + 1).toString().padStart(2, '0')}</td>
+                          <td className="py-4 px-5 text-[15px] font-semibold text-text-primary">{member.role}</td>
+                          <td className="py-4 px-5 text-[15px] font-semibold text-text-primary">{member.name}</td>
+                          <td className="py-4 px-5 text-[14px] text-text-secondary">{member.email}</td>
                           <td className="py-4 px-5 text-right">
                             {isCurrentUserSociety && (
                               isUneditable ? (
-                                <span className="text-gray-500 font-bold px-3">-</span>
+                                <span className="text-text-muted font-bold px-3">-</span>
                               ) : (
-                                <button onClick={() => setEditingMember({ original: member, current: member, confirmDelete: false })} className="p-2 text-gray-500 hover:text-white hover:bg-white/10 rounded-lg transition-colors inline-flex" title="Edit"><Edit className="w-4 h-4"/></button>
+                                <button onClick={() => setEditingMember({ original: member, current: member, confirmDelete: false })} className="p-2 text-text-secondary hover:text-text-primary hover:bg-surface-hover rounded-lg transition-colors inline-flex cursor-pointer" title="Edit"><Edit className="w-4 h-4"/></button>
                               )
                             )}
                           </td>
@@ -239,11 +239,11 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ profil
                     })}
 
                     {profile.advisor && profile.advisor.user && (
-                      <tr className="hover:bg-white/5 transition-colors border-t border-white/20 bg-white/[0.01]">
-                        <td className="py-4 px-5 text-[14px] font-semibold text-gray-500">--</td>
-                        <td className="py-4 px-5 text-[15px] font-bold text-purple-400">Faculty Advisor</td>
-                        <td className="py-4 px-5 text-[15px] font-semibold text-white">{profile.advisor.user.fullName}</td>
-                        <td className="py-4 px-5 text-[14px] text-gray-400">{profile.advisor.user.email}</td>
+                      <tr className="hover:bg-surface-hover transition-colors border-t border-border-subtle bg-surface-glass">
+                        <td className="py-4 px-5 text-[14px] font-semibold text-text-secondary">--</td>
+                        <td className="py-4 px-5 text-[15px] font-bold text-purple-600 dark:text-purple-400">Faculty Advisor</td>
+                        <td className="py-4 px-5 text-[15px] font-semibold text-text-primary">{profile.advisor.user.fullName}</td>
+                        <td className="py-4 px-5 text-[14px] text-text-secondary">{profile.advisor.user.email}</td>
                         <td className="py-4 px-5 text-right"></td>
                       </tr>
                     )}
@@ -277,20 +277,20 @@ export const DashboardAboutModal: React.FC<DashboardAboutModalProps> = ({ profil
                 
                 <div className="flex justify-end gap-3 pt-2">
                   {!UNEDITABLE_ROLES.includes(editingMember.original.role) && (
-                    <button onClick={() => setEditingMember({...editingMember, confirmDelete: true})} className="px-4 py-2 bg-red-500 text-white hover:bg-red-600 rounded-xl text-sm font-bold transition-colors mr-auto">Delete</button>
+                    <button onClick={() => setEditingMember({...editingMember, confirmDelete: true})} className="px-4 py-2 bg-red-500 text-white hover:bg-red-600 rounded-xl text-sm font-bold transition-colors mr-auto cursor-pointer">Delete</button>
                   )}
-                  <button onClick={() => setEditingMember(null)} className="px-4 py-2 bg-white text-black hover:bg-gray-200 rounded-xl text-sm font-bold transition-colors">Cancel</button>
-                  <button onClick={handleSaveMember} disabled={updateMutation.isPending} className="px-4 py-2 bg-white text-black hover:bg-gray-200 rounded-xl text-sm font-bold transition-colors disabled:opacity-50">
+                  <button onClick={() => setEditingMember(null)} className="px-4 py-2 bg-surface border border-border-medium text-text-primary hover:bg-surface-hover rounded-xl text-sm font-bold transition-colors cursor-pointer">Cancel</button>
+                  <button onClick={handleSaveMember} disabled={updateMutation.isPending} className="px-4 py-2 bg-text-primary text-text-inverse hover:opacity-90 rounded-xl text-sm font-bold transition-colors disabled:opacity-50 cursor-pointer shadow-elevation-1">
                     {updateMutation.isPending ? 'Saving...' : 'Save Changes'}
                   </button>
                 </div>
               </div>
             ) : (
               <div className="space-y-4">
-                <p className="text-gray-300 text-sm">Are you sure you want to remove <strong className="text-white">{editingMember.original.name}</strong> from the Executive Council?</p>
+                <p className="text-text-secondary text-sm">Are you sure you want to remove <strong className="text-text-primary">{editingMember.original.name}</strong> from the Executive Council?</p>
                 <div className="flex justify-end gap-3 pt-2">
-                  <button onClick={() => setEditingMember({...editingMember, confirmDelete: false})} className="px-4 py-2 bg-white text-black hover:bg-gray-200 rounded-xl text-sm font-bold transition-colors">Cancel</button>
-                  <button onClick={handleDeleteMember} disabled={updateMutation.isPending} className="px-4 py-2 bg-red-500 text-white hover:bg-red-600 rounded-xl text-sm font-bold transition-colors disabled:opacity-50 flex items-center gap-2">
+                  <button onClick={() => setEditingMember({...editingMember, confirmDelete: false})} className="px-4 py-2 bg-surface border border-border-medium text-text-primary hover:bg-surface-hover rounded-xl text-sm font-bold transition-colors cursor-pointer">Cancel</button>
+                  <button onClick={handleDeleteMember} disabled={updateMutation.isPending} className="px-4 py-2 bg-red-500 text-white hover:bg-red-600 rounded-xl text-sm font-bold transition-colors disabled:opacity-50 flex items-center gap-2 cursor-pointer shadow-elevation-1">
                     <Trash2 className="w-4 h-4"/> Yes, Remove
                   </button>
                 </div>
