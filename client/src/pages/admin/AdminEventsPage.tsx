@@ -16,6 +16,7 @@ import {
   ArrowLeft,
   X,
   ArrowRight,
+  Plus,
 } from 'lucide-react';
 import { FlippableAdminEventCard, EventGrid } from '@/components/admin/FlippableAdminEventCard';
 import { adminService } from '@/services/admin.service';
@@ -139,6 +140,13 @@ export const AdminEventsPage: React.FC = () => {
     <div className="w-full max-w-[1440px] mx-auto text-left relative">
       <div className="flex items-center justify-between mb-4">
         <BackButton variant="inline" />
+        <Link
+          to="/events/create"
+          className="flex items-center gap-1.5 px-4 py-2.5 bg-brand-primary text-white hover:opacity-95 rounded-xl text-sm font-bold transition-all shadow-md cursor-pointer"
+        >
+          <Plus className="w-4 h-4" />
+          <span>Create Event</span>
+        </Link>
       </div>
 
       <div className="text-left mb-6">
@@ -168,7 +176,9 @@ export const AdminEventsPage: React.FC = () => {
             onChange={(e: any) => { setTypeToggle(e.target.value); setFromDate(''); setToDate(''); }}
             placeholder="All Event Timings"
           />
-          <CustomDropdown className="w-full md:flex-1 shrink-0" icon={<Filter className="w-4 h-4" />} options={[{ value: "", label: "All Statuses" },
+          <CustomDropdown className="w-full md:flex-1 shrink-0" icon={<Filter className="w-4 h-4" />} options={[
+              { value: "", label: "All Statuses" },
+              { value: 'DRAFT', label: 'Drafts' },
               { value: 'PENDING_ADMIN', label: 'Pending Review' },
               { value: 'PUBLISHED', label: 'Published / Approved' },
               { value: 'CHANGES_REQUESTED', label: 'Changes Requested' }

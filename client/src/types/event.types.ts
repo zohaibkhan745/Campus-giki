@@ -62,6 +62,7 @@ export interface CreateEventPayload {
   inChargeRegNum?: string | null;
   inChargeContact?: string | null;
   submitForApproval?: boolean;
+  societyId?: string | null;
 }
 
 export type UpdateEventPayload = Partial<CreateEventPayload>;

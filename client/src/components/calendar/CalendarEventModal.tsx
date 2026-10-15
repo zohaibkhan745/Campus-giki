@@ -237,6 +237,7 @@ export const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
               variant="secondary"
               className="w-full justify-center sm:w-auto"
               align="left"
+              direction="up"
             />
             {event.registrationLink ? (
               <a

@@ -58,11 +58,11 @@ export class EventsController {
   }
 
   @Post()
-  @Auth(Role.SOCIETY)
+  @Auth(Role.SOCIETY, Role.DSA_ADMIN)
   @HttpCode(HttpStatus.CREATED)
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({
-    summary: 'Create a new campus event for authenticated society',
+    summary: 'Create a new campus event (for authenticated society or DSA admin)',
   })
   @ApiResponse({
     status: 201,
@@ -75,13 +75,13 @@ export class EventsController {
   })
   @ApiResponse({
     status: 403,
-    description: 'Forbidden - Profile setup incomplete or society role missing',
+    description: 'Forbidden - Profile setup incomplete or role missing',
   })
   async createEvent(
     @CurrentUser() user: UserProfileDto,
     @Body() dto: CreateEventDto,
   ): Promise<EventResponseDto> {
-    return this.eventsService.createEvent(user.id, dto);
+    return this.eventsService.createEvent(user.id, dto, user.role);
   }
 
   @Get('my-events')

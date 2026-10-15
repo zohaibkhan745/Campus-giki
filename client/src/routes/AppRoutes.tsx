@@ -98,6 +98,16 @@ export const AppRoutes: React.FC = () => {
           <Route path="/society/setup" element={<SocietySetupPage />} />
           <Route path="/society/calendar" element={<YearlyCalendarPage />} />
           <Route path="/society/events" element={<SocietyEventsPage />} />
+        </Route>
+
+        {/* Shared Society & DSA Admin Event Management Routes */}
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={['SOCIETY', 'DSA_ADMIN']}>
+              <DashboardLayout />
+            </ProtectedRoute>
+          }
+        >
           <Route path="/events/create" element={<CreateEventPage />} />
           <Route path="/events/:id/edit" element={<EditEventPage />} />
         </Route>

@@ -126,6 +126,13 @@ export const EditEventPage: React.FC = () => {
         setIsCustomIncharge(true);
       }
 
+      const defaultName =
+        eventData.inChargeName || (user?.role === "DSA_ADMIN" ? "DSA Directorate" : "");
+      const defaultReg =
+        eventData.inChargeRegNum || (user?.role === "DSA_ADMIN" ? "0000000" : "");
+      const defaultContact =
+        eventData.inChargeContact || (user?.role === "DSA_ADMIN" ? "03001234567" : "");
+
       reset({
         title: eventData.title || "",
         description: eventData.description || "",
@@ -137,9 +144,9 @@ export const EditEventPage: React.FC = () => {
         videoUrl: eventData.videoUrl || "",
         registrationLink: eventData.registrationLink || "",
         eventType: eventData.eventType || "",
-        inChargeName: eventData.inChargeName || "",
-        inChargeRegNum: eventData.inChargeRegNum || "",
-        inChargeContact: eventData.inChargeContact || "",
+        inChargeName: defaultName,
+        inChargeRegNum: defaultReg,
+        inChargeContact: defaultContact,
       });
     }
   }, [eventData, reset]);
@@ -172,7 +179,7 @@ export const EditEventPage: React.FC = () => {
     mutationFn: (data: EventFormData) => eventService.updateEvent(id!, data),
     onSuccess: () => {
       void invalidateEventQueries(queryClient, id);
-      navigate("/dashboard", { replace: true });
+      navigate(user?.role === "DSA_ADMIN" ? "/admin/events" : "/dashboard", { replace: true });
     },
     onError: (
       error: AxiosError<{ message?: string | string[]; error?: string }>,
@@ -896,6 +903,22 @@ export const EditEventPage: React.FC = () => {
               >
                 Save Changes
               </Button>
+
+              {user?.role === "DSA_ADMIN" && eventData?.approvalStatus === "DRAFT" && (
+                <Button
+                  type="button"
+                  variant="primary"
+                  className="w-full bg-green-600 border border-green-500 hover:bg-green-700 text-white"
+                  isLoading={updateMutation.isPending}
+                  onClick={handleSubmit(
+                    (data) => onSubmit(data, true),
+                    onError,
+                  )}
+                  leftIcon={<ShieldCheck className="w-5 h-5" />}
+                >
+                  Publish Campus Event
+                </Button>
+              )}
 
               {eventData?.approvalStatus === "CHANGES_REQUESTED" && (
                 <Button

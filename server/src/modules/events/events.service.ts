@@ -267,19 +267,47 @@ export class EventsService {
   }
 
   /**
-   * Creates a new campus event for the authenticated society.
+   * Creates a new campus event for the authenticated society or DSA admin.
    */
-  async createEvent(userId: string, dto: CreateEventDto): Promise<EventResponseDto> {
-    const society = await this.validateSocietyOwnership(userId);
+  async createEvent(
+    userId: string,
+    dto: CreateEventDto,
+    userRole?: string,
+  ): Promise<EventResponseDto> {
+    const isDsaAdmin = userRole === 'DSA_ADMIN';
+    let targetSocietyId: string;
+
+    if (isDsaAdmin) {
+      if (!dto.societyId) {
+        throw new BadRequestException(
+          'Host society must be selected when creating an event as DSA Admin',
+        );
+      }
+      const society = await this.prisma.society.findUnique({
+        where: { id: dto.societyId },
+        select: { id: true, name: true, logoUrl: true },
+      });
+      if (!society) {
+        throw new NotFoundException(`Society with ID '${dto.societyId}' was not found`);
+      }
+      targetSocietyId = society.id;
+    } else {
+      const society = await this.validateSocietyOwnership(userId);
+      targetSocietyId = society.id;
+    }
 
     this.validateFutureDate(dto.eventDate);
     this.validateTimeRange(dto.startTime, dto.endTime);
 
     const submitForApproval = Boolean(dto.submitForApproval);
-    const isPublished = false;
-    const approvalStatus = submitForApproval
-      ? EventApprovalStatus.PENDING_ADVISOR
-      : EventApprovalStatus.DRAFT;
+    const isPublished = isDsaAdmin ? dto.submitForApproval !== false : false;
+    const approvalStatus = isDsaAdmin
+      ? dto.submitForApproval === false
+        ? EventApprovalStatus.DRAFT
+        : EventApprovalStatus.PUBLISHED
+      : submitForApproval
+        ? EventApprovalStatus.PENDING_ADVISOR
+        : EventApprovalStatus.DRAFT;
 
     const coverImageUrl = this.sanitizeImageUrl(dto.coverImageUrl);
 
@@ -300,7 +328,8 @@ export class EventsService {
         inChargeContact: dto.inChargeContact || null,
         isPublished,
         approvalStatus,
-        societyId: society.id,
+        dsaApprovedAt: isDsaAdmin && isPublished ? new Date() : null,
+        societyId: targetSocietyId,
       },
       include: {
         society: {
@@ -315,8 +344,16 @@ export class EventsService {
 
     this.invalidateCache();
 
-    if (submitForApproval) {
-      this.notifyAdvisorOfEventSubmission(event.id, society.id);
+    if (!isDsaAdmin && submitForApproval) {
+      this.notifyAdvisorOfEventSubmission(event.id, targetSocietyId);
+    } else if (isDsaAdmin && isPublished) {
+      this.notifySocietyOfEventUpdate(
+        targetSocietyId,
+        event.id,
+        'APPROVED',
+        'DSA Directorate',
+        'Official campus event scheduled and published by DSA Directorate.',
+      );
     }
 
     return event;
@@ -585,11 +622,14 @@ export class EventsService {
         ...(dto.inChargeContact !== undefined && { inChargeContact: dto.inChargeContact || null }),
         ...(dto.submitForApproval === true && {
           approvalStatus:
-            event.approvalStatus === 'CHANGES_REQUESTED' &&
-            event.lastChangeRequestBy === 'DSA_ADMIN'
-              ? 'PENDING_ADMIN'
-              : 'PENDING_ADVISOR',
-          isPublished: false,
+            userRole === 'DSA_ADMIN'
+              ? EventApprovalStatus.PUBLISHED
+              : event.approvalStatus === 'CHANGES_REQUESTED' &&
+                event.lastChangeRequestBy === 'DSA_ADMIN'
+                ? 'PENDING_ADMIN'
+                : 'PENDING_ADVISOR',
+          isPublished: userRole === 'DSA_ADMIN' ? true : false,
+          dsaApprovedAt: userRole === 'DSA_ADMIN' ? new Date() : event.dsaApprovedAt,
           lastChangeRequestBy: null,
         }),
       },
@@ -607,7 +647,15 @@ export class EventsService {
     this.invalidateCache();
 
     if (dto.submitForApproval === true) {
-      if (updated.approvalStatus === 'PENDING_ADVISOR') {
+      if (userRole === 'DSA_ADMIN') {
+        this.notifySocietyOfEventUpdate(
+          updated.society.id,
+          updated.id,
+          'APPROVED',
+          'DSA Directorate',
+          'Official campus event updated and published by DSA Directorate.',
+        );
+      } else if (updated.approvalStatus === 'PENDING_ADVISOR') {
         this.notifyAdvisorOfEventSubmission(updated.id, updated.society.id);
       } else if (updated.approvalStatus === 'PENDING_ADMIN') {
         this.notifyDsaOfEventForwarded(updated.id, updated.society.id, 'Faculty Advisor');

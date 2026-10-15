@@ -171,7 +171,14 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
             {formattedDate} • {formattedTime}
           </span>
         </div>
-        <span className="card-tag !text-[9px] !py-1 !px-2 shrink-0">Event</span>
+        <div className="flex items-center gap-1.5 shrink-0">
+          {(item as any).approvalStatus === 'DRAFT' && (
+            <span className="bg-amber-500/15 text-amber-500 border border-amber-500/30 text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-md tracking-wider">
+              Draft
+            </span>
+          )}
+          <span className="card-tag !text-[9px] !py-1 !px-2 shrink-0">Event</span>
+        </div>
       </div>
 
       {/* Center Media & Description Body */}
@@ -293,6 +300,7 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
             variant="compact"
             className="h-[32px] w-[32px]"
             align="right"
+            direction="up"
           />
           {reviewUrl ? (
             <Link

@@ -4,7 +4,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate, Link } from "react-router-dom";
 import { invalidateEventQueries } from "@/lib/queryInvalidations";
-import { ArrowLeft, CheckCircle2, ShieldCheck, Sparkles, Loader2 } from "lucide-react";
+import { ArrowLeft, CheckCircle2, ShieldCheck, Sparkles, Loader2, Building2 } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { adminService } from "@/services/admin.service";
 import { eventService } from "@/services/event.service";
 import { societyService } from "@/services/society.service";
 import { yearlyPlanService } from "@/services/yearly-plan.service";
@@ -26,6 +28,9 @@ import type { AxiosError } from "axios";
 export const CreateEventPage: React.FC = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { user } = useAuth();
+  const isDsaAdmin = user?.role === "DSA_ADMIN";
+
   const [serverError, setServerError] = useState<string | null>(null);
   const [showNoticeModal, setShowNoticeModal] = useState(false);
 
@@ -45,6 +50,7 @@ export const CreateEventPage: React.FC = () => {
     resolver: zodResolver(eventFormSchema),
     mode: "onChange",
     defaultValues: {
+      societyId: "",
       title: "",
       description: "",
       eventDate: "",
@@ -54,21 +60,39 @@ export const CreateEventPage: React.FC = () => {
       coverImageUrl: "",
       registrationLink: "",
       eventType: "",
-      inChargeName: "",
-      inChargeRegNum: "",
-      inChargeContact: "",
+      inChargeName: isDsaAdmin ? "DSA Directorate" : "",
+      inChargeRegNum: isDsaAdmin ? "0000000" : "",
+      inChargeContact: isDsaAdmin ? "03001234567" : "",
     },
   });
 
   const coverImageUrl = watch("coverImageUrl");
   const videoUrl = watch("videoUrl");
+  const selectedSocietyId = watch("societyId");
+
+  // Fetch list of societies if user is DSA Admin
+  const { data: societiesData, isLoading: isLoadingSocieties } = useQuery({
+    queryKey: ["publicSocietiesList"],
+    queryFn: () => societyService.getPublicSocieties({ limit: 100 }),
+    enabled: isDsaAdmin,
+  });
+  const societies = societiesData?.items || [];
+
+  // Query selected society details for DSA Admin to auto-fill council in-charge details
+  const { data: selectedSocietyDetail } = useQuery({
+    queryKey: ["adminSocietyDetail", selectedSocietyId],
+    queryFn: () => adminService.getSocietyById(selectedSocietyId),
+    enabled: isDsaAdmin && Boolean(selectedSocietyId),
+  });
 
   const { data: dashboardData } = useQuery({
     queryKey: ["societyDashboard"],
     queryFn: societyService.getDashboard,
+    enabled: !isDsaAdmin,
   });
 
   useEffect(() => {
+    if (isDsaAdmin) return;
     if ((dashboardData as any)?.profile) {
       const profile = (dashboardData as any)?.profile;
       let hasFullCouncil = false;
@@ -88,38 +112,117 @@ export const CreateEventPage: React.FC = () => {
         setShowNoticeModal(true);
       }
     }
-  }, [dashboardData, navigate]);
+  }, [dashboardData, navigate, isDsaAdmin]);
 
-  // Handle In-Charge Auto-fill
-  useEffect(() => {
-    if (!isCustomIncharge && (dashboardData as any)?.profile) {
+  // Compute default in-charge details based on council or DSA administration fallback
+  const defaultInCharge = useMemo(() => {
+    if (!isDsaAdmin) {
+      if ((dashboardData as any)?.profile) {
+        try {
+          const council = JSON.parse(
+            (dashboardData as any).profile.executiveCouncil || "[]",
+          );
+          const ec = council.find((m: any) => m.role === "Event Coordinator");
+          if (ec && ec.name && ec.name.trim()) {
+            const cleanRegNum = (ec.regNum || "").replace(/\D/g, "").slice(0, 7);
+            const cleanContact = (ec.contact || "").replace(/\D/g, "").slice(0, 11);
+            return {
+              designation: "Event Coordinator",
+              name: ec.name.trim(),
+              regNum: cleanRegNum.length === 7 ? cleanRegNum : "0000000",
+              contact: cleanContact.length === 11 ? cleanContact : "03001234567",
+            };
+          }
+        } catch {}
+      }
+      return {
+        designation: "Event Coordinator",
+        name: "",
+        regNum: "",
+        contact: "",
+      };
+    }
+
+    // For DSA Admin:
+    if (selectedSocietyDetail) {
+      // 1. Try Event Coordinator from selected society's Executive Council
       try {
         const council = JSON.parse(
-          (dashboardData as any).profile.executiveCouncil || "[]",
+          selectedSocietyDetail.executiveCouncil || "[]",
         );
         const ec = council.find((m: any) => m.role === "Event Coordinator");
-        if (ec) {
-          setValue("inChargeName", ec.name || "", { shouldValidate: true });
-          setValue("inChargeRegNum", ec.regNum || "", { shouldValidate: true });
-          setValue("inChargeContact", ec.contact || "", {
-            shouldValidate: true,
-          });
+        if (ec && ec.name && ec.name.trim()) {
+          const cleanRegNum = (ec.regNum || "").replace(/\D/g, "").slice(0, 7);
+          const cleanContact = (ec.contact || "").replace(/\D/g, "").slice(0, 11);
+          return {
+            designation: "Event Coordinator",
+            name: ec.name.trim(),
+            regNum: cleanRegNum.length === 7 ? cleanRegNum : "0000000",
+            contact: cleanContact.length === 11 ? cleanContact : "03001234567",
+          };
         }
-      } catch (e) {}
-    } else if (isCustomIncharge) {
+      } catch {}
+
+      // 2. Fallback to Society President
+      if (
+        selectedSocietyDetail.presidentName &&
+        selectedSocietyDetail.presidentName.trim()
+      ) {
+        const cleanRegNum = (
+          selectedSocietyDetail.presidentRegNum || ""
+        )
+          .replace(/\D/g, "")
+          .slice(0, 7);
+        const cleanContact = (
+          selectedSocietyDetail.presidentContact || ""
+        )
+          .replace(/\D/g, "")
+          .slice(0, 11);
+        return {
+          designation: "Society President",
+          name: selectedSocietyDetail.presidentName.trim(),
+          regNum: cleanRegNum.length === 7 ? cleanRegNum : "0000000",
+          contact: cleanContact.length === 11 ? cleanContact : "03001234567",
+        };
+      }
+    }
+
+    // 3. Fallback to DSA Directorate
+    return {
+      designation: "DSA Directorate",
+      name: "DSA Directorate",
+      regNum: "0000000",
+      contact: "03001234567",
+    };
+  }, [isDsaAdmin, dashboardData, selectedSocietyDetail]);
+
+  // Handle In-Charge Auto-fill for society users & DSA Admin
+  useEffect(() => {
+    if (!isCustomIncharge) {
+      if (defaultInCharge.name) {
+        setValue("inChargeName", defaultInCharge.name, { shouldValidate: true });
+        setValue("inChargeRegNum", defaultInCharge.regNum, {
+          shouldValidate: true,
+        });
+        setValue("inChargeContact", defaultInCharge.contact, {
+          shouldValidate: true,
+        });
+      }
+    } else {
       setValue("inChargeName", "", { shouldValidate: false });
       setValue("inChargeRegNum", "", { shouldValidate: false });
       setValue("inChargeContact", "", { shouldValidate: false });
     }
-  }, [isCustomIncharge, dashboardData, setValue]);
+  }, [isCustomIncharge, defaultInCharge, setValue]);
 
   const { data: myPlans } = useQuery({
     queryKey: ["myYearlyPlans"],
     queryFn: () => yearlyPlanService.getMyPlans(),
+    enabled: !isDsaAdmin,
   });
 
   const plannedEvents = useMemo(() => {
-    if (!myPlans) return [];
+    if (isDsaAdmin || !myPlans) return [];
     const list: {
       key: string;
       planYear: number;
@@ -137,7 +240,7 @@ export const CreateEventPage: React.FC = () => {
       });
     });
     return list;
-  }, [myPlans]);
+  }, [myPlans, isDsaAdmin]);
 
   const handleSelectPlannedEvent = (key: string) => {
     setSelectedEventKey(key);
@@ -163,7 +266,7 @@ export const CreateEventPage: React.FC = () => {
     mutationFn: (data: EventFormData) => eventService.createEvent(data),
     onSuccess: () => {
       void invalidateEventQueries(queryClient);
-      navigate("/dashboard", { replace: true });
+      navigate(isDsaAdmin ? "/admin/events" : "/dashboard", { replace: true });
     },
     onError: (
       error: AxiosError<{ message?: string | string[]; error?: string }>,
@@ -182,6 +285,11 @@ export const CreateEventPage: React.FC = () => {
 
   const handlePublish = (data: EventFormData, requireReview: boolean) => {
     setServerError(null);
+    if (isDsaAdmin && !data.societyId) {
+      setServerError("Please select the host society for this event.");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
     createMutation.mutate({ ...data, submitForApproval: requireReview });
   };
 
@@ -200,13 +308,15 @@ export const CreateEventPage: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="mb-4">
-            <BackButton to="/dashboard" variant="inline" />
+            <BackButton to={isDsaAdmin ? "/admin/events" : "/dashboard"} variant="inline" />
           </div>
           <h1 className="text-3xl font-extrabold text-text-primary tracking-tight">
-            Create New Campus Event
+            {isDsaAdmin ? "Schedule & Publish Campus Event" : "Create New Campus Event"}
           </h1>
           <p className="text-sm font-medium text-text-secondary mt-1">
-            Fill in the details below to list a new event on the campus feed.
+            {isDsaAdmin
+              ? "Publish official campus events and All-Pak competitions linked to host student societies."
+              : "Fill in the details below to submit a new event proposal to your advisor and DSA."}
           </p>
         </div>
       </div>
@@ -219,7 +329,46 @@ export const CreateEventPage: React.FC = () => {
         />
       )}
 
-      {plannedEvents && plannedEvents.length > 0 && (
+      {/* Host Society Selector for DSA Admin */}
+      {isDsaAdmin && (
+        <div className="bg-surface-glass border border-border-medium rounded-cards p-6 backdrop-blur-[20px] shadow-elevation-1">
+          <div className="flex items-center gap-2 mb-2">
+            <Building2 className="w-5 h-5 text-brand-primary" />
+            <h3 className="text-text-primary font-bold text-sm">
+              Host Society <span className="text-red-500">*</span>
+            </h3>
+            <span className="text-[10px] font-extrabold text-brand-primary uppercase tracking-wider bg-brand-primary/10 px-2.5 py-1 rounded-inputs border border-brand-primary/20">
+              Required for Admin
+            </span>
+          </div>
+          <p className="text-xs text-text-secondary font-medium mb-3">
+            Select the student society hosting or associated with this event (e.g., ACM, SOPHEP, NETRONIX for All-Pak events):
+          </p>
+          <CustomDropdown
+            value={watch("societyId") || ""}
+            onChange={(e: any) => {
+              const val = typeof e === "string" ? e : e?.target?.value || "";
+              setValue("societyId", val, { shouldValidate: true });
+              if (serverError) setServerError(null);
+            }}
+            options={[
+              { value: "", label: isLoadingSocieties ? "Loading societies..." : "Select Host Society" },
+              ...societies.map((s) => ({
+                value: s.id,
+                label: s.name,
+              })),
+            ]}
+            disabled={createMutation.isPending || isLoadingSocieties}
+          />
+          {errors.societyId?.message && (
+            <span className="error-text mt-2 block text-xs text-red-500">
+              {errors.societyId.message}
+            </span>
+          )}
+        </div>
+      )}
+
+      {!isDsaAdmin && plannedEvents && plannedEvents.length > 0 && (
         <div className="bg-surface-glass border border-border-medium rounded-cards p-6 backdrop-blur-[20px] shadow-elevation-1">
           <div className="flex items-center gap-2 mb-2">
             <h3 className="text-text-primary font-bold text-sm">
@@ -535,11 +684,11 @@ export const CreateEventPage: React.FC = () => {
 
               {!isCustomIncharge ? (
                 <div className="input-box disabled">
-                  <input type="text" value="Event Coordinator" disabled />
+                  <input type="text" value={defaultInCharge.designation} disabled />
                 </div>
               ) : (
                 <div className="input-box">
-                  <input type="text" placeholder="Enter designation" />
+                  <input type="text" placeholder="Enter designation (e.g. Lead Organizer)" />
                 </div>
               )}
             </div>
@@ -682,26 +831,66 @@ export const CreateEventPage: React.FC = () => {
           </div>
         </div>
 
-        <button
-          type="button"
-          className="btn-submit-review active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
-          disabled={createMutation.isPending}
-          onClick={handleSubmit((data) => handlePublish(data, true), onError)}
-        >
-          {createMutation.isPending ? (
-            <>
-              <Loader2 className="w-5 h-5 animate-spin text-white" />
-              <span>Submitting for Review...</span>
-            </>
-          ) : (
-            <span>Submit for Advisor & DSA Review</span>
-          )}
-        </button>
+        {isDsaAdmin ? (
+          <div className="flex flex-col sm:flex-row items-center gap-3">
+            <button
+              type="button"
+              className="btn-submit-review w-full flex-1 active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+              disabled={createMutation.isPending}
+              onClick={handleSubmit((data) => handlePublish(data, true), onError)}
+            >
+              {createMutation.isPending ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin text-white" />
+                  <span>Publishing Campus Event...</span>
+                </>
+              ) : (
+                <>
+                  <CheckCircle2 className="w-5 h-5 text-white" />
+                  <span>Publish Campus Event (DSA Official)</span>
+                </>
+              )}
+            </button>
+            <button
+              type="button"
+              className="w-full sm:w-auto px-6 py-3.5 bg-surface-hover hover:bg-surface text-text-primary border border-border-medium rounded-xl text-sm font-bold transition-all cursor-pointer disabled:opacity-60"
+              disabled={createMutation.isPending}
+              onClick={handleSubmit((data) => {
+                if (!data.societyId) {
+                  setServerError("Please select the host society for this event.");
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                  return;
+                }
+                createMutation.mutate({ ...data, submitForApproval: false });
+              }, onError)}
+            >
+              Save as Draft
+            </button>
+          </div>
+        ) : (
+          <button
+            type="button"
+            className="btn-submit-review active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+            disabled={createMutation.isPending}
+            onClick={handleSubmit((data) => handlePublish(data, true), onError)}
+          >
+            {createMutation.isPending ? (
+              <>
+                <Loader2 className="w-5 h-5 animate-spin text-white" />
+                <span>Submitting for Review...</span>
+              </>
+            ) : (
+              <span>Submit for Advisor & DSA Review</span>
+            )}
+          </button>
+        )}
       </form>
-      <CouncilNoticeModal
-        isOpen={showNoticeModal}
-        onClose={() => navigate("/society/setup?tab=council")}
-      />
+      {!isDsaAdmin && (
+        <CouncilNoticeModal
+          isOpen={showNoticeModal}
+          onClose={() => navigate("/society/setup?tab=council")}
+        />
+      )}
     </div>
   );
 };

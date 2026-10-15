@@ -20,7 +20,8 @@ import {
   CalendarDays,
   Settings,
   Users,
-  Ban
+  Ban,
+  Plus,
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { adminService } from '@/services/admin.service';
@@ -92,6 +93,13 @@ export const AdminDashboardPage: React.FC = () => {
               <span>DDSA Staff</span>
             </Link>
           )}
+          <Link
+            to="/events/create"
+            className="flex justify-center items-center gap-1.5 px-4 py-2.5 bg-brand-primary text-white hover:opacity-95 rounded-xl text-sm font-bold transition-all shadow-md cursor-pointer"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Create Event</span>
+          </Link>
           <button
             onClick={() => setIsAnnouncementDialogOpen(true)}
             className="flex justify-center items-center gap-1.5 px-4 py-2.5 bg-text-primary text-text-inverse hover:opacity-90 rounded-xl text-sm font-bold transition-all shadow-md cursor-pointer"
@@ -200,7 +208,8 @@ export const AdminDashboardPage: React.FC = () => {
                 onChange={(e: any) => setStatusFilter(e.target.value)}
                 options={[
                   { value: 'PENDING_ADMIN', label: 'Pending DSA Approval' },
-                  { value: 'CHANGES_REQUESTED', label: 'Changes Requested' }
+                  { value: 'CHANGES_REQUESTED', label: 'Changes Requested' },
+                  { value: 'DRAFT', label: 'Draft Events' },
                 ]}
               />
               <Link to="/admin/events" className="whitespace-nowrap px-4 py-2 bg-text-primary text-text-inverse border border-transparent rounded-xl text-sm font-bold shadow-md hover:opacity-90 transition-all">
