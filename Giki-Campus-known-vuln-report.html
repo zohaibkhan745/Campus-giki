@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DrogonSec Security Report</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f172a; color: #e2e8f0; }
+  .header { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); padding: 2rem; border-bottom: 1px solid #334155; }
+  .header h1 { font-size: 2rem; color: #38bdf8; margin-bottom: 0.5rem; }
+  .header p { color: #94a3b8; }
+  .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin: 2rem 0; }
+  .stat-card { background: #1e293b; border: 1px solid #334155; border-radius: 0.5rem; padding: 1.5rem; text-align: center; }
+  .stat-card .number { font-size: 2.5rem; font-weight: bold; }
+  .stat-card .label { color: #94a3b8; font-size: 0.875rem; margin-top: 0.25rem; }
+  .critical { color: #dc2626; } .high { color: #ea580c; } .medium { color: #ca8a04; }
+  .low { color: #2563eb; } .info { color: #6b7280; }
+  .section { margin: 2rem 0; }
+  .section h2 { color: #38bdf8; font-size: 1.25rem; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid #334155; }
+  .finding { background: #1e293b; border: 1px solid #334155; border-radius: 0.5rem; padding: 1.5rem; margin-bottom: 1rem; }
+  .finding-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+  .finding-title { font-weight: 600; font-size: 1.1rem; }
+  .badge { padding: 0.25rem 0.75rem; border-radius: 9999px; color: white; font-size: 0.75rem; font-weight: 600; }
+  .finding-meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.5rem; margin-bottom: 1rem; }
+  .meta-item { font-size: 0.875rem; color: #94a3b8; }
+  .meta-item strong { color: #e2e8f0; }
+  .code-block { background: #0f172a; border: 1px solid #334155; border-radius: 0.375rem; padding: 1rem; font-family: 'Courier New', monospace; font-size: 0.8rem; overflow-x: auto; white-space: pre; margin: 0.75rem 0; }
+  .remediation { background: #064e3b; border: 1px solid #065f46; border-radius: 0.375rem; padding: 1rem; margin-top: 0.75rem; font-size: 0.875rem; }
+  .remediation::before { content: "✓ Fix: "; font-weight: bold; color: #34d399; }
+  .ai-remediation { background: #1e1b4b; border: 1px solid #4338ca; border-radius: 0.375rem; padding: 1rem; margin-top: 0.75rem; font-size: 0.875rem; }
+  .ai-remediation strong { color: #818cf8; }
+  .ai-remediation p { margin: 0.5rem 0 0; color: #c7d2fe; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<div class="header">
+  <div style="max-width:1200px;margin:0 auto">
+    <h1>🛡️ DrogonSec Security Report</h1>
+    <p>Target: /home/code/testing/Campus-giki | Scanned: 2026-10-21 22:09:45 | Duration: 9.513s</p>
+  </div>
+</div>
+<div class="container">
+  <div class="stats-grid">
+    <div class="stat-card"><div class="number">89</div><div class="label">Total Findings</div></div>
+    <div class="stat-card"><div class="number critical">39</div><div class="label">Critical</div></div>
+    <div class="stat-card"><div class="number high">49</div><div class="label">High</div></div>
+    <div class="stat-card"><div class="number medium">0</div><div class="label">Medium</div></div>
+    <div class="stat-card"><div class="number low">1</div><div class="label">Low</div></div>
+    <div class="stat-card"><div class="number">284</div><div class="label">Files Scanned</div></div>
+  </div><div class="section"><h2>🔍 SAST Findings (1)</h2>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#2563eb">LOW</span><span class="finding-title">Missing Content Security Policy (CSP)</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>File:</strong> /home/code/testing/Campus-giki/client/index.html:2</div>
+    <div class="meta-item"><strong>Rule:</strong> HTML-002</div>
+    <div class="meta-item"><strong>OWASP:</strong> A02:2025 - Security Misconfiguration</div>
+    <div class="meta-item"><strong>CWE:</strong> CWE-693 | CVSS: 3.1</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">This HTML document defines no Content-Security-Policy, so it relies entirely on other XSS defenses.</p>
+  <div class="remediation">Add a CSP via meta tag (&lt;meta http-equiv=&#34;Content-Security-Policy&#34; ...&gt;) or an HTTP response header.</div>
+  
+</div></div><div class="section"><h2>🔑 Leak Findings (1)</h2>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#ea580c">HIGH</span><span class="finding-title">Hardcoded Password</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>File:</strong> /home/code/testing/Campus-giki/server/scripts/scramble-societies.ts:27</div>
+    <div class="meta-item"><strong>Rule:</strong> LEAK-120</div>
+    <div class="meta-item"><strong>Match:</strong> <code style="color:#f87171"> pa*****************************</code></div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">Hardcoded password detected. Should be stored in a secrets manager.</p>
+  
+</div></div><div class="section"><h2>📦 SCA Findings (87)</h2>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#dc2626">CRITICAL</span><span class="finding-title">brace-expansion 1.1.16</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-102276 | CVSS: 9.0</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/server/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 1.1.19</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">brace-expansion: DoS via uncontrolled recursion in parseCommaParts causing stack exhaustion</p>
+  <div class="remediation">Upgrade to version 1.1.19 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-6j4f-fj2g-mc7p" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-102276</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#dc2626">CRITICAL</span><span class="finding-title">brace-expansion 5.0.8</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-102276 | CVSS: 9.0</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/server/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 5.0.10</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">brace-expansion: DoS via uncontrolled recursion in parseCommaParts causing stack exhaustion</p>
+  <div class="remediation">Upgrade to version 5.0.10 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-6j4f-fj2g-mc7p" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-102276</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#dc2626">CRITICAL</span><span class="finding-title">brace-expansion 2.1.2</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-102276 | CVSS: 9.0</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/server/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 2.1.5</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">brace-expansion: DoS via uncontrolled recursion in parseCommaParts causing stack exhaustion</p>
+  <div class="remediation">Upgrade to version 2.1.5 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-6j4f-fj2g-mc7p" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-102276</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#dc2626">CRITICAL</span><span class="finding-title">brace-expansion 1.1.16</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-102277 | CVSS: 9.0</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/server/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 1.1.21</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">brace-expansion: Quadratic-time expansion of the `{a},b}` rewrite causes CPU denial of service</p>
+  <div class="remediation">Upgrade to version 1.1.21 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-q2hr-2g5m-vwhr" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-102277</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#dc2626">CRITICAL</span><span class="finding-title">brace-expansion 5.0.8</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-102277 | CVSS: 9.0</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/server/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 5.0.12</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">brace-expansion: Quadratic-time expansion of the `{a},b}` rewrite causes CPU denial of service</p>
+  <div class="remediation">Upgrade to version 5.0.12 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-q2hr-2g5m-vwhr" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-102277</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#dc2626">CRITICAL</span><span class="finding-title">brace-expansion 2.1.2</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-102277 | CVSS: 9.0</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/server/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 2.1.7</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">brace-expansion: Quadratic-time expansion of the `{a},b}` rewrite causes CPU denial of service</p>
+  <div class="remediation">Upgrade to version 2.1.7 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-q2hr-2g5m-vwhr" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-102277</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#dc2626">CRITICAL</span><span class="finding-title">brace-expansion 1.1.16</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-102278 | CVSS: 9.0</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/server/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 1.1.20</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">brace-expansion: DoS via uncontrolled recursion on nested brace groups causing stack exhaustion</p>
+  <div class="remediation">Upgrade to version 1.1.20 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-qhr7-859c-m2p7" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-102278</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#dc2626">CRITICAL</span><span class="finding-title">brace-expansion 5.0.8</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-102278 | CVSS: 9.0</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/server/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 5.0.11</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">brace-expansion: DoS via uncontrolled recursion on nested brace groups causing stack exhaustion</p>
+  <div class="remediation">Upgrade to version 5.0.11 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-qhr7-859c-m2p7" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-102278</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#dc2626">CRITICAL</span><span class="finding-title">brace-expansion 2.1.2</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-102278 | CVSS: 9.0</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/server/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 2.1.6</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">brace-expansion: DoS via uncontrolled recursion on nested brace groups causing stack exhaustion</p>
+  <div class="remediation">Upgrade to version 2.1.6 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-qhr7-859c-m2p7" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-102278</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#dc2626">CRITICAL</span><span class="finding-title">brace-expansion 1.1.16</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-14257 | CVSS: 9.0</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/server/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 1.1.17</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">brace-expansion: DoS via unbounded expansion length causing an out-of-memory process crash</p>
+  <div class="remediation">Upgrade to version 1.1.17 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-mh99-v99m-4gvg" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-14257</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#dc2626">CRITICAL</span><span class="finding-title">brace-expansion 2.1.2</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-14257 | CVSS: 9.0</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/server/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 2.1.3</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">brace-expansion: DoS via unbounded expansion length causing an out-of-memory process crash</p>
+  <div class="remediation">Upgrade to version 2.1.3 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-mh99-v99m-4gvg" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-14257</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#dc2626">CRITICAL</span><span class="finding-title">brace-expansion 1.1.16</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-69152 | CVSS: 9.0</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/server/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 1.1.18</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">brace-expansion: DoS via unbounded intermediate arrays, bypassing the CVE-2026-14257 mitigation</p>
+  <div class="remediation">Upgrade to version 1.1.18 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-rgw5-rvv9-x895" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-69152</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#dc2626">CRITICAL</span><span class="finding-title">brace-expansion 5.0.8</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-69152 | CVSS: 9.0</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/server/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 5.0.9</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">brace-expansion: DoS via unbounded intermediate arrays, bypassing the CVE-2026-14257 mitigation</p>
+  <div class="remediation">Upgrade to version 5.0.9 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-rgw5-rvv9-x895" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-69152</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#dc2626">CRITICAL</span><span class="finding-title">brace-expansion 2.1.2</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-69152 | CVSS: 9.0</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/server/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 2.1.4</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">brace-expansion: DoS via unbounded intermediate arrays, bypassing the CVE-2026-14257 mitigation</p>
+  <div class="remediation">Upgrade to version 2.1.4 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-rgw5-rvv9-x895" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-69152</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#dc2626">CRITICAL</span><span class="finding-title">fast-uri 3.1.4</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-18446 | CVSS: 9.0</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/server/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 3.1.5</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">fast-uri vulnerable to host confusion via backslash authority introducer</p>
+  <div class="remediation">Upgrade to version 3.1.5 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-7p8r-x3mc-p8w7" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-18446</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#dc2626">CRITICAL</span><span class="finding-title">fast-uri 3.1.4</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-75899 | CVSS: 9.0</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/server/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 3.1.6</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">fast-uri vulnerable to server-side request forgery via repeated hostname percent-decoding</p>
+  <div class="remediation">Upgrade to version 3.1.6 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-fph4-wmhf-6fwf" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-75899</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#dc2626">CRITICAL</span><span class="finding-title">fast-uri 3.1.4</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-75931 | CVSS: 9.0</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/server/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 3.1.6</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">fast-uri vulnerable to host confusion via skipped IDN canonicalization on scheme-relative references</p>
+  <div class="remediation">Upgrade to version 3.1.6 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-5jgf-p345-68v8" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-75931</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#dc2626">CRITICAL</span><span class="finding-title">fast-uri 3.1.4</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-75975 | CVSS: 9.0</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/server/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 3.1.6</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">fast-uri vulnerable to server-side request forgery via malformed IPv6 normalization</p>
+  <div class="remediation">Upgrade to version 3.1.6 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-f65p-4m7j-42xc" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-75975</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#dc2626">CRITICAL</span><span class="finding-title">fast-uri 3.1.4</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-76172 | CVSS: 9.0</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/server/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 3.1.6</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">fast-uri vulnerable to host confusion via percent-encoded scheme normalization</p>
+  <div class="remediation">Upgrade to version 3.1.6 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-jqff-g426-hqxp" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-76172</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#dc2626">CRITICAL</span><span class="finding-title">fast-uri 3.1.4</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-84292 | CVSS: 9.0</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/server/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 3.1.7</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">fast-uri vulnerable to authority injection via an unvalidated port in serialize</p>
+  <div class="remediation">Upgrade to version 3.1.7 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-qw65-cvwx-89v3" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-84292</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#dc2626">CRITICAL</span><span class="finding-title">handlebars 4.7.9</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-106446 | CVSS: 9.0</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/server/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 4.7.10</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">Handlebars: JavaScript Injection via AST Type Confusion in compile (bypass of CVE-2026-33937)</p>
+  <div class="remediation">Upgrade to version 4.7.10 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-8r5x-fm3f-whwj" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-106446</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#dc2626">CRITICAL</span><span class="finding-title">joi 18.2.3</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-92599 | CVSS: 9.0</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/server/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 18.2.6</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">joi: Quadratic regular-expression backtracking in `Joi.string().isoDate()`</p>
+  <div class="remediation">Upgrade to version 18.2.6 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-6h2x-m376-mqjq" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-92599</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#dc2626">CRITICAL</span><span class="finding-title">js-yaml 5.2.1</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-73643 | CVSS: 9.0</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/server/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 5.2.2</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">js-yaml: Exponential parsing time in flow collections leads to denial of service</p>
+  <div class="remediation">Upgrade to version 5.2.2 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-pm4m-ph32-ghv5" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-73643</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#dc2626">CRITICAL</span><span class="finding-title">js-yaml 4.3.0</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-84375 | CVSS: 9.0</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/server/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 4.3.2</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">js-yaml: maxTotalMergeKeys does not limit CPU use for empty merge sources</p>
+  <div class="remediation">Upgrade to version 4.3.2 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-2883-xcg3-v3hh" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-84375</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#dc2626">CRITICAL</span><span class="finding-title">js-yaml 3.15.0</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-84375 | CVSS: 9.0</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/server/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 3.15.2</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">js-yaml: maxTotalMergeKeys does not limit CPU use for empty merge sources</p>
+  <div class="remediation">Upgrade to version 3.15.2 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-2883-xcg3-v3hh" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-84375</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#dc2626">CRITICAL</span><span class="finding-title">js-yaml 4.3.0</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> GHSA-5p4m-2wfm-xmqj | CVSS: 9.0</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/server/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 4.3.1</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">JS-YAML: Quadratic CPU consumption in !!omap resolution (3.x and 4.x) — CVE-2026-59870 fix not backported</p>
+  <div class="remediation">Upgrade to version 4.3.1 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-5p4m-2wfm-xmqj" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">GHSA-5p4m-2wfm-xmqj</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#dc2626">CRITICAL</span><span class="finding-title">js-yaml 3.15.0</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> GHSA-5p4m-2wfm-xmqj | CVSS: 9.0</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/server/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 3.15.1</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">JS-YAML: Quadratic CPU consumption in !!omap resolution (3.x and 4.x) — CVE-2026-59870 fix not backported</p>
+  <div class="remediation">Upgrade to version 3.15.1 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-5p4m-2wfm-xmqj" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">GHSA-5p4m-2wfm-xmqj</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#dc2626">CRITICAL</span><span class="finding-title">js-yaml 5.2.1</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> GHSA-r3ph-w7gj-g6xm | CVSS: 9.0</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/server/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 5.4.1</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">js-yaml: maxTotalMergeKeys does not limit CPU use for empty merge sources</p>
+  <div class="remediation">Upgrade to version 5.4.1 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-r3ph-w7gj-g6xm" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">GHSA-r3ph-w7gj-g6xm</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#dc2626">CRITICAL</span><span class="finding-title">multer 2.2.0</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-77037 | CVSS: 9.0</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/server/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 2.3.0</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">multer vulnerable to Denial of Service via file descriptor leak on aborted uploads</p>
+  <div class="remediation">Upgrade to version 2.3.0 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-qfvm-cv95-jqjf" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-77037</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#dc2626">CRITICAL</span><span class="finding-title">multer 2.2.0</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-77078 | CVSS: 9.0</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/server/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 2.3.0</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">multer vulnerable to Denial of Service via crafted multipart field names</p>
+  <div class="remediation">Upgrade to version 2.3.0 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-wc9g-mqfw-jrwm" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-77078</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#dc2626">CRITICAL</span><span class="finding-title">multer 2.2.0</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-82333 | CVSS: 9.0</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/server/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 2.3.0</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">multer vulnerable to Denial of Service via oversized array index in field names</p>
+  <div class="remediation">Upgrade to version 2.3.0 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-535w-7cp7-47q4" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-82333</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#dc2626">CRITICAL</span><span class="finding-title">multer 2.2.0</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-88932 | CVSS: 9.0</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/server/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 2.4.0</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">multer vulnerable to Denial of Service via orphaned disk writes on aborted uploads</p>
+  <div class="remediation">Upgrade to version 2.4.0 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-3pph-fpjx-jg34" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-88932</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#dc2626">CRITICAL</span><span class="finding-title">nodemailer 9.0.3</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-100700 | CVSS: 9.0</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/server/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 10.0.6</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">Nodemailer: Quadratic backtracking in the addressparser free-text fallback allows remote denial of service</p>
+  <div class="remediation">Upgrade to version 10.0.6 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-v53p-9fqp-m79j" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-100700</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#dc2626">CRITICAL</span><span class="finding-title">nodemailer 9.0.3</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-92596 | CVSS: 9.0</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/server/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 9.1.0</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">Nodemailer: Quadratic (O(n²)) time complexity in addressparser allows remote denial of service via a crafted address list</p>
+  <div class="remediation">Upgrade to version 9.1.0 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-2x7j-588g-ccc2" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-92596</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#dc2626">CRITICAL</span><span class="finding-title">proxy-addr 2.0.7</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-90711 | CVSS: 9.0</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/server/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 2.0.8</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">proxy-addr vulnerable to IP spoofing via IPv4-mapped IPv6 trust subnet</p>
+  <div class="remediation">Upgrade to version 2.0.8 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-jqcg-44mw-7w3h" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-90711</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#dc2626">CRITICAL</span><span class="finding-title">qs 6.15.3</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-82417 | CVSS: 9.0</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/server/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 6.16.0</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">qs: Denial of Service via Attacker Controlled isBuffer</p>
+  <div class="remediation">Upgrade to version 6.16.0 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-4mjr-xmp4-gh2g" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-82417</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#dc2626">CRITICAL</span><span class="finding-title">source-map-js 1.2.1</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-93749 | CVSS: 9.0</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/client/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 1.2.2</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">source-map-js allows event-loop denial of service through indexed source-map section offsets</p>
+  <div class="remediation">Upgrade to version 1.2.2 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-68fv-2mgg-jv7q" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-93749</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#dc2626">CRITICAL</span><span class="finding-title">sprintf-js 1.0.3</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-97058 | CVSS: 9.0</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/server/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> </div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">sprintf-js vulnerable to denial of service through unbounded precision specifiers</p>
+  <div class="remediation">Upgrade to version  or higher. See: <a href="https://osv.dev/vulnerability/GHSA-hp3w-g68c-fv3c" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-97058</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#dc2626">CRITICAL</span><span class="finding-title">undici 8.10.0</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-19534 | CVSS: 9.0</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/client/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 8.10.2</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">undici vulnerable to Denial of Service via unrequested WebSocket subprotocol</p>
+  <div class="remediation">Upgrade to version 8.10.2 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-rfgv-xxqx-mfg5" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-19534</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#ea580c">HIGH</span><span class="finding-title">fast-uri 3.1.4</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-86472 | CVSS: 7.5</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/server/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 3.1.8</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">fast-uri vulnerable to inconsistent host case normalization via percent-encoded octets</p>
+  <div class="remediation">Upgrade to version 3.1.8 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-hrr3-gc8f-f4qj" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-86472</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#ea580c">HIGH</span><span class="finding-title">handlebars 4.7.9</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-106444 | CVSS: 7.5</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/server/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 4.7.10</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">Handlebars: JavaScript Injection via Unsafe Inline Embedding of Precompiled Templates</p>
+  <div class="remediation">Upgrade to version 4.7.10 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-xw65-4hp5-5hc7" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-106444</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#ea580c">HIGH</span><span class="finding-title">joi 18.2.3</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-84367 | CVSS: 7.5</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/server/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 18.2.4</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">joi: object().rename() with a template target can set the validated object&#39;s prototype</p>
+  <div class="remediation">Upgrade to version 18.2.4 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-gg4h-3hg2-grpc" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-84367</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#ea580c">HIGH</span><span class="finding-title">joi 18.2.3</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-84368 | CVSS: 7.5</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/server/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 18.2.5</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">joi: Prototype pollution via a `__proto__` language key in custom messages</p>
+  <div class="remediation">Upgrade to version 18.2.5 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-6w3j-5fw6-r9vr" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-84368</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#ea580c">HIGH</span><span class="finding-title">joi 18.2.3</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-90771 | CVSS: 7.5</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/server/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 18.2.9</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">joi messages compilation allows prototype replacement through __proto__ error codes</p>
+  <div class="remediation">Upgrade to version 18.2.9 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-wr44-6hxh-3jwq" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-90771</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#ea580c">HIGH</span><span class="finding-title">multer 2.2.0</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-77063 | CVSS: 7.5</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/server/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 2.3.0</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">multer vulnerable to file size limit bypass via async fileFilter race condition</p>
+  <div class="remediation">Upgrade to version 2.3.0 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-qvfw-j98x-7q72" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-77063</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#ea580c">HIGH</span><span class="finding-title">nanoid 3.3.16</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-67213 | CVSS: 7.5</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/client/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 3.3.18</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">nanoid: custom generators can loop indefinitely when size is zero</p>
+  <div class="remediation">Upgrade to version 3.3.18 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-2v37-7h3g-55p8" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-67213</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#ea580c">HIGH</span><span class="finding-title">nodemailer 9.0.3</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-100701 | CVSS: 7.5</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/server/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 10.0.2</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">Nodemailer: Process-global DNS cache reuses TLS `servername` across transports, enabling cross-tenant SMTP credential disclosure</p>
+  <div class="remediation">Upgrade to version 10.0.2 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-6vj9-mwq6-2f5v" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-100701</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#ea580c">HIGH</span><span class="finding-title">nodemailer 9.0.3</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-100702 | CVSS: 7.5</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/server/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 10.0.2</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">Nodemailer: Nested structured recipient arrays bypass the parser depth limit and cause stack exhaustion DoS</p>
+  <div class="remediation">Upgrade to version 10.0.2 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-8vvx-rff5-p5rq" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-100702</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#ea580c">HIGH</span><span class="finding-title">nodemailer 9.0.3</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-92595 | CVSS: 7.5</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/server/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 9.1.1</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">Nodemailer: resolveContent() on a MailMessage bypasses disableFileAccess/disableUrlAccess when called with the legacy signature</p>
+  <div class="remediation">Upgrade to version 9.1.1 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-8m3c-c648-2xjj" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-92595</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#ea580c">HIGH</span><span class="finding-title">nodemailer 9.0.3</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-92597 | CVSS: 7.5</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/server/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 9.1.0</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">Nodemailer: Recipient-domain validation bypass via RFC 5322 comment mis-parsing leads to email delivery to an attacker-controlled domain</p>
+  <div class="remediation">Upgrade to version 9.1.0 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-cc9r-2j5m-2m83" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-92597</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#ea580c">HIGH</span><span class="finding-title">nodemailer 9.0.3</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-92598 | CVSS: 7.5</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/server/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 9.1.0</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">Nodemailer: IDN/Punycode domain allow-list bypass leads to email delivery to an attacker-controlled domain</p>
+  <div class="remediation">Upgrade to version 9.1.0 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-wmmp-3585-3rmp" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-92598</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#ea580c">HIGH</span><span class="finding-title">qs 6.15.3</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-82562 | CVSS: 7.5</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/server/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 6.16.0</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">qs array-limit bypass via bracket-key comma parsing</p>
+  <div class="remediation">Upgrade to version 6.16.0 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-x5fp-wj9c-mxmx" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-82562</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#ea580c">HIGH</span><span class="finding-title">shell-quote 1.9.0</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-102422 | CVSS: 7.5</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 1.11.0</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">shell-quote: `quote()` command injection via a line terminator in a token after a `{ comment }` token</p>
+  <div class="remediation">Upgrade to version 1.11.0 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-pqg4-j6r4-53mv" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-102422</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#ea580c">HIGH</span><span class="finding-title">undici 8.10.0</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-18149 | CVSS: 7.5</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/client/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 8.10.2</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">undici vulnerable to Denial of Service via orphaned RetryHandler response body</p>
+  <div class="remediation">Upgrade to version 8.10.2 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-pmjh-fq2x-6v4x" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-18149</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#ea580c">HIGH</span><span class="finding-title">undici 8.10.0</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-18540 | CVSS: 7.5</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/client/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 8.10.2</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">undici vulnerable to downstream response splitting via retry interceptor</p>
+  <div class="remediation">Upgrade to version 8.10.2 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-r53p-7pc4-xj5r" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-18540</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#ea580c">HIGH</span><span class="finding-title">undici 8.10.0</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-84890 | CVSS: 7.5</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/client/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 8.10.2</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">undici vulnerable to Denial of Service via unbounded decompression of compressed responses</p>
+  <div class="remediation">Upgrade to version 8.10.2 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-3xpg-4rpp-hhhm" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-84890</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#ea580c">HIGH</span><span class="finding-title">undici 8.10.0</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-84933 | CVSS: 7.5</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/client/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 8.10.2</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">undici vulnerable to cross-user cookie disclosure via Set-Cookie caching in shared caches</p>
+  <div class="remediation">Upgrade to version 8.10.2 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-2jfj-6hjv-fm6j" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-84933</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#ea580c">HIGH</span><span class="finding-title">undici 8.10.0</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-84947 | CVSS: 7.5</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/client/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 8.10.2</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">undici vulnerable to response truncation via oversized chunked responses in the dump interceptor</p>
+  <div class="remediation">Upgrade to version 8.10.2 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-2gqq-gqf2-x968" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-84947</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#ea580c">HIGH</span><span class="finding-title">undici 8.10.0</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-84961 | CVSS: 7.5</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/client/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 8.10.2</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">undici vulnerable to TLS certificate validation bypass via dropped connect options in BalancedPool</p>
+  <div class="remediation">Upgrade to version 8.10.2 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-w293-vg96-wgc3" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-84961</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#ea580c">HIGH</span><span class="finding-title">undici 8.10.0</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-85008 | CVSS: 7.5</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/client/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 8.10.2</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">undici vulnerable to caching and replay of unsafe HTTP method responses</p>
+  <div class="remediation">Upgrade to version 8.10.2 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-8436-99hf-9mmv" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-85008</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#ea580c">HIGH</span><span class="finding-title">undici 8.10.0</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-85014 | CVSS: 7.5</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/client/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 8.10.2</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">undici vulnerable to Denial of Service via WebSocketStream unclean close</p>
+  <div class="remediation">Upgrade to version 8.10.2 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-rx4f-c7p8-82vq" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-85014</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#ea580c">HIGH</span><span class="finding-title">undici 8.10.0</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-85024 | CVSS: 7.5</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/client/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 8.10.2</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">undici vulnerable to Denial of Service via unhandled error in WebSocket permessage-deflate decompression</p>
+  <div class="remediation">Upgrade to version 8.10.2 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-3wwx-pv8p-q78v" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-85024</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#ea580c">HIGH</span><span class="finding-title">undici 8.10.0</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-85152 | CVSS: 7.5</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/client/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 8.10.2</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">undici vulnerable to cross-origin cache poisoning via missing origin isolation in interceptors</p>
+  <div class="remediation">Upgrade to version 8.10.2 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-vp8m-p9jh-q5pm" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-85152</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#ea580c">HIGH</span><span class="finding-title">axios 1.18.1</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-101898 | CVSS: 0.0</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/client/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 1.20.0</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">Axios: HTTP/2 adapter bypasses configured DNS lookup and proxy controls</p>
+  <div class="remediation">Upgrade to version 1.20.0 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-3pq3-5fj3-cg6v" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-101898</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#ea580c">HIGH</span><span class="finding-title">axios 1.18.1</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-101899 | CVSS: 0.0</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/client/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 1.20.0</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">Axios: CIDR-form NO_PROXY entries are ignored, causing proxy exclusion bypass for internal IP ranges</p>
+  <div class="remediation">Upgrade to version 1.20.0 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-44g4-m2mj-wpvx" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-101899</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#ea580c">HIGH</span><span class="finding-title">axios 1.18.1</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-101900 | CVSS: 0.0</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/client/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 1.20.0</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">Axios: Fetch Adapter Header Injection via Inherited FormData getHeaders</p>
+  <div class="remediation">Upgrade to version 1.20.0 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-4hqw-qxg8-jxx2" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-101900</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#ea580c">HIGH</span><span class="finding-title">axios 1.18.1</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-101901 | CVSS: 0.0</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/client/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 1.20.0</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">Axios: Denial of Service via Unhandled &#39;error&#39; Event in HTTP/2 ClientHttp2Session Initialization</p>
+  <div class="remediation">Upgrade to version 1.20.0 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-542g-h47m-68v8" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-101901</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#ea580c">HIGH</span><span class="finding-title">axios 1.18.1</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-101902 | CVSS: 0.0</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/client/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 1.20.0</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">Axios: Prototype-Pollution Gadget in the Default Instance Allows Inherited Object.prototype.method to Override HTTP Method</p>
+  <div class="remediation">Upgrade to version 1.20.0 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-9fr6-4gfg-395g" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-101902</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#ea580c">HIGH</span><span class="finding-title">axios 1.18.1</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-101903 | CVSS: 0.0</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/client/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 1.20.0</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">Axios: ReDoS in fromDataURI data: URL parser freezes the Node event loop (DoS)</p>
+  <div class="remediation">Upgrade to version 1.20.0 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-c29m-xwm3-cm6r" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-101903</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#ea580c">HIGH</span><span class="finding-title">axios 1.18.1</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-101904 | CVSS: 0.0</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/client/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 1.20.0</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">Axios: Header Injection via Inherited headers After Minimal Interceptor</p>
+  <div class="remediation">Upgrade to version 1.20.0 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-j8rh-479h-cp32" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-101904</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#ea580c">HIGH</span><span class="finding-title">axios 1.18.1</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-101905 | CVSS: 0.0</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/client/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 1.20.0</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">Axios: Node HTTP adapter prototype-pollution gadget allows request socket hijack via inherited createConnection</p>
+  <div class="remediation">Upgrade to version 1.20.0 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-m8m8-qj5v-23w3" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-101905</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#ea580c">HIGH</span><span class="finding-title">axios 1.18.1</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-101906 | CVSS: 0.0</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/client/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 1.20.0</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">Axios: ReDoS (O(N²)) in shouldBypassProxy host normalization, reachable via untrusted redirect Location</p>
+  <div class="remediation">Upgrade to version 1.20.0 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-mghh-pgcx-3jjj" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-101906</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#ea580c">HIGH</span><span class="finding-title">axios 1.18.1</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-101907 | CVSS: 0.0</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/client/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 1.20.0</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">Axios: maxRedirects: 0 is not enforced by the fetch adapter, allowing redirect-based SSRF</p>
+  <div class="remediation">Upgrade to version 1.20.0 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-r4gj-5m52-g5wh" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-101907</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#ea580c">HIGH</span><span class="finding-title">axios 1.18.1</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-101908 | CVSS: 0.0</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/client/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 1.20.0</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">Axios: Prototype pollution gadget in fetch adapter can alter outbound requests</p>
+  <div class="remediation">Upgrade to version 1.20.0 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-vh66-26gq-q6x8" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-101908</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#ea580c">HIGH</span><span class="finding-title">axios 1.18.1</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-101909 | CVSS: 0.0</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/client/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 1.20.0</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">Axios: Prototype Pollution Gadget in axios toFormData Options</p>
+  <div class="remediation">Upgrade to version 1.20.0 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-x97p-jq2g-jp4f" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-101909</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#ea580c">HIGH</span><span class="finding-title">deepmerge-ts 7.1.5</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-40345 | CVSS: 0.0</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/server/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 8.0.0</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">DeepmergeTS has stack exhaustion when merging recursive object graphs</p>
+  <div class="remediation">Upgrade to version 8.0.0 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-ggr8-5vv4-36mx" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-40345</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#ea580c">HIGH</span><span class="finding-title">follow-redirects 1.16.0</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-111755 | CVSS: 0.0</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/client/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 1.16.1</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">follow-redirects sensitiveHeaders regex escaping can expose credential headers</p>
+  <div class="remediation">Upgrade to version 1.16.1 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-8r9p-f939-6h3c" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-111755</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#ea580c">HIGH</span><span class="finding-title">follow-redirects 1.16.0</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-111756 | CVSS: 0.0</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/client/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 1.16.1</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">follow-redirects array-form headers bypass cross-origin credential stripping</p>
+  <div class="remediation">Upgrade to version 1.16.1 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-q3jh-wrc6-jgq8" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-111756</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#ea580c">HIGH</span><span class="finding-title">handlebars 4.7.9</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-106445 | CVSS: 0.0</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/server/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 4.7.10</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">Handlebars: JavaScript Injection via Own Property Check Bypass</p>
+  <div class="remediation">Upgrade to version 4.7.10 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-p8wg-vrv2-v86f" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-106445</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#ea580c">HIGH</span><span class="finding-title">react-router 7.18.1</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> GHSA-qwww-vcr4-c8h2 | CVSS: 0.0</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/client/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 7.18.2</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">React Router: RSC Mode CSRF Bypass Allows Action Execution Before 400 Response</p>
+  <div class="remediation">Upgrade to version 7.18.2 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-qwww-vcr4-c8h2" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">GHSA-qwww-vcr4-c8h2</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#ea580c">HIGH</span><span class="finding-title">sharp 0.35.3</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-114111 | CVSS: 0.0</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/server/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 0.35.5</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">sharp : Vulnerability in librsvg dependency CVE-2026-96889</p>
+  <div class="remediation">Upgrade to version 0.35.5 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-wq5f-xc86-pv6w" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-114111</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#ea580c">HIGH</span><span class="finding-title">sharp 0.35.3</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-114112 | CVSS: 0.0</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/server/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 0.35.4</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">sharp: Vulnerabilities in libheif: GHSA-g89c-p67h-r497 and GHSA-2jg2-4ch7-h545</p>
+  <div class="remediation">Upgrade to version 0.35.4 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-rgj7-g3m4-5g8c" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-114112</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#ea580c">HIGH</span><span class="finding-title">vite 8.1.5</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-112942 | CVSS: 0.0</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/client/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 8.1.6</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">launch-editor: `fs.existsSync()` existence check can be bypassed on Windows</p>
+  <div class="remediation">Upgrade to version 8.1.6 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-587h-7wmj-h5pm" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-112942</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#ea580c">HIGH</span><span class="finding-title">vite 8.1.5</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-112943 | CVSS: 0.0</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/client/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 8.1.6</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">launch-editor: escapeCmdArgs() omits % escaping on Windows</p>
+  <div class="remediation">Upgrade to version 8.1.6 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-698v-4r3x-3vcv" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-112943</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#ea580c">HIGH</span><span class="finding-title">vite 8.1.5</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-112944 | CVSS: 0.0</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/client/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 8.1.6</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">launch-editor: Editor CLI flag misinterpretation causing arbitrary command execution for some editors</p>
+  <div class="remediation">Upgrade to version 8.1.6 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-r825-w8mm-5pxw" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-112944</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#ea580c">HIGH</span><span class="finding-title">vite 8.1.5</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-112945 | CVSS: 0.0</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/client/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 8.1.6</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">Vite: Cross origin script execution through Vite custom middleware</p>
+  <div class="remediation">Upgrade to version 8.1.6 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-9jrq-w75r-8gcw" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-112945</a></div>
+</div>
+<div class="finding">
+  <div class="finding-header"><span class="badge" style="background:#ea580c">HIGH</span><span class="finding-title">vite 8.1.5</span></div>
+  <div class="finding-meta">
+    <div class="meta-item"><strong>CVE:</strong> CVE-2026-112946 | CVSS: 0.0</div>
+    <div class="meta-item"><strong>Manifest:</strong> /home/code/testing/Campus-giki/client/package-lock.json</div>
+    <div class="meta-item"><strong>Fixed in:</strong> 8.1.6</div>
+    <div class="meta-item"><strong>Ecosystem:</strong> npm</div>
+  </div>
+  <p style="color:#94a3b8;font-size:0.875rem">Vite: Files outside `server.fs.allow` could be served when project paths match system paths on non-Windows machine</p>
+  <div class="remediation">Upgrade to version 8.1.6 or higher. See: <a href="https://osv.dev/vulnerability/GHSA-rq7h-c2jc-7f22" rel="noopener noreferrer nofollow" target="_blank" style="color:#38bdf8">CVE-2026-112946</a></div>
+</div></div></div>
+<div style="text-align:center;padding:2rem;color:#475569;font-size:0.875rem">
+  Generated by <strong>DrogonSec Security Scanner</strong> | Aligned with OWASP Top 10:2025
+</div>
+</body></html>

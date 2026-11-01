@@ -216,7 +216,7 @@ export const SocietyEventsPage: React.FC = () => {
           ) : (
             <div className="cards-container">
               {filteredEvents.map((event: EventItem) => (
-                <EventCard key={event.id} item={{ ...event, type: 'event' } as any} />
+                <EventCard key={event.id} item={{ ...event, type: 'event' } as any} allowManagement />
               ))}
             </div>
           )}

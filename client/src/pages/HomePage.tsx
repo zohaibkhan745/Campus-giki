@@ -33,7 +33,8 @@ export const HomePage: React.FC = () => {
 
           {/* Initial Loading State */}
           {isLoading ? (
-            <div className="space-y-8">
+            <div className="cards-container">
+              <FeedCardSkeleton />
               <FeedCardSkeleton />
               <FeedCardSkeleton />
               <FeedCardSkeleton />

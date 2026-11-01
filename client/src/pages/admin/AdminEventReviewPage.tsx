@@ -214,6 +214,45 @@ export const AdminEventReviewPage: React.FC = () => {
         </div>
       </div>
 
+      {/* Event Banner / Cover Image */}
+      {eventData.coverImageUrl && (
+        <div className="w-full min-h-[280px] max-h-[560px] sm:max-h-[640px] rounded-2xl overflow-hidden bg-black/90 border border-border-medium shadow-elevation-1 relative flex items-center justify-center group">
+          {/* Ambient blurred backdrop so letterboxing is seamlessly matched */}
+          <img
+            src={resolveImageUrl(eventData.coverImageUrl)}
+            alt=""
+            aria-hidden="true"
+            className="absolute inset-0 w-full h-full object-cover filter blur-xl opacity-35 scale-110 pointer-events-none"
+          />
+          {/* Main uncropped image */}
+          <img
+            src={resolveImageUrl(eventData.coverImageUrl)}
+            alt={eventData.title}
+            className="relative z-10 max-h-[560px] sm:max-h-[640px] w-auto max-w-full object-contain shadow-2xl transition-transform duration-300"
+            onError={(e) => {
+              (e.target as HTMLImageElement).src =
+                'https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=1200&auto=format&fit=crop&q=80';
+            }}
+          />
+          <div className="absolute bottom-4 left-4 pointer-events-none z-20">
+            <span className="text-xs font-bold uppercase tracking-wider text-white/90 bg-black/50 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/20">
+              Event Banner
+            </span>
+          </div>
+        </div>
+      )}
+
+      {/* Promotional Video */}
+      {eventData.videoUrl && (
+        <div className="w-full rounded-2xl overflow-hidden bg-black border border-border-medium shadow-elevation-1">
+          <video
+            controls
+            src={resolveImageUrl(eventData.videoUrl)}
+            className="w-full max-h-[480px] object-contain"
+          />
+        </div>
+      )}
+
       {eventData.rules && (
         <div className="p-4 bg-amber-500/10 border border-amber-500/30 backdrop-blur-md rounded-cards space-y-1">
           <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 font-extrabold text-xs uppercase tracking-wider">

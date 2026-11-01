@@ -8,26 +8,33 @@ import { useQueryClient } from '@tanstack/react-query';
 import { eventService } from '@/services/event.service';
 import { globalNotification } from '@/contexts/NotificationContext';
 import { invalidateEventQueries } from '@/lib/queryInvalidations';
+import { Loader2, Calendar as CalendarIcon, MapPin } from 'lucide-react';
+import { AddToCalendarButton } from '@/components/events';
+
 const VenuePermissionSlipModal = React.lazy(() =>
   import('@/components/events/VenuePermissionSlipModal').then((m) => ({ default: m.VenuePermissionSlipModal })),
 );
 const UploadSignedSlipModal = React.lazy(() =>
   import('@/components/events/UploadSignedSlipModal').then((m) => ({ default: m.UploadSignedSlipModal })),
 );
-import { Loader2 } from 'lucide-react';
-import { ConfirmModal } from '@/components/ui/ConfirmModal';
-import { AddToCalendarButton } from '@/components/events';
 
 interface EventCardProps {
   item: EventFeedItem;
   onEdit?: () => void;
   onDelete?: () => void;
   reviewUrl?: string;
+  allowManagement?: boolean;
   /** @deprecated Flip animation is removed in favor of direct navigation */
   disableFlip?: boolean;
 }
 
-const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, reviewUrl }) => {
+const EventCardComponent: React.FC<EventCardProps> = ({
+  item,
+  onEdit,
+  onDelete,
+  reviewUrl,
+  allowManagement = false,
+}) => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const queryClient = useQueryClient();
@@ -35,9 +42,30 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
   const coverImage = resolveImageUrl(item.coverImageUrl);
   const logoImage = getSocietyLogo(item.society?.logoUrl);
   const authorName = item.society?.name || 'Society';
+  const societyUsername =
+    (item.society as any)?.username ||
+    (item.society?.name ? item.society.name.toLowerCase().replace(/\s+/g, '') : 'society');
 
-  const isApproved = (item as any).approvalStatus === 'APPROVED' || (item as any).approvalStatus === 'PUBLISHED';
+  const approvalStatus = (item as any).approvalStatus;
+  const isApproved = approvalStatus === 'APPROVED' || approvalStatus === 'PUBLISHED';
   const isPublished = isApproved || Boolean((item as any).isPublished);
+  const isChangesRequested = approvalStatus === 'CHANGES_REQUESTED';
+  const isPendingAdvisor = approvalStatus === 'PENDING_ADVISOR';
+  const isPendingAdmin = approvalStatus === 'PENDING_ADMIN';
+  const isDraft = approvalStatus === 'DRAFT';
+
+  const showStatusBadge = Boolean(approvalStatus && !isApproved);
+  const statusLabel = isPendingAdmin
+    ? 'Pending DSA'
+    : isPendingAdvisor
+    ? 'Pending Advisor'
+    : isChangesRequested
+    ? 'Changes Requested'
+    : isDraft
+    ? 'Draft'
+    : typeof approvalStatus === 'string'
+    ? approvalStatus.replace('_', ' ')
+    : '';
 
   const isMySociety = user?.role === 'SOCIETY' && user.society?.id === item.society?.id;
   const isDsaAdmin = user?.role === 'DSA_ADMIN';
@@ -104,18 +132,9 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
     }
   };
 
-  const formattedDate = new Date(item.createdAt).toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  });
-  const formattedTime = new Date(item.createdAt).toLocaleTimeString('en-US', {
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true,
-  });
-
   const eventDateObj = new Date(item.eventDate || item.createdAt);
+  const eventMonthShort = eventDateObj.toLocaleDateString('en-US', { month: 'short' }).toUpperCase();
+  const eventDayNum = eventDateObj.toLocaleDateString('en-US', { day: 'numeric' });
   const eventDate = eventDateObj.toLocaleDateString('en-US', {
     weekday: 'short',
     month: 'short',
@@ -147,7 +166,7 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
 
   return (
     <article
-      className="card-wrapper group relative flex flex-col w-full h-full rounded-[28px] overflow-hidden border border-border-medium bg-surface shadow-elevation-1 transition-all duration-200 hover:-translate-y-1 hover:border-brand-primary/40 hover:shadow-elevation-2 active:scale-[0.99] cursor-pointer select-none focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
+      className="card-wrapper group relative flex flex-col w-full h-full rounded-[24px] overflow-hidden border border-border-medium bg-surface shadow-elevation-1 transition-all duration-200 hover:-translate-y-1 hover:border-brand-primary/40 hover:shadow-elevation-2 active:scale-[0.99] cursor-pointer select-none focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
       data-type="event"
       data-card-id={item.id}
       onClick={handleCardClick}
@@ -158,117 +177,104 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
       role="article"
       aria-label={`Event: ${item.title}`}
     >
-      {/* Upper Bar Section */}
-      <div className="bg-surface/95 border-b border-border-subtle px-4 py-3 flex items-center justify-between gap-3 w-full rounded-t-[24px] shrink-0 z-20 relative">
-        <div className="flex flex-col min-w-0 flex-1 text-left">
-          <span
-            className="text-text-primary text-[18px] font-black tracking-tight truncate leading-tight group-hover:text-brand-primary transition-colors"
-            title={item.title}
-          >
-            {item.title}
-          </span>
-          <span className="text-text-secondary text-[11px] font-medium whitespace-nowrap mt-0.5">
-            {formattedDate} • {formattedTime}
-          </span>
-        </div>
-        <div className="flex items-center gap-1.5 shrink-0">
-          {(item as any).approvalStatus === 'DRAFT' && (
-            <span className="bg-amber-500/15 text-amber-500 border border-amber-500/30 text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-md tracking-wider">
-              Draft
-            </span>
-          )}
-          <span className="card-tag !text-[9px] !py-1 !px-2 shrink-0">Event</span>
-        </div>
-      </div>
-
-      {/* Center Media & Description Body */}
-      <div className={`relative w-full flex-1 min-h-0 overflow-hidden flex flex-col ${!coverImage ? 'bg-surface-glass backdrop-blur-xl' : 'bg-surface-hover'}`}>
+      {/* 1. Top Poster Section with Clean Ambient Backdrop & Date Badge */}
+      <div className="relative w-full aspect-[16/10] overflow-hidden bg-black/90 flex items-center justify-center shrink-0">
         {coverImage ? (
           <>
+            {/* Ambient blurred backdrop so any aspect ratio fills seamlessly without empty letterboxing */}
+            <img
+              src={coverImage}
+              alt=""
+              aria-hidden="true"
+              loading="lazy"
+              decoding="async"
+              className="absolute inset-0 w-full h-full object-cover filter blur-lg opacity-40 scale-110 pointer-events-none"
+            />
+            <div className="absolute inset-0 bg-black/20 pointer-events-none" />
+            {/* Wholly visible, uncropped poster */}
             <img
               src={coverImage}
               alt={item.title || 'Event Poster'}
               loading="lazy"
               decoding="async"
-              className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+              className="relative z-1 max-h-full max-w-full w-auto h-auto object-contain group-hover:scale-[1.02] transition-transform duration-500 ease-out"
             />
-            <div className="absolute inset-0 bg-black/30" />
           </>
-        ) : null}
-
-        <div className={cn("relative z-10 text-left flex flex-col flex-1", !coverImage ? "p-4" : "absolute top-5 left-5 right-5")}>
-          <div className={cn("flex flex-col gap-1", coverImage ? "drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)] text-white" : "text-text-primary")}>
-            <div className={cn("flex items-center gap-1.5 text-xs font-semibold", coverImage ? "text-white" : "text-text-primary")}>
-              <svg className="w-3.5 h-3.5 stroke-current flex-shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                <line x1="16" y1="2" x2="16" y2="6" />
-                <line x1="8" y1="2" x2="8" y2="6" />
-                <line x1="3" y1="10" x2="21" y2="10" />
-              </svg>
-              <span>{eventDate} • {eventTime}</span>
-            </div>
-            {item.venue && (
-              <div className={cn("flex items-center gap-1.5 text-[11px] font-medium", coverImage ? "text-gray-200" : "text-text-secondary")}>
-                <svg className="w-3.5 h-3.5 stroke-current flex-shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                  <circle cx="12" cy="10" r="3" />
-                </svg>
-                <span className="truncate">{item.venue}</span>
-              </div>
-            )}
+        ) : (
+          <div className="w-full h-full bg-surface-elevated flex items-center justify-center text-text-muted">
+            <CalendarIcon className="w-10 h-10 opacity-25" />
           </div>
+        )}
 
-          {!coverImage && (
-            <div className="text-text-secondary text-[16px] leading-relaxed mt-3 line-clamp-6 whitespace-pre-wrap flex-1">
-              {item.description}
-            </div>
-          )}
+        {/* Floating Calendar Date Tile (Top-Left) */}
+        <div className="absolute top-3 left-3 z-10 bg-surface/95 backdrop-blur-md border border-border-subtle rounded-xl px-2.5 py-1 text-center shadow-md pointer-events-none">
+          <span className="block text-[10px] font-black uppercase tracking-wider text-brand-primary leading-tight">
+            {eventMonthShort}
+          </span>
+          <span className="block text-base font-black text-text-primary leading-tight">
+            {eventDayNum}
+          </span>
         </div>
 
-        {(item as any).approvalStatus && (item as any).approvalStatus !== 'PUBLISHED' && (item as any).approvalStatus !== 'APPROVED' && (
-          <div className="absolute bottom-5 left-5 right-5 z-10 text-left">
+        {/* Status Badge (Top-Right) */}
+        {showStatusBadge && (
+          <div className="absolute top-3 right-3 z-10 pointer-events-none">
             <span
               className={cn(
-                "inline-block px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider backdrop-blur-md shadow-lg border",
-                (item as any).approvalStatus === 'PENDING_ADVISOR'
-                  ? "bg-orange-500/20 text-orange-400 border-orange-500/30"
-                  : (item as any).approvalStatus === 'PENDING_ADMIN'
-                  ? "bg-yellow-500/20 text-yellow-400 border-yellow-500/30"
-                  : "bg-red-500/20 text-red-400 border-red-500/30"
+                'inline-block px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider backdrop-blur-md shadow-md border',
+                isPendingAdvisor
+                  ? 'bg-orange-500/25 text-orange-400 border-orange-500/35'
+                  : isPendingAdmin
+                  ? 'bg-yellow-500/25 text-yellow-400 border-yellow-500/35'
+                  : isChangesRequested
+                  ? 'bg-amber-500/25 text-amber-400 border-amber-500/35'
+                  : isDraft
+                  ? 'bg-gray-500/25 text-gray-300 border-gray-500/35'
+                  : 'bg-red-500/25 text-red-400 border-red-500/35'
               )}
             >
-              {(item as any).approvalStatus === 'PENDING_ADMIN'
-                ? 'Pending DSA'
-                : (item as any).approvalStatus === 'PENDING_ADVISOR'
-                ? 'Pending Advisor'
-                : (item as any).approvalStatus.replace('_', ' ')}
+              {statusLabel}
             </span>
           </div>
         )}
       </div>
 
-      {/* Delete Confirmation Modal */}
-      <ConfirmModal
-        isOpen={showDeleteConfirm}
-        onClose={() => setShowDeleteConfirm(false)}
-        onConfirm={handleDelete}
-        title="Delete Event?"
-        message="Are you sure you want to permanently delete this event? This action cannot be undone."
-        confirmText="Delete"
-        cancelText="Cancel"
-        isLoading={isDeleting}
-        variant="danger"
-      />
+      {/* 2. Middle Event Details Section */}
+      <div className="flex flex-col flex-1 p-4 text-left gap-1.5 min-h-0">
+        {/* Event Schedule Timestamp */}
+        <div className="flex items-center gap-1.5 text-xs font-semibold text-brand-primary">
+          <CalendarIcon className="w-3.5 h-3.5 shrink-0" />
+          <span className="truncate">{eventDate} • {eventTime}</span>
+        </div>
 
-      {/* Lower Bar Section */}
-      <div
-        className="bg-surface/95 border-t border-border-subtle p-4 flex items-center justify-between gap-3 shrink-0 rounded-b-[24px] relative z-20"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="flex items-center gap-2.5 min-w-0 flex-1">
+        {/* Event Title (High-contrast, up to 2 lines without premature cutoff) */}
+        <h3
+          className="text-[16px] font-bold text-text-primary tracking-tight leading-snug line-clamp-2 group-hover:text-brand-primary transition-colors mt-0.5"
+          title={item.title}
+        >
+          {item.title}
+        </h3>
+
+        {/* Venue Location */}
+        {item.venue && (
+          <div className="flex items-center gap-1.5 text-xs text-text-secondary">
+            <MapPin className="w-3.5 h-3.5 shrink-0 text-text-muted" />
+            <span className="truncate">{item.venue}</span>
+          </div>
+        )}
+
+        {/* Fallback description if no cover image */}
+        {!coverImage && item.description && (
+          <p className="text-text-secondary text-xs leading-relaxed mt-1 line-clamp-3 whitespace-pre-wrap flex-1">
+            {item.description}
+          </p>
+        )}
+
+        {/* 3. Society / Organizer Row (Given 100% width, never crushed) */}
+        <div className="flex items-center gap-2.5 pt-3 mt-auto border-t border-border-subtle">
           <Link
             to={`/societies/${item.society.id}`}
-            className="w-9 h-9 rounded-full bg-brand-primary flex items-center justify-center border border-border-medium shrink-0 overflow-hidden hover:opacity-80 transition-opacity"
+            className="w-7 h-7 rounded-full bg-brand-primary flex items-center justify-center border border-border-medium shrink-0 overflow-hidden hover:opacity-80 transition-opacity"
             onClick={(e) => e.stopPropagation()}
           >
             <img
@@ -284,24 +290,33 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
           </Link>
           <Link
             to={`/societies/${item.society.id}`}
-            className="flex flex-col min-w-0 flex-1 text-left hover:opacity-80 transition-opacity"
+            className="flex items-baseline gap-1.5 min-w-0 flex-1 text-left hover:opacity-80 transition-opacity"
             onClick={(e) => e.stopPropagation()}
           >
-            <span className="text-text-primary text-[14px] font-bold leading-tight truncate">{authorName}</span>
-            <span className="text-text-secondary text-[12px] font-medium leading-none mt-0.5 truncate">
-              @{(item.society as any)?.username || item.society.name.toLowerCase().replace(/\s+/g, '')}
+            <span className="text-text-primary text-[13px] font-bold truncate leading-tight">
+              {authorName}
+            </span>
+            <span className="text-text-muted text-[11px] font-medium truncate hidden sm:inline leading-none">
+              @{societyUsername}
             </span>
           </Link>
         </div>
+      </div>
 
-        <div className="flex items-center gap-2 shrink-0 h-full">
-          <AddToCalendarButton
-            event={item}
-            variant="compact"
-            className="h-[32px] w-[32px]"
-            align="right"
-            direction="up"
-          />
+      {/* 4. Lower Action Bar Section */}
+      <div
+        className="bg-surface/95 border-t border-border-subtle p-3 px-4 flex items-center justify-between gap-2 shrink-0 rounded-b-[24px] relative z-20"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <AddToCalendarButton
+          event={item}
+          variant="compact"
+          className="h-[32px] w-[32px]"
+          align="left"
+          direction="up"
+        />
+
+        <div className="flex items-center gap-2">
           {reviewUrl ? (
             <Link
               to={reviewUrl}
@@ -310,6 +325,18 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
             >
               Review
             </Link>
+          ) : allowManagement && isChangesRequested && isMySociety ? (
+            <button
+              type="button"
+              className="px-4 h-[32px] flex items-center justify-center bg-amber-600 hover:bg-amber-700 active:scale-95 text-white text-[12px] font-bold rounded-lg transition-all border-none shadow-sm pointer-events-auto cursor-pointer"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                navigate(`/events/${item.id}/edit`);
+              }}
+            >
+              Edit
+            </button>
           ) : (
             <button
               type="button"
@@ -324,7 +351,7 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
             </button>
           )}
 
-          {canEditOrDelete && (
+          {allowManagement && canEditOrDelete && (
             <div className="menu-container shrink-0 h-full flex items-center">
               <button
                 type="button"
@@ -477,5 +504,5 @@ const EventCardComponent: React.FC<EventCardProps> = ({ item, onEdit, onDelete, 
 };
 
 export const EventCard = React.memo(EventCardComponent, (prevProps, nextProps) => {
-  return prevProps.item.id === nextProps.item.id;
+  return prevProps.item.id === nextProps.item.id && prevProps.allowManagement === nextProps.allowManagement;
 });

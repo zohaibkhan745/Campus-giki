@@ -448,7 +448,7 @@ export const DashboardPage: React.FC = () => {
                 </div>
               ) : (
                 <div className="cards-container">
-                    {pendingEvents.slice(0, 4).map((event) => <EventCard key={event.id} item={{...event, type: 'event'} as any} />)}
+                    {pendingEvents.slice(0, 4).map((event) => <EventCard key={event.id} item={{...event, type: 'event'} as any} allowManagement />)}
                   </div>
               )}
             </div>
@@ -475,7 +475,7 @@ export const DashboardPage: React.FC = () => {
                 </div>
               ) : (
                 <div className="cards-container">
-                    {upcomingEvents.slice(0, 3).map((event) => <EventCard key={event.id} item={{...event, type: 'event'} as any} />)}
+                    {upcomingEvents.slice(0, 3).map((event) => <EventCard key={event.id} item={{...event, type: 'event'} as any} allowManagement />)}
                   </div>
               )}
             </div>

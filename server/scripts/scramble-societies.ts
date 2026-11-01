@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import * as crypto from 'crypto';
 
 const prisma = new PrismaClient();
 
@@ -24,7 +25,7 @@ async function main() {
         where: { id: society.user.id },
         data: {
           isActive: false,
-          password: 'DELETED_CREDENTIALS',
+          password: crypto.randomBytes(32).toString('hex'),
           email: `deleted_${society.user.id}@giki.edu.pk`
         }
       });

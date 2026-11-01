@@ -28,22 +28,30 @@
   gap: 1.5rem;
   align-items: start;
   padding: 1rem 0;
-  max-width: 1440px;
+  max-width: 1760px;
   margin: 0 auto;
   width: 100%;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 640px) {
   .cards-container {
     grid-template-columns: repeat(2, 1fr);
-    gap: 1.75rem;
+    gap: 1.5rem;
   }
 }
 
 @media (min-width: 1024px) {
   .cards-container {
     grid-template-columns: repeat(3, 1fr);
-    gap: 2rem;
+    gap: 1.5rem;
+    padding: 1.25rem 0;
+  }
+}
+
+@media (min-width: 1200px) {
+  .cards-container {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
     padding: 1.5rem 0;
   }
 }

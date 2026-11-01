@@ -53,7 +53,7 @@ export const eventFormSchema = z
       .min(1, 'Contact is required')
       .regex(/^\d{11}$/, 'Contact number must be exactly 11 digits'),
     submitForApproval: z.boolean().optional(),
-    societyId: z.string().optional(),
+    societyId: z.string().optional().nullable(),
   })
   .refine(
     (data) => {

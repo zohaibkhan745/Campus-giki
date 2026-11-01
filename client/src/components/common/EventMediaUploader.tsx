@@ -151,7 +151,7 @@ export const EventMediaUploader: React.FC<EventMediaUploaderProps> = ({
             <img
               src={resolveImageUrl(previewUrl)}
               alt="Event Media Preview"
-              className="w-full h-full object-cover"
+              className="w-full h-full object-contain mx-auto"
               onError={() => {
                 setError('Failed to display preview image');
               }}

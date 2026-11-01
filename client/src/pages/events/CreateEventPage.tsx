@@ -50,7 +50,7 @@ export const CreateEventPage: React.FC = () => {
     resolver: zodResolver(eventFormSchema),
     mode: "onChange",
     defaultValues: {
-      societyId: "",
+      societyId: undefined,
       title: "",
       description: "",
       eventDate: "",
@@ -81,7 +81,7 @@ export const CreateEventPage: React.FC = () => {
   // Query selected society details for DSA Admin to auto-fill council in-charge details
   const { data: selectedSocietyDetail } = useQuery({
     queryKey: ["adminSocietyDetail", selectedSocietyId],
-    queryFn: () => adminService.getSocietyById(selectedSocietyId),
+    queryFn: () => adminService.getSocietyById(selectedSocietyId!),
     enabled: isDsaAdmin && Boolean(selectedSocietyId),
   });
 
@@ -290,7 +290,14 @@ export const CreateEventPage: React.FC = () => {
       window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
-    createMutation.mutate({ ...data, submitForApproval: requireReview });
+    const payload: any = {
+      ...data,
+      submitForApproval: requireReview,
+    };
+    if (!isDsaAdmin || !payload.societyId) {
+      delete payload.societyId;
+    }
+    createMutation.mutate(payload);
   };
 
   const onError = () => {
@@ -861,7 +868,7 @@ export const CreateEventPage: React.FC = () => {
                   window.scrollTo({ top: 0, behavior: "smooth" });
                   return;
                 }
-                createMutation.mutate({ ...data, submitForApproval: false });
+                handlePublish(data, false);
               }, onError)}
             >
               Save as Draft

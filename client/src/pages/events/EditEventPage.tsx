@@ -30,6 +30,7 @@ import { CustomTimePicker } from "@/components/ui/CustomTimePicker";
 import { Controller } from "react-hook-form";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
+import { BackButton } from "@/components/ui/BackButton";
 import { Alert } from "@/components/ui/Alert";
 import { EventMediaUploader } from "@/components/common/EventMediaUploader";
 import { ErrorState } from "@/components/ui/ErrorState";
@@ -42,6 +43,16 @@ export const EditEventPage: React.FC = () => {
   const queryClient = useQueryClient();
   const [serverError, setServerError] = useState<string | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
+  const handleGoBack = () => {
+    if (window.history.state && window.history.state.idx > 0) {
+      navigate(-1);
+    } else if (id) {
+      navigate(`/events/${id}`);
+    } else {
+      navigate("/dashboard");
+    }
+  };
 
   // Query existing event data
   const {
@@ -246,13 +257,7 @@ export const EditEventPage: React.FC = () => {
     return (
       <div className="max-w-2xl mx-auto py-12 px-4 space-y-6 text-left">
         <div className="flex items-center gap-3">
-          <button
-            onClick={() => navigate(-1)}
-            className="inline-flex items-center justify-center w-10 h-10 bg-surface-hover hover:bg-surface backdrop-blur-md border border-border-medium text-text-primary rounded-full transition-all cursor-pointer shadow-elevation-1 shrink-0"
-            title="Go Back"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </button>
+          <BackButton onClick={handleGoBack} />
           <div>
             <h1 className="text-2xl font-bold text-text-primary">Event Locked</h1>
             <p className="text-xs text-text-secondary">Published Campus Event</p>
@@ -303,9 +308,9 @@ export const EditEventPage: React.FC = () => {
               type="button"
               variant="outline"
               className="w-full"
-              onClick={() => navigate('/dashboard')}
+              onClick={handleGoBack}
             >
-              Back to Dashboard
+              Go Back
             </Button>
             <Button
               type="button"
@@ -377,12 +382,7 @@ export const EditEventPage: React.FC = () => {
   return (
     <div className="max-w-3xl mx-auto space-y-6">
       <div className="flex items-center gap-4">
-        <Link
-          to="/dashboard"
-          className="p-2 hover:bg-surface-hover rounded-full transition-colors text-text-primary"
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </Link>
+        <BackButton onClick={handleGoBack} />
         <div>
           <h1 className="text-2xl font-bold text-text-primary mb-1">
             Edit Event: {eventData.title}

@@ -1,4 +1,4 @@
-import { getSocietyLogo } from '@/lib/utils';
+import { getSocietyLogo, resolveImageUrl } from '@/lib/utils';
 import React from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useParams, Link, useNavigate } from 'react-router-dom';
@@ -13,6 +13,8 @@ import {
   ShieldCheck,
   FileText,
   FileCheck,
+  Edit,
+  AlertCircle,
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { eventService } from '@/services/event.service';
@@ -100,11 +102,18 @@ export const EventDetailPage: React.FC = () => {
   }
 
   const targetSocietyId = eventItem.society?.id || eventItem.societyId;
+  const isMySociety = user?.role === 'SOCIETY' && user.society?.id === targetSocietyId;
+  const isDsaAdmin = user?.role === 'DSA_ADMIN';
+  const isPublished =
+    Boolean(eventItem.isPublished) ||
+    eventItem.approvalStatus === 'APPROVED' ||
+    eventItem.approvalStatus === 'PUBLISHED';
+  const canEdit = isDsaAdmin || (isMySociety && !isPublished);
 
   const canViewRules =
-    user?.role === 'DSA_ADMIN' ||
+    isDsaAdmin ||
     user?.role === 'ADVISOR' ||
-    (user?.role === 'SOCIETY' && user.society?.id === targetSocietyId);
+    isMySociety;
 
   return (
     <div className="page-transition max-w-4xl mx-auto space-y-6 text-left pt-10 sm:pt-14 pb-8 px-4">
@@ -115,13 +124,44 @@ export const EventDetailPage: React.FC = () => {
 
       {/* Main Container */}
       <div className="bg-surface-card p-6 sm:p-8 rounded-3xl border border-border-subtle space-y-8 shadow-card">
+        {/* Revision Requested Notice Banner */}
+        {canEdit && eventItem.approvalStatus === 'CHANGES_REQUESTED' && (
+          <div className="p-5 sm:p-6 rounded-2xl bg-amber-500/15 border-2 border-amber-500/40 backdrop-blur-md space-y-4 shadow-lg animate-in fade-in slide-in-from-top-2">
+            <div className="flex items-center gap-2.5 text-amber-700 dark:text-amber-300 font-extrabold text-base">
+              <AlertCircle className="w-5 h-5 text-amber-500 shrink-0" />
+              <span>Action Required: Changes Requested by {eventItem.lastChangeRequestBy === 'DSA_ADMIN' ? 'DSA Directorate' : 'Advisor'}</span>
+            </div>
+            {(eventItem.advisorComments || eventItem.dsaComments) && (
+              <div className="p-4 bg-surface-elevated/80 rounded-xl border border-border-subtle space-y-1 text-left">
+                <p className="text-xs font-bold uppercase tracking-wider text-text-muted">
+                  Feedback &amp; Required Revisions:
+                </p>
+                <p className="text-sm font-medium text-text-primary whitespace-pre-line leading-relaxed">
+                  {eventItem.lastChangeRequestBy === 'DSA_ADMIN' ? eventItem.dsaComments : eventItem.advisorComments}
+                </p>
+              </div>
+            )}
+            <p className="text-xs text-text-secondary font-medium">
+              Click &quot;Edit&quot; below to update the event schedule, venue, or media resources, and resubmit for review.
+            </p>
+          </div>
+        )}
+
         {/* 1. Hero Cover Image */}
         {eventItem.coverImageUrl && (
-          <div className="w-full h-56 sm:h-80 rounded-2xl overflow-hidden bg-surface-elevated border border-border-subtle shadow-md">
+          <div className="w-full min-h-[260px] max-h-[560px] sm:max-h-[640px] rounded-2xl overflow-hidden bg-black/90 border border-border-subtle shadow-md relative flex items-center justify-center">
+            {/* Ambient blurred backdrop so letterboxing matches the poster */}
             <img
-              src={eventItem.coverImageUrl}
+              src={resolveImageUrl(eventItem.coverImageUrl)}
+              alt=""
+              aria-hidden="true"
+              className="absolute inset-0 w-full h-full object-cover filter blur-xl opacity-35 scale-110 pointer-events-none"
+            />
+            {/* Wholly visible uncropped image */}
+            <img
+              src={resolveImageUrl(eventItem.coverImageUrl)}
               alt={eventItem.title}
-              className="w-full h-full object-cover"
+              className="relative z-10 max-h-[560px] sm:max-h-[640px] w-auto max-w-full object-contain shadow-2xl"
               onError={(e) => {
                 (e.target as HTMLImageElement).src =
                   'https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=1200&auto=format&fit=crop&q=80';
@@ -150,8 +190,22 @@ export const EventDetailPage: React.FC = () => {
               </h1>
             </div>
 
-            {/* Action Buttons: Add to Calendar & Register */}
+            {/* Action Buttons: Edit, Add to Calendar & Register */}
             <div className="flex flex-wrap items-center gap-3">
+              {canEdit && (
+                <Link
+                  to={`/events/${eventItem.id}/edit`}
+                  className={`inline-flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-bold transition-all shadow-sm active:scale-95 cursor-pointer ${
+                    eventItem.approvalStatus === 'CHANGES_REQUESTED'
+                      ? 'bg-amber-600 hover:bg-amber-700 text-white shadow-amber-500/20'
+                      : 'bg-surface-elevated hover:bg-surface-hover text-text-primary border border-border-subtle'
+                  }`}
+                >
+                  <Edit className="w-4 h-4" />
+                  <span>Edit</span>
+                </Link>
+              )}
+
               <AddToCalendarButton
                 event={eventItem}
                 variant="primary"

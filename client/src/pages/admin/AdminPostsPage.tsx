@@ -107,10 +107,14 @@ export const AdminPostsPage: React.FC = () => {
 
   const saveMutation = useMutation({
     meta: { notify: true },
-    mutationFn: (formData: PostFormData) =>
-      editingPost
-        ? postService.updatePost(editingPost.id, formData)
-        : postService.createPost(formData),
+    mutationFn: async (formData: PostFormData) => {
+      if (editingPost) {
+        await postService.updatePost(editingPost.id, formData);
+      } else {
+        await postService.createPost(formData);
+      }
+    },
+
     onSuccess: async () => {
       await invalidatePostQueries(queryClient);
       closeModal();

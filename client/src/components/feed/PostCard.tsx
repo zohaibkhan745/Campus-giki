@@ -144,17 +144,27 @@ const PostCardComponent: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) 
         </div>
 
         {/* Center Media & Description Body */}
-        <div className={`relative w-full flex-1 min-h-0 overflow-hidden flex flex-col ${!coverImage ? 'bg-surface-glass backdrop-blur-xl' : 'bg-surface-hover'}`}>
+        <div className={`relative w-full flex-1 min-h-0 overflow-hidden flex items-center justify-center ${!coverImage ? 'bg-surface-glass backdrop-blur-xl' : 'bg-black/90'}`}>
           {coverImage ? (
             <>
+              {/* Ambient blurred backdrop */}
+              <img
+                src={coverImage}
+                alt=""
+                aria-hidden="true"
+                loading="lazy"
+                decoding="async"
+                className="absolute inset-0 w-full h-full object-cover filter blur-lg opacity-40 scale-110 pointer-events-none"
+              />
+              <div className="absolute inset-0 bg-black/25 pointer-events-none" />
+              {/* Wholly visible uncropped image */}
               <img
                 src={coverImage}
                 alt={postTitle}
                 loading="lazy"
                 decoding="async"
-                className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+                className="relative z-1 max-h-full max-w-full w-auto h-auto object-contain group-hover:scale-[1.02] transition-transform duration-500 ease-out"
               />
-              <div className="absolute inset-0 bg-black/30" />
             </>
           ) : null}
 

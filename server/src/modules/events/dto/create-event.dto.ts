@@ -19,6 +19,9 @@ export class CreateEventDto {
     description: 'Host Society UUID (required when created by DSA Admin, optional for societies)',
   })
   @IsOptional()
+  @Transform(({ value }: { value: unknown }) =>
+    !value || value === '' || value === null || value === 'undefined' ? undefined : value,
+  )
   @IsUUID('all', { message: 'Society ID must be a valid UUID' })
   societyId?: string;
 
