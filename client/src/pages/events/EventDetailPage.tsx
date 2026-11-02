@@ -190,7 +190,7 @@ export const EventDetailPage: React.FC = () => {
                   type="button"
                   onClick={() => setIsPrintModalOpen(true)}
                   className="inline-flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-bold bg-surface-elevated hover:bg-surface-hover text-text-primary border border-border-subtle transition-all shadow-sm active:scale-95 cursor-pointer"
-                  title="Print Official Event Sanction & Summary"
+                  title="Print Official Event Summary"
                 >
                   <Printer className="w-4 h-4 text-brand-primary" />
                   <span>Print Summary</span>

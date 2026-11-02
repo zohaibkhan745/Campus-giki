@@ -121,7 +121,7 @@ export const EventPrintModal: React.FC<EventPrintModalProps> = ({
     <div
       role="dialog"
       aria-modal="true"
-      aria-label="Event Sanction Document Preview"
+      aria-label="Event Summary Document Preview"
       className="fixed inset-0 z-[9999] flex flex-col bg-black/85 backdrop-blur-md animate-in fade-in duration-200 select-none print:static print:bg-white print:p-0 print:m-0"
     >
       {/* Top Controls Toolbar (Hidden when printing) */}
@@ -131,7 +131,7 @@ export const EventPrintModal: React.FC<EventPrintModalProps> = ({
             <Printer className="w-5 h-5" />
           </div>
           <div>
-            <h2 className="text-sm font-bold tracking-tight">Event Summary &amp; Sanction Document</h2>
+            <h2 className="text-sm font-bold tracking-tight">Event Summary &amp; Details</h2>
             <div className="flex items-center gap-2 mt-0.5 text-xs text-text-muted">
               <span>Ref: {refCode}</span>
               <span>•</span>
@@ -201,7 +201,7 @@ export const EventPrintModal: React.FC<EventPrintModalProps> = ({
       >
         {/* Printable A4 Document Sheet */}
         <article
-          id="event-sanction-printable"
+          id="event-summary-printable"
           style={{
             width: '794px',
             minHeight: '1123px',
@@ -235,7 +235,7 @@ export const EventPrintModal: React.FC<EventPrintModalProps> = ({
                     Directorate of Student Affairs (DSA)
                   </div>
                   <h3 className="text-xs font-extrabold uppercase tracking-wide mt-1 text-black underline underline-offset-2">
-                    Official Campus Event Sanction &amp; Summary
+                    Official Campus Event Summary
                   </h3>
                 </div>
                 <div className="text-right w-24 shrink-0 text-[10px] text-gray-700 font-mono">
@@ -271,7 +271,7 @@ export const EventPrintModal: React.FC<EventPrintModalProps> = ({
                       : 'bg-amber-100 text-amber-800 border-amber-500'
                   }`}
                 >
-                  {isApproved ? 'SANCTIONED & APPROVED' : (event.approvalStatus || 'PENDING REVIEW').replace('_', ' ')}
+                  {isApproved ? 'APPROVED' : (event.approvalStatus || 'PENDING REVIEW').replace('_', ' ')}
                 </span>
               </div>
             </div>
@@ -307,7 +307,7 @@ export const EventPrintModal: React.FC<EventPrintModalProps> = ({
                   </span>
                 </div>
                 <div>
-                  <span className="text-[9px] font-bold text-gray-500 uppercase block">Sanctioned Venue</span>
+                  <span className="text-[9px] font-bold text-gray-500 uppercase block">Approved Venue</span>
                   <span className="font-bold text-black block mt-0.5">{event.venue || 'Campus Venue'}</span>
                 </div>
               </div>
@@ -363,7 +363,7 @@ export const EventPrintModal: React.FC<EventPrintModalProps> = ({
             )}
           </div>
 
-          {/* 8. Institutional Verification & Sanctions Footer */}
+          {/* 8. Institutional Verification & Approval Footer */}
           <div className="pt-4 border-t-2 border-black space-y-3 mt-4">
             <div className="grid grid-cols-2 gap-8 text-xs text-left">
               {/* Advisor Column */}
@@ -392,16 +392,11 @@ export const EventPrintModal: React.FC<EventPrintModalProps> = ({
                   <span>Authorized Signature</span>
                   <span>
                     {event.dsaApprovedAt
-                      ? `Sanctioned: ${new Date(event.dsaApprovedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`
+                      ? `Approved: ${new Date(event.dsaApprovedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`
                       : 'Pending Clearance'}
                   </span>
                 </div>
               </div>
-            </div>
-
-            {/* Security & Gate Pass Notice */}
-            <div className="p-2 border border-dashed border-gray-300 rounded text-[9px] text-gray-500 text-center leading-normal">
-              Notice: This document constitutes official institutional clearance for the event listed above. Campus Security, Maintenance, and Hostel Wardens are requested to facilitate authorized student officers in accordance with Institute regulations.
             </div>
           </div>
         </article>
@@ -422,11 +417,11 @@ export const EventPrintModal: React.FC<EventPrintModalProps> = ({
           body * {
             visibility: hidden;
           }
-          #event-sanction-printable,
-          #event-sanction-printable * {
+          #event-summary-printable,
+          #event-summary-printable * {
             visibility: visible;
           }
-          #event-sanction-printable {
+          #event-summary-printable {
             position: absolute;
             left: 0;
             top: 0;
@@ -444,3 +439,4 @@ export const EventPrintModal: React.FC<EventPrintModalProps> = ({
     document.body
   );
 };
+
