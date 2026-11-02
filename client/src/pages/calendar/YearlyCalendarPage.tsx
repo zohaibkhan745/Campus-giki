@@ -31,6 +31,30 @@ import { BackButton } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import type { AxiosError } from 'axios';
 
+const KNOWN_VENUES = [
+  'TBD',
+  'Auditorium',
+  'Faculty',
+  'Guest House',
+  'Sports Complex',
+  'Basket Ball Court',
+  'Main Ground',
+  'Cafe Lawn',
+];
+
+const formatIsoDateOnly = (dateStr?: string | Date | null): string => {
+  if (!dateStr) return '';
+  if (typeof dateStr === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+    return dateStr;
+  }
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return '';
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 export const YearlyCalendarPage: React.FC = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -42,7 +66,9 @@ export const YearlyCalendarPage: React.FC = () => {
   // For custom venue input tracking
   const [customVenueRows, setCustomVenueRows] = useState<Record<number, boolean>>({});
 
-  const { data: plans = [] } = useQuery({
+  const loadedPlanIdRef = React.useRef<string | null>(null);
+
+  const { data: plans = [], isLoading: isLoadingPlans } = useQuery({
     queryKey: ['myYearlyPlans'],
     queryFn: yearlyPlanService.getMyPlans,
   });
@@ -60,12 +86,24 @@ export const YearlyCalendarPage: React.FC = () => {
     setValue,
     getValues,
     watch,
-    formState: { errors, isDirty },
+    formState: { errors },
   } = useForm<YearlyPlanFormData>({
     resolver: zodResolver(yearlyPlanFormSchema),
     defaultValues: {
       year: currentYear,
-      events: [{ eventName: '', startDate: '', endDate: '', description: '', venue: '', rules: '', societyRules: '' }],
+      events: [
+        {
+          eventName: '',
+          startDate: '',
+          endDate: '',
+          description: '',
+          venue: '',
+          rules: '',
+          societyRules: '',
+          eventType: '',
+          duration: 'One Day Event',
+        },
+      ],
     },
   });
 
@@ -75,23 +113,50 @@ export const YearlyCalendarPage: React.FC = () => {
   });
 
   useEffect(() => {
-    if (existingPlan && !isDirty) {
+    if (existingPlan && loadedPlanIdRef.current !== existingPlan.id) {
+      loadedPlanIdRef.current = existingPlan.id;
+
+      const customVenues: Record<number, boolean> = {};
+
+      const eventsToLoad =
+        existingPlan.plannedEvents && existingPlan.plannedEvents.length > 0
+          ? existingPlan.plannedEvents.map((e, idx) => {
+              if (e.venue && !KNOWN_VENUES.includes(e.venue)) {
+                customVenues[idx] = true;
+              }
+              return {
+                eventName: e.eventName || '',
+                startDate: formatIsoDateOnly(e.startDate),
+                endDate: formatIsoDateOnly(e.endDate),
+                description: e.description || '',
+                venue: e.venue || '',
+                rules: e.rules || '',
+                societyRules: e.societyRules || '',
+                eventType: e.eventType || '',
+                duration: e.duration || 'One Day Event',
+              };
+            })
+          : [
+              {
+                eventName: '',
+                startDate: '',
+                endDate: '',
+                description: '',
+                venue: '',
+                rules: '',
+                societyRules: '',
+                eventType: '',
+                duration: 'One Day Event',
+              },
+            ];
+
+      setCustomVenueRows(customVenues);
       reset({
         year: existingPlan.year,
-        events: existingPlan.plannedEvents.map((e) => ({
-          eventName: e.eventName,
-          startDate: e.startDate ? new Date(e.startDate).toISOString().split('T')[0] : '',
-          endDate: e.endDate ? new Date(e.endDate).toISOString().split('T')[0] : '',
-          description: e.description || '',
-          venue: e.venue || '',
-          rules: e.rules || '',
-          societyRules: e.societyRules || '',
-          eventType: e.eventType || '',
-          duration: e.duration || 'One Day Event',
-        })),
+        events: eventsToLoad,
       });
     }
-  }, [existingPlan, reset, isDirty]);
+  }, [existingPlan, reset]);
 
   const createMutation = useMutation({
     meta: { notify: true },
@@ -102,6 +167,7 @@ export const YearlyCalendarPage: React.FC = () => {
         events: data.payload.events,
       }),
     onSuccess: (_, variables) => {
+      loadedPlanIdRef.current = null;
       void invalidatePlanQueries(queryClient, existingPlan?.id);
       if (variables.status === 'PENDING_ADVISOR' as PlanStatus) {
         setSuccessMessage('Yearly calendar plan submitted for advisor review successfully!');
@@ -121,6 +187,7 @@ export const YearlyCalendarPage: React.FC = () => {
         events: data.payload.events,
       }),
     onSuccess: (_, variables) => {
+      loadedPlanIdRef.current = null;
       void invalidatePlanQueries(queryClient, existingPlan?.id);
       if (variables.status === 'PENDING_ADVISOR' as PlanStatus) {
         setSuccessMessage('Revised yearly plan resubmitted for advisor review successfully!');
@@ -179,6 +246,15 @@ export const YearlyCalendarPage: React.FC = () => {
 
   const isEditRequestPending = existingPlan?.editRequestStatus === 'PENDING';
   const isReadOnly = existingPlan?.status === 'APPROVED' || existingPlan?.status === 'PENDING_ADVISOR' || existingPlan?.status === 'PENDING_ADMIN';
+
+  if (isLoadingPlans) {
+    return (
+      <div className="max-w-5xl mx-auto p-4 sm:p-6 lg:p-8 flex flex-col items-center justify-center min-h-[50vh] gap-3">
+        <div className="w-8 h-8 border-3 border-brand-primary border-t-transparent rounded-full animate-spin" />
+        <p className="text-sm text-text-secondary font-medium">Loading annual calendar plan...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-5xl mx-auto space-y-6 animate-fade-in p-4 sm:p-6 lg:p-8">
@@ -310,7 +386,6 @@ export const YearlyCalendarPage: React.FC = () => {
                     <Controller
                       name={`events.${index}.duration`}
                       control={control}
-                      defaultValue="One Day Event"
                       render={({ field: dField }) => (
                         <CustomDropdown
                           value={dField.value || "One Day Event"}
@@ -404,7 +479,6 @@ export const YearlyCalendarPage: React.FC = () => {
                     <Controller
                       name={`events.${index}.eventType`}
                       control={control}
-                      defaultValue=""
                       render={({ field: tField }) => (
                         <CustomDropdown
                           value={tField.value || ""}
@@ -503,7 +577,7 @@ export const YearlyCalendarPage: React.FC = () => {
               <button
                 type="button"
                 className="w-full py-4 border-2 border-dashed border-border-medium rounded-xl text-text-muted hover:text-text-primary hover:border-border-strong hover:bg-surface-hover transition-all font-semibold flex items-center justify-center gap-2 cursor-pointer"
-                onClick={() => append({ eventName: '', startDate: '', endDate: '', description: '', venue: '', rules: '', societyRules: '', duration: 'One Day Event' })}
+                onClick={() => append({ eventName: '', startDate: '', endDate: '', description: '', venue: '', rules: '', societyRules: '', duration: 'One Day Event', eventType: '' })}
                 disabled={isReadOnly || isSaving}
               >+ Add Event Row</button>
             </div>
