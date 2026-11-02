@@ -226,15 +226,13 @@ export const AdminYearlyPlanDetailPage: React.FC = () => {
           </div>
         )}
 
-        {/* Previous Remarks / Feedback History (Shown only if feedback exists) */}
+        {/* Previous Remarks / Feedback History (Shown only if DSA feedback exists) */}
         {plan.advisorComments && (
-          <div className="bg-surface border border-border-subtle rounded-2xl p-5 backdrop-blur-md shadow-elevation-1 space-y-2">
-            <div className="flex items-center gap-2 text-text-primary font-bold text-sm">
-              <Clock className="w-4 h-4 text-brand-primary" />
-              <span>Review Feedback History</span>
-            </div>
-            <FeedbackHistory rawComments={plan.advisorComments} />
-          </div>
+          <FeedbackHistory
+            rawComments={plan.advisorComments}
+            currentStatus={plan.status}
+            filterRole="DSA Admin"
+          />
         )}
 
         {/* Submitted Events (Content First) */}

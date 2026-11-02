@@ -315,15 +315,11 @@ export const YearlyCalendarPage: React.FC = () => {
       )}
 
       {existingPlan?.advisorComments && (
-        <div className="bg-surface-glass border border-border-medium rounded-cards p-5 backdrop-blur-[20px] shadow-elevation-1">
-          <FeedbackHistory rawComments={existingPlan.advisorComments} />
-          {isChangesRequested && (
-            <div className="p-3 bg-red-500/10 border border-red-500/30 text-red-400 rounded-inputs text-xs font-semibold shadow-sm flex items-center gap-2 mt-4">
-              <AlertCircle className="w-4 h-4 shrink-0" />
-              <span>Please adjust your planned event dates or notes as requested above and click "Resubmit for Approval".</span>
-            </div>
-          )}
-        </div>
+        <FeedbackHistory
+          rawComments={existingPlan.advisorComments}
+          currentStatus={existingPlan.status}
+          filterRole="all"
+        />
       )}
 
       {existingPlan?.editRequestStatus === 'APPROVED' && (
