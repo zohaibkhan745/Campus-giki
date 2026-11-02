@@ -81,6 +81,8 @@ export const EditEventPage: React.FC = () => {
     formState: { errors },
   } = useForm<EventFormData>({
     resolver: zodResolver(eventFormSchema),
+    mode: "onTouched",
+    reValidateMode: "onChange",
     defaultValues: {
       title: "",
       description: "",

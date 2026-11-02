@@ -49,7 +49,8 @@ export const CreateEventPage: React.FC = () => {
     formState: { errors },
   } = useForm<EventFormData>({
     resolver: zodResolver(eventFormSchema),
-    mode: "onChange",
+    mode: "onTouched",
+    reValidateMode: "onChange",
     defaultValues: {
       societyId: undefined,
       title: "",
@@ -210,9 +211,10 @@ export const CreateEventPage: React.FC = () => {
         });
       }
     } else {
-      setValue("inChargeName", "", { shouldValidate: false });
-      setValue("inChargeRegNum", "", { shouldValidate: false });
-      setValue("inChargeContact", "", { shouldValidate: false });
+      setValue("inChargeName", "", { shouldValidate: false, shouldDirty: false, shouldTouch: false });
+      setValue("inChargeRegNum", "", { shouldValidate: false, shouldDirty: false, shouldTouch: false });
+      setValue("inChargeContact", "", { shouldValidate: false, shouldDirty: false, shouldTouch: false });
+      clearErrors(["inChargeName", "inChargeRegNum", "inChargeContact"]);
     }
   }, [isCustomIncharge, defaultInCharge, setValue]);
 
