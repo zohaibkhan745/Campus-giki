@@ -11,16 +11,12 @@ import {
   ArrowLeft,
   Info,
   ShieldCheck,
-  FileText,
-  FileCheck,
   Edit,
   AlertCircle,
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { eventService } from '@/services/event.service';
 import { EventDetailSkeleton } from '@/components/events/EventDetailSkeleton';
-import { VenuePermissionSlipModal } from '@/components/events/VenuePermissionSlipModal';
-import { UploadSignedSlipModal } from '@/components/events/UploadSignedSlipModal';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { BackButton } from '@/components/ui';
 import { AddToCalendarButton } from '@/components/events';
@@ -30,8 +26,6 @@ export const EventDetailPage: React.FC = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { user } = useAuth();
-  const [isSlipModalOpen, setIsSlipModalOpen] = React.useState(false);
-  const [isUploadModalOpen, setIsUploadModalOpen] = React.useState(false);
 
   const {
     data: eventItem,
@@ -109,11 +103,6 @@ export const EventDetailPage: React.FC = () => {
     eventItem.approvalStatus === 'APPROVED' ||
     eventItem.approvalStatus === 'PUBLISHED';
   const canEdit = isDsaAdmin || (isMySociety && !isPublished);
-
-  const canViewRules =
-    isDsaAdmin ||
-    user?.role === 'ADVISOR' ||
-    isMySociety;
 
   return (
     <div className="page-transition max-w-4xl mx-auto space-y-6 text-left pt-10 sm:pt-14 pb-8 px-4">
@@ -281,8 +270,8 @@ export const EventDetailPage: React.FC = () => {
           </p>
         </div>
 
-        {/* 6. Official DSA Rules (Visible to Authorized Only) */}
-        {canViewRules && eventItem.rules && (
+        {/* 6. DSA Directives & Event Rules */}
+        {eventItem.rules && (
           <div className="space-y-3 pt-2">
             <div className="p-4 bg-amber-500/10 border border-amber-500/30 rounded-2xl space-y-1">
               <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 font-extrabold text-xs uppercase tracking-wider">
@@ -295,95 +284,6 @@ export const EventDetailPage: React.FC = () => {
             </div>
           </div>
         )}
-
-        {/* 6.5 Official Venue Clearance (Visible only to Society & DSA Admin) */}
-        {canViewRules &&
-          (eventItem.approvalStatus === 'APPROVED' || eventItem.approvalStatus === 'PUBLISHED') && (
-            <div className="space-y-3 pt-2">
-              <div className="p-5 bg-surface-elevated/40 border border-border-subtle rounded-2xl space-y-4 shadow-sm">
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div className="flex items-center gap-2 text-text-primary font-extrabold text-sm">
-                    <FileText className="w-5 h-5 text-brand-primary" />
-                    <span>Physical Venue Clearance &amp; PS to Dean Endorsement</span>
-                  </div>
-                  <span
-                    className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
-                      eventItem.venueClearanceStatus === 'VERIFIED'
-                        ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'
-                        : eventItem.venueClearanceStatus === 'SUBMITTED'
-                        ? 'bg-blue-500/15 text-blue-600 dark:text-blue-400 border border-blue-500/30'
-                        : eventItem.venueClearanceStatus === 'REJECTED'
-                        ? 'bg-red-500/15 text-red-600 dark:text-red-400 border border-red-500/30'
-                        : 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30'
-                    }`}
-                  >
-                    {eventItem.venueClearanceStatus === 'VERIFIED'
-                      ? '✓ Venue Clearance Verified'
-                      : eventItem.venueClearanceStatus === 'SUBMITTED'
-                      ? 'Under DSA Review'
-                      : eventItem.venueClearanceStatus === 'REJECTED'
-                      ? 'Re-upload Requested'
-                      : 'Pending Physical Sign-off'}
-                  </span>
-                </div>
-
-                <div className="text-xs text-text-muted space-y-1">
-                  <p>
-                    Allocated Venue:{' '}
-                    <strong className="text-text-primary">{eventItem.venue}</strong> ({eventItem.startTime} -{' '}
-                    {eventItem.endTime})
-                  </p>
-                  <p>
-                    This event requires an official Venue Permission Slip stamped and signed by the PS to Dean /
-                    Dean&apos;s Office.
-                  </p>
-                  {eventItem.venueClearanceNotes && (
-                    <p className="p-2.5 bg-red-500/10 text-red-600 dark:text-red-400 rounded-xl border border-red-500/20 mt-2 font-medium">
-                      DSA Remarks: {eventItem.venueClearanceNotes}
-                    </p>
-                  )}
-                </div>
-
-                <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-border-subtle">
-                  <button
-                    type="button"
-                    onClick={() => setIsSlipModalOpen(true)}
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-surface-elevated hover:bg-surface-hover text-text-primary border border-border-subtle rounded-xl text-xs font-bold transition-all shadow-sm active:scale-95 cursor-pointer"
-                  >
-                    <FileText className="w-4 h-4 text-brand-primary" />
-                    <span>View / Print Permission Slip</span>
-                  </button>
-
-                  {user?.role === 'SOCIETY' && user.society?.id === targetSocietyId && (
-                    <button
-                      type="button"
-                      onClick={() => setIsUploadModalOpen(true)}
-                      className="inline-flex items-center gap-2 px-4 py-2 bg-brand-primary hover:bg-brand-primary-hover text-white rounded-xl text-xs font-bold transition-all shadow-sm cursor-pointer"
-                    >
-                      <FileCheck className="w-4 h-4" />
-                      <span>
-                        {eventItem.signedVenueSlipUrl
-                          ? 'View / Update Signed Slip'
-                          : 'Upload Signed PS to Dean Slip'}
-                      </span>
-                    </button>
-                  )}
-
-                  {eventItem.signedVenueSlipUrl && (
-                    <a
-                      href={eventItem.signedVenueSlipUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 px-3 py-2 bg-surface-elevated hover:bg-surface-hover text-text-secondary border border-border-subtle rounded-xl text-xs font-semibold transition-colors"
-                    >
-                      <span>View Stamped Copy</span>
-                      <ExternalLink className="w-3.5 h-3.5" />
-                    </a>
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
 
         {/* 7. Hosting Society Information Card */}
         {eventItem.society && targetSocietyId && (
@@ -474,24 +374,6 @@ export const EventDetailPage: React.FC = () => {
           </div>
         )}
       </div>
-
-      {isSlipModalOpen && (
-        <VenuePermissionSlipModal
-          isOpen={isSlipModalOpen}
-          onClose={() => setIsSlipModalOpen(false)}
-          event={eventItem}
-          societyName={eventItem.society?.name}
-          societyLogo={eventItem.society?.logoUrl}
-        />
-      )}
-
-      {isUploadModalOpen && (
-        <UploadSignedSlipModal
-          isOpen={isUploadModalOpen}
-          onClose={() => setIsUploadModalOpen(false)}
-          event={eventItem}
-        />
-      )}
     </div>
   );
 };

@@ -1,7 +1,5 @@
 import { CustomDropdown } from '@/components/ui/CustomDropdown';
 import React, { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import {
@@ -22,11 +20,9 @@ import {
 import { eventService } from '@/services/event.service';
 import { adminService } from '@/services/admin.service';
 import { VenuePermissionSlipModal } from '@/components/events/VenuePermissionSlipModal';
+import { RequestChangesModal } from '@/components/events/RequestChangesModal';
+import { ApproveEventModal } from '@/components/events/ApproveEventModal';
 import { resolveImageUrl } from '@/lib/utils';
-import {
-  eventFormSchema,
-  type EventFormData,
-} from '@/lib/validations/event.schema';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { Alert } from '@/components/ui/Alert';
@@ -54,10 +50,10 @@ export const AdminEventReviewPage: React.FC = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [serverError, setServerError] = useState<string | null>(null);
-  const [dsaComment, setDsaComment] = useState('');
-  const [commentError, setCommentError] = useState(false);
   const [venueNotes, setVenueNotes] = useState('');
   const [isVenueSlipPreviewOpen, setIsVenueSlipPreviewOpen] = useState(false);
+  const [isRequestChangesOpen, setIsRequestChangesOpen] = useState(false);
+  const [isApproveModalOpen, setIsApproveModalOpen] = useState(false);
 
   const {
     data: eventData,
@@ -67,6 +63,8 @@ export const AdminEventReviewPage: React.FC = () => {
     queryKey: ['event', id],
     queryFn: () => eventService.getEventById(id!),
     enabled: !!id,
+    staleTime: 0,
+    refetchOnMount: 'always',
   });
 
   const verifyVenueMutation = useMutation({
@@ -86,62 +84,26 @@ export const AdminEventReviewPage: React.FC = () => {
     },
   });
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm<EventFormData>({
-    resolver: zodResolver(eventFormSchema),
-  });
-
   useEffect(() => {
     if (eventData) {
-      const formattedDate = eventData.eventDate
-        ? new Date(eventData.eventDate).toISOString().split('T')[0]
-        : '';
-
-      setDsaComment(eventData.dsaComments || '');
       setVenueNotes(eventData.venueClearanceNotes || '');
-
-      reset({
-        title: eventData.title,
-        description: eventData.description,
-        eventDate: formattedDate,
-        startTime: eventData.startTime,
-        endTime: eventData.endTime,
-        venue: eventData.venue,
-        coverImageUrl: eventData.coverImageUrl || '',
-        registrationLink: eventData.registrationLink || '',
-        eventType: eventData.eventType || '',
-        inChargeName: eventData.inChargeName || '',
-        inChargeRegNum: eventData.inChargeRegNum || '',
-        inChargeContact: eventData.inChargeContact || '',
-      });
     }
-  }, [eventData, reset]);
-
-  const updateMutation = useMutation({
-    meta: { notify: true },
-    mutationFn: (data: EventFormData) => eventService.updateEvent(id!, data),
-    onSuccess: () => {
-      void invalidateEventQueries(queryClient, id);
-    },
-    onError: (
-      error: AxiosError<{ message?: string | string[]; error?: string }>,
-    ) => {
-      const respMessage = error.response?.data?.message;
-      let errText = 'Failed to update event. Please verify your inputs.';
-      if (Array.isArray(respMessage)) errText = respMessage.join(', ');
-      else if (typeof respMessage === 'string') errText = respMessage;
-      setServerError(errText);
-    },
-  });
+  }, [eventData]);
 
   const updateEventStatusMutation = useMutation({
     meta: { notify: true },
-    mutationFn: (data: { status: 'APPROVED' | 'CHANGES_REQUESTED' | 'PENDING_ADVISOR' }) =>
-      adminService.updateEventStatus(id!, { status: data.status, comments: dsaComment.trim() || undefined }),
+    mutationFn: (data: {
+      status: 'APPROVED' | 'CHANGES_REQUESTED' | 'PENDING_ADVISOR';
+      comments?: string;
+      rules?: string;
+      requiresVenueClearance?: boolean;
+    }) =>
+      adminService.updateEventStatus(id!, {
+        status: data.status,
+        comments: data.comments,
+        rules: data.rules,
+        requiresVenueClearance: data.requiresVenueClearance,
+      }),
     onSuccess: (_, variables) => {
       if (id) {
         if (variables.status === 'APPROVED') {
@@ -149,6 +111,8 @@ export const AdminEventReviewPage: React.FC = () => {
         }
         void invalidateEventQueries(queryClient, id);
       }
+      setIsRequestChangesOpen(false);
+      setIsApproveModalOpen(false);
       navigate('/dashboard', { replace: true });
     },
     onError: (
@@ -162,19 +126,19 @@ export const AdminEventReviewPage: React.FC = () => {
     },
   });
 
-  const handleRequestChanges = () => {
-    if (!dsaComment.trim()) {
-      setCommentError(true);
-      globalNotification.triggerFailed('Please add a comment detailing the requested changes.');
-      return;
-    }
-    setCommentError(false);
-    updateEventStatusMutation.mutate({ status: 'CHANGES_REQUESTED' });
+  const handleConfirmRequestChanges = (comments?: string) => {
+    updateEventStatusMutation.mutate({
+      status: 'CHANGES_REQUESTED',
+      comments,
+    });
   };
 
-  const onSaveDetails = (data: EventFormData) => {
-    setServerError(null);
-    updateMutation.mutate(data);
+  const handleConfirmApproval = (payload: { rules?: string; requiresVenueClearance: boolean }) => {
+    updateEventStatusMutation.mutate({
+      status: 'APPROVED',
+      rules: payload.rules,
+      requiresVenueClearance: payload.requiresVenueClearance,
+    });
   };
 
   if (isLoadingEvent) {
@@ -268,44 +232,26 @@ export const AdminEventReviewPage: React.FC = () => {
       {/* Main Glassmorphic Card */}
       <div className="relative z-1 w-full p-8 rounded-cards bg-surface-glass backdrop-blur-xl border border-border-medium shadow-elevation-1 text-text-primary space-y-8">
         
-        {/* Advisor Review & Comments Section */}
+        {/* DSA Decision Actions */}
         <div className="space-y-4">
           <h2 className="text-lg font-extrabold flex items-center gap-2">
             <ShieldCheck className="w-5 h-5 text-brand-primary" />
-            DSA Admin Review & Feedback
+            DSA Decision &amp; Actions
           </h2>
           
-          <div className="space-y-1.5 text-left">
-            <label className="block text-xs uppercase tracking-wider text-text-secondary font-semibold mb-1">
-              Feedback / Comments
-            </label>
-            <textarea
-              rows={3}
-              value={dsaComment}
-              onChange={(e) => {
-                setDsaComment(e.target.value);
-                if (e.target.value.trim()) setCommentError(false);
-              }}
-              placeholder="Provide feedback or reasons for requesting changes..."
-              disabled={!isPending || updateEventStatusMutation.isPending}
-              className={cn(
-                "w-full text-sm transition-all outline-none bg-surface text-text-primary placeholder:text-text-muted rounded-inputs px-3.5 py-2.5 border resize-y disabled:opacity-50",
-                commentError 
-                  ? "border-red-500/50 ring-2 ring-red-500/20 focus:border-red-500" 
-                  : "border-border-medium focus:border-border-strong focus:ring-2 focus:ring-brand-primary/20"
-              )}
-            />
-            {commentError && (
-              <p className="text-red-500 dark:text-red-400 text-xs mt-1 font-medium">Comment is required to request changes.</p>
-            )}
-          </div>
+          {eventData.dsaComments && (
+            <div className="p-3.5 rounded-xl bg-surface border border-border-subtle text-xs text-text-secondary">
+              <span className="font-bold text-text-primary block mb-0.5">Current DSA Comments:</span>
+              <p className="whitespace-pre-line">{eventData.dsaComments}</p>
+            </div>
+          )}
 
           {isPending ? (
-            <div className="flex flex-col sm:flex-row gap-3 pt-2">
+            <div className="flex flex-col sm:flex-row gap-3 pt-1">
               <Button
                 type="button"
                 variant="primary"
-                onClick={() => updateEventStatusMutation.mutate({ status: 'APPROVED' })}
+                onClick={() => setIsApproveModalOpen(true)}
                 isLoading={updateEventStatusMutation.isPending}
                 leftIcon={<CheckCircle2 className="w-4 h-4 text-white" />}
                 className="bg-emerald-600 text-white hover:bg-emerald-700 w-full sm:flex-1"
@@ -315,16 +261,16 @@ export const AdminEventReviewPage: React.FC = () => {
               <Button
                 type="button"
                 variant="outline"
-                onClick={handleRequestChanges}
+                onClick={() => setIsRequestChangesOpen(true)}
                 isLoading={updateEventStatusMutation.isPending}
-                leftIcon={<AlertCircle className="w-4 h-4 text-text-secondary" />}
+                leftIcon={<AlertCircle className="w-4 h-4 text-amber-500" />}
                 className="bg-surface hover:bg-surface-hover text-text-primary border border-border-medium w-full sm:flex-1"
               >
                 Request Changes
               </Button>
             </div>
           ) : (
-            <p className="text-xs text-text-secondary font-medium pt-2">
+            <p className="text-xs text-text-secondary font-medium pt-1">
               This event is currently in {eventData.approvalStatus} status and cannot be approved/rejected at this time.
             </p>
           )}
@@ -338,7 +284,7 @@ export const AdminEventReviewPage: React.FC = () => {
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <h2 className="text-lg font-extrabold flex items-center gap-2">
                   <FileText className="w-5 h-5 text-amber-500" />
-                  Physical Venue Clearance &amp; PS to Dean Endorsement
+                  Physical Venue Clearance &amp; Authority Endorsement
                 </h2>
                 <span className={cn(
                   "px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-inputs border",
@@ -365,7 +311,7 @@ export const AdminEventReviewPage: React.FC = () => {
                   Requested Venue: <strong className="text-text-primary text-sm">{eventData.venue}</strong>
                 </p>
                 <p className="text-text-muted">
-                  Society must obtain an official signature and stamp from the PS to Dean / Dean&apos;s Office certifying that this facility is vacant and allocated.
+                  Society must obtain an official signature and stamp from the respective authority certifying that this facility is vacant and allocated.
                 </p>
                 <div className="pt-2">
                   <button
@@ -385,7 +331,7 @@ export const AdminEventReviewPage: React.FC = () => {
                   <div className="p-4 bg-surface-glass border border-border-subtle rounded-2xl space-y-3">
                     <div className="flex items-center justify-between">
                       <span className="text-xs uppercase tracking-wider text-text-secondary font-bold">
-                        Uploaded PS to Dean Endorsement Slip
+                        Uploaded Authority Endorsement Slip
                       </span>
                       {eventData.venueSlipUploadedAt && (
                         <span className="text-[11px] text-text-muted">
@@ -487,7 +433,7 @@ export const AdminEventReviewPage: React.FC = () => {
         <div className="w-full h-px bg-border-subtle my-6"></div>
 
         {/* Event Overview Section */}
-        <form onSubmit={handleSubmit(onSaveDetails)} className="space-y-6" noValidate>
+        <div className="space-y-6">
           <div className="space-y-4">
             <h2 className="text-lg font-extrabold flex items-center gap-2">
               <Calendar className="w-5 h-5 text-brand-primary" />
@@ -499,8 +445,8 @@ export const AdminEventReviewPage: React.FC = () => {
               placeholder="e.g. GIKI SoftDesk Hackathon 2026"
               leftIcon={<Calendar className="w-4 h-4" />}
               disabled={true}
-              error={errors.title?.message}
-              {...register('title')}
+              readOnly
+              value={eventData.title || ''}
             />
 
             <div className="space-y-1.5 text-left">
@@ -515,8 +461,9 @@ export const AdminEventReviewPage: React.FC = () => {
                   rows={4}
                   placeholder="Describe your event agenda, prerequisites, target audience, and guidelines..."
                   disabled={true}
+                  readOnly
+                  value={eventData.description || ''}
                   className="w-full text-sm transition-all outline-none bg-surface-hover/50 text-text-primary placeholder:text-text-muted rounded-inputs px-3.5 py-2.5 pl-10 border border-border-subtle disabled:opacity-75 resize-y"
-                  {...register('description')}
                 />
               </div>
             </div>
@@ -544,7 +491,12 @@ export const AdminEventReviewPage: React.FC = () => {
                 label="Event Date *"
                 leftIcon={<Calendar className="w-4 h-4" />}
                 disabled={true}
-                {...register('eventDate')}
+                readOnly
+                value={
+                  eventData.eventDate
+                    ? new Date(eventData.eventDate).toISOString().split('T')[0]
+                    : ''
+                }
               />
             </div>
 
@@ -554,14 +506,16 @@ export const AdminEventReviewPage: React.FC = () => {
                 label="Start Time *"
                 leftIcon={<Clock className="w-4 h-4" />}
                 disabled={true}
-                {...register('startTime')}
+                readOnly
+                value={eventData.startTime || ''}
               />
               <Input
                 type="time"
                 label="End Time *"
                 leftIcon={<Clock className="w-4 h-4" />}
                 disabled={true}
-                {...register('endTime')}
+                readOnly
+                value={eventData.endTime || ''}
               />
             </div>
 
@@ -570,7 +524,8 @@ export const AdminEventReviewPage: React.FC = () => {
               placeholder="e.g. AHA Auditorium"
               leftIcon={<MapPin className="w-4 h-4" />}
               disabled={true}
-              {...register('venue')}
+              readOnly
+              value={eventData.venue || ''}
             />
           </div>
 
@@ -589,23 +544,26 @@ export const AdminEventReviewPage: React.FC = () => {
                 label="In-Charge Name *"
                 placeholder="e.g. John Doe"
                 disabled={true}
-                {...register('inChargeName')}
+                readOnly
+                value={eventData.inChargeName || ''}
               />
               <Input
                 label="Registration Number *"
                 placeholder="e.g. 2023123"
                 disabled={true}
-                {...register('inChargeRegNum')}
+                readOnly
+                value={eventData.inChargeRegNum || ''}
               />
               <Input
                 label="Contact Number *"
                 placeholder="e.g. 03001234567"
                 disabled={true}
-                {...register('inChargeContact')}
+                readOnly
+                value={eventData.inChargeContact || ''}
               />
             </div>
           </div>
-        </form>
+        </div>
       </div>
 
       {isVenueSlipPreviewOpen && (
@@ -615,6 +573,30 @@ export const AdminEventReviewPage: React.FC = () => {
           event={eventData}
           societyName={eventData.society?.name}
           societyLogo={eventData.society?.logoUrl}
+        />
+      )}
+
+      {isRequestChangesOpen && (
+        <RequestChangesModal
+          isOpen={isRequestChangesOpen}
+          onClose={() => setIsRequestChangesOpen(false)}
+          onSubmit={handleConfirmRequestChanges}
+          isLoading={updateEventStatusMutation.isPending}
+          reviewerRole="DSA_ADMIN"
+          eventTitle={eventData.title}
+          initialComments={eventData.dsaComments || ''}
+        />
+      )}
+
+      {isApproveModalOpen && (
+        <ApproveEventModal
+          isOpen={isApproveModalOpen}
+          onClose={() => setIsApproveModalOpen(false)}
+          onSubmit={handleConfirmApproval}
+          isLoading={updateEventStatusMutation.isPending}
+          eventTitle={eventData.title}
+          venueName={eventData.venue}
+          initialRules={eventData.rules || ''}
         />
       )}
     </div>

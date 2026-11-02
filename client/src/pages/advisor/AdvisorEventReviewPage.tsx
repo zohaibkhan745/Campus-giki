@@ -1,7 +1,5 @@
 import { CustomDropdown } from '@/components/ui/CustomDropdown';
 import React, { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { invalidateEventQueries } from '@/lib/queryInvalidations';
@@ -11,7 +9,6 @@ import {
   MapPin,
   FileText,
   Image,
-
   ArrowLeft,
   Save,
   Loader2,
@@ -22,14 +19,11 @@ import {
 } from 'lucide-react';
 import { eventService } from '@/services/event.service';
 import { advisorService } from '@/services/advisor.service';
-import {
-  eventFormSchema,
-  type EventFormData,
-} from '@/lib/validations/event.schema';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { Alert } from '@/components/ui/Alert';
 import { ErrorState, BackButton } from '@/components/ui';
+import { RequestChangesModal } from '@/components/events/RequestChangesModal';
 import type { AxiosError } from 'axios';
 
 const getBadgeStyles = (status: string) => {
@@ -51,8 +45,7 @@ export const AdvisorEventReviewPage: React.FC = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [serverError, setServerError] = useState<string | null>(null);
-  const [advisorComment, setAdvisorComment] = useState('');
-  const [commentError, setCommentError] = useState(false);
+  const [isRequestChangesOpen, setIsRequestChangesOpen] = useState(false);
 
   const {
     data: eventData,
@@ -64,65 +57,21 @@ export const AdvisorEventReviewPage: React.FC = () => {
     queryKey: ['event', id],
     queryFn: () => eventService.getEventById(id!),
     enabled: !!id,
-  });
-
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm<EventFormData>({
-    resolver: zodResolver(eventFormSchema),
+    staleTime: 0,
+    refetchOnMount: 'always',
   });
 
   useEffect(() => {
-    if (eventData) {
-      const formattedDate = eventData.eventDate
-        ? new Date(eventData.eventDate).toISOString().split('T')[0]
-        : '';
-
-      setAdvisorComment(eventData.advisorComments || '');
-
-      reset({
-        title: eventData.title,
-        description: eventData.description,
-        eventDate: formattedDate,
-        startTime: eventData.startTime,
-        endTime: eventData.endTime,
-        venue: eventData.venue,
-        coverImageUrl: eventData.coverImageUrl || '',
-        registrationLink: eventData.registrationLink || '',
-        eventType: eventData.eventType || '',
-        inChargeName: eventData.inChargeName || '',
-        inChargeRegNum: eventData.inChargeRegNum || '',
-        inChargeContact: eventData.inChargeContact || '',
-      });
-    }
-  }, [eventData, reset]);
-
-  const updateMutation = useMutation({
-    meta: { notify: true },
-    mutationFn: (data: EventFormData) => eventService.updateEvent(id!, data),
-    onSuccess: () => {
-      void invalidateEventQueries(queryClient, id);
-    },
-    onError: (
-      error: AxiosError<{ message?: string | string[]; error?: string }>,
-    ) => {
-      const respMessage = error.response?.data?.message;
-      let errText = 'Failed to update event. Please verify your inputs.';
-      if (Array.isArray(respMessage)) errText = respMessage.join(', ');
-      else if (typeof respMessage === 'string') errText = respMessage;
-      setServerError(errText);
-    },
-  });
+    // Advisor event review initialization
+  }, [eventData]);
 
   const updateEventStatusMutation = useMutation({
     meta: { notify: true },
-    mutationFn: ({ status }: { status: string }) =>
-      advisorService.updateEventStatus(id!, { status, comments: advisorComment }),
+    mutationFn: ({ status, comments }: { status: string; comments?: string }) =>
+      advisorService.updateEventStatus(id!, { status, comments }),
     onSuccess: () => {
       void invalidateEventQueries(queryClient, id);
+      setIsRequestChangesOpen(false);
       navigate('/advisor/yearly-plans', { replace: true });
     },
     onError: (
@@ -136,19 +85,11 @@ export const AdvisorEventReviewPage: React.FC = () => {
     },
   });
 
-  const handleRequestChanges = () => {
-    if (!advisorComment.trim()) {
-      setCommentError(true);
-      globalNotification.triggerFailed('Please add a comment detailing the requested changes.');
-      return;
-    }
-    setCommentError(false);
-    updateEventStatusMutation.mutate({ status: 'CHANGES_REQUESTED' });
-  };
-
-  const onSaveDetails = (data: EventFormData) => {
-    setServerError(null);
-    updateMutation.mutate(data);
+  const handleConfirmRequestChanges = (comments?: string) => {
+    updateEventStatusMutation.mutate({
+      status: 'CHANGES_REQUESTED',
+      comments,
+    });
   };
 
   if (isLoadingEvent) {
@@ -256,40 +197,22 @@ export const AdvisorEventReviewPage: React.FC = () => {
       {/* Main Glassmorphic Card */}
       <div className="relative z-1 w-full p-8 rounded-cards bg-surface-glass backdrop-blur-xl border border-border-medium shadow-elevation-1 text-text-primary space-y-8">
         
-        {/* Advisor Review & Comments Section */}
+        {/* Advisor Review & Actions Section */}
         <div className="space-y-4">
           <h2 className="text-lg font-extrabold flex items-center gap-2">
             <ShieldCheck className="w-5 h-5 text-brand-primary" />
-            Advisor Review & Feedback
+            Faculty Advisor Decision &amp; Actions
           </h2>
           
-          <div className="space-y-1.5 text-left">
-            <label className="block text-xs uppercase tracking-wider text-text-secondary font-semibold mb-1">
-              Feedback / Comments
-            </label>
-            <textarea
-              rows={3}
-              value={advisorComment}
-              onChange={(e) => {
-                setAdvisorComment(e.target.value);
-                if (e.target.value.trim()) setCommentError(false);
-              }}
-              placeholder="Provide feedback or reasons for requesting changes..."
-              disabled={!isPending || updateEventStatusMutation.isPending}
-              className={cn(
-                "w-full text-sm transition-all outline-none bg-surface text-text-primary placeholder:text-text-muted rounded-inputs px-3.5 py-2.5 border resize-y disabled:opacity-50",
-                commentError 
-                  ? "border-red-500/50 ring-2 ring-red-500/20 focus:border-red-500" 
-                  : "border-border-medium focus:border-border-strong focus:ring-2 focus:ring-brand-primary/20"
-              )}
-            />
-            {commentError && (
-              <p className="text-red-500 dark:text-red-400 text-xs mt-1 font-medium">Comment is required to request changes.</p>
-            )}
-          </div>
+          {eventData.advisorComments && (
+            <div className="p-3.5 rounded-xl bg-surface border border-border-subtle text-xs text-text-secondary">
+              <span className="font-bold text-text-primary block mb-0.5">Current Advisor Comments:</span>
+              <p className="whitespace-pre-line">{eventData.advisorComments}</p>
+            </div>
+          )}
 
           {isPending ? (
-            <div className="flex flex-col sm:flex-row gap-3 pt-2">
+            <div className="flex flex-col sm:flex-row gap-3 pt-1">
               <Button
                 type="button"
                 variant="primary"
@@ -303,16 +226,16 @@ export const AdvisorEventReviewPage: React.FC = () => {
               <Button
                 type="button"
                 variant="outline"
-                onClick={handleRequestChanges}
+                onClick={() => setIsRequestChangesOpen(true)}
                 isLoading={updateEventStatusMutation.isPending}
-                leftIcon={<AlertCircle className="w-4 h-4 text-text-secondary" />}
+                leftIcon={<AlertCircle className="w-4 h-4 text-amber-500" />}
                 className="bg-surface hover:bg-surface-hover text-text-primary border border-border-medium w-full sm:flex-1"
               >
                 Request Changes
               </Button>
             </div>
           ) : (
-            <p className="text-xs text-text-secondary font-medium pt-2">
+            <p className="text-xs text-text-secondary font-medium pt-1">
               This event is currently in {eventData.approvalStatus} status and cannot be approved/rejected at this time.
             </p>
           )}
@@ -322,7 +245,7 @@ export const AdvisorEventReviewPage: React.FC = () => {
         <div className="w-full h-px bg-border-subtle my-6"></div>
 
         {/* Event Overview Section */}
-        <form onSubmit={handleSubmit(onSaveDetails)} className="space-y-6" noValidate>
+        <div className="space-y-6">
           <div className="space-y-4">
             <h2 className="text-lg font-extrabold flex items-center gap-2">
               <Calendar className="w-5 h-5 text-brand-primary" />
@@ -334,8 +257,8 @@ export const AdvisorEventReviewPage: React.FC = () => {
               placeholder="e.g. GIKI SoftDesk Hackathon 2026"
               leftIcon={<Calendar className="w-4 h-4" />}
               disabled={true}
-              error={errors.title?.message}
-              {...register('title')}
+              readOnly
+              value={eventData.title || ''}
             />
 
             <div className="space-y-1.5 text-left">
@@ -350,8 +273,9 @@ export const AdvisorEventReviewPage: React.FC = () => {
                   rows={4}
                   placeholder="Describe your event agenda, prerequisites, target audience, and guidelines..."
                   disabled={true}
+                  readOnly
+                  value={eventData.description || ''}
                   className="w-full text-sm transition-all outline-none bg-surface-hover/50 text-text-primary placeholder:text-text-muted rounded-inputs px-3.5 py-2.5 pl-10 border border-border-subtle disabled:opacity-75 resize-y"
-                  {...register('description')}
                 />
               </div>
             </div>
@@ -379,7 +303,12 @@ export const AdvisorEventReviewPage: React.FC = () => {
                 label="Event Date *"
                 leftIcon={<Calendar className="w-4 h-4" />}
                 disabled={true}
-                {...register('eventDate')}
+                readOnly
+                value={
+                  eventData.eventDate
+                    ? new Date(eventData.eventDate).toISOString().split('T')[0]
+                    : ''
+                }
               />
             </div>
 
@@ -389,14 +318,16 @@ export const AdvisorEventReviewPage: React.FC = () => {
                 label="Start Time *"
                 leftIcon={<Clock className="w-4 h-4" />}
                 disabled={true}
-                {...register('startTime')}
+                readOnly
+                value={eventData.startTime || ''}
               />
               <Input
                 type="time"
                 label="End Time *"
                 leftIcon={<Clock className="w-4 h-4" />}
                 disabled={true}
-                {...register('endTime')}
+                readOnly
+                value={eventData.endTime || ''}
               />
             </div>
 
@@ -405,7 +336,8 @@ export const AdvisorEventReviewPage: React.FC = () => {
               placeholder="e.g. AHA Auditorium"
               leftIcon={<MapPin className="w-4 h-4" />}
               disabled={true}
-              {...register('venue')}
+              readOnly
+              value={eventData.venue || ''}
             />
           </div>
 
@@ -424,24 +356,39 @@ export const AdvisorEventReviewPage: React.FC = () => {
                 label="In-Charge Name *"
                 placeholder="e.g. John Doe"
                 disabled={true}
-                {...register('inChargeName')}
+                readOnly
+                value={eventData.inChargeName || ''}
               />
               <Input
                 label="Registration Number *"
                 placeholder="e.g. 2023123"
                 disabled={true}
-                {...register('inChargeRegNum')}
+                readOnly
+                value={eventData.inChargeRegNum || ''}
               />
               <Input
                 label="Contact Number *"
                 placeholder="e.g. 03001234567"
                 disabled={true}
-                {...register('inChargeContact')}
+                readOnly
+                value={eventData.inChargeContact || ''}
               />
             </div>
           </div>
-        </form>
+        </div>
       </div>
+
+      {isRequestChangesOpen && (
+        <RequestChangesModal
+          isOpen={isRequestChangesOpen}
+          onClose={() => setIsRequestChangesOpen(false)}
+          onSubmit={handleConfirmRequestChanges}
+          isLoading={updateEventStatusMutation.isPending}
+          reviewerRole="ADVISOR"
+          eventTitle={eventData.title}
+          initialComments={eventData.advisorComments || ''}
+        />
+      )}
     </div>
   );
 };

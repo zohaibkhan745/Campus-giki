@@ -177,7 +177,7 @@ export const UploadSignedSlipModal: React.FC<UploadSignedSlipModalProps> = ({
         <div className="flex items-center justify-between pb-3 border-b border-border-subtle">
           <div>
             <h3 className="font-bold text-base text-text-primary">Upload Signed Slip</h3>
-            <p className="text-xs text-text-secondary mt-0.5">PS to Dean / Venue Custodian Endorsement</p>
+            <p className="text-xs text-text-secondary mt-0.5">Respective Authority / Venue Custodian Endorsement</p>
           </div>
           <button
             type="button"

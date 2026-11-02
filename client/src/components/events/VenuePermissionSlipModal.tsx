@@ -372,9 +372,6 @@ export const VenuePermissionSlipModal: React.FC<VenuePermissionSlipModalProps> =
                     <p className="text-[10px] text-gray-600">
                       Approved on: {event.advisorApprovedAt ? new Date(event.advisorApprovedAt).toLocaleDateString() : 'Recorded'}
                     </p>
-                    {event.advisorComments && (
-                      <p className="text-[9px] italic text-gray-600">Remarks: &quot;{event.advisorComments}&quot;</p>
-                    )}
                     <div className="pt-1 text-[9px] text-gray-400 font-mono">
                       Digitally Verified via Campus GIKI
                     </div>
@@ -407,7 +404,7 @@ export const VenuePermissionSlipModal: React.FC<VenuePermissionSlipModalProps> =
                 </h4>
                 <div className="border-2 border-black p-3 rounded space-y-3">
                   <div className="flex items-center justify-between text-xs font-bold text-gray-800">
-                    <span>Facility Authority: Dean&apos;s Office / PS to Dean / Venue Custodian</span>
+                    <span>Facility Authority: Respective Authority / Venue Custodian</span>
                     <div className="flex items-center gap-6">
                       <label className="flex items-center gap-1.5 cursor-pointer">
                         <input type="checkbox" className="w-3.5 h-3.5 border-2 border-black" />
@@ -444,7 +441,7 @@ export const VenuePermissionSlipModal: React.FC<VenuePermissionSlipModalProps> =
                     <div className="text-center space-y-6">
                       <div className="border-b-2 border-dotted border-black mx-6"></div>
                       <div>
-                        <p className="text-[11px] font-black uppercase tracking-wider">PS to Dean / Authorized Signatory</p>
+                        <p className="text-[11px] font-black uppercase tracking-wider">Respective Authority / Authorized Signatory</p>
                         <p className="text-[9px] text-gray-500">Official Signature, Stamp &amp; Date</p>
                       </div>
                     </div>
@@ -456,7 +453,7 @@ export const VenuePermissionSlipModal: React.FC<VenuePermissionSlipModalProps> =
             {/* Instructions Notice at Footer */}
             <footer className="border-t border-gray-300 pt-2.5 text-[9px] text-gray-500 text-center space-y-0.5 font-mono">
               <p className="font-bold">INSTRUCTIONS FOR ORGANIZERS:</p>
-              <p>1. Present this slip to the PS to Dean / Dean&apos;s Office to confirm venue reservation and obtain official stamp.</p>
+              <p>1. Present this slip to the respective authority to confirm venue reservation and obtain official stamp.</p>
               <p>2. Once endorsed, capture a clear picture or scan and upload it through your Society Portal on Campus GIKI.</p>
             </footer>
           </article>

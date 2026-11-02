@@ -4,3 +4,5 @@ export * from './UploadSignedSlipModal';
 export * from './CouncilNoticeModal';
 export * from './DeleteEventDialog';
 export * from './EventDetailSkeleton';
+export * from './RequestChangesModal';
+export * from './ApproveEventModal';

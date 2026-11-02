@@ -257,7 +257,10 @@ export const DashboardPage: React.FC = () => {
   ];
   const uniqueApprovedEvents = Array.from(new Map(allApprovedEvents.map(e => [e.id, e])).values());
   const venueClearancePendingEvents = uniqueApprovedEvents.filter(
-    (e: any) => !e.signedVenueSlipUrl || e.venueClearanceStatus === 'PENDING_UPLOAD' || e.venueClearanceStatus === 'REJECTED'
+    (e: any) =>
+      e.venueClearanceStatus !== 'VERIFIED' &&
+      !e.venueClearanceNotes?.includes('exempted') &&
+      (!e.signedVenueSlipUrl || e.venueClearanceStatus === 'PENDING_UPLOAD' || e.venueClearanceStatus === 'REJECTED')
   );
 
   // First-login redirect if profile setup incomplete
@@ -376,7 +379,7 @@ export const DashboardPage: React.FC = () => {
                   </span>
                 </div>
                 <p className="text-xs text-text-secondary leading-relaxed max-w-3xl">
-                  The following approved events require official physical clearance from the <strong>PS to Dean / Dean&apos;s Office</strong> for the allocated venue. Print the official slip, obtain the physical signature and stamp, and upload the signed copy.
+                  The following approved events require official physical clearance from the <strong>respective authority</strong> for the allocated venue. Print the official slip, obtain the physical signature and stamp, and upload the signed copy.
                 </p>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
@@ -386,7 +389,7 @@ export const DashboardPage: React.FC = () => {
                         <div className="flex items-center justify-between gap-2">
                           <h4 className="font-bold text-sm text-text-primary truncate">{ev.title}</h4>
                           <span className="text-[10px] uppercase font-extrabold px-2 py-0.5 rounded bg-amber-500/20 text-amber-600 dark:text-amber-300 shrink-0">
-                            {ev.venueClearanceStatus === 'REJECTED' ? 'Re-upload Required' : 'Awaiting PS Signature'}
+                            {ev.venueClearanceStatus === 'REJECTED' ? 'Re-upload Required' : 'Awaiting Authority Signature'}
                           </span>
                         </div>
                         <p className="text-xs text-text-secondary mt-1 flex items-center gap-1.5">

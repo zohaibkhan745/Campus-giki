@@ -56,7 +56,7 @@ const EventCardComponent: React.FC<EventCardProps> = ({
 
   const showStatusBadge = Boolean(approvalStatus && !isApproved);
   const statusLabel = isPendingAdmin
-    ? 'Pending DSA'
+    ? 'Pending Admin'
     : isPendingAdvisor
     ? 'Pending Advisor'
     : isChangesRequested
@@ -76,6 +76,12 @@ const EventCardComponent: React.FC<EventCardProps> = ({
   // Both DSA Admin and the owning society CAN delete (even when published)
   const canDelete = isDsaAdmin || isMySociety;
   const canEditOrDelete = canEdit || canDelete;
+
+  // Venue clearance requirement check
+  const isVenueClearanceExempt = Boolean(
+    (item as any).venueClearanceNotes?.includes('exempted') && !(item as any).signedVenueSlipUrl
+  );
+  const needsVenueSlip = isApproved && (item as any).venueClearanceStatus && !isVenueClearanceExempt;
 
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -149,8 +155,13 @@ const EventCardComponent: React.FC<EventCardProps> = ({
   const targetUrl = reviewUrl || `/events/${item.id}`;
 
   const handleMouseEnter = () => {
-    // Pre-seed React Query cache so the event detail page loads with 0ms delay
-    queryClient.setQueryData(['event', item.id], (prev: any) => prev || item);
+    // Properly prefetch the complete event detail in the background without polluting the cache with truncated list items
+    if (item.id) {
+      void queryClient.prefetchQuery({
+        queryKey: ['event', item.id],
+        queryFn: () => eventService.getEventById(item.id),
+      });
+    }
   };
 
   const handleCardClick = () => {
@@ -387,7 +398,7 @@ const EventCardComponent: React.FC<EventCardProps> = ({
                         Edit Event
                       </button>
                     )}
-                    {isMySociety && isApproved && (
+                    {isMySociety && needsVenueSlip && (
                       <>
                         <button
                           className="card-dropdown-item"

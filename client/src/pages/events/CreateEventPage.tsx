@@ -3,7 +3,7 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate, Link } from "react-router-dom";
-import { invalidateEventQueries } from "@/lib/queryInvalidations";
+import { invalidateEventQueries, optimisticUpdateEvent } from "@/lib/queryInvalidations";
 import { ArrowLeft, CheckCircle2, ShieldCheck, Sparkles, Loader2, Building2 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { adminService } from "@/services/admin.service";
@@ -267,8 +267,11 @@ export const CreateEventPage: React.FC = () => {
   const createMutation = useMutation({
     meta: { notify: true },
     mutationFn: (data: EventFormData) => eventService.createEvent(data),
-    onSuccess: () => {
-      void invalidateEventQueries(queryClient);
+    onSuccess: async (newEvent) => {
+      if (newEvent) {
+        optimisticUpdateEvent(queryClient, newEvent);
+      }
+      await invalidateEventQueries(queryClient);
       navigate(isDsaAdmin ? "/admin/events" : "/dashboard", { replace: true });
     },
     onError: (
@@ -596,30 +599,8 @@ export const CreateEventPage: React.FC = () => {
               }}
               options={[
                 { label: "Auditorium", value: "Auditorium" },
-                {
-                  label: "Faculty Club (Inside)",
-                  value: "Faculty Club (Inside)",
-                },
-                {
-                  label: "Faculty Club (Outside)",
-                  value: "Faculty Club (Outside)",
-                },
-                {
-                  label: "Faculty Club (Inside + Outside)",
-                  value: "Faculty Club (Inside + Outside)",
-                },
-                {
-                  label: "Guest House (Inside)",
-                  value: "Guest House (Inside)",
-                },
-                {
-                  label: "Guest House (Outside)",
-                  value: "Guest House (Outside)",
-                },
-                {
-                  label: "Guest House (Inside + Outside)",
-                  value: "Guest House (Inside + Outside)",
-                },
+                { label: "Faculty", value: "Faculty" },
+                { label: "Guest House", value: "Guest House" },
                 { label: "Sports Complex", value: "Sports Complex" },
                 { label: "Basket Ball Court", value: "Basket Ball Court" },
                 { label: "Main Ground", value: "Main Ground" },

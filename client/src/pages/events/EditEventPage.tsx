@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate, Link, useParams } from "react-router-dom";
-import { invalidateEventQueries } from "@/lib/queryInvalidations";
+import { invalidateEventQueries, optimisticUpdateEvent } from "@/lib/queryInvalidations";
 import {
   Calendar,
   Clock,
@@ -112,9 +112,12 @@ export const EditEventPage: React.FC = () => {
 
       const standardVenues = [
         "Auditorium",
+        "Faculty",
+        "Faculty Club",
         "Faculty Club (Inside)",
         "Faculty Club (Outside)",
         "Faculty Club (Inside + Outside)",
+        "Guest House",
         "Guest House (Inside)",
         "Guest House (Outside)",
         "Guest House (Inside + Outside)",
@@ -182,8 +185,26 @@ export const EditEventPage: React.FC = () => {
 
   const deleteMutation = useMutation({
     mutationFn: () => eventService.deleteEvent(id!),
-    onSuccess: () => {
-      void invalidateEventQueries(queryClient, id);
+    onSuccess: async () => {
+      queryClient.setQueriesData(
+        { queryKey: ['societyDashboard'] },
+        (old: any) => {
+          if (!old) return old;
+          return {
+            ...old,
+            pendingEvents: Array.isArray(old.pendingEvents)
+              ? old.pendingEvents.filter((e: any) => e.id !== id)
+              : old.pendingEvents,
+            upcomingEvents: Array.isArray(old.upcomingEvents)
+              ? old.upcomingEvents.filter((e: any) => e.id !== id)
+              : old.upcomingEvents,
+            recentEvents: Array.isArray(old.recentEvents)
+              ? old.recentEvents.filter((e: any) => e.id !== id)
+              : old.recentEvents,
+          };
+        },
+      );
+      await invalidateEventQueries(queryClient, id);
       navigate("/dashboard", { replace: true });
     },
   });
@@ -191,8 +212,9 @@ export const EditEventPage: React.FC = () => {
   const updateMutation = useMutation({
     meta: { notify: true },
     mutationFn: (data: EventFormData) => eventService.updateEvent(id!, data),
-    onSuccess: () => {
-      void invalidateEventQueries(queryClient, id);
+    onSuccess: async (updatedEvent) => {
+      optimisticUpdateEvent(queryClient, updatedEvent);
+      await invalidateEventQueries(queryClient, id);
       navigate(user?.role === "DSA_ADMIN" ? "/admin/events" : "/dashboard", { replace: true });
     },
     onError: (
@@ -400,6 +422,10 @@ export const EditEventPage: React.FC = () => {
         (eventData.advisorComments || eventData.dsaComments) &&
         (() => {
           const isByAdmin = eventData.lastChangeRequestBy === "DSA_ADMIN";
+          const activeNotes = isByAdmin
+            ? (eventData.dsaComments || eventData.advisorComments)
+            : (eventData.advisorComments || eventData.dsaComments);
+
           return (
             <div
               className={`backdrop-blur-md p-5 rounded-[18px] shadow-lg mb-6 border ${isByAdmin ? "bg-yellow-500/10 border-yellow-500/30" : "bg-orange-500/10 border-orange-500/30"}`}
@@ -407,37 +433,25 @@ export const EditEventPage: React.FC = () => {
               <h3
                 className={`font-bold mb-3 flex items-center gap-2 ${isByAdmin ? "text-yellow-400" : "text-orange-400"}`}
               >
-                Changes Requested by {isByAdmin ? "Admin" : "Advisor"}
+                Changes Requested by {isByAdmin ? "DSA / Admin" : "Faculty Advisor"}
               </h3>
               <div
                 className={`space-y-4 text-sm leading-relaxed ${isByAdmin ? "text-yellow-200/90" : "text-orange-200/90"}`}
               >
-                {eventData.advisorComments && (
-                  <div>
-                    <span
-                      className={`font-semibold block mb-1 ${isByAdmin ? "text-yellow-300" : "text-orange-300"}`}
-                    >
-                      Advisor Notes:
-                    </span>
-                    <p>{eventData.advisorComments}</p>
-                  </div>
-                )}
-                {eventData.dsaComments && (
-                  <div>
-                    <span
-                      className={`font-semibold block mb-1 ${isByAdmin ? "text-yellow-300" : "text-orange-300"}`}
-                    >
-                      DSA / Admin Notes:
-                    </span>
-                    <p>{eventData.dsaComments}</p>
-                  </div>
-                )}
+                <div>
+                  <span
+                    className={`font-semibold block mb-1 ${isByAdmin ? "text-yellow-300" : "text-orange-300"}`}
+                  >
+                    {isByAdmin ? "DSA / Admin Required Revisions:" : "Advisor Required Revisions:"}
+                  </span>
+                  <p className="whitespace-pre-line">{activeNotes}</p>
+                </div>
               </div>
               <p
                 className={`mt-4 text-xs font-medium ${isByAdmin ? "text-yellow-300/80" : "text-orange-300/80"}`}
               >
-                Please address the feedback above and resubmit the event for
-                review.
+                Please address the feedback above and resubmit the event for{" "}
+                {isByAdmin ? "admin" : "advisor"} review.
               </p>
             </div>
           );
@@ -629,30 +643,8 @@ export const EditEventPage: React.FC = () => {
               }}
               options={[
                 { label: "Auditorium", value: "Auditorium" },
-                {
-                  label: "Faculty Club (Inside)",
-                  value: "Faculty Club (Inside)",
-                },
-                {
-                  label: "Faculty Club (Outside)",
-                  value: "Faculty Club (Outside)",
-                },
-                {
-                  label: "Faculty Club (Inside + Outside)",
-                  value: "Faculty Club (Inside + Outside)",
-                },
-                {
-                  label: "Guest House (Inside)",
-                  value: "Guest House (Inside)",
-                },
-                {
-                  label: "Guest House (Outside)",
-                  value: "Guest House (Outside)",
-                },
-                {
-                  label: "Guest House (Inside + Outside)",
-                  value: "Guest House (Inside + Outside)",
-                },
+                { label: "Faculty", value: "Faculty" },
+                { label: "Guest House", value: "Guest House" },
                 { label: "Sports Complex", value: "Sports Complex" },
                 { label: "Basket Ball Court", value: "Basket Ball Court" },
                 { label: "Main Ground", value: "Main Ground" },

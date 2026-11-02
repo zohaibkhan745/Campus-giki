@@ -236,15 +236,7 @@ export class AdminService {
     }));
 
     const pendingEventsPreview = pendingEventsRaw.map((evt) => ({
-      id: evt.id,
-      title: evt.title,
-      eventDate: evt.eventDate,
-      startTime: evt.startTime,
-      endTime: evt.endTime,
-      venue: evt.venue,
-      society: evt.society,
-      createdAt: evt.createdAt,
-      approvalStatus: evt.approvalStatus,
+      ...evt,
     }));
 
     const recentlyApprovedEventsPreview = recentlyApprovedEventsRaw.map((evt) => ({
@@ -616,19 +608,7 @@ export class AdminService {
     const totalPages = Math.ceil(total / limit) || 1;
 
     const formattedItems = events.map((evt) => ({
-      id: evt.id,
-      title: evt.title,
-      description: evt.description,
-      eventDate: evt.eventDate,
-      startTime: evt.startTime,
-      endTime: evt.endTime,
-      venue: evt.venue,
-      coverImageUrl: evt.coverImageUrl,
-      registrationLink: evt.registrationLink,
-      createdAt: evt.createdAt,
-      updatedAt: evt.updatedAt,
-      society: evt.society,
-      approvalStatus: evt.approvalStatus,
+      ...evt,
       isUpcoming: new Date(evt.eventDate) >= today,
     }));
 
@@ -1300,7 +1280,7 @@ export class AdminService {
 
   async updateEventStatus(
     eventId: string,
-    dto: { status: string; comments?: string; rules?: string },
+    dto: { status: string; comments?: string; rules?: string; requiresVenueClearance?: boolean },
   ) {
     const event = await this.prisma.event.findUnique({ where: { id: eventId } });
     if (!event) {
@@ -1311,8 +1291,8 @@ export class AdminService {
 
     const data: any = {
       approvalStatus: isApprovedOrPublished ? 'PUBLISHED' : (dto.status as any),
-      dsaComments: dto.comments || null,
-      rules: dto.rules !== undefined ? dto.rules : undefined,
+      dsaComments: dto.comments !== undefined ? (dto.comments || null) : undefined,
+      rules: dto.rules !== undefined ? (dto.rules?.trim() || null) : undefined,
       isPublished: isApprovedOrPublished,
       ...(dto.status === 'CHANGES_REQUESTED' ? { lastChangeRequestBy: 'DSA_ADMIN' } : {}),
       ...(isApprovedOrPublished ? { lastChangeRequestBy: null } : {}),
@@ -1320,7 +1300,12 @@ export class AdminService {
 
     if (isApprovedOrPublished) {
       data.dsaApprovedAt = new Date();
-      if (!event.venueClearanceStatus) {
+      if (dto.requiresVenueClearance === false) {
+        // If DSA specifies venue clearance is not required, mark as VERIFIED directly
+        data.venueClearanceStatus = 'VERIFIED';
+        data.venueClearanceVerifiedAt = new Date();
+        data.venueClearanceNotes = 'Venue clearance exempted / verified directly by DSA Directorate.';
+      } else if (!event.venueClearanceStatus) {
         data.venueClearanceStatus = 'PENDING_UPLOAD';
       }
     }

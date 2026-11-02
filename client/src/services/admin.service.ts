@@ -191,7 +191,18 @@ export interface AdminEventItem {
   endTime: string;
   venue: string;
   coverImageUrl?: string | null;
+  videoUrl?: string | null;
   registrationLink?: string | null;
+  eventType?: string | null;
+  inChargeName?: string | null;
+  inChargeRegNum?: string | null;
+  inChargeContact?: string | null;
+  rules?: string | null;
+  advisorComments?: string | null;
+  dsaComments?: string | null;
+  venueClearanceStatus?: string | null;
+  signedVenueSlipUrl?: string | null;
+  lastChangeRequestBy?: string | null;
   createdAt: string;
   updatedAt: string;
   isUpcoming: boolean;
@@ -443,7 +454,7 @@ export const adminService = {
     return api.patch(`/admin/yearly-plans/${id}`, payload);
   },
 
-  async updateEventStatus(id: string, payload: { status: string; comments?: string; rules?: string }) {
+  async updateEventStatus(id: string, payload: { status: string; comments?: string; rules?: string; requiresVenueClearance?: boolean }) {
     return api.patch(`/admin/events/${id}/status`, payload);
   },
 

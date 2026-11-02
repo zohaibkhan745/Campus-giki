@@ -17,37 +17,108 @@ export const invalidateEventQueries = async (
   const invalidations: Promise<void>[] = [
     // 1. Single Event Detail
     eventId
-      ? queryClient.invalidateQueries({ queryKey: ['event', eventId] })
-      : queryClient.invalidateQueries({ queryKey: ['event'] }),
+      ? queryClient.invalidateQueries({ queryKey: ['event', eventId], refetchType: 'all' })
+      : queryClient.invalidateQueries({ queryKey: ['event'], refetchType: 'all' }),
 
     // 2. Admin Views & Dashboards
-    queryClient.invalidateQueries({ queryKey: ['dashboardEvents'] }),
-    queryClient.invalidateQueries({ queryKey: ['adminDashboard'] }),
-    queryClient.invalidateQueries({ queryKey: ['adminPendingSummary'] }),
-    queryClient.invalidateQueries({ queryKey: ['adminEventsList'] }),
-    queryClient.invalidateQueries({ queryKey: ['adminEvents'] }),
+    queryClient.invalidateQueries({ queryKey: ['dashboardEvents'], refetchType: 'all' }),
+    queryClient.invalidateQueries({ queryKey: ['adminDashboard'], refetchType: 'all' }),
+    queryClient.invalidateQueries({ queryKey: ['adminPendingSummary'], refetchType: 'all' }),
+    queryClient.invalidateQueries({ queryKey: ['adminEventsList'], refetchType: 'all' }),
+    queryClient.invalidateQueries({ queryKey: ['adminEvents'], refetchType: 'all' }),
 
     // 3. Society Views & Dashboards
-    queryClient.invalidateQueries({ queryKey: ['mySocietyEventsList'] }),
-    queryClient.invalidateQueries({ queryKey: ['myEvents'] }),
-    queryClient.invalidateQueries({ queryKey: ['societyEvents'] }),
-    queryClient.invalidateQueries({ queryKey: ['societyDashboard'] }),
+    queryClient.invalidateQueries({ queryKey: ['mySocietyEventsList'], refetchType: 'all' }),
+    queryClient.invalidateQueries({ queryKey: ['myEvents'], refetchType: 'all' }),
+    queryClient.invalidateQueries({ queryKey: ['societyEvents'], refetchType: 'all' }),
+    queryClient.invalidateQueries({ queryKey: ['societyDashboard'], refetchType: 'all' }),
 
     // 4. Advisor Views
-    queryClient.invalidateQueries({ queryKey: ['advisorEventsQueue'] }),
-    queryClient.invalidateQueries({ queryKey: ['advisorEvents'] }),
-    queryClient.invalidateQueries({ queryKey: ['advisorDashboard'] }),
+    queryClient.invalidateQueries({ queryKey: ['advisorEventsQueue'], refetchType: 'all' }),
+    queryClient.invalidateQueries({ queryKey: ['advisorEvents'], refetchType: 'all' }),
+    queryClient.invalidateQueries({ queryKey: ['advisorDashboard'], refetchType: 'all' }),
 
     // 5. Public Views & Feeds
-    queryClient.invalidateQueries({ queryKey: ['campusFeed'] }),
-    queryClient.invalidateQueries({ queryKey: ['events'] }),
-    queryClient.invalidateQueries({ queryKey: ['publicEvents'] }),
-    queryClient.invalidateQueries({ queryKey: ['publicCalendarEvents'] }),
-    queryClient.invalidateQueries({ queryKey: ['publicListEvents'] }),
-    queryClient.invalidateQueries({ queryKey: ['publicSocietyEvents'] }),
+    queryClient.invalidateQueries({ queryKey: ['campusFeed'], refetchType: 'all' }),
+    queryClient.invalidateQueries({ queryKey: ['events'], refetchType: 'all' }),
+    queryClient.invalidateQueries({ queryKey: ['publicEvents'], refetchType: 'all' }),
+    queryClient.invalidateQueries({ queryKey: ['publicCalendarEvents'], refetchType: 'all' }),
+    queryClient.invalidateQueries({ queryKey: ['publicListEvents'], refetchType: 'all' }),
+    queryClient.invalidateQueries({ queryKey: ['publicSocietyEvents'], refetchType: 'all' }),
   ];
 
   await Promise.all(invalidations);
+};
+
+/**
+ * Optimistically updates the client cache when an event is updated or resubmitted,
+ * ensuring the Society Dashboard and event lists immediately reflect the updated status
+ * (e.g. 'PENDING_ADMIN' or 'PENDING_ADVISOR') without requiring a manual page refresh.
+ */
+export const optimisticUpdateEvent = (
+  queryClient: QueryClient,
+  updatedEvent: any,
+): void => {
+  if (!updatedEvent || !updatedEvent.id) return;
+  const eventId = updatedEvent.id;
+
+  // 1. Single Event Detail
+  queryClient.setQueryData(['event', eventId], (old: any) => {
+    if (!old) return updatedEvent;
+    return { ...old, ...updatedEvent };
+  });
+
+  // 2. Society Dashboard (instantly updates pendingEvents array with 0ms delay)
+  queryClient.setQueriesData(
+    { queryKey: ['societyDashboard'] },
+    (old: any) => {
+      if (!old) return old;
+      let updatedPending = Array.isArray(old.pendingEvents) ? [...old.pendingEvents] : [];
+      const index = updatedPending.findIndex((e: any) => e.id === eventId);
+      if (index >= 0) {
+        updatedPending[index] = { ...updatedPending[index], ...updatedEvent };
+      } else if (
+        ['PENDING_ADVISOR', 'PENDING_ADMIN', 'CHANGES_REQUESTED'].includes(
+          updatedEvent.approvalStatus,
+        )
+      ) {
+        updatedPending = [updatedEvent, ...updatedPending];
+      }
+
+      const updatedUpcoming = Array.isArray(old.upcomingEvents)
+        ? old.upcomingEvents.map((e: any) => (e.id === eventId ? { ...e, ...updatedEvent } : e))
+        : old.upcomingEvents;
+
+      const updatedRecent = Array.isArray(old.recentEvents)
+        ? old.recentEvents.map((e: any) => (e.id === eventId ? { ...e, ...updatedEvent } : e))
+        : old.recentEvents;
+
+      return {
+        ...old,
+        pendingEvents: updatedPending,
+        upcomingEvents: updatedUpcoming,
+        recentEvents: updatedRecent,
+      };
+    },
+  );
+
+  // 3. Society Events List
+  queryClient.setQueriesData(
+    { queryKey: ['mySocietyEventsList'] },
+    (old: any) => {
+      if (!old) return old;
+      if (Array.isArray(old)) {
+        return old.map((e: any) => (e.id === eventId ? { ...e, ...updatedEvent } : e));
+      }
+      if (Array.isArray(old.items)) {
+        return {
+          ...old,
+          items: old.items.map((e: any) => (e.id === eventId ? { ...e, ...updatedEvent } : e)),
+        };
+      }
+      return old;
+    },
+  );
 };
 
 /**

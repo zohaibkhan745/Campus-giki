@@ -370,7 +370,7 @@ export class AdminController {
   })
   async updateEventStatus(
     @Param('id', ParseUUIDPipe) id: string,
-    @Body() dto: { status: string; comments?: string; rules?: string },
+    @Body() dto: { status: string; comments?: string; rules?: string; requiresVenueClearance?: boolean },
   ) {
     return this.adminService.updateEventStatus(id, dto);
   }
