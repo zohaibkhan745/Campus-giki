@@ -11,7 +11,6 @@ import { Loader2 } from 'lucide-react';
 
 // Core Public Pages (Eagerly imported for instant 0ms dock tab switching without fallback spinners)
 import { HomePage } from '@/pages/HomePage';
-import { UpcomingEventsPage } from '@/pages/events/UpcomingEventsPage';
 import { CampusCalendarPage } from '@/pages/events/CampusCalendarPage';
 import { SocietyDirectoryPage } from '@/pages/societies/SocietyDirectoryPage';
 
@@ -64,7 +63,7 @@ export const AppRoutes: React.FC = () => {
       {/* Public Routes with Global Navigation */}
       <Route element={<RootLayout />}>
         <Route path="/" element={<HomePage />} />
-        <Route path="/upcoming-events" element={<UpcomingEventsPage />} />
+        <Route path="/upcoming-events" element={<Navigate to="/events?view=upcoming" replace />} />
         <Route path="/societies" element={<SocietyDirectoryPage />} />
         <Route path="/societies/:id" element={<SocietyProfilePage />} />
         <Route path="/events" element={<CampusCalendarPage />} />

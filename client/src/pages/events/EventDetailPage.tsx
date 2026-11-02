@@ -86,8 +86,8 @@ export const EventDetailPage: React.FC = () => {
           onRetry={isError ? () => refetch() : undefined}
           actionText="Try Reconnecting"
           secondaryAction={{
-            label: 'Browse Upcoming Events',
-            to: '/upcoming-events',
+            label: 'Browse Campus Events',
+            to: '/events',
           }}
           showBackAction
         />

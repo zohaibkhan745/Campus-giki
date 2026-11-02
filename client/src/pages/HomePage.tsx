@@ -56,8 +56,8 @@ export const HomePage: React.FC = () => {
               title="Campus Feed is Quiet"
               description="No announcements or society events have been published to the feed yet. Explore upcoming campus events or connect with student societies."
               action={{
-                label: 'Upcoming Events',
-                to: '/upcoming-events',
+                label: 'Campus Events',
+                to: '/events',
               }}
               secondaryAction={{
                 label: 'Browse Societies',

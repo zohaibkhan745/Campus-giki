@@ -1,7 +1,6 @@
 import React, { useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Home, CalendarDays, Menu } from 'lucide-react';
-import { UpcomingEventIcon } from '@/components/icons/UpcomingEventIcon';
 import { SocietyIcon } from '@/components/icons/SocietyIcon';
 import { useAuth } from '@/hooks/useAuth';
 import { useQueryClient } from '@tanstack/react-query';
@@ -35,8 +34,7 @@ export interface DockNavItem {
  */
 const NAV_ITEM_REGISTRY: readonly DockNavItem[] = [
   { id: 'home', label: 'Home', path: '/', icon: <Home /> },
-  { id: 'upcoming', label: 'Upcoming', path: '/upcoming-events', icon: <UpcomingEventIcon /> },
-  { id: 'calendar', label: 'Calendar', path: '/events', icon: <CalendarDays /> },
+  { id: 'events', label: 'Events', path: '/events', icon: <CalendarDays />, activePrefixes: ['/events'] },
   { id: 'societies', label: 'Societies', path: '/societies', icon: <SocietyIcon /> },
   {
     id: 'dashboard',
@@ -85,11 +83,6 @@ export const DockNav: React.FC = () => {
           queryKey: ['campusFeed', 12],
           queryFn: ({ pageParam = 1 }) => feedService.getFeed({ page: pageParam, limit: 12 }),
           initialPageParam: 1,
-        });
-      } else if (path === '/upcoming-events') {
-        queryClient.prefetchQuery({
-          queryKey: ['events', 'upcoming'],
-          queryFn: () => eventService.getAllPublicEvents({ from: new Date().toISOString(), limit: 50, page: 1 }),
         });
       } else if (path === '/events') {
         const now = new Date();

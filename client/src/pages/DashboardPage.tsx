@@ -109,7 +109,7 @@ const StudentDashboardView: React.FC<{ user: any; logout: () => void }> = ({ use
           </Link>
 
           <Link
-            to="/upcoming-events"
+            to="/events"
             className="group p-6 rounded-2xl bg-surface-glass hover:bg-surface-hover border border-border-medium shadow-elevation-1 transition-all flex flex-col justify-between space-y-4"
           >
             <div className="p-3 bg-emerald-500/15 text-emerald-500 rounded-xl w-fit group-hover:scale-110 transition-transform">
@@ -117,10 +117,10 @@ const StudentDashboardView: React.FC<{ user: any; logout: () => void }> = ({ use
             </div>
             <div>
               <h3 className="text-lg font-bold text-text-primary group-hover:text-emerald-500 transition-colors flex items-center justify-between">
-                Upcoming Events
+                Campus Events
                 <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
               </h3>
-              <p className="text-xs text-text-secondary mt-1">Competitions, workshops, and galas</p>
+              <p className="text-xs text-text-secondary mt-1">Calendar, competitions, and workshops</p>
             </div>
           </Link>
 

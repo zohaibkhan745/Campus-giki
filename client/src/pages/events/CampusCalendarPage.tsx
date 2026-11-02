@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { Calendar as CalendarIcon, Loader2, RefreshCw, AlertCircle } from 'lucide-react';
+import { Calendar as CalendarIcon, CalendarDays, List, Loader2, RefreshCw, AlertCircle, Plus } from 'lucide-react';
 import { CustomDropdown } from '@/components/ui/CustomDropdown';
 import { eventService } from '@/services/event.service';
 import { societyService } from '@/services/society.service';
@@ -20,19 +20,55 @@ export const CampusCalendarPage: React.FC = () => {
   const [selectedSociety, setSelectedSociety] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearch = useDebounce(searchQuery, 250);
-  const [searchParams] = useSearchParams();
-  const viewParam = searchParams.get('view') as 'today' | 'week' | 'month' | 'upcoming' | null;
-  const [listFilter, setListFilter] = useState<'today' | 'week' | 'month' | 'upcoming'>(viewParam || 'upcoming');
+  const [searchParams, setSearchParams] = useSearchParams();
+  
+  const rawViewParam = searchParams.get('view');
+  const isListViewParam = rawViewParam && ['today', 'week', 'month', 'upcoming', 'list'].includes(rawViewParam);
+  
+  const [viewMode, setViewMode] = useState<'calendar' | 'list'>(isListViewParam ? 'list' : 'calendar');
+  const [listFilter, setListFilter] = useState<'today' | 'week' | 'month' | 'upcoming'>(
+    rawViewParam && ['today', 'week', 'month', 'upcoming'].includes(rawViewParam)
+      ? (rawViewParam as 'today' | 'week' | 'month' | 'upcoming')
+      : 'upcoming'
+  );
   const [visibleEventsCount, setVisibleEventsCount] = useState(8);
 
+  // Synchronize state if URL query param changes externally
   useEffect(() => {
-    if (viewParam) {
-      setTimeout(() => document.getElementById('events-list')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 300);
-    } else if (window.location.hash) {
-      const id = window.location.hash.replace('#', '');
-      setTimeout(() => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 300);
+    if (rawViewParam && ['today', 'week', 'month', 'upcoming', 'list'].includes(rawViewParam)) {
+      setViewMode('list');
+      if (['today', 'week', 'month', 'upcoming'].includes(rawViewParam)) {
+        setListFilter(rawViewParam as 'today' | 'week' | 'month' | 'upcoming');
+      }
+    } else if (rawViewParam === 'calendar') {
+      setViewMode('calendar');
     }
-  }, [viewParam]);
+  }, [rawViewParam]);
+
+  const handleModeSwitch = (mode: 'calendar' | 'list') => {
+    setViewMode(mode);
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev);
+      if (mode === 'calendar') {
+        next.set('view', 'calendar');
+      } else {
+        next.set('view', listFilter);
+      }
+      return next;
+    }, { replace: true });
+  };
+
+  const handleFilterChange = (filter: 'today' | 'week' | 'month' | 'upcoming') => {
+    setListFilter(filter);
+    setVisibleEventsCount(8);
+    if (viewMode === 'list') {
+      setSearchParams(prev => {
+        const next = new URLSearchParams(prev);
+        next.set('view', filter);
+        return next;
+      }, { replace: true });
+    }
+  };
 
   const { data: societiesData } = useQuery({
     queryKey: ['societiesListForFilter'],
@@ -47,7 +83,6 @@ export const CampusCalendarPage: React.FC = () => {
     data: calendarEventsData,
     isLoading: isCalendarLoading,
     isError: isCalendarError,
-    error: calendarError,
     refetch: refetchCalendar,
   } = useQuery({
     queryKey: ['publicCalendarEvents', startOfMonth.toISOString(), endOfMonth.toISOString(), selectedSociety, debouncedSearch],
@@ -60,7 +95,11 @@ export const CampusCalendarPage: React.FC = () => {
     placeholderData: keepPreviousData,
   });
   
-  const calendarEventsList = (calendarEventsData?.items || []).filter(ev => !searchQuery || ev.title.toLowerCase().includes(searchQuery.toLowerCase()) || ev.description?.toLowerCase().includes(searchQuery.toLowerCase()));
+  const calendarEventsList = (calendarEventsData?.items || []).filter(ev => 
+    !searchQuery || 
+    ev.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+    ev.description?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const filterDates = useMemo(() => {
     const today = new Date();
@@ -95,18 +134,36 @@ export const CampusCalendarPage: React.FC = () => {
       from: filterDates.from, 
       to: filterDates.to, 
       societyId: selectedSociety !== 'all' ? selectedSociety : undefined, 
-      limit: 40 
+      limit: 50 
     }),
     placeholderData: keepPreviousData,
   });
   
-  const eventsList = listEventsData?.items || [];
-  const visibleEvents = eventsList.slice(0, visibleEventsCount);
+  const rawEventsList = listEventsData?.items || [];
+  const filteredEventsList = useMemo(() => {
+    if (!debouncedSearch.trim()) return rawEventsList;
+    const query = debouncedSearch.toLowerCase();
+    return rawEventsList.filter(ev => 
+      ev.title?.toLowerCase().includes(query) || 
+      ev.description?.toLowerCase().includes(query) ||
+      ev.venue?.toLowerCase().includes(query) ||
+      ev.society?.name?.toLowerCase().includes(query)
+    );
+  }, [rawEventsList, debouncedSearch]);
+
+  const visibleEvents = filteredEventsList.slice(0, visibleEventsCount);
 
   const handleClearFilters = () => {
     setSearchQuery('');
     setSelectedSociety('all');
     setListFilter('upcoming');
+    if (viewMode === 'list') {
+      setSearchParams(prev => {
+        const next = new URLSearchParams(prev);
+        next.set('view', 'upcoming');
+        return next;
+      }, { replace: true });
+    }
   };
 
   // Calendar logic
@@ -158,63 +215,106 @@ export const CampusCalendarPage: React.FC = () => {
   };
 
   const today = new Date();
-  const isCurrentMonthView = currentDate.getMonth() === today.getMonth() && currentDate.getFullYear() === today.getFullYear(); const isToday = (d: Date) => d.getDate() === today.getDate() && d.getMonth() === today.getMonth() && d.getFullYear() === today.getFullYear();
+  const isCurrentMonthView = currentDate.getMonth() === today.getMonth() && currentDate.getFullYear() === today.getFullYear();
+  const isToday = (d: Date) => d.getDate() === today.getDate() && d.getMonth() === today.getMonth() && d.getFullYear() === today.getFullYear();
 
   return (
-    <div className="min-h-screen text-text-primary flex justify-center py-6 px-8 sm:px-10 font-sans relative">
+    <div className="min-h-screen text-text-primary flex justify-center py-6 px-4 sm:px-8 lg:px-10 font-sans relative">
       <div className="w-full max-w-full flex flex-col gap-6 pb-20">
         
         {/* Page Header */}
-        <h1 className="font-extrabold text-5xl sm:text-6xl text-text-primary tracking-tight leading-tight pb-4">
-          Events Calendar
-        </h1>
-        
-        {/* Top Navigation */}
-        <div className="flex justify-between items-center flex-wrap gap-3">
-          <div className="flex items-center gap-2">
-            <h2 className="text-2xl font-bold text-text-primary drop-shadow-sm mr-2">
-              {currentDate.toLocaleString('default', { month: 'long', year: 'numeric' })}
-            </h2>
-            
-            {isCalendarLoading && <Loader2 className="w-4 h-4 animate-spin ml-2 text-text-muted" />}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-border-subtle">
+          <div>
+            <h1 className="font-extrabold text-4xl sm:text-5xl lg:text-6xl text-text-primary tracking-tight leading-tight">
+              Campus Events
+            </h1>
+            <p className="text-sm sm:text-base text-text-secondary mt-1 max-w-2xl">
+              Discover upcoming activities, workshops, competitions, and view the monthly academic calendar.
+            </p>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3 self-start md:self-auto flex-wrap">
+            {/* View Mode Switcher (Segmented Control) */}
+            <div className="inline-flex p-1 bg-surface-glass border border-border-medium rounded-2xl backdrop-blur-md shadow-sm">
+              <button
+                type="button"
+                onClick={() => handleModeSwitch('calendar')}
+                aria-pressed={viewMode === 'calendar'}
+                className={`flex items-center gap-2 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+                  viewMode === 'calendar'
+                    ? 'bg-text-primary text-text-inverse shadow-sm'
+                    : 'text-text-secondary hover:text-text-primary hover:bg-surface-hover'
+                }`}
+              >
+                <CalendarDays className="w-4 h-4" />
+                <span>Calendar</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleModeSwitch('list')}
+                aria-pressed={viewMode === 'list'}
+                className={`flex items-center gap-2 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+                  viewMode === 'list'
+                    ? 'bg-text-primary text-text-inverse shadow-sm'
+                    : 'text-text-secondary hover:text-text-primary hover:bg-surface-hover'
+                }`}
+              >
+                <List className="w-4 h-4" />
+                <span>List View</span>
+              </button>
+            </div>
+
             {user?.role === 'SOCIETY' && (
               <button 
-                className="px-4 py-2 rounded-xl bg-brand-primary text-white font-bold hover:bg-brand-primary-hover shadow-sm transition-all text-sm cursor-pointer" 
+                className="inline-flex items-center gap-1.5 px-4 py-2 sm:py-2.5 rounded-xl bg-brand-primary text-white font-bold hover:bg-brand-primary-hover shadow-sm transition-all text-xs sm:text-sm cursor-pointer" 
                 onClick={() => navigate('/events/create')}
               >
-                + New Event
+                <Plus className="w-4 h-4" />
+                <span>New Event</span>
               </button>
             )}
           </div>
         </div>
 
-        {/* Controls */}
+        {/* Filter Controls Bar */}
         <div className="flex flex-col sm:flex-row gap-2.5">
           <div className="flex flex-row gap-2.5 flex-1">
             <input 
               type="text" 
               className="campus-calendar-search-input flex-1 min-w-[120px] h-[44px]" 
-              placeholder="Search events..." 
+              placeholder="Search events by title, description..." 
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
             />
             
-            <div className="flex gap-1 shrink-0 items-center justify-center">
-              <button className="campus-calendar-glass-btn w-10 h-11" onClick={prevMonth}>&lt;</button>
-              <button 
-                className={`campus-calendar-glass-btn w-[135px] h-11 ${!isCurrentMonthView ? 'bg-text-primary text-text-inverse font-bold' : ''}`}
-                onClick={goToday} 
-              >
-                Current Month
-              </button>
-              <button className="campus-calendar-glass-btn w-10 h-11" onClick={nextMonth}>&gt;</button>
-            </div>
+            {viewMode === 'calendar' && (
+              <div className="flex gap-1 shrink-0 items-center justify-center">
+                <button 
+                  className="campus-calendar-glass-btn w-10 h-11" 
+                  onClick={prevMonth}
+                  aria-label="Previous month"
+                >
+                  &lt;
+                </button>
+                <button 
+                  className={`campus-calendar-glass-btn w-[135px] h-11 ${!isCurrentMonthView ? 'bg-text-primary text-text-inverse font-bold' : ''}`}
+                  onClick={goToday} 
+                >
+                  Current Month
+                </button>
+                <button 
+                  className="campus-calendar-glass-btn w-10 h-11" 
+                  onClick={nextMonth}
+                  aria-label="Next month"
+                >
+                  &gt;
+                </button>
+              </div>
+            )}
           </div>
 
-          <div className="w-full sm:w-[280px] shrink-0 h-[44px]">
+          <div className="w-full sm:w-[260px] shrink-0 h-[44px]">
             <CustomDropdown 
               className="w-full h-full"
               value={selectedSociety}
@@ -225,77 +325,99 @@ export const CampusCalendarPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Calendar Sync Error Notification */}
-        {isCalendarError && (
-          <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/25 text-amber-600 dark:text-amber-200 text-xs sm:text-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-lg">
-            <div className="flex items-center gap-2.5">
-              <AlertCircle className="w-5 h-5 text-amber-500 shrink-0" />
-              <span>Unable to sync latest calendar events from the campus server. Displaying cached view.</span>
+        {/* Calendar View Container */}
+        {viewMode === 'calendar' && (
+          <div className="flex flex-col gap-6">
+            {/* Month Header */}
+            <div className="flex justify-between items-center flex-wrap gap-3">
+              <div className="flex items-center gap-2">
+                <h2 className="text-2xl font-bold text-text-primary drop-shadow-sm">
+                  {currentDate.toLocaleString('default', { month: 'long', year: 'numeric' })}
+                </h2>
+                {isCalendarLoading && <Loader2 className="w-4 h-4 animate-spin ml-2 text-text-muted" />}
+              </div>
             </div>
-            <button
-              onClick={() => refetchCalendar()}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-700 dark:text-amber-300 font-bold text-xs transition-colors self-start sm:self-auto cursor-pointer"
-            >
-              <RefreshCw className="w-3.5 h-3.5" />
-              <span>Retry Sync</span>
-            </button>
+
+            {/* Calendar Sync Error Notification */}
+            {isCalendarError && (
+              <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/25 text-amber-600 dark:text-amber-200 text-xs sm:text-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-lg">
+                <div className="flex items-center gap-2.5">
+                  <AlertCircle className="w-5 h-5 text-amber-500 shrink-0" />
+                  <span>Unable to sync latest calendar events from the campus server. Displaying cached view.</span>
+                </div>
+                <button
+                  onClick={() => refetchCalendar()}
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-700 dark:text-amber-300 font-bold text-xs transition-colors self-start sm:self-auto cursor-pointer"
+                >
+                  <RefreshCw className="w-3.5 h-3.5" />
+                  <span>Retry Sync</span>
+                </button>
+              </div>
+            )}
+
+            {/* Calendar Card Grid */}
+            <div className="campus-calendar-card">
+              <div className="campus-calendar-weekdays">
+                <div>Sun</div>
+                <div>Mon</div>
+                <div>Tue</div>
+                <div>Wed</div>
+                <div>Thu</div>
+                <div>Fri</div>
+                <div>Sat</div>
+              </div>
+
+              <div className="campus-calendar-grid">
+                {cells.map((cell, idx) => {
+                  const dayEvents = getEventsForDate(cell.fullDate);
+                  const cellClasses = `campus-calendar-day-cell ${cell.isOtherMonth ? 'other-month' : ''} ${isToday(cell.fullDate) ? 'today' : ''}`;
+                  return (
+                    <div key={idx} className={cellClasses}>
+                      <span className="campus-calendar-day-number">{cell.day}</span>
+                      {dayEvents.map(ev => (
+                        <div 
+                          key={ev.id} 
+                          onClick={(e) => {
+                            const rect = e.currentTarget.getBoundingClientRect();
+                            const computedStyle = window.getComputedStyle(e.currentTarget);
+                            const bg = computedStyle.backgroundColor;
+                            const color = computedStyle.color;
+                            setSelectedEvent({ event: ev, rect, bg, color });
+                          }}
+                          className={`campus-calendar-event-tag ${getEventColorClass(ev.society?.name || 'A')} ${selectedEvent?.event.id === ev.id ? 'ring-2 ring-brand-primary shadow-sm' : ''}`}
+                          title={ev.title}
+                        >
+                          {ev.title}
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
           </div>
         )}
 
-        {/* Calendar Card Grid */}
-        <div className="campus-calendar-card">
-          <div className="campus-calendar-weekdays">
-            <div>Sun</div>
-            <div>Mon</div>
-            <div>Tue</div>
-            <div>Wed</div>
-            <div>Thu</div>
-            <div>Fri</div>
-            <div>Sat</div>
-          </div>
-
-          <div className="campus-calendar-grid">
-            {cells.map((cell, idx) => {
-              const dayEvents = getEventsForDate(cell.fullDate);
-              const cellClasses = `campus-calendar-day-cell ${cell.isOtherMonth ? 'other-month' : ''} ${isToday(cell.fullDate) ? 'today' : ''}`;
-              return (
-                <div key={idx} className={cellClasses}>
-                  <span className="campus-calendar-day-number">{cell.day}</span>
-                  {dayEvents.map(ev => (
-                    <div 
-                      key={ev.id} 
-                      onClick={(e) => {
-                        const rect = e.currentTarget.getBoundingClientRect();
-                        const computedStyle = window.getComputedStyle(e.currentTarget);
-                        const bg = computedStyle.backgroundColor;
-                        const color = computedStyle.color;
-                        setSelectedEvent({ event: ev, rect, bg, color });
-                      }}
-                      className={`campus-calendar-event-tag ${getEventColorClass(ev.society?.name || 'A')} ${selectedEvent?.event.id === ev.id ? 'ring-2 ring-brand-primary shadow-sm' : ''}`}
-                      title={ev.title}
-                    >
-                      {ev.title}
-                    </div>
-                  ))}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Detailed Events List Below Calendar */}
-        <div id="events-list" className="pt-8 pb-12">
+        {/* Detailed Events Feed Section */}
+        <div id="events-list" className={viewMode === 'calendar' ? 'pt-8 pb-12' : 'pt-2 pb-12'}>
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-            <h2 className="font-eb-garamond text-2xl font-bold text-text-primary flex items-center gap-2">
-              Events 
-            </h2>
+            <div className="flex items-center gap-3">
+              <h2 className="font-eb-garamond text-2xl font-bold text-text-primary flex items-center gap-2">
+                {viewMode === 'calendar' ? 'Events Schedule' : 'Upcoming Events'}
+              </h2>
+              {!isListLoading && (
+                <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-surface-glass border border-border-subtle text-text-secondary">
+                  {filteredEventsList.length} {filteredEventsList.length === 1 ? 'event' : 'events'}
+                </span>
+              )}
+            </div>
             
             <div className="flex items-center flex-wrap gap-2">
-              {['today', 'week', 'month', 'upcoming'].map((filter) => (
+              {(['today', 'week', 'month', 'upcoming'] as const).map((filter) => (
                 <button
                   key={filter}
-                  onClick={() => { setListFilter(filter as any); setVisibleEventsCount(8); }}
-                  className={`px-4 py-2 rounded-full font-bold text-sm border transition-all cursor-pointer ${
+                  onClick={() => handleFilterChange(filter)}
+                  className={`px-4 py-2 rounded-full font-bold text-xs sm:text-sm border transition-all cursor-pointer ${
                     listFilter === filter
                       ? 'bg-text-primary text-text-inverse border-text-primary shadow-sm'
                       : 'bg-surface-glass text-text-secondary border-border-subtle hover:border-border-strong hover:text-text-primary'
@@ -308,7 +430,9 @@ export const CampusCalendarPage: React.FC = () => {
           </div>
           
           {isListLoading ? (
-            <div className="flex justify-center p-10"><Loader2 className="w-8 h-8 animate-spin text-text-muted" /></div>
+            <div className="flex justify-center p-16">
+              <Loader2 className="w-8 h-8 animate-spin text-text-muted" />
+            </div>
           ) : isListError ? (
             <ErrorState
               error={listError}
@@ -339,13 +463,13 @@ export const CampusCalendarPage: React.FC = () => {
                 ))}
               </div>
               
-              {eventsList.length > visibleEventsCount && (
+              {filteredEventsList.length > visibleEventsCount && (
                 <div className="mt-8 flex justify-center">
                   <button 
                     onClick={() => setVisibleEventsCount(prev => prev + 8)}
-                    className="campus-calendar-glass-btn !px-8 !py-3 !font-bold"
+                    className="campus-calendar-glass-btn !px-8 !py-3 !font-bold cursor-pointer hover:scale-105 transition-transform"
                   >
-                    Load More Events
+                    Load More Events ({filteredEventsList.length - visibleEventsCount} remaining)
                   </button>
                 </div>
               )}
@@ -366,9 +490,3 @@ export const CampusCalendarPage: React.FC = () => {
     </div>
   );
 };
-
-
-
-
-
-

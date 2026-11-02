@@ -186,8 +186,8 @@ export const SocietyDirectoryPage: React.FC = () => {
           error={error}
           onRetry={refetch}
           secondaryAction={{
-            label: 'Upcoming Events',
-            to: '/upcoming-events',
+            label: 'Campus Events',
+            to: '/events',
           }}
         />
       ) : societies.length === 0 ? (
