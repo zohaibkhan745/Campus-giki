@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate, Link } from "react-router-dom";
 import { invalidateEventQueries, optimisticUpdateEvent } from "@/lib/queryInvalidations";
-import { ArrowLeft, CheckCircle2, ShieldCheck, Sparkles, Loader2, Building2, Clock } from "lucide-react";
+import { ArrowLeft, CheckCircle2, ShieldCheck, Sparkles, Loader2, Building2 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { adminService } from "@/services/admin.service";
 import { eventService } from "@/services/event.service";
@@ -224,15 +224,6 @@ export const CreateEventPage: React.FC = () => {
     enabled: !isDsaAdmin,
   });
 
-  const latestPlan = useMemo(() => {
-    if (!myPlans || myPlans.length === 0) return null;
-    return myPlans[0];
-  }, [myPlans]);
-
-  const isPlanUnderReview = Boolean(
-    latestPlan && (latestPlan.status === "PENDING_ADVISOR" || latestPlan.status === "PENDING_ADMIN")
-  );
-
   // Only planned events from APPROVED annual calendars may be imported / auto-filled
   const plannedEvents = useMemo(() => {
     if (isDsaAdmin || !myPlans) return [];
@@ -422,18 +413,6 @@ export const CreateEventPage: React.FC = () => {
               })),
             ]}
           />
-        </div>
-      )}
-
-      {!isDsaAdmin && plannedEvents.length === 0 && isPlanUnderReview && (
-        <div className="p-4 rounded-cards bg-yellow-500/10 border border-yellow-500/20 text-yellow-600 dark:text-yellow-400 text-xs flex items-center gap-3">
-          <Clock className="w-4 h-4 shrink-0 text-yellow-500" />
-          <div>
-            <span className="font-semibold">Annual Calendar Under Review: </span>
-            <span className="text-text-secondary">
-              Your annual calendar is currently awaiting approval from your Faculty Advisor/DSA. Planned events will become available for auto-fill once approved. You can still enter event details manually below.
-            </span>
-          </div>
         </div>
       )}
 
