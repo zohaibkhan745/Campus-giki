@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { AlertCircle, X, Send, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 
-interface RequestChangesModalProps {
+export interface RequestChangesModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (comments?: string) => void;
@@ -11,6 +11,9 @@ interface RequestChangesModalProps {
   reviewerRole?: 'ADVISOR' | 'DSA_ADMIN';
   eventTitle?: string;
   initialComments?: string;
+  title?: string;
+  description?: string;
+  placeholder?: string;
 }
 
 export const RequestChangesModal: React.FC<RequestChangesModalProps> = ({
@@ -21,8 +24,17 @@ export const RequestChangesModal: React.FC<RequestChangesModalProps> = ({
   reviewerRole = 'DSA_ADMIN',
   eventTitle,
   initialComments = '',
+  title = 'Request Changes',
+  description,
+  placeholder,
 }) => {
   const [comments, setComments] = useState(initialComments);
+
+  useEffect(() => {
+    if (isOpen) {
+      setComments(initialComments);
+    }
+  }, [isOpen, initialComments]);
 
   if (!isOpen) return null;
 
@@ -34,7 +46,11 @@ export const RequestChangesModal: React.FC<RequestChangesModalProps> = ({
     onSubmit(hasText ? comments.trim() : undefined);
   };
 
-  return createPortal(
+  const defaultPlaceholder = isDsa
+    ? 'e.g. Please adjust the event schedule or specify alternate dates and venues...'
+    : 'e.g. Please update the schedule to avoid overlap with academic examinations or select an alternate venue...';
+
+  return typeof document !== 'undefined' ? createPortal(
     <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4">
       {/* Backdrop */}
       <div
@@ -62,13 +78,16 @@ export const RequestChangesModal: React.FC<RequestChangesModalProps> = ({
           </div>
           <div>
             <h3 className="text-xl font-extrabold text-text-primary tracking-tight">
-              Request Changes
+              {title}
             </h3>
             <p className="text-xs text-text-secondary mt-1 font-medium leading-relaxed">
-              {eventTitle ? (
-                <>For <strong className="text-text-primary">{eventTitle}</strong>. </>
-              ) : null}
-              Provide revision feedback for the society officers, or skip to request general rework.
+              {description ? (
+                description
+              ) : eventTitle ? (
+                <>For <strong className="text-text-primary">{eventTitle}</strong>. Provide revision feedback for the society officers, or skip to request general rework.</>
+              ) : (
+                'Provide revision feedback for the society officers, or skip to request general rework.'
+              )}
             </p>
           </div>
         </div>
@@ -88,15 +107,11 @@ export const RequestChangesModal: React.FC<RequestChangesModalProps> = ({
               value={comments}
               onChange={(e) => setComments(e.target.value)}
               disabled={isLoading}
-              placeholder={
-                isDsa
-                  ? 'e.g. Please select another auditorium as AHA is reserved; please also adjust the end time.'
-                  : 'e.g. Please update the schedule to avoid overlap with mid-term examinations.'
-              }
+              placeholder={placeholder || defaultPlaceholder}
               className="w-full text-sm outline-none bg-surface text-text-primary placeholder:text-text-muted rounded-inputs p-3.5 border border-border-medium focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all resize-y disabled:opacity-50"
             />
             <p className="text-[11px] text-text-muted leading-relaxed">
-              If left blank, the event proposal will return to the host society marked as &ldquo;Changes Requested by {isDsa ? 'Admin' : 'Advisor'}&rdquo; without a custom note.
+              If left blank, the proposal will return to the host society marked as &ldquo;Changes Requested by {isDsa ? 'Admin' : 'Advisor'}&rdquo; without a custom note.
             </p>
           </div>
 
@@ -125,6 +140,5 @@ export const RequestChangesModal: React.FC<RequestChangesModalProps> = ({
       </div>
     </div>,
     document.body
-  );
+  ) : null;
 };
-
