@@ -321,7 +321,7 @@ export const CreateEventPage: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="mb-4">
-            <BackButton to={isDsaAdmin ? "/admin/events" : "/dashboard"} variant="inline" />
+            <BackButton variant="inline" fallback={isDsaAdmin ? "/admin" : "/dashboard"} />
           </div>
           <h1 className="text-3xl font-extrabold text-text-primary tracking-tight">
             {isDsaAdmin ? "Schedule & Publish Campus Event" : "Create New Campus Event"}

@@ -4,6 +4,8 @@ import { ArrowLeft } from 'lucide-react';
 
 export interface BackButtonProps {
   to?: string;
+  fallback?: string;
+  forceTo?: boolean;
   onClick?: () => void;
   className?: string;
   title?: string;
@@ -13,9 +15,12 @@ export interface BackButtonProps {
 /**
  * Universal, accessible BackButton adhering to HCI principles & WCAG AAA contrast standards.
  * Dynamically responds to Light and Dark modes using semantic design tokens.
+ * By default, navigates back in browser history if history exists; otherwise falls back to fallback/to or dashboard.
  */
 export const BackButton: React.FC<BackButtonProps> = ({
   to,
+  fallback,
+  forceTo = false,
   onClick,
   className = '',
   title = 'Go back',
@@ -27,10 +32,25 @@ export const BackButton: React.FC<BackButtonProps> = ({
     e.preventDefault();
     if (onClick) {
       onClick();
-    } else if (to) {
+      return;
+    }
+
+    if (forceTo && to) {
       navigate(to);
-    } else {
+      return;
+    }
+
+    const hasHistory =
+      typeof window !== 'undefined' &&
+      window.history.state &&
+      typeof window.history.state.idx === 'number' &&
+      window.history.state.idx > 0;
+
+    if (hasHistory) {
       navigate(-1);
+    } else {
+      const destination = fallback || to || '/dashboard';
+      navigate(destination);
     }
   };
 
