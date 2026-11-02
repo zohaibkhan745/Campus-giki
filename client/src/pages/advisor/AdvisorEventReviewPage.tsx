@@ -16,6 +16,7 @@ import {
   AlertCircle,
   X,
   ShieldCheck,
+  Printer,
 } from 'lucide-react';
 import { eventService } from '@/services/event.service';
 import { advisorService } from '@/services/advisor.service';
@@ -23,7 +24,7 @@ import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { Alert } from '@/components/ui/Alert';
 import { ErrorState, BackButton } from '@/components/ui';
-import { RequestChangesModal } from '@/components/events/RequestChangesModal';
+import { RequestChangesModal, EventPrintModal } from '@/components/events';
 import type { AxiosError } from 'axios';
 
 const getBadgeStyles = (status: string) => {
@@ -46,6 +47,7 @@ export const AdvisorEventReviewPage: React.FC = () => {
   const queryClient = useQueryClient();
   const [serverError, setServerError] = useState<string | null>(null);
   const [isRequestChangesOpen, setIsRequestChangesOpen] = useState(false);
+  const [isPrintModalOpen, setIsPrintModalOpen] = useState(false);
 
   const {
     data: eventData,
@@ -131,15 +133,29 @@ export const AdvisorEventReviewPage: React.FC = () => {
       <div className="flex items-center mb-4">
         <BackButton variant="inline" />
       </div>
-      <div className="mb-6">
-        <h1 className="text-4xl font-extrabold text-text-primary leading-tight">
-          Event Details: {eventData.title}
-        </h1>
-        <div className="flex items-center gap-3 mt-3">
-          <span className={`px-3 py-1 border backdrop-blur-md rounded-inputs text-xs uppercase tracking-wider font-bold ${getBadgeStyles(eventData.approvalStatus || '')}`}>
-            {formatStatus(eventData.approvalStatus || '')}
-          </span>
-          <span className="text-sm text-text-secondary font-medium">Society: {eventData.society?.name}</span>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+        <div>
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-text-primary leading-tight">
+            Event Details: {eventData.title}
+          </h1>
+          <div className="flex items-center gap-3 mt-3">
+            <span className={`px-3 py-1 border backdrop-blur-md rounded-inputs text-xs uppercase tracking-wider font-bold ${getBadgeStyles(eventData.approvalStatus || '')}`}>
+              {formatStatus(eventData.approvalStatus || '')}
+            </span>
+            <span className="text-sm text-text-secondary font-medium">Society: {eventData.society?.name}</span>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3 shrink-0">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setIsPrintModalOpen(true)}
+            className="bg-surface hover:bg-surface-hover text-text-primary border border-border-medium"
+            leftIcon={<Printer className="w-4 h-4 text-blue-500" />}
+          >
+            Print Summary
+          </Button>
         </div>
       </div>
 
@@ -389,6 +405,13 @@ export const AdvisorEventReviewPage: React.FC = () => {
           initialComments={eventData.advisorComments || ''}
         />
       )}
+
+      {/* Official Event Sanction & Summary Print Modal */}
+      <EventPrintModal
+        isOpen={isPrintModalOpen}
+        onClose={() => setIsPrintModalOpen(false)}
+        event={eventData}
+      />
     </div>
   );
 };

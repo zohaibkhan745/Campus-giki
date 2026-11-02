@@ -1,5 +1,5 @@
 import { getSocietyLogo, resolveImageUrl } from '@/lib/utils';
-import React from 'react';
+import React, { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import {
@@ -13,19 +13,21 @@ import {
   ShieldCheck,
   Edit,
   AlertCircle,
+  Printer,
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { eventService } from '@/services/event.service';
 import { EventDetailSkeleton } from '@/components/events/EventDetailSkeleton';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { BackButton } from '@/components/ui';
-import { AddToCalendarButton } from '@/components/events';
+import { AddToCalendarButton, EventPrintModal } from '@/components/events';
 
 export const EventDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { user } = useAuth();
+  const [isPrintModalOpen, setIsPrintModalOpen] = useState(false);
 
   const {
     data: eventItem,
@@ -98,6 +100,8 @@ export const EventDetailPage: React.FC = () => {
   const targetSocietyId = eventItem.society?.id || eventItem.societyId;
   const isMySociety = user?.role === 'SOCIETY' && user.society?.id === targetSocietyId;
   const isDsaAdmin = user?.role === 'DSA_ADMIN';
+  const isAdvisor = user?.role === 'ADVISOR';
+  const isAuthorizedToPrint = isMySociety || isDsaAdmin || isAdvisor;
   const isPublished =
     Boolean(eventItem.isPublished) ||
     eventItem.approvalStatus === 'APPROVED' ||
@@ -179,8 +183,20 @@ export const EventDetailPage: React.FC = () => {
               </h1>
             </div>
 
-            {/* Action Buttons: Edit, Add to Calendar & Register */}
+            {/* Action Buttons: Edit, Add to Calendar, Register & Print */}
             <div className="flex flex-wrap items-center gap-3">
+              {isAuthorizedToPrint && (
+                <button
+                  type="button"
+                  onClick={() => setIsPrintModalOpen(true)}
+                  className="inline-flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-bold bg-surface-elevated hover:bg-surface-hover text-text-primary border border-border-subtle transition-all shadow-sm active:scale-95 cursor-pointer"
+                  title="Print Official Event Sanction & Summary"
+                >
+                  <Printer className="w-4 h-4 text-brand-primary" />
+                  <span>Print Summary</span>
+                </button>
+              )}
+
               {canEdit && (
                 <Link
                   to={`/events/${eventItem.id}/edit`}
@@ -374,6 +390,13 @@ export const EventDetailPage: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Official Event Sanction & Summary Print Modal */}
+      <EventPrintModal
+        isOpen={isPrintModalOpen}
+        onClose={() => setIsPrintModalOpen(false)}
+        event={eventItem}
+      />
     </div>
   );
 };

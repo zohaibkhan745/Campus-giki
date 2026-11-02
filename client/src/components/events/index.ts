@@ -6,3 +6,4 @@ export * from './DeleteEventDialog';
 export * from './EventDetailSkeleton';
 export * from './RequestChangesModal';
 export * from './ApproveEventModal';
+export * from './EventPrintModal';
