@@ -189,7 +189,7 @@ const EventCardComponent: React.FC<EventCardProps> = ({
       aria-label={`Event: ${item.title}`}
     >
       {/* 1. Top Poster Section with Clean Ambient Backdrop & Date Badge */}
-      <div className="relative w-full aspect-[16/10] overflow-hidden bg-black/90 flex items-center justify-center shrink-0">
+      <div className="relative w-full aspect-[16/9] overflow-hidden bg-black/90 flex items-center justify-center shrink-0">
         {coverImage ? (
           <>
             {/* Ambient blurred backdrop so any aspect ratio fills seamlessly without empty letterboxing */}
@@ -212,8 +212,9 @@ const EventCardComponent: React.FC<EventCardProps> = ({
             />
           </>
         ) : (
-          <div className="w-full h-full bg-surface-elevated flex items-center justify-center text-text-muted">
-            <CalendarIcon className="w-10 h-10 opacity-25" />
+          <div className="w-full h-full bg-gradient-to-br from-brand-primary/20 via-surface-elevated to-surface flex flex-col items-center justify-center text-text-muted gap-1">
+            <CalendarIcon className="w-9 h-9 text-brand-primary opacity-60" />
+            <span className="text-[11px] font-semibold text-text-muted uppercase tracking-wider">Campus Event</span>
           </div>
         )}
 
@@ -227,9 +228,9 @@ const EventCardComponent: React.FC<EventCardProps> = ({
           </span>
         </div>
 
-        {/* Status Badge (Top-Right) */}
-        {showStatusBadge && (
-          <div className="absolute top-3 right-3 z-10 pointer-events-none">
+        {/* Status / Category Badge (Top-Right) */}
+        <div className="absolute top-3 right-3 z-10 pointer-events-none">
+          {showStatusBadge ? (
             <span
               className={cn(
                 'inline-block px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider backdrop-blur-md shadow-md border',
@@ -246,40 +247,35 @@ const EventCardComponent: React.FC<EventCardProps> = ({
             >
               {statusLabel}
             </span>
-          </div>
-        )}
+          ) : (
+            <span className="card-tag !text-[9px] !py-0.5 !px-2.5 shrink-0 backdrop-blur-md bg-surface-glass border border-border-subtle font-extrabold uppercase tracking-wider text-text-primary">
+              {(item as any).eventType || 'Event'}
+            </span>
+          )}
+        </div>
       </div>
 
       {/* 2. Middle Event Details Section */}
-      <div className="flex flex-col flex-1 p-4 text-left gap-1.5 min-h-0">
+      <div className="flex flex-col flex-1 p-4 sm:p-5 text-left gap-2 min-h-0">
         {/* Event Schedule Timestamp */}
         <div className="flex items-center gap-1.5 text-xs font-semibold text-brand-primary">
           <CalendarIcon className="w-3.5 h-3.5 shrink-0" />
           <span className="truncate">{eventDate} • {eventTime}</span>
         </div>
 
-        {/* Event Title (High-contrast, up to 2 lines without premature cutoff) */}
+        {/* Event Title (High-contrast, bold, guaranteed visible) */}
         <h3
-          className="text-[16px] font-bold text-text-primary tracking-tight leading-snug line-clamp-2 group-hover:text-brand-primary transition-colors mt-0.5"
+          className="text-[17px] font-bold text-text-primary tracking-tight leading-snug line-clamp-2 group-hover:text-brand-primary transition-colors min-h-[2.6rem] flex items-center"
           title={item.title}
         >
-          {item.title}
+          {item.title || 'Untitled Event'}
         </h3>
 
         {/* Venue Location */}
-        {item.venue && (
-          <div className="flex items-center gap-1.5 text-xs text-text-secondary">
-            <MapPin className="w-3.5 h-3.5 shrink-0 text-text-muted" />
-            <span className="truncate">{item.venue}</span>
-          </div>
-        )}
-
-        {/* Fallback description if no cover image */}
-        {!coverImage && item.description && (
-          <p className="text-text-secondary text-xs leading-relaxed mt-1 line-clamp-3 whitespace-pre-wrap flex-1">
-            {item.description}
-          </p>
-        )}
+        <div className="flex items-center gap-1.5 text-xs text-text-secondary">
+          <MapPin className="w-3.5 h-3.5 shrink-0 text-text-muted" />
+          <span className="truncate">{item.venue || 'GIKI Campus'}</span>
+        </div>
 
         {/* 3. Society / Organizer Row (Given 100% width, never crushed) */}
         <div className="flex items-center gap-2.5 pt-3 mt-auto border-t border-border-subtle">
