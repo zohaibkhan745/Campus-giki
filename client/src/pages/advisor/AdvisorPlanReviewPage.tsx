@@ -296,7 +296,7 @@ export const AdvisorPlanReviewPage: React.FC = () => {
           <div className="flex items-center gap-2">
             <ShieldCheck className="w-5 h-5 text-brand-primary" />
             <h2 className="text-base sm:text-lg font-bold text-text-primary">
-              Faculty Advisor Decision &amp; Actions
+              Advisor Decision
             </h2>
           </div>
 
@@ -311,7 +311,7 @@ export const AdvisorPlanReviewPage: React.FC = () => {
                 leftIcon={<CheckCircle2 className="w-4 h-4 text-white" />}
                 className="bg-emerald-600 text-white hover:bg-emerald-700 w-full sm:flex-1 py-3"
               >
-                Approve Plan (Forward to DSA)
+                Approve &amp; Forward to DSA
               </Button>
               <Button
                 type="button"
@@ -344,10 +344,8 @@ export const AdvisorPlanReviewPage: React.FC = () => {
         onSubmit={handleConfirmRequestChanges}
         isLoading={reviewMutation.isPending && reviewMutation.variables?.decision === 'CHANGES_REQUESTED'}
         reviewerRole="ADVISOR"
-        title="Request Annual Calendar Changes"
-        eventTitle={`${plan.society?.name} (${plan.year})`}
-        description="Provide feedback or revision instructions for the society officers regarding their planned events, dates, or venues."
-        placeholder="e.g. Please reschedule the science exhibition to avoid overlapping with midterm exams in March..."
+        title="Request Changes"
+        eventTitle={`${plan.society?.name} • ${plan.year} Calendar`}
       />
 
       {/* Yearly Plan Print / PDF Modal */}

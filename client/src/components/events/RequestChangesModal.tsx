@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { AlertCircle, X, Send, ArrowRight } from 'lucide-react';
+import { AlertCircle, X } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 
 export interface RequestChangesModalProps {
@@ -38,17 +38,12 @@ export const RequestChangesModal: React.FC<RequestChangesModalProps> = ({
 
   if (!isOpen) return null;
 
-  const isDsa = reviewerRole === 'DSA_ADMIN';
-  const hasText = comments.trim().length > 0;
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(hasText ? comments.trim() : undefined);
+    onSubmit(comments.trim() ? comments.trim() : undefined);
   };
 
-  const defaultPlaceholder = isDsa
-    ? 'e.g. Please adjust the event schedule or specify alternate dates and venues...'
-    : 'e.g. Please update the schedule to avoid overlap with academic examinations or select an alternate venue...';
+  const defaultPlaceholder = 'Add feedback or revision notes (optional)...';
 
   return typeof document !== 'undefined' ? createPortal(
     <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4">
@@ -80,15 +75,11 @@ export const RequestChangesModal: React.FC<RequestChangesModalProps> = ({
             <h3 className="text-xl font-extrabold text-text-primary tracking-tight">
               {title}
             </h3>
-            <p className="text-xs text-text-secondary mt-1 font-medium leading-relaxed">
-              {description ? (
-                description
-              ) : eventTitle ? (
-                <>For <strong className="text-text-primary">{eventTitle}</strong>. Provide revision feedback for the society officers, or skip to request general rework.</>
-              ) : (
-                'Provide revision feedback for the society officers, or skip to request general rework.'
-              )}
-            </p>
+            {description || eventTitle ? (
+              <p className="text-xs text-text-muted mt-0.5 font-medium">
+                {description || eventTitle}
+              </p>
+            ) : null}
           </div>
         </div>
 
@@ -96,10 +87,10 @@ export const RequestChangesModal: React.FC<RequestChangesModalProps> = ({
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2 text-left">
             <div className="flex items-center justify-between text-xs">
-              <label htmlFor="change-request-notes" className="font-bold text-text-primary">
-                Revision Notes &amp; Guidance
+              <label htmlFor="change-request-notes" className="font-semibold text-text-primary">
+                Feedback
               </label>
-              <span className="text-text-muted font-medium">Optional</span>
+              <span className="text-[11px] text-text-muted">Optional</span>
             </div>
             <textarea
               id="change-request-notes"
@@ -110,9 +101,6 @@ export const RequestChangesModal: React.FC<RequestChangesModalProps> = ({
               placeholder={placeholder || defaultPlaceholder}
               className="w-full text-sm outline-none bg-surface text-text-primary placeholder:text-text-muted rounded-inputs p-3.5 border border-border-medium focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all resize-y disabled:opacity-50"
             />
-            <p className="text-[11px] text-text-muted leading-relaxed">
-              If left blank, the proposal will return to the host society marked as &ldquo;Changes Requested by {isDsa ? 'Admin' : 'Advisor'}&rdquo; without a custom note.
-            </p>
           </div>
 
           {/* Action Buttons */}
@@ -130,10 +118,10 @@ export const RequestChangesModal: React.FC<RequestChangesModalProps> = ({
               type="submit"
               variant="primary"
               isLoading={isLoading}
-              leftIcon={hasText ? <Send className="w-4 h-4 text-amber-400" /> : <ArrowRight className="w-4 h-4" />}
+              leftIcon={<AlertCircle className="w-4 h-4" />}
               className="w-full sm:w-auto bg-amber-600 hover:bg-amber-700 text-white border-amber-500/30"
             >
-              {hasText ? 'Send Changes Request' : 'Skip Note & Request Changes'}
+              Request Changes
             </Button>
           </div>
         </form>

@@ -343,7 +343,7 @@ export const AdminYearlyPlanDetailPage: React.FC = () => {
           <div className="flex items-center gap-2">
             <ShieldCheck className="w-5 h-5 text-brand-primary" />
             <h2 className="text-base sm:text-lg font-bold text-text-primary">
-              DSA Administrative Decision &amp; Actions
+              DSA Decision
             </h2>
           </div>
 
@@ -391,10 +391,8 @@ export const AdminYearlyPlanDetailPage: React.FC = () => {
         onSubmit={handleConfirmRequestChanges}
         isLoading={reviewMutation.isPending && reviewMutation.variables?.decision === 'CHANGES_REQUESTED'}
         reviewerRole="DSA_ADMIN"
-        title="Request Annual Calendar Changes"
-        eventTitle={`${plan.society?.name} (${plan.year})`}
-        description="Provide feedback or revision instructions for the society officers regarding their planned events, dates, or venues."
-        placeholder="e.g. Please select alternate dates or adjust venue bookings for events overlapping with campus-wide exams..."
+        title="Request Changes"
+        eventTitle={`${plan.society?.name} • ${plan.year} Calendar`}
       />
 
       {/* Yearly Plan Print / PDF Modal */}

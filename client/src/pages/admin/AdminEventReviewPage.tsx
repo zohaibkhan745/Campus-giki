@@ -236,7 +236,7 @@ export const AdminEventReviewPage: React.FC = () => {
         <div className="space-y-4">
           <h2 className="text-lg font-extrabold flex items-center gap-2">
             <ShieldCheck className="w-5 h-5 text-brand-primary" />
-            DSA Decision &amp; Actions
+            DSA Decision
           </h2>
           
           {eventData.dsaComments && (

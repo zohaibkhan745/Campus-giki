@@ -201,7 +201,7 @@ export const AdvisorEventReviewPage: React.FC = () => {
         <div className="space-y-4">
           <h2 className="text-lg font-extrabold flex items-center gap-2">
             <ShieldCheck className="w-5 h-5 text-brand-primary" />
-            Faculty Advisor Decision &amp; Actions
+            Advisor Decision
           </h2>
           
           {eventData.advisorComments && (
