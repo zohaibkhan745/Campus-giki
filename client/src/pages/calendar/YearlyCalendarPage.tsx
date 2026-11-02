@@ -533,41 +533,72 @@ export const YearlyCalendarPage: React.FC = () => {
           </div>
         ) : existingPlan && (
           <div className="flex flex-col gap-4 pt-4 border-t border-border-subtle">
-            {existingPlan.status === 'APPROVED' && !isEditRequestPending && (
-              <div className="flex flex-col space-y-2">
-                <label className="text-sm font-medium text-text-secondary">
-                  Reason for Edit Request <span className="text-red-500">*</span>
-                </label>
-                <textarea
-                  value={editReason}
-                  onChange={(e) => {
-                    setEditReason(e.target.value);
-                    if (e.target.value.trim()) setEditReasonError(false);
-                  }}
-                  placeholder="Explain why you need edit access..."
-                  className={cn(
-                    "w-full bg-surface-glass text-text-primary placeholder:text-text-muted text-sm rounded-xl border p-3.5 transition-all outline-none resize-none h-24",
-                    editReasonError 
-                      ? "border-red-500/50 ring-2 ring-red-500/20 focus:border-red-500" 
-                      : "border-border-medium focus:border-border-strong focus:ring-2 focus:ring-brand-primary/20"
-                  )}
-                />
-                {editReasonError && (
-                  <p className="text-red-400 text-xs mt-1">Please provide a reason to request edit access.</p>
-                )}
+            {/* 1. Submitted for Advisor Review notice */}
+            {existingPlan.status === 'PENDING_ADVISOR' && (
+              <div className="p-4 rounded-xl bg-yellow-500/10 border border-yellow-500/20 text-yellow-600 dark:text-yellow-400 text-sm flex items-center gap-3">
+                <Clock className="w-5 h-5 shrink-0" />
+                <div>
+                  <p className="font-semibold">Submitted for Advisor Review</p>
+                  <p className="text-xs text-text-secondary mt-0.5">
+                    Your annual calendar has been submitted and is currently locked while under review by your Faculty Advisor. You will be notified once they review it.
+                  </p>
+                </div>
               </div>
             )}
-            <div className="flex flex-col sm:flex-row gap-4">
-              <button
-                type="button"
-                className={`flex-1 inline-flex items-center justify-center font-semibold rounded-inputs px-5 py-3.5 text-white transition-all duration-200 ${(existingPlan.status !== 'APPROVED' || isEditRequestPending) ? 'opacity-50 cursor-not-allowed bg-warning/50 border border-warning/50' : 'hover:bg-warning-hover bg-warning border border-warning cursor-pointer'}`}
-                disabled={existingPlan.status !== 'APPROVED' || isEditRequestPending || isSaving}
-                onClick={handleRequestEdit}
-              >
-                {isEditRequestPending ? <Clock className="w-5 h-5 mr-2" /> : <Edit3 className="w-5 h-5 mr-2" />}
-                {isEditRequestPending ? 'Edit Request Pending Approval' : 'Request Edit Access'}
-              </button>
-            </div>
+
+            {/* 2. Endorsed by Advisor and awaiting DSA clearance notice */}
+            {existingPlan.status === 'PENDING_ADMIN' && (
+              <div className="p-4 rounded-xl bg-orange-500/10 border border-orange-500/20 text-orange-600 dark:text-orange-400 text-sm flex items-center gap-3">
+                <Clock className="w-5 h-5 shrink-0" />
+                <div>
+                  <p className="font-semibold">Awaiting Final DSA Clearance</p>
+                  <p className="text-xs text-text-secondary mt-0.5">
+                    Your annual calendar has been endorsed by your Faculty Advisor and is now awaiting final review and approval by the Directorate of Student Affairs (DSA).
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* 3. Approved annual calendar: Society can request edit access */}
+            {existingPlan.status === 'APPROVED' && (
+              <>
+                {!isEditRequestPending && (
+                  <div className="flex flex-col space-y-2">
+                    <label className="text-sm font-medium text-text-secondary">
+                      Reason for Edit Request <span className="text-red-500">*</span>
+                    </label>
+                    <textarea
+                      value={editReason}
+                      onChange={(e) => {
+                        setEditReason(e.target.value);
+                        if (e.target.value.trim()) setEditReasonError(false);
+                      }}
+                      placeholder="Explain why you need edit access to this approved annual calendar..."
+                      className={cn(
+                        "w-full bg-surface-glass text-text-primary placeholder:text-text-muted text-sm rounded-xl border p-3.5 transition-all outline-none resize-none h-24",
+                        editReasonError 
+                          ? "border-red-500/50 ring-2 ring-red-500/20 focus:border-red-500" 
+                          : "border-border-medium focus:border-border-strong focus:ring-2 focus:ring-brand-primary/20"
+                      )}
+                    />
+                    {editReasonError && (
+                      <p className="text-red-400 text-xs mt-1">Please provide a reason to request edit access.</p>
+                    )}
+                  </div>
+                )}
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <button
+                    type="button"
+                    className={`flex-1 inline-flex items-center justify-center font-semibold rounded-inputs px-5 py-3.5 text-white transition-all duration-200 ${isEditRequestPending ? 'opacity-50 cursor-not-allowed bg-warning/50 border border-warning/50' : 'hover:bg-warning-hover bg-warning border border-warning cursor-pointer'}`}
+                    disabled={isEditRequestPending || isSaving}
+                    onClick={handleRequestEdit}
+                  >
+                    {isEditRequestPending ? <Clock className="w-5 h-5 mr-2" /> : <Edit3 className="w-5 h-5 mr-2" />}
+                    {isEditRequestPending ? 'Edit Request Pending Approval' : 'Request Edit Access'}
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         )}
       </form>
