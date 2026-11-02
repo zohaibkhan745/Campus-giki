@@ -59,4 +59,6 @@ uploads/
 server/uploads/
 
 UI Components/
-
+*-vuln-report.html
+*-report.html
+*vuln*.html
