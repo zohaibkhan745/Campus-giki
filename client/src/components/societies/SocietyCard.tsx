@@ -13,7 +13,7 @@ export const SocietyCard: React.FC<SocietyCardProps> = ({ society, className }) 
   const navigate = useNavigate();
 
   const logoImage = getSocietyLogo(society.logoUrl);
-  const bannerImage = (society as any).bannerUrl ? resolveImageUrl((society as any).bannerUrl) : null;
+  const bannerImage = society.bannerUrl ? resolveImageUrl(society.bannerUrl) : null;
   const username = society.name.toLowerCase().replace(/[^a-z0-9]/g, '');
 
   // Calculate EC Members count safely
@@ -63,13 +63,16 @@ export const SocietyCard: React.FC<SocietyCardProps> = ({ society, className }) 
             src={bannerImage}
             alt=""
             aria-hidden="true"
-            className="absolute inset-0 w-full h-full object-cover filter blur-xs opacity-60 scale-105 pointer-events-none"
+            className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 pointer-events-none"
+            onError={(e) => {
+              e.currentTarget.style.display = 'none';
+            }}
           />
         ) : (
           <div className="absolute inset-0 bg-gradient-to-r from-brand-primary/15 via-purple-500/10 to-brand-secondary/15" />
         )}
 
-        <div className="absolute inset-0 bg-black/20 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/20 pointer-events-none" />
 
         {/* Top-Right Category Pill Badge */}
         <div className="absolute top-3 right-3 z-10">
@@ -137,4 +140,3 @@ export const SocietyCard: React.FC<SocietyCardProps> = ({ society, className }) 
     </article>
   );
 };
-

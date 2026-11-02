@@ -31,7 +31,7 @@ import {
   type ExecutiveCouncilMember,
 } from '@/services/admin.service';
 import { societyService } from '@/services/society.service';
-import { getSocietyLogo, getAdvisorLogo } from '@/lib/utils';
+import { getSocietyLogo, getAdvisorLogo, resolveImageUrl } from '@/lib/utils';
 import { CustomDropdown } from '@/components/ui/CustomDropdown';
 import { ConfirmModal } from '@/components/ui/ConfirmModal';
 import { ErrorState } from '@/components/ui/ErrorState';
@@ -279,7 +279,7 @@ export const AdminSocietyDetailPage: React.FC = () => {
         <div className="h-44 sm:h-52 w-full relative overflow-hidden bg-gradient-to-r from-blue-900/40 via-purple-900/30 to-slate-900/60">
           {society.bannerUrl ? (
             <img
-              src={society.bannerUrl}
+              src={resolveImageUrl(society.bannerUrl)}
               alt={`${society.name} Banner`}
               className="w-full h-full object-cover object-center"
               onError={(e) => {

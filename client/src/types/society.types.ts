@@ -16,6 +16,7 @@ export interface PublicSocietyItem {
   type?: OrganizationType;
   shortDescription?: string | null;
   logoUrl?: string | null;
+  bannerUrl?: string | null;
   _count?: { members?: number; followers?: number; };
   category?: {
     id: string;

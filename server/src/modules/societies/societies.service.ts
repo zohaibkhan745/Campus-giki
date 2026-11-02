@@ -75,6 +75,7 @@ export class SocietiesService {
           type: true,
           shortDescription: true,
           logoUrl: true,
+          bannerUrl: true,
           executiveCouncil: true,
           presidentName: true,
           category: {

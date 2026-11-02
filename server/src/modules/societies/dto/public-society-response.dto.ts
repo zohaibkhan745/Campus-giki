@@ -28,6 +28,9 @@ export class PublicSocietyItemDto {
   @ApiPropertyOptional({ example: 'https://giki.edu.pk/societies/acm-logo.png' })
   logoUrl?: string | null;
 
+  @ApiPropertyOptional({ example: 'https://giki.edu.pk/societies/acm-banner.png' })
+  bannerUrl?: string | null;
+
   @ApiPropertyOptional({ example: '[]' })
   executiveCouncil?: string | null;
 
