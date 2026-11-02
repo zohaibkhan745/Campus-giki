@@ -1,13 +1,12 @@
-import { getSocietyLogo } from '@/lib/utils';
 import React, { useState } from 'react';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
 import {
   Building2,
   Search,
   FilterX,
 } from 'lucide-react';
 import { societyService } from '@/services/society.service';
+import { SocietyCard } from '@/components/societies/SocietyCard';
 import { SocietyCardSkeleton } from '@/components/societies/SocietyCardSkeleton';
 import { CustomDropdown } from '@/components/ui/CustomDropdown';
 import { useDebounce } from '@/hooks/useDebounce';
@@ -16,7 +15,6 @@ import { EmptyState } from '@/components/ui/EmptyState';
 import type { OrganizationType } from '@/types/society.types';
 
 export const SocietyDirectoryPage: React.FC = () => {
-  const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [selectedType, setSelectedType] = useState<OrganizationType | ''>('');
@@ -176,9 +174,9 @@ export const SocietyDirectoryPage: React.FC = () => {
         </div>
       )}
 
-      {/* Directory Content Views */}
+      {/* Directory Content Views (Consistently 4 columns on desktop) */}
       {isLoading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
             <SocietyCardSkeleton key={i} />
           ))}
@@ -208,77 +206,9 @@ export const SocietyDirectoryPage: React.FC = () => {
           }
         />
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {societies.map((society) => (
-            <div
-              key={society.id}
-              onClick={() => navigate(`/societies/${society.id}`)}
-              className="relative group cursor-pointer h-full"
-            >
-              {/* Subtle ambient hover glow */}
-              <div className="absolute -inset-0.5 bg-brand-primary/15 rounded-3xl blur-lg opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none"></div>
-
-              {/* Main Card Container */}
-              <div className="relative h-full flex flex-col bg-surface-card rounded-3xl shadow-card group-hover:shadow-card-hover overflow-hidden transition-all duration-300 ease-out hover:-translate-y-1 border border-border-subtle group-hover:border-border-medium">
-                <div className="relative overflow-hidden group/img image-container">
-                  <img
-                    src={getSocietyLogo(society.logoUrl)}
-                    alt={society.name}
-                    className="w-full aspect-square object-cover transition-transform duration-500 ease-out group-hover/img:scale-[1.03]"
-                    onError={(e) => {
-                      e.currentTarget.src = '/default-society.jpg';
-                    }}
-                  />
-
-                  <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/80 via-black/40 to-transparent pointer-events-none" />
-
-                  <div className="absolute top-5 left-5 pr-14 max-w-full">
-                    <h2 className="text-2xl sm:text-3xl font-extrabold text-white leading-tight line-clamp-3 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
-                      {society.name}
-                    </h2>
-                  </div>
-                </div>
-
-                <div className="p-4 flex items-center justify-between bg-surface-card flex-1 gap-3 border-t border-border-subtle">
-                  <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-8 h-8 rounded-full overflow-hidden transition-transform duration-300 hover:scale-105 ring-2 ring-border-subtle flex-shrink-0 bg-surface-elevated flex items-center justify-center">
-                      <img
-                        src={getSocietyLogo(society.logoUrl)}
-                        alt={`${society.name} avatar`}
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          e.currentTarget.src = '/default-society.jpg';
-                        }}
-                      />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="text-sm font-medium text-text-secondary truncate">
-                        @{society.name.toLowerCase().replace(/[^a-z0-9]/g, '')}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="relative z-10 text-right shrink-0">
-                    <div className="text-lg font-bold leading-none text-text-primary">
-                      {(() => {
-                        try {
-                          const s = society as any;
-                          return (
-                            (s.executiveCouncil ? JSON.parse(s.executiveCouncil).length : 0) +
-                            (s.presidentName ? 1 : 0)
-                          );
-                        } catch {
-                          return 1;
-                        }
-                      })()}
-                    </div>
-                    <div className="text-[10px] uppercase tracking-wider font-bold text-text-muted mt-0.5">
-                      EC Members
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <SocietyCard key={society.id} society={society} />
           ))}
         </div>
       )}

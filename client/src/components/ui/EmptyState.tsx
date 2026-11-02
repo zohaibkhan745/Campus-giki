@@ -13,7 +13,8 @@ export interface EmptyStateAction {
 }
 
 export interface EmptyStateProps {
-  icon?: LucideIcon;
+  icon?: LucideIcon | null;
+  hideIcon?: boolean;
   title: string;
   description: string;
   action?: EmptyStateAction;
@@ -26,6 +27,7 @@ export interface EmptyStateProps {
 
 export const EmptyState: React.FC<EmptyStateProps> = ({
   icon: Icon = Sparkles,
+  hideIcon = false,
   title,
   description,
   action,
@@ -45,9 +47,11 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
     >
       <div className="relative z-10 flex flex-col items-center max-w-md mx-auto space-y-4">
         {/* Icon Badge */}
-        <div className="relative flex items-center justify-center w-16 h-16 rounded-2xl bg-surface border border-border-medium shadow-sm text-text-primary">
-          <Icon className="w-8 h-8 text-brand-primary" />
-        </div>
+        {!hideIcon && Icon && (
+          <div className="relative flex items-center justify-center w-16 h-16 rounded-2xl bg-surface border border-border-medium shadow-sm text-text-primary">
+            <Icon className="w-8 h-8 text-brand-primary" />
+          </div>
+        )}
 
         {/* Text Details */}
         <div className="space-y-2">

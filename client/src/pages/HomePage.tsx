@@ -5,7 +5,7 @@ import { FeedCardSkeleton } from '@/components/feed/FeedCardSkeleton';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { EmptyState } from '@/components/ui/EmptyState';
 
-import { RefreshCw, Sparkles } from 'lucide-react';
+import { RefreshCw } from 'lucide-react';
 import React from 'react';
 
 export const HomePage: React.FC = () => {
@@ -52,7 +52,7 @@ export const HomePage: React.FC = () => {
           ) : items.length === 0 ? (
             /* True Empty State */
             <EmptyState
-              icon={Sparkles}
+              hideIcon
               title="Campus Feed is Quiet"
               description="No announcements or society events have been published to the feed yet. Explore upcoming campus events or connect with student societies."
               action={{

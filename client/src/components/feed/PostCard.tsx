@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Link, useNavigate } from 'react-router-dom';
-import { Loader2 } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Loader2, Megaphone } from 'lucide-react';
 import { ConfirmModal } from '@/components/ui/ConfirmModal';
 import { getSocietyLogo, resolveImageUrl, cn } from '@/lib/utils';
 import type { PostFeedItem } from '@/types/feed.types';
@@ -9,6 +9,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useQueryClient } from '@tanstack/react-query';
 import { postService } from '@/services/post.service';
 import { globalNotification } from '@/contexts/NotificationContext';
+
 const PostDetailModal = React.lazy(() =>
   import('./PostDetailModal').then((m) => ({ default: m.PostDetailModal })),
 );
@@ -22,7 +23,6 @@ interface PostCardProps {
 const PostCardComponent: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
-  const navigate = useNavigate();
 
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -45,13 +45,17 @@ const PostCardComponent: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) 
     : (item.society?.name || 'Society');
   const societyId = isDsaPost ? undefined : item.society?.id;
 
-  const formattedDate = new Date(item.createdAt).toLocaleDateString('en-US', {
+  const dateObj = new Date(item.createdAt);
+  const postMonthShort = dateObj.toLocaleDateString('en-US', { month: 'short' }).toUpperCase();
+  const postDayNum = dateObj.toLocaleDateString('en-US', { day: 'numeric' });
+
+  const formattedDate = dateObj.toLocaleDateString('en-US', {
     month: 'short',
     day: 'numeric',
     year: 'numeric',
   });
 
-  const formattedTime = new Date(item.createdAt).toLocaleTimeString('en-US', {
+  const formattedTime = dateObj.toLocaleTimeString('en-US', {
     hour: 'numeric',
     minute: '2-digit',
     hour12: true,
@@ -98,18 +102,17 @@ const PostCardComponent: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) 
   };
 
   const handleDelete = async () => {
-    if (isDeleting) return;
     setIsDeleting(true);
     try {
       await postService.deletePost(item.id);
-      globalNotification.triggerSuccess('Post deleted successfully');
       setShowDeleteConfirm(false);
-      queryClient.invalidateQueries({ queryKey: ['campusFeed'] });
-      queryClient.invalidateQueries({ queryKey: ['societyPosts'] });
+      globalNotification.triggerSuccess?.('Post deleted successfully');
       queryClient.invalidateQueries({ queryKey: ['adminPosts'] });
+      queryClient.invalidateQueries({ queryKey: ['publicFeed'] });
+      queryClient.invalidateQueries({ queryKey: ['feed'] });
       if (onDelete) onDelete();
     } catch {
-      globalNotification.triggerFailed('Failed to delete post');
+      globalNotification.triggerFailed?.('Failed to delete post');
     } finally {
       setIsDeleting(false);
     }
@@ -118,7 +121,7 @@ const PostCardComponent: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) 
   return (
     <>
       <article
-        className="card-wrapper group relative flex flex-col w-full h-full rounded-[28px] overflow-hidden border border-border-medium bg-surface shadow-elevation-1 transition-all duration-200 hover:-translate-y-1 hover:border-brand-primary/40 hover:shadow-elevation-2 active:scale-[0.99] cursor-pointer select-none focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
+        className="card-wrapper group relative flex flex-col w-full h-full rounded-[24px] overflow-hidden border border-border-medium bg-surface shadow-elevation-1 transition-all duration-200 hover:-translate-y-1 hover:border-brand-primary/40 hover:shadow-elevation-2 active:scale-[0.99] cursor-pointer select-none focus:outline-none focus:ring-2 focus:ring-brand-primary/50 text-left"
         data-type="post"
         data-card-id={item.id}
         onClick={handleCardClick}
@@ -127,24 +130,8 @@ const PostCardComponent: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) 
         role="article"
         aria-label={`Announcement: ${postTitle}`}
       >
-        {/* Upper Bar Section */}
-        <div className="bg-surface/95 border-b border-border-subtle px-4 py-3 flex items-center justify-between gap-3 w-full rounded-t-[24px] shrink-0 z-20 relative">
-          <div className="flex flex-col min-w-0 flex-1 text-left">
-            <span
-              className="text-text-primary text-[18px] font-black tracking-tight truncate leading-tight group-hover:text-brand-primary transition-colors"
-              title={postTitle}
-            >
-              {postTitle}
-            </span>
-            <span className="text-text-secondary text-[11px] font-medium whitespace-nowrap mt-0.5">
-              {formattedDate} • {formattedTime}
-            </span>
-          </div>
-          <span className="card-tag !text-[9px] !py-1 !px-2 shrink-0">Post</span>
-        </div>
-
-        {/* Center Media & Description Body */}
-        <div className={`relative w-full flex-1 min-h-0 overflow-hidden flex items-center justify-center ${!coverImage ? 'bg-surface-glass backdrop-blur-xl' : 'bg-black/90'}`}>
+        {/* 1. Top Poster Section with Ambient Backdrop & Date Badge */}
+        <div className="relative w-full aspect-[16/10] overflow-hidden bg-black/90 flex items-center justify-center shrink-0">
           {coverImage ? (
             <>
               {/* Ambient blurred backdrop */}
@@ -156,7 +143,7 @@ const PostCardComponent: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) 
                 decoding="async"
                 className="absolute inset-0 w-full h-full object-cover filter blur-lg opacity-40 scale-110 pointer-events-none"
               />
-              <div className="absolute inset-0 bg-black/25 pointer-events-none" />
+              <div className="absolute inset-0 bg-black/20 pointer-events-none" />
               {/* Wholly visible uncropped image */}
               <img
                 src={coverImage}
@@ -166,27 +153,57 @@ const PostCardComponent: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) 
                 className="relative z-1 max-h-full max-w-full w-auto h-auto object-contain group-hover:scale-[1.02] transition-transform duration-500 ease-out"
               />
             </>
-          ) : null}
+          ) : (
+            <div className="w-full h-full bg-gradient-to-br from-brand-secondary/20 via-surface-elevated to-surface flex items-center justify-center text-text-muted">
+              <Megaphone className="w-10 h-10 opacity-30 text-brand-secondary" />
+            </div>
+          )}
 
-          <div className={cn("relative z-10 text-left flex flex-col flex-1", !coverImage ? "p-4" : "absolute top-5 left-5 right-5")}>
-            {!coverImage && (
-              <div className="text-text-secondary text-[16px] leading-relaxed mt-3 line-clamp-6 whitespace-pre-wrap flex-1">
-                {item.content}
-              </div>
-            )}
+          {/* Floating Date Badge (Top-Left) */}
+          <div className="absolute top-3 left-3 z-10 bg-surface/95 backdrop-blur-md border border-border-subtle rounded-xl px-2.5 py-1 text-center shadow-md pointer-events-none">
+            <span className="block text-[10px] font-black uppercase tracking-wider text-brand-secondary leading-tight">
+              {postMonthShort}
+            </span>
+            <span className="block text-base font-black text-text-primary leading-tight">
+              {postDayNum}
+            </span>
+          </div>
+
+          {/* Type Badge (Top-Right) */}
+          <div className="absolute top-3 right-3 z-10 pointer-events-none">
+            <span className="card-tag !text-[9px] !py-0.5 !px-2.5 shrink-0 backdrop-blur-md bg-surface-glass border border-border-subtle font-extrabold uppercase tracking-wider text-text-primary">
+              {isDsaPost ? 'Notice' : 'Post'}
+            </span>
           </div>
         </div>
 
-        {/* Lower Bar Section */}
-        <div
-          className="bg-surface/95 border-t border-border-subtle p-4 flex items-center justify-between gap-3 shrink-0 rounded-b-[24px] relative z-20"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div className="flex items-center gap-2.5 min-w-0 flex-1">
+        {/* 2. Middle Content Section */}
+        <div className="flex flex-col flex-1 p-4 text-left gap-1.5 min-h-0">
+          {/* Post Schedule Timestamp */}
+          <div className="flex items-center gap-1.5 text-xs font-semibold text-brand-secondary">
+            <Megaphone className="w-3.5 h-3.5 shrink-0" />
+            <span className="truncate">{formattedDate} • {formattedTime}</span>
+          </div>
+
+          {/* Post Title */}
+          <h3
+            className="text-[16px] font-bold text-text-primary tracking-tight leading-snug line-clamp-2 group-hover:text-brand-primary transition-colors mt-0.5"
+            title={postTitle}
+          >
+            {postTitle}
+          </h3>
+
+          {/* Post Content Snippet */}
+          <p className="text-text-secondary text-xs leading-relaxed line-clamp-2 mt-0.5">
+            {item.content}
+          </p>
+
+          {/* 3. Society / Author Row (Full width) */}
+          <div className="flex items-center gap-2.5 pt-3 mt-auto border-t border-border-subtle">
             {societyId ? (
               <Link
                 to={`/societies/${societyId}`}
-                className="w-9 h-9 rounded-full bg-brand-primary flex items-center justify-center border border-border-medium shrink-0 overflow-hidden hover:opacity-80 transition-opacity"
+                className="w-7 h-7 rounded-full bg-brand-primary flex items-center justify-center border border-border-medium shrink-0 overflow-hidden hover:opacity-80 transition-opacity"
                 onClick={(e) => e.stopPropagation()}
               >
                 <img
@@ -201,7 +218,7 @@ const PostCardComponent: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) 
                 />
               </Link>
             ) : (
-              <div className="w-9 h-9 rounded-full bg-brand-primary flex items-center justify-center border border-border-medium shrink-0 overflow-hidden">
+              <div className="w-7 h-7 rounded-full bg-brand-primary flex items-center justify-center border border-border-medium shrink-0 overflow-hidden">
                 <img
                   src={logoImage}
                   alt={authorName}
@@ -215,25 +232,37 @@ const PostCardComponent: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) 
               </div>
             )}
 
-            <div className="flex flex-col min-w-0 flex-1 text-left">
+            <div className="flex items-baseline gap-1.5 min-w-0 flex-1 text-left">
               {societyId ? (
                 <Link
                   to={`/societies/${societyId}`}
-                  className="text-text-primary text-[14px] font-bold leading-tight truncate hover:opacity-80 transition-opacity"
+                  className="text-text-primary text-[13px] font-bold truncate leading-tight hover:opacity-80 transition-opacity"
                   onClick={(e) => e.stopPropagation()}
                 >
                   {authorName}
                 </Link>
               ) : (
-                <span className="text-text-primary text-[14px] font-bold leading-tight truncate">{authorName}</span>
+                <span className="text-text-primary text-[13px] font-bold truncate leading-tight">
+                  {authorName}
+                </span>
               )}
-              <span className="text-text-secondary text-[12px] font-medium leading-none mt-0.5 truncate">
+              <span className="text-text-muted text-[11px] font-medium truncate hidden sm:inline leading-none">
                 {isDsaPost ? '@dsa.giki' : `@${(item.society as any)?.username || item.society?.name?.toLowerCase().replace(/\s+/g, '') || 'society'}`}
               </span>
             </div>
           </div>
+        </div>
 
-          <div className="flex items-center gap-2 shrink-0 h-full">
+        {/* 4. Lower Action Bar Section */}
+        <div
+          className="bg-surface/95 border-t border-border-subtle p-3 px-4 flex items-center justify-between gap-2 shrink-0 rounded-b-[24px] relative z-20"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <span className="text-[11px] font-semibold text-text-muted">
+            Campus Bulletin
+          </span>
+
+          <div className="flex items-center gap-2">
             <button
               type="button"
               className="px-4 h-[32px] flex items-center justify-center bg-text-primary hover:opacity-90 active:scale-95 text-text-inverse text-[12px] font-bold rounded-lg transition-all border-none shadow-sm pointer-events-auto cursor-pointer"
@@ -262,18 +291,11 @@ const PostCardComponent: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) 
                     <circle cx="19" cy="12" r="2.5" />
                   </svg>
                 </button>
-
                 {dropdownOpen &&
                   createPortal(
                     <div
                       className="card-dropdown-menu active"
-                      style={{
-                        position: 'fixed',
-                        top: dropdownPos.top,
-                        left: dropdownPos.left,
-                        zIndex: 99999,
-                        margin: 0,
-                      }}
+                      style={{ position: 'fixed', top: dropdownPos.top, left: dropdownPos.left, zIndex: 99999, margin: 0 }}
                       onClick={(e) => e.stopPropagation()}
                     >
                       {canEdit && (
@@ -283,7 +305,6 @@ const PostCardComponent: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) 
                             e.stopPropagation();
                             setDropdownOpen(false);
                             if (onEdit) onEdit();
-                            else navigate(`/posts/${item.id}/edit`);
                           }}
                         >
                           Edit Post
@@ -308,22 +329,23 @@ const PostCardComponent: React.FC<PostCardProps> = ({ item, onEdit, onDelete }) 
         </div>
       </article>
 
-      {/* Detail Modal */}
+      {/* Post Detail Modal */}
       {isDetailOpen && (
         <React.Suspense fallback={null}>
-          <PostDetailModal item={item} onClose={() => setIsDetailOpen(false)} />
+          <PostDetailModal
+            item={item}
+            onClose={() => setIsDetailOpen(false)}
+          />
         </React.Suspense>
       )}
 
       {/* Delete Confirmation Modal */}
       <ConfirmModal
         isOpen={showDeleteConfirm}
-        onClose={() => {
-          if (!isDeleting) setShowDeleteConfirm(false);
-        }}
+        onClose={() => setShowDeleteConfirm(false)}
         onConfirm={handleDelete}
-        title="Delete Post?"
-        message="Are you sure you want to permanently delete this post? This action cannot be undone."
+        title="Delete Post"
+        message="Are you sure you want to delete this post? This action cannot be undone."
         confirmText="Delete"
         cancelText="Cancel"
         isLoading={isDeleting}

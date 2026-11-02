@@ -68,4 +68,30 @@ describe('EmptyState Component', () => {
     await user.click(actionButton);
     expect(handleClick).toHaveBeenCalledTimes(1);
   });
+
+  it('does not render icon when hideIcon is true or icon is null', () => {
+    const { container, rerender } = render(
+      <MemoryRouter>
+        <EmptyState
+          hideIcon
+          title="Hidden Icon State"
+          description="Description"
+        />
+      </MemoryRouter>
+    );
+
+    expect(container.querySelector('.rounded-2xl')).not.toBeInTheDocument();
+
+    rerender(
+      <MemoryRouter>
+        <EmptyState
+          icon={null}
+          title="Null Icon State"
+          description="Description"
+        />
+      </MemoryRouter>
+    );
+
+    expect(container.querySelector('.rounded-2xl')).not.toBeInTheDocument();
+  });
 });
