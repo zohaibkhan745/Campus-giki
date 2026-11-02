@@ -45,6 +45,7 @@ export const CreateEventPage: React.FC = () => {
     setValue,
     watch,
     control,
+    clearErrors,
     formState: { errors },
   } = useForm<EventFormData>({
     resolver: zodResolver(eventFormSchema),
@@ -584,7 +585,8 @@ export const CreateEventPage: React.FC = () => {
                 const val = typeof e === "string" ? e : e?.target?.value || "";
                 if (val === "Custom (Add)") {
                   setIsCustomVenue(true);
-                  setValue("venue", "", { shouldValidate: true });
+                  setValue("venue", "", { shouldValidate: false, shouldDirty: false, shouldTouch: false });
+                  clearErrors("venue");
                 } else {
                   setIsCustomVenue(false);
                   setValue("venue", val, { shouldValidate: true });
