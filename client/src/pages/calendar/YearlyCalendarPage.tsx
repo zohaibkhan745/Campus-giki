@@ -35,6 +35,7 @@ const KNOWN_VENUES = [
   'TBD',
   'Auditorium',
   'Faculty',
+  'Faculty Club',
   'Guest House',
   'Sports Complex',
   'Basket Ball Court',
@@ -514,7 +515,7 @@ export const YearlyCalendarPage: React.FC = () => {
                           options={[
                             {label: "TBD", value: "TBD"},
                             {label: "Auditorium", value: "Auditorium"},
-                            {label: "Faculty", value: "Faculty"},
+                            {label: "Faculty Club", value: "Faculty Club"},
                             {label: "Guest House", value: "Guest House"},
                             {label: "Sports Complex", value: "Sports Complex"},
                             {label: "Basket Ball Court", value: "Basket Ball Court"},

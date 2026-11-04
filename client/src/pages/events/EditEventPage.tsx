@@ -643,7 +643,7 @@ export const EditEventPage: React.FC = () => {
               }}
               options={[
                 { label: "Auditorium", value: "Auditorium" },
-                { label: "Faculty", value: "Faculty" },
+                { label: "Faculty Club", value: "Faculty Club" },
                 { label: "Guest House", value: "Guest House" },
                 { label: "Sports Complex", value: "Sports Complex" },
                 { label: "Basket Ball Court", value: "Basket Ball Court" },
